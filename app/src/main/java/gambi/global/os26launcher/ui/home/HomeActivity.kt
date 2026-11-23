@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.ViewTreeObserver
 import gambi.global.os26launcher.core.glass.GlassEnvironment
+import gambi.global.os26launcher.core.perf.PerfSwitches
 import gambi.global.os26launcher.core.glass.compose.LocalDsFrostedBackdrop
 import gambi.global.os26launcher.core.glass.compose.rememberFrostedBackdrop
 import gambi.global.os26launcher.domain.config.GeneralConfigRepository
@@ -365,7 +366,7 @@ class HomeActivity : AppCompatActivity() {
                 // LD Task 4: ảnh nổi kéo-thả trên cả Library (kéo app từ Library ra Home), toạ độ gốc = cửa sổ như HomeScreen.
                 homeDrag?.let {
                     // PG3: ô thư mục đang kéo vẫn có kính mờ tĩnh.
-                    CompositionLocalProvider(LocalDsFrostedBackdrop provides frosted.backdropOrNull) {
+                    CompositionLocalProvider(LocalDsFrostedBackdrop provides if (PerfSwitches.noFrosted) null else frosted.backdropOrNull) {
                         gambi.global.os26launcher.ui.home.compose.HomeDragLayer(it, it.cells, icons)
                     }
                 }
