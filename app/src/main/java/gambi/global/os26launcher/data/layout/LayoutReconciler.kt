@@ -99,7 +99,7 @@ class LayoutReconciler @Inject constructor(
                 // M7 Task 11: từ M7 "0 hàng" không còn đồng nghĩa "máy mới" -- người dùng có thể đã ẩn HẾT app. Dựng bố cục
                 // chỉ từ app KHÔNG bị ẩn; không còn app nào thì không dựng gì (bỏ ẩn sau đó sẽ tự tạo trang, xem
                 // placeNewInTransaction). Máy mới: `hidden_apps` rỗng nên hành vi y như cũ.
-                val hidden = hiddenAppDao.getAll()
+                val hidden = notOnHomeRows() // TF: cả app "xóa khỏi MH chính"
                     .mapTo(HashSet()) { ComponentKey(it.packageName, it.className, it.userSerial) }
                 val apps = allApps.filter { it.key !in hidden }
                 if (apps.isEmpty()) return@withTransaction
@@ -255,7 +255,7 @@ class LayoutReconciler @Inject constructor(
                 if (row.itemType == LauncherItemEntity.ITEM_TYPE_WIDGET && pkg != null) candidates.add(pkg to row.userSerial)
             }
             // M7 Task 11: hàng `hidden_apps` của app đã gỡ lúc launcher không chạy cũng là ứng viên (cùng phép hỏi hệ thống).
-            val hiddenBefore = hiddenAppDao.getAll()
+            val hiddenBefore = notOnHomeRows() // TF: cả cờ offHome của app đã gỡ (cài lại thì về Home như app mới)
             for (h in hiddenBefore) {
                 if (ComponentKey(h.packageName, h.className, h.userSerial) !in live) candidates.add(
                     h.packageName to h.userSerial
@@ -285,6 +285,7 @@ class LayoutReconciler @Inject constructor(
                                 it.className,
                                 it.userSerial
                             )
+                            hiddenAppDao.setOffHome(it.packageName, it.className, it.userSerial, false)
                         }
                     val doomed = before.filter { row ->
                         val pkg = row.packageName
@@ -540,38 +541,57 @@ class LayoutReconciler @Inject constructor(
             if (hidden) {
                 db.withTransaction {
                     hiddenAppDao.insert(HiddenAppEntity(key.packageName, key.className, userSerial))
-                    val all = itemDao.getAll()
-                    val placed = all.firstOrNull {
-                        it.itemType == LauncherItemEntity.ITEM_TYPE_APP &&
-                                it.packageName == key.packageName && it.className == key.className &&
-                                it.userSerial == userSerial
-                    }
-                    if (placed != null) {
-                        itemDao.deleteByIds(listOf(placed.id))
-                        // M7 Task 8 (Ruling G2): ẩn icon trong lưới thì các icon SAU nó cùng trang dồn lên 1 bậc (dock thì
-                        // không cần: dock đọc theo rank rồi căn giữa). Cùng transaction/mutex với việc xóa.
-                        if (placed.container == LauncherItemEntity.CONTAINER_HOME) compactPageAfterRemoval(
-                            all,
-                            placed,
-                            grid
-                        )
-                        // G2a A3a (D9): app nằm trong thư mục -> kiểm tra giải tán thư mục đó.
-                        if (placed.container > 0) dissolveFolderIfNeeded(placed.container)
-                    }
+                    removePlacementInTransaction(key, userSerial, grid)
                 }
             } else {
                 hiddenAppDao.delete(key.packageName, key.className, userSerial)
-                val app = appRepository.apps.first { it.isNotEmpty() }.firstOrNull { it.key == key }
-                if (app != null) {
-                    val fresh = selectFresh(listOf(app))
-                    // Bỏ ẩn do người dùng chủ động: không re-point hàng mồ côi của app khác vào đây (D4).
-                    if (fresh.isNotEmpty()) db.withTransaction {
-                        placeNewInTransaction(listOf(app), fresh, grid, allowRepoint = false)
-                    }
-                }
+                placeAfterLastIcon(key, grid)
             }
         }
     }
+
+    /**
+     * TF — "Xóa khỏi Màn hình chính" (không ẩn): ghi cờ `offHome`, gỡ hàng placement (dồn ô, giải tán thư mục như ẩn). App vẫn hiện ở Library và
+     * tìm kiếm; bộ đặt app mới bỏ qua nó nên không "sống lại" trên Home.
+     */
+    suspend fun removeFromHome(key: ComponentKey, userSerial: Long) {
+        mutex.withLock {
+            val grid = currentGrid()
+            db.withTransaction {
+                hiddenAppDao.setOffHome(key.packageName, key.className, userSerial, true)
+                removePlacementInTransaction(key, userSerial, grid)
+            }
+        }
+    }
+
+    /** Thân chung của ẩn và [removeFromHome]: xóa hàng app của [key], dồn các icon sau nó cùng trang, giải tán thư mục còn ≤ 1 app. PHẢI gọi trong transaction và dưới [mutex]. */
+    private suspend fun removePlacementInTransaction(key: ComponentKey, userSerial: Long, grid: GridPreset) {
+        val all = itemDao.getAll()
+        val placed = all.firstOrNull {
+            it.itemType == LauncherItemEntity.ITEM_TYPE_APP &&
+                    it.packageName == key.packageName && it.className == key.className &&
+                    it.userSerial == userSerial
+        } ?: return
+        itemDao.deleteByIds(listOf(placed.id))
+        // M7 Task 8 (Ruling G2): ẩn icon trong lưới thì các icon SAU nó cùng trang dồn lên 1 bậc (dock thì
+        // không cần: dock đọc theo rank rồi căn giữa). Cùng transaction/mutex với việc xóa.
+        if (placed.container == LauncherItemEntity.CONTAINER_HOME) compactPageAfterRemoval(all, placed, grid)
+        // G2a A3a (D9): app nằm trong thư mục -> kiểm tra giải tán thư mục đó.
+        if (placed.container > 0) dissolveFolderIfNeeded(placed.container)
+    }
+
+    /** Thân chung của bỏ ẩn và [addToHome]: đặt app [key] SAU icon cuối (FX3 C20) như app mới. PHẢI gọi dưới [mutex], ngoài transaction. */
+    private suspend fun placeAfterLastIcon(key: ComponentKey, grid: GridPreset) {
+        val app = appRepository.apps.first { it.isNotEmpty() }.firstOrNull { it.key == key } ?: return
+        val fresh = selectFresh(listOf(app))
+        // Do người dùng chủ động: không re-point hàng mồ côi của app khác vào đây (D4).
+        if (fresh.isNotEmpty()) db.withTransaction {
+            placeNewInTransaction(listOf(app), fresh, grid, allowRepoint = false)
+        }
+    }
+
+    /** TF: khóa của app KHÔNG được tự đặt lên Home: đã ẩn (`hidden`) hoặc đã "xóa khỏi MH chính" (`offHome`). */
+    private suspend fun notOnHomeRows(): List<HiddenAppEntity> = (hiddenAppDao.getAll() + hiddenAppDao.getOffHome()).distinct()
 
     /**
      * Thân của [moveItem] nhánh lưới chính (M7 Task 5 Step 5): tính kế hoạch bằng [GridInsertPlanner] (hàm
@@ -846,7 +866,7 @@ class LayoutReconciler @Inject constructor(
         val known = itemDao.getAll().mapNotNullTo(HashSet()) { it.componentKeyOrNull() }
         // M7 Task 8: app đang ẩn không có hàng placement nhưng KHÔNG phải app mới -- bỏ qua, nếu không lần quét kế tiếp
         // (danh sách app nạp lại, catchUp lúc mở app) sẽ coi nó là app mới và đặt lại vào bố cục = "sống lại".
-        val hidden = hiddenAppDao.getAll()
+        val hidden = notOnHomeRows() // TF: cả app "xóa khỏi MH chính" (offHome) không phải app mới
             .mapTo(HashSet()) { ComponentKey(it.packageName, it.className, it.userSerial) }
         val candidates = apps.filter { it.key !in known && it.key !in hidden }
         if (candidates.isEmpty()) return candidates
@@ -880,7 +900,7 @@ class LayoutReconciler @Inject constructor(
     ) {
         val rows = itemDao.getAll()
         val known = rows.mapNotNullTo(HashSet()) { it.componentKeyOrNull() }
-        val hiddenRows = hiddenAppDao.getAll()
+        val hiddenRows = notOnHomeRows() // TF: ẩn + offHome (repoint đổi className của cả hai)
         val hidden = hiddenRows.mapTo(HashSet()) { ComponentKey(it.packageName, it.className, it.userSerial) }
         // Lọc lại trong transaction (idempotent): chắc chắn không chèn trùng dù trạng thái đổi sau selectFresh.
         var fresh = candidates.filter { it.key !in known && it.key !in hidden }
@@ -1194,6 +1214,82 @@ class LayoutReconciler @Inject constructor(
     }
 
     /**
+     * LD Task 1 — tạo hàng app MỚI cho [key] đúng chỗ người dùng thả khi kéo từ App Library. Cùng khuôn [addWidgetAt]: mọi thứ trong [mutex] và MỘT
+     * transaction, kế hoạch dùng id tạm [NEW_APP_PLAN_ID].
+     * - Lưới ([targetContainer] = HOME): [GridInsertPlanner] neo [cell] của trang [targetPageId] (`PageId.NEW` = trang tạm ở cuối), icon bị phủ được
+     *   đẩy, tạo trang tràn nếu kế hoạch đòi.
+     * - Dock ([targetContainer] = DOCK): chèn vào slot `cell.x` bằng [DockInsertPlanner] (cùng luật kéo thường), dock đầy thì từ chối.
+     * App đã có trên Home vẫn được thêm (bản trùng, chủ dự án chốt 2026-11-23). Cờ `offHome` (TF) của app được bỏ. false = không ghi gì.
+     */
+    suspend fun addAppAt(key: ComponentKey, targetContainer: Long, targetPageId: Long?, cell: GridPosition): Boolean = mutex.withLock {
+        val grid = currentGrid()
+        db.withTransaction {
+            val rows = itemDao.getAll()
+            val placed = when (targetContainer) {
+                LauncherItemEntity.CONTAINER_DOCK -> {
+                    val dockItems = rows.filter { it.container == LauncherItemEntity.CONTAINER_DOCK }.sortedBy { it.rank }
+                    val order = DockInsertPlanner.plan(dockItems.map { it.id }, NEW_APP_PLAN_ID, cell.x, GridMetrics.DOCK_SLOTS)
+                        ?: return@withTransaction false
+                    val byId = dockItems.associateBy { it.id }
+                    val slot = order.indexOf(NEW_APP_PLAN_ID)
+                    itemDao.insertAll(listOf(appRow(key, LauncherItemEntity.CONTAINER_DOCK, 0, slot, 0, rank = slot)))
+                    itemDao.updateAll(order.mapIndexedNotNull { i, id ->
+                        byId[id]?.takeIf { it.rank != i || it.gridX != i }?.copy(gridX = i, gridY = 0, rank = i)
+                    })
+                    true
+                }
+
+                LauncherItemEntity.CONTAINER_HOME -> {
+                    val pageId = targetPageId ?: return@withTransaction false
+                    val pages = pageDao.getAll().sortedBy { it.rank }
+                    val isNewPage = pageId == PageId.NEW
+                    val targetPageIndex = if (isNewPage) pages.size else pages.indexOfFirst { it.id == pageId }
+                    if (targetPageIndex < 0) return@withTransaction false
+                    val snapshot = pages.map { page ->
+                        GridInsertPlanner.PageSlots(
+                            page.id,
+                            rows.filter { it.container == LauncherItemEntity.CONTAINER_HOME && it.pageId == page.id }.map { it.toSlot() }
+                        )
+                    }.toMutableList()
+                    if (isNewPage) snapshot.add(GridInsertPlanner.PageSlots(PageId.NEW, emptyList()))
+                    val plan = GridInsertPlanner.plan(snapshot, NEW_APP_PLAN_ID, targetPageIndex, cell.x, cell.y, grid.columns, grid.rows, 1, 1)
+                    if (plan.rejected) return@withTransaction false
+                    val own = plan.placements.firstOrNull { it.itemId == NEW_APP_PLAN_ID } ?: return@withTransaction false
+
+                    val pageIds = pages.mapTo(ArrayList()) { it.id }
+                    var nextRank = (pages.lastOrNull()?.rank ?: -1) + 1
+                    if (isNewPage) pageIds.add(pageDao.insert(HomePageEntity(rank = nextRank++)))
+                    repeat(plan.newPages) { pageIds.add(pageDao.insert(HomePageEntity(rank = nextRank++))) }
+
+                    itemDao.insertAll(listOf(appRow(key, LauncherItemEntity.CONTAINER_HOME, pageIds[own.pageIndex], own.x, own.y)))
+                    val byId = rows.associateBy { it.id }
+                    val moved = plan.placements.filter { it.itemId != NEW_APP_PLAN_ID }
+                    if (moved.isNotEmpty()) {
+                        itemDao.updateAll(moved.map { pl -> byId.getValue(pl.itemId).copy(pageId = pageIds[pl.pageIndex], gridX = pl.x, gridY = pl.y) })
+                    }
+                    true
+                }
+
+                else -> false // thư mục: ngoài phạm vi LD
+            }
+            if (placed) hiddenAppDao.setOffHome(key.packageName, key.className, key.userSerial, false)
+            placed
+        }
+    }
+
+    private fun appRow(key: ComponentKey, container: Long, pageId: Long, x: Int, y: Int, rank: Int = 0) = LauncherItemEntity(
+        container = container,
+        pageId = pageId,
+        gridX = x,
+        gridY = y,
+        rank = rank,
+        itemType = LauncherItemEntity.ITEM_TYPE_APP,
+        packageName = key.packageName,
+        className = key.className,
+        userSerial = key.userSerial
+    )
+
+    /**
      * Bản Compose (2026-11-21) — chuyển dữ liệu Today cũ sang kho của REF (`TodayWidgetsStore`, DataStore `today_widgets`). Bản Compose trước
      * lưu widget Today thành hàng `container = TODAY` (-102) trong `launcher_items`; REF lưu danh sách riêng (id trong dải `TodayWidget.ID_BASE`,
      * có widget "App gần đây", không có widget app). Một lần, idempotent:
@@ -1263,5 +1359,8 @@ class LayoutReconciler @Inject constructor(
 
         /** G2c Task 13: id tạm của widget chưa có hàng khi lập kế hoạch ([GridInsertPlanner]); id hàng thật luôn > 0. */
         const val NEW_WIDGET_PLAN_ID = Long.MIN_VALUE
+
+        /** LD Task 1: id tạm của app kéo từ Library (chưa có hàng) khi lập kế hoạch; khác [NEW_WIDGET_PLAN_ID], id hàng thật luôn > 0. */
+        const val NEW_APP_PLAN_ID = Long.MIN_VALUE + 1
     }
 }

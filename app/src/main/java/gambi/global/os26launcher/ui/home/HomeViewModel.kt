@@ -97,7 +97,9 @@ class HomeViewModel @Inject constructor(
     private val iconPackRepository: gambi.global.os26launcher.domain.repository.IconPackRepository, // IP
     observeRecentApps: gambi.global.os26launcher.domain.usecase.ObserveRecentAppsUseCase, // TV-2
     private val todayWidgetsRepository: gambi.global.os26launcher.domain.today.TodayWidgetsRepository, // TV-3
-    private val removeTodayWidgetUseCase: gambi.global.os26launcher.domain.usecase.RemoveTodayWidgetUseCase // TV-3
+    private val removeTodayWidgetUseCase: gambi.global.os26launcher.domain.usecase.RemoveTodayWidgetUseCase, // TV-3
+    private val removeFromHomeUseCase: gambi.global.os26launcher.domain.usecase.RemoveFromHomeUseCase, // TF
+    private val addAppAtUseCase: gambi.global.os26launcher.domain.usecase.AddAppAtUseCase // LD
 ) : ViewModel() {
 
     /** TV-2: app gần đây của Today View (đã bỏ app gỡ/ẩn, mới nhất trước, tối đa 8). `null` = Loading. */
@@ -471,7 +473,7 @@ class HomeViewModel @Inject constructor(
      * G2a A3a (D6/D9): ẩn app [key] đang nằm trong thư mục đang mở panel ("−" hoặc menu nhấn giữ trong panel). Cập nhật lạc
      * quan: bỏ app khỏi thư mục; còn <= 1 app thì đóng panel (DB giải tán thư mục, UI đối chiếu sau khi ghi xong).
      */
-    fun hideAppInFolder(key: ComponentKey) {
+    fun hideAppInFolder(key: ComponentKey, hide: Boolean = true) {
         val s = _uiState.value
         if (s.draggingItemId != null) return
         val folderId = s.openFolderId ?: return
@@ -493,7 +495,7 @@ class HomeViewModel @Inject constructor(
                 }
             },
             write = {
-                hideAppUseCase(key, key.userSerial)
+                if (hide) hideAppUseCase(key, key.userSerial) else removeFromHomeUseCase(key) // TF: hide=false = "Xóa khỏi MH chính"
                 true
             },
             failureLog = "hideAppInFolder failed folder=$folderId"
@@ -726,7 +728,28 @@ class HomeViewModel @Inject constructor(
 
     // M7 Task 8: bấm dấu "−" trên 1 icon -> ẩn nhanh. Lưới: các icon SAU nó cùng trang dồn lên 1 bậc (Ruling G2, cùng
     // GridRemovePlanner với DB); dock: bỏ item (dock đọc theo thứ tự rồi căn giữa nên tự "dồn").
-    fun onQuickHideTapped(itemId: Long) {
+    /**
+     * LD — thả app kéo từ App Library xuống lưới ([targetContainer] = HOME, trang [targetPageId], `PageId.NEW` = trang tạm) hoặc dock (slot `cell.x`).
+     * KHÔNG lạc quan (như `addWidgetAt`): hàng mới chưa có id thật, DB phát lại bố cục ngay sau khi ghi. Bị từ chối thì chỉ ghi log (UI đã cho ảnh
+     * nổi mờ đi / bay vào ô; DB phát lại bố cục cũ). Trang tạm bị bỏ cờ như mọi lần thả.
+     */
+    fun onLibraryAppDropped(app: AppItem, targetContainer: Long, targetPageId: Long?, cell: GridPosition) {
+        _uiState.update { it.copy(draggingItemId = null, ghostPage = false) } // LD Task 4: phiên kéo (id giả) kết thúc
+        viewModelScope.launch {
+            try {
+                if (!addAppAtUseCase(app.key, targetContainer, targetPageId, cell)) {
+                    Log.w(TAG, "addAppAt rejected ${app.key.packageName} container=$targetContainer page=$targetPageId cell=$cell")
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e(TAG, "addAppAt failed ${app.key.packageName}", e)
+                _events.trySend(HomeEvent.MenuActionFailed)
+            }
+        }
+    }
+
+    fun onQuickHideTapped(itemId: Long, hide: Boolean = true) {
         val s = _uiState.value
         if (s.draggingItemId != null) return
         val key =
@@ -741,7 +764,7 @@ class HomeViewModel @Inject constructor(
                     dock = it.dock.filter { d -> d.itemId != itemId })
             },
             write = {
-                hideAppUseCase(key, key.userSerial)
+                if (hide) hideAppUseCase(key, key.userSerial) else removeFromHomeUseCase(key) // TF: hide=false = "Xóa khỏi MH chính"
                 // EP Q5: ẩn ngoài edit mode (menu nhấn giữ) không có lần thoát edit mode nào sau đó, nên dọn trang trống ngay.
                 if (!s.editMode) pruneEmptyPagesUseCase()
                 true

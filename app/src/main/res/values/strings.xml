@@ -64,6 +64,7 @@
     <string name="remove_app_delete">Delete App</string>
     <string name="remove_app_from_home">Remove from Home Screen</string>
     <string name="remove_app_cancel">Cancel</string>
+    <string name="library_uninstall_message">Deleting this app will also delete its data.</string>
 
     <!-- M8b: tìm kiếm -->
     <string name="search_field_hint">Search</string>
@@ -331,6 +332,7 @@
     <string name="cc_tile_settings">Settings</string>
     <string name="cc_tile_dark_mode">Dark mode</string>
     <string name="cc_tile_notes">Notes</string>
+    <string name="cc_tile_screen_mirror">Screen Mirroring</string>
     <string name="cc_tile_night_shift">Night Shift</string>
     <string name="cc_tile_app">App</string>
     <string name="cc_customize_tiles">Customize controls</string>

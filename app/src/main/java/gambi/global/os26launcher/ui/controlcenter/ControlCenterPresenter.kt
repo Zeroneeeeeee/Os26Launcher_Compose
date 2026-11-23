@@ -155,6 +155,7 @@ internal class ControlCenterPresenter(
                 CustomTileType.SETTINGS -> open(SystemPanel.SETTINGS)
                 CustomTileType.DARK_MODE -> open(SystemPanel.DARK_MODE)
                 CustomTileType.NOTES -> open(SystemPanel.NOTES)
+            CustomTileType.SCREEN_MIRROR -> open(SystemPanel.SCREEN_MIRROR) // TF
             }
         }
     }

@@ -56,6 +56,8 @@ internal object SystemIntents {
 
         SystemPanel.NOTES -> listOfNotNull(launcherByPackageHint(context, listOf("notes", "note", "keep", "memo")))
         SystemPanel.DND_SETTINGS -> listOf(Intent(ACTION_ZEN_MODE_SETTINGS), Intent(Settings.ACTION_SOUND_SETTINGS))
+        // TF: màn truyền màn hình của hệ thống (Samsung mở Smart View); ROM thiếu thì Kết nối không dây.
+        SystemPanel.SCREEN_MIRROR -> listOf(Intent(Settings.ACTION_CAST_SETTINGS), Intent(Settings.ACTION_WIRELESS_SETTINGS))
         SystemPanel.SOUND_OUTPUT -> listOfNotNull(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) Intent(Settings.Panel.ACTION_VOLUME) else null,
             Intent(Settings.ACTION_SOUND_SETTINGS)

@@ -39,6 +39,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
@@ -96,6 +98,7 @@ import kotlin.math.roundToInt
 import gambi.global.os26launcher.ui.home.compose.NotificationBadges
 import gambi.global.os26launcher.ui.home.compose.library.HomeLibrary
 import gambi.global.os26launcher.ui.home.compose.library.HomeLibraryState
+import gambi.global.os26launcher.ui.home.compose.library.LibraryDragGesture
 import gambi.global.os26launcher.ui.home.compose.today.HomeToday
 import gambi.global.os26launcher.ui.home.compose.today.HomeTodayState
 import gambi.global.os26launcher.ui.home.compose.today.TodayActions
@@ -164,6 +167,10 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var library: HomeLibraryState // JS4: App Library Compose
     private val libraryProgress = mutableFloatStateOf(0f)
     private lateinit var today: HomeTodayState // TV: màn widget bên trái trang 1
+    private lateinit var libraryDrag: LibraryDragGesture // LD Task 3: nhấn giữ / kéo app trong Library
+
+    /** LD Task 4: trạng thái kéo-thả của HomeScreen (HomeScreen báo lên khi dựng). */
+    private var homeDrag by androidx.compose.runtime.mutableStateOf<gambi.global.os26launcher.ui.home.compose.HomeDragState?>(null)
     private val todayModel = gambi.global.os26launcher.ui.home.compose.today.TodayGridModel() // TV-3: thứ tự, kéo đổi chỗ, thêm/xóa của lưới Today
     private val icons by lazy { HomeIcons(viewModel::loadIcon) } // JH1 D7: dùng chung cho Home, Today và bảng chọn widget
     private val pagerInfo = HomePagerInfo()
@@ -241,6 +248,7 @@ class HomeActivity : AppCompatActivity() {
             isLibraryActive = { library.isActive },
             pillClaims = pagerInfo::pillClaims // chạm trên pill dạng chấm không mở Today (như Library)
         )
+        libraryDrag = createLibraryDrag() // LD Task 3
         setContent {
             val state by viewModel.uiState.collectAsStateWithLifecycle()
             val search by searchViewModel.uiState.collectAsStateWithLifecycle()
@@ -258,6 +266,7 @@ class HomeActivity : AppCompatActivity() {
             // JH3a D4 — Back theo thứ tự HomeBackController (LIFO): đăng ký sau thì được hỏi trước. Gốc: chưa là launcher mặc định thì đóng.
             BackHandler(enabled = !defaultLauncherRepository.isDefaultLauncher()) { finish() }
             BackHandler(enabled = state.libraryOpen) { library.closeIfOpen() }
+            BackHandler(enabled = state.libraryOpen && library.editing) { library.exitEditing() } // LD Task 2: Back thoát chế độ sửa trước khi đóng Library
             BackHandler(enabled = state.todayOpen) { today.closeIfOpen() } // TV: cùng lớp "nền" với Library (không mở chồng nhau)
             BackHandler(enabled = state.todayEditMode) { viewModel.exitTodayEditMode() } // TV-3: Back thoát chế độ sửa của Today trước khi đóng Today
             BackHandler(enabled = state.openCategoryGroup != null) { viewModel.closeCategoryGroup() }
@@ -331,6 +340,7 @@ class HomeActivity : AppCompatActivity() {
                     hiddenWidgetPackages = hiddenWidgetPackages,
                     pageScrollRequests = pageScrollRequests,
                     isNavBarHidden = { navBarHidden },
+                    onDragState = { homeDrag = it }, // LD Task 4
                     modifier = Modifier.onSizeChanged { onRootSize(it.width, it.height) }
                 )
                 // TV Task 3: màn Today phía trên Home (trong LocalHostedWidgets để widget app vẽ được), trượt vào từ trái.
@@ -347,6 +357,8 @@ class HomeActivity : AppCompatActivity() {
                 }
                 // JS4: App Library Compose phía trên Home (trước đây là View thêm bằng addContentView, JH3c).
                 HomeLibrary(library, icons, state.backdrop)
+                // LD Task 4: ảnh nổi kéo-thả trên cả Library (kéo app từ Library ra Home), toạ độ gốc = cửa sổ như HomeScreen.
+                homeDrag?.let { gambi.global.os26launcher.ui.home.compose.HomeDragLayer(it, it.cells, icons) }
             }
                 SearchOverlay(search, searchActions, state.backdrop, onProgress = { searchProgress.floatValue = it })
             }
@@ -397,6 +409,8 @@ class HomeActivity : AppCompatActivity() {
         override fun exitEditMode() = viewModel.exitEditMode()
         override fun onDragStarted(itemId: Long) = viewModel.onDragStarted(itemId)
         override fun onDragCancelled() = viewModel.onDragCancelled()
+        override fun onLibraryAppDropped(app: gambi.global.os26launcher.domain.model.AppItem, targetContainer: Long, targetPageId: Long?, cell: GridPosition) =
+            viewModel.onLibraryAppDropped(app, targetContainer, targetPageId, cell) // LD Task 4
         override fun onItemDropped(itemId: Long, targetContainer: Long, targetPageId: Long?, cell: GridPosition) =
             viewModel.onItemDropped(itemId, targetContainer, targetPageId, cell)
 
@@ -555,9 +569,11 @@ class HomeActivity : AppCompatActivity() {
      * dọn nhấn giữ / pager) rồi nuốt; CONSUME thì nuốt. Lớp tìm kiếm đang mở thì không xét.
      */
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        if (!::library.isInitialized || !::today.isInitialized || searchViewModel.uiState.value.isOpen) return super.dispatchTouchEvent(ev)
+        if (!::library.isInitialized || !::today.isInitialized || !::libraryDrag.isInitialized || searchViewModel.uiState.value.isOpen) return super.dispatchTouchEvent(ev)
         // TV: hai controller cùng xem mọi chạm (Home 1 trang thì cả hai là ứng viên lúc DOWN, chiều vuốt quyết bên nào). Library hỏi trước; bên nào
         // tiếp quản thì bên kia nhận một ACTION_CANCEL giả để bỏ ứng viên (canOpen của mỗi bên đã chặn mở chồng khi bên kia đang hiện).
+        // LD Task 3: nhấn giữ app trong Library xét TRƯỚC (DOWN vẫn đi tiếp; đã giữ / đang kéo ra thì nuốt hết cử chỉ).
+        if (libraryDrag.onTouch(ev) == LibraryDragGesture.Result.CONSUME) return true
         val libraryResult = library.onTouch(ev)
         if (libraryResult != LibraryOverlayController.Result.PASS) {
             if (libraryResult == LibraryOverlayController.Result.TAKEOVER) cancelInto(today::onTouch, ev)
@@ -579,6 +595,43 @@ class HomeActivity : AppCompatActivity() {
         }
         LibraryOverlayController.Result.CONSUME -> true
     }
+
+    /**
+     * LD Task 3 — giữ yên trên app của Library: rung, vào chế độ sửa, rồi huỷ chạm đang dở ở cây view (cú bấm không thành, danh sách không cuộn) và ở
+     * hai controller vuốt. Gọi từ Handler (ngoài `dispatchTouchEvent`) nên gửi thẳng `window.superDispatchTouchEvent`.
+     */
+    private fun createLibraryDrag() = LibraryDragGesture(
+        library,
+        object : LibraryDragGesture.Host {
+            override fun onHold(app: gambi.global.os26launcher.domain.model.AppItem, down: MotionEvent) {
+                window.decorView.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
+                library.enterEditing()
+                val cancel = MotionEvent.obtain(down).apply { action = MotionEvent.ACTION_CANCEL }
+                window.superDispatchTouchEvent(cancel)
+                library.onTouch(cancel)
+                today.onTouch(cancel)
+                cancel.recycle()
+            }
+
+            // LD Task 4: bàn giao phiên kéo sang Home. startExternal bật draggingItemId + edit mode → render đóng Library (và thoát chế độ sửa của
+            // Library); từ đây mọi MOVE/UP của cử chỉ đi thẳng vào HomeDragState (toạ độ cửa sổ = toạ độ gốc HomeScreen, cả hai tràn viền).
+            override fun onDragOut(app: gambi.global.os26launcher.domain.model.AppItem, icon: android.graphics.RectF, x: Float, y: Float) {
+                val drag = homeDrag ?: return
+                drag.startExternal(app, Offset(x, y), androidx.compose.ui.geometry.Rect(icon.left, icon.top, icon.right, icon.bottom))
+            }
+
+            override fun onDragMove(x: Float, y: Float) {
+                homeDrag?.move(Offset(x, y))
+            }
+
+            override fun onDragEnd(x: Float, y: Float, cancelled: Boolean) {
+                val drag = homeDrag ?: return
+                if (cancelled) drag.cancel() else drag.drop()
+            }
+        },
+        android.view.ViewConfiguration.get(this),
+        resources.displayMetrics.density
+    )
 
     /** Gửi bản `ACTION_CANCEL` của [ev] cho controller [target] (bỏ ứng viên của nó). */
     private fun cancelInto(target: (MotionEvent) -> LibraryOverlayController.Result, ev: MotionEvent) {

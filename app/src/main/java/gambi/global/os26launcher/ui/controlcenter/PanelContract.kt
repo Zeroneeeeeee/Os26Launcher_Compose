@@ -29,6 +29,7 @@ internal fun CustomTileType.iconRes(): Int = when (this) {
     CustomTileType.DARK_MODE -> R.drawable.ic_cc_dark_mode
     CustomTileType.NOTES -> R.drawable.ic_cc_notes
     CustomTileType.NIGHT_SHIFT -> R.drawable.ic_cc_night_shift
+    CustomTileType.SCREEN_MIRROR -> R.drawable.ic_cc_screen_mirror // TF
 }
 
 internal fun CustomTileType.labelRes(): Int = when (this) {
@@ -43,6 +44,7 @@ internal fun CustomTileType.labelRes(): Int = when (this) {
     CustomTileType.DARK_MODE -> R.string.cc_tile_dark_mode
     CustomTileType.NOTES -> R.string.cc_tile_notes
     CustomTileType.NIGHT_SHIFT -> R.string.cc_tile_night_shift
+    CustomTileType.SCREEN_MIRROR -> R.string.cc_tile_screen_mirror // TF
 }
 
 /** Ô nào là công tắc (đọc được Bật/Tắt), ô nào chỉ là lối tắt. */

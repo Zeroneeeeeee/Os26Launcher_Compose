@@ -17,7 +17,12 @@ data class AppOverrideEntity(
     @ColumnInfo(defaultValue = "0") val hidden: Boolean = false,
     val customLabel: String? = null,
     /** File trong `files/custom_icons/`; null = icon hệ thống. */
-    val customIconPath: String? = null
+    val customIconPath: String? = null,
+    /**
+     * TF (v3): người dùng đã "Xóa khỏi Màn hình chính": app không có hàng trong `launcher_items` nhưng KHÔNG bị ẩn (vẫn ở Library, tìm kiếm).
+     * Cờ này để bộ đặt app mới không coi app là "mới" và đặt lại lên Home.
+     */
+    @ColumnInfo(defaultValue = "0") val offHome: Boolean = false
 )
 
 /** CF — một tên riêng đọc từ [AppOverrideEntity] (chỉ hàng có `customLabel`). */

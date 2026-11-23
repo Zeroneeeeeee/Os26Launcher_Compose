@@ -127,6 +127,8 @@ internal fun HomeScreen(
     pageScrollRequests: Flow<Long> = emptyFlow(),
     /** P2-5: người dùng đã ẩn thanh điều hướng (PB Task 4) → dải đáy màn cũng nhấn giữ vào edit mode được. Đọc lúc chạm xuống. */
     isNavBarHidden: () -> Boolean = { false },
+    /** LD Task 4: trạng thái kéo-thả cho Activity (kéo app từ Library sang; ảnh nổi vẽ ở Activity, trên lớp Library). */
+    onDragState: (HomeDragState) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val backdrop = rememberLayerBackdrop()
@@ -143,6 +145,7 @@ internal fun HomeScreen(
     }
     val pagerState = rememberPagerState { pages.size }
     val drag = remember { HomeDragState(scope, density.density) }
+    LaunchedEffect(drag) { onDragState(drag) }
     var editMenuOpen by remember { androidx.compose.runtime.mutableStateOf(false) } // P2-9e: menu "Sửa" của thanh edit mode
     val barInsets = WindowInsets.systemBarsIgnoringVisibility
     SideEffect {
@@ -411,7 +414,7 @@ internal fun HomeScreen(
                 onShortcut = overlays.onIconMenuShortcut,
                 onDismiss = overlays.closeIconMenu
             )
-            HomeDragLayer(drag, cells, icons)
+            // LD Task 4: ảnh nổi vẽ ở HomeActivity, trên lớp App Library (kéo app từ Library ra phải thấy ngay khi Library còn hiện).
         }
     }
 }

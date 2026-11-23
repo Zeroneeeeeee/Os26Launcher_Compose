@@ -74,6 +74,19 @@ internal fun showRemoveWidgetDialog(activity: ComponentActivity, messageRes: Int
     )
 }
 
+/** LD Task 2: dấu "−" trên app ở chế độ sửa của Library: chỉ hỏi gỡ cài đặt (không có "Xóa khỏi MH chính"), cùng kiểu thẻ với xóa app. */
+internal fun showUninstallAppDialog(activity: ComponentActivity, appLabel: String, onDeleteApp: () -> Unit) {
+    showCard(
+        activity,
+        title = activity.getString(R.string.remove_app_title, appLabel),
+        message = activity.getString(R.string.library_uninstall_message),
+        buttons = listOf(
+            CardButton(R.string.remove_app_delete, destructive = true, bold = false, action = onDeleteApp),
+            CardButton(R.string.remove_app_cancel, destructive = false, bold = true, action = null)
+        )
+    )
+}
+
 /** Đóng hộp đang hiện (nếu có), vd khi Activity bị hủy. */
 internal fun dismissRemoveDialog() {
     current?.dismiss()

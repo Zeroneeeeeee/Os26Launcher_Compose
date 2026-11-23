@@ -63,6 +63,7 @@
     <string name="remove_app_delete">Hapus aplikasi</string>
     <string name="remove_app_from_home">Hapus dari layar utama</string>
     <string name="remove_app_cancel">Batal</string>
+    <string name="library_uninstall_message">Menghapus aplikasi ini juga akan menghapus datanya.</string>
 
     <!-- M8b: tìm kiếm -->
     <string name="search_field_hint">Cari</string>
@@ -303,6 +304,7 @@
     <string name="cc_tile_settings">Setelan</string>
     <string name="cc_tile_dark_mode">Mode gelap</string>
     <string name="cc_tile_notes">Catatan</string>
+    <string name="cc_tile_screen_mirror">Pencerminan Layar</string>
     <string name="cc_tile_night_shift">Night Shift</string>
     <string name="cc_tile_app">Aplikasi</string>
     <string name="cc_customize_tiles">Sesuaikan kontrol</string>

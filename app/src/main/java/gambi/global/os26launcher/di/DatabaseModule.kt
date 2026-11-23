@@ -26,6 +26,7 @@ object DatabaseModule {
     fun provideLauncherDatabase(@ApplicationContext context: Context): LauncherDatabase =
         Room.databaseBuilder(context, LauncherDatabase::class.java, "launcher.db")
             .fallbackToDestructiveMigrationFrom(dropAllTables = true, 1)
+            .addMigrations(LauncherDatabase.MIGRATION_2_3) // TF
             .build()
 
     @Provides
