@@ -4,6 +4,13 @@ File ghi lại kinh nghiệm triển khai tính năng, fix bug và viết docs, 
 
 ---
 
+## Dự án hiện hành (chủ dự án chốt 2026-11-23)
+
+- **Chỉ phát triển trên dự án Compose này:** `E:\SourceTree\Os26Launcher_Compose`, remote `origin` = https://github.com/Zeroneeeeeee/Os26Launcher_Compose. Dự án View/XML ở `E:\SourceTree\IosLauncher` **ngừng phát triển từ 2026-11-23**, chỉ còn để tra cứu (plan, knowledgement, code cũ).
+- **Repo Compose tách ra trước vài mốc làm sau ở repo XML** (đọc code 2026-11-23, chưa đối chiếu hết): thiếu RA (thêm lại app vào Home, Room v3, cột `app_overrides.offHome`) và khóa màn Ứng dụng ẩn của HL; các plan `FM`, `GX`, `HL`, `RA`, `P2-checklist`, `P3-checklist`, `UI-sync-log`, `control-center-backlog` chỉ có ở `IosLauncher/docs/plans/`. Cần mốc nào thì đối chiếu code hai repo trước, rồi port theo plan gốc.
+- Plan `FL-first-run-layout` (bố cục lần đầu: widget Đồng hồ + Pin, gom thư mục gợi ý) viết ở repo XML 2026-11-23, **tạm dừng** khi đổi dự án, chưa duyệt. Làm lại thì viết plan mới cho Compose, lấy file đó làm nguồn.
+- Docs trong `plans/`, `knowledgements/`, `report/`, `lessons/` là lịch sử: giữ nguyên, kể cả đường dẫn `E:\SourceTree\IosLauncher` bên trong.
+
 ## Mục lục bài học (đọc theo chủ đề)
 
 File này chỉ giữ cái mọi agent cần mỗi lần. Bài học theo mốc nằm ở `docs/lessons/` (xem [lessons/README.md](lessons/README.md), có bảng tra tên mục cũ → file mới). Đọc file chủ đề liên quan tới việc mình làm, không cần đọc hết:
@@ -44,7 +51,7 @@ Bài học mới: Claude chép thẳng vào cuối file chủ đề đúng ở `
 ## Tên gọi và package
 
 - **Package đổi 2026-10-16:** `gambi.global.ioslauncher` → `gambi.global.os26launcher`, lý do tránh rủi ro tên thương hiệu. Khi rename package trong dự án này, phải sửa đủ 6 chỗ: thư mục source, `package`/`import` trong mọi file Kotlin, `namespace` + `applicationId` trong `app/build.gradle.kts`, tên custom view trong layout XML (`<gambi.global.os26launcher.demo.DemoBackdropView`), lệnh `adb shell dumpsys gfxinfo <package>` trong docs, và đường dẫn file trong docs.
-- Cùng ngày đổi nốt: `app_name` = "OS26 Launcher", style `Theme.Os26Launcher` (themes.xml, values-night/themes.xml, AndroidManifest), `rootProject.name` = "Os26Launcher". **Giữ nguyên** tên thư mục `E:\SourceTree\IosLauncher`, nên mọi đường dẫn trong docs vẫn đúng — khi sửa docs phải phân biệt "tên dự án" (đổi) với "đường dẫn thư mục" (không đổi).
+- Cùng ngày đổi nốt: `app_name` = "OS26 Launcher", style `Theme.Os26Launcher` (themes.xml, values-night/themes.xml, AndroidManifest), `rootProject.name` = "Os26Launcher". Lúc đó **giữ nguyên** tên thư mục `E:\SourceTree\IosLauncher` (repo XML); từ 2026-11-23 dự án là `E:\SourceTree\Os26Launcher_Compose`, đường dẫn cũ trong docs lịch sử trỏ về repo XML — khi sửa docs phải phân biệt "tên dự án" (đổi) với "đường dẫn thư mục" (không đổi).
 - `.idea/workspace.xml` cũng chứa tên cũ nhưng nằm trong `.gitignore` và IDE tự tạo lại — bỏ qua.
 
 ## Build và toolchain
@@ -75,17 +82,17 @@ Bài học mới: Claude chép thẳng vào cuối file chủ đề đúng ở `
 
 ## Môi trường của Claude khi làm việc trên dự án này
 
-**Từ 2026-11-02 (đo bằng lệnh trong phiên Claude Code):** Claude chạy thẳng trên máy Windows của chủ dự án (Claude Code CLI), thư mục làm việc `E:\SourceTree\IosLauncher`. Không còn container hay Linux VM trung gian, nên các bẫy cũ về bản copy, `.git/*.lock`, quyền xóa file của shell và `$HOME/mnt/...` (mục lịch sử bên dưới) không còn áp dụng.
+**Từ 2026-11-02 (đo bằng lệnh trong phiên Claude Code):** Claude chạy thẳng trên máy Windows của chủ dự án (Claude Code CLI), thư mục làm việc `E:\SourceTree\Os26Launcher_Compose` (trước 2026-11-23 là repo XML `E:\SourceTree\IosLauncher`). Không còn container hay Linux VM trung gian, nên các bẫy cũ về bản copy, `.git/*.lock`, quyền xóa file của shell và `$HOME/mnt/...` (mục lịch sử bên dưới) không còn áp dụng.
 
 - Shell: PowerShell 5.1 (chính) và Git Bash. Lệnh trong docs và plan vẫn viết cho CMD/PowerShell theo quy ước dự án.
 - Công cụ có sẵn: `adb` 1.0.41 trong PATH (`E:\SDK_Components\platform-tools`), git 2.47.1 (Git Credential Manager), `gh` 2.103.3 đăng nhập tài khoản `An-K4`, JDK 23 ở `JAVA_HOME` (Gradle dùng JDK theo cấu hình riêng của nó).
 - Có mạng: `dl.google.com`, `repo1.maven.org`, `jitpack.io` đều trả lời (khác hẳn môi trường cũ).
-- Remote: `origin` = repo private https://github.com/An-K4/Os26Launcher (tạo 2026-11-02). Push và mở PR chỉ khi chủ dự án bảo (từ 2026-11-16 chủ dự án tự commit/push, `Workflow.md` bước 7).
+- Remote: `origin` = https://github.com/Zeroneeeeeee/Os26Launcher_Compose (đọc `git remote -v` 2026-11-23; repo XML cũ là https://github.com/An-K4/Os26Launcher, tạo 2026-11-02). Push và mở PR chỉ khi chủ dự án bảo (từ 2026-11-16 chủ dự án tự commit/push, `Workflow.md` bước 7).
 - **Claude build được** (đo 2026-11-02): `gradlew.bat assembleDebug` từ thư mục chính chạy xanh trong 47 giây (bản tăng dần, 3/43 task chạy lại; build sạch lần đầu trong worktree mới sẽ lâu hơn, chưa đo), ra `app/build/outputs/apk/debug/app-debug.apk`. Nghĩa là Claude tự kiểm được lỗi biên dịch trước khi đưa chủ dự án; kiểm tay trên máy vẫn là việc của chủ dự án.
 - `adb` chỉ dùng được khi chủ dự án cắm máy và bật USB debugging; lúc đo 2026-11-02 chưa có máy nào. Có máy thì Claude cài/đọc logcat được, nhưng vẫn chỉ cài khi chủ dự án bảo (`Workflow.md` mục 5).
 - Làm nhiều agent song song trong worktree (`E:\SourceTree\IosLauncher-wt\`, mỗi worktree phải chép `local.properties`) đã ngừng từ 2026-11-16; chỉ còn trong lịch sử của `MultiAgent-Workflow.md`.
 
-**Từ 2026-11-16 có thêm kiểu phiên thứ hai (đo bằng lệnh trong phiên claude.ai):** Claude nối vào máy qua Linux VM, thư mục dự án ở `$HOME/mnt/IosLauncher`. Shell này có JDK 11, không có `adb`, `dl.google.com` trả 403 → **Claude không build được**, chủ dự án build/cài/dán lỗi. Shell không xóa được file khi chưa được cấp quyền, nên `git commit`/`pull` để lại `.git/*.lock` → **chủ dự án commit**. Hai kiểu phiên có thể xen nhau: đầu phiên chạy `java -version` và `adb version` để biết mình đang ở kiểu nào (bảng ở `Workflow.md` mục 5).
+**Từ 2026-11-16 có thêm kiểu phiên thứ hai (đo bằng lệnh trong phiên claude.ai):** Claude nối vào máy qua Linux VM, thư mục dự án ở `$HOME/mnt/Os26Launcher_Compose` (trước 2026-11-23: `$HOME/mnt/IosLauncher`). Shell này có JDK 11, không có `adb`, `dl.google.com` trả 403 → **Claude không build được**, chủ dự án build/cài/dán lỗi. Shell không xóa được file khi chưa được cấp quyền, nên `git commit`/`pull` để lại `.git/*.lock` → **chủ dự án commit**. Hai kiểu phiên có thể xen nhau: đầu phiên chạy `java -version` và `adb version` để biết mình đang ở kiểu nào (bảng ở `Workflow.md` mục 5).
 - Version AndroidX stable đọc 2026-10-16: core 1.19.1 · activity 1.13.0 · appcompat (dự án đang 1.8.0) · material 1.14.0 · lifecycle 2.11.0 · room 2.8.5 · datastore 1.2.1 · fragment 1.9.1 · recyclerview 1.4.0 · work 2.12.0 · androidx.hilt 1.4.0.
 
 **Lịch sử, trước 2026-11-02 (không còn đúng):** Claude chạy trong container đám mây, chạm vào dự án qua shell Linux VM (`$HOME/mnt/Os26Launcher`) chỉ có JDK 11, không `adb`, không mạng, không build được; người dùng tự build/cài/dán log. Các bài học riêng của môi trường đó: không sửa bản copy rồi commit đè (đã mất một lớp sửa `project_structure.md`); dùng `mv` thay `git mv` vì shell không xóa được file và để lại `.git/*.lock`; quyền xóa file của shell hết hạn giữa các phiên.
@@ -98,6 +105,7 @@ Bài học mới: Claude chép thẳng vào cuối file chủ đề đúng ở `
 - **Kịch bản kiểm không được bắt chủ dự án so hai màn cùng lúc** (2026-11-16, chủ dự án góp ý DS3 Task 2): trên một máy chỉ thấy một màn. Khi cần so trước/sau một cài đặt, đặt sẵn khối mẫu (giá trị mặc định) cạnh khối thật trong cùng màn, kèm dòng số giá trị đang đặt, rồi mới viết kịch bản "đổi cài đặt → mở lại màn → so hai khối".
 - **Tecno Spark 40 (KM5n, Android 15, serial `144321556G007171`)** là máy tái hiện lỗi tràn viền sau `recreate()` (EF, 2026-11-18): Activity tràn viền mới phải gọi `reassertEdgeToEdge(window)` sau `setContentView`, xem [lessons/home-pager-animation.md](lessons/home-pager-animation.md) mục EF. Lỗi chỉ ở một đời máy thì thử trên đúng máy đó trước khi lùi bản.
 - **Vsmart Live 4 (Android 11): chạm vùng trống / Đóng tất cả ở màn Gần đây về launcher Vsmart dù app đã là launcher mặc định** (đo 2026-11-18; bản trước HC không bị). Màn Gần đây là `com.vinsmart.launcher/com.android.quickstep.RecentsActivity` (`dumpsys activity recents` → `mRecentsComponent`), và khi chạm nó gửi intent HOME có gắn cứng `pkg=com.vinsmart.launcher` (log `START u0 {act=MAIN cat=[HOME] ... pkg=com.vinsmart.launcher ...} from uid 10069`). Nút Home vẫn về launcher mặc định. Nguyên nhân (đã xác nhận): Quickstep của Vsmart nhớ sai "launcher mặc định" (nghĩ là chính nó) sau khi `installDebug` bản đổi intent-filter của `HomeActivity` (HC bỏ LAUNCHER), và không đọc lại. `adb shell am force-stop com.vinsmart.launcher` rồi bấm Home là hết. Bài học: sau khi phát hành, không đổi intent-filter HOME của `HomeActivity` (bản cập nhật có thể để Quickstep của máy nhớ sai như trên); lỗi lạ về Home/Gần đây ngay sau khi cài bản đổi manifest thì force-stop launcher hệ thống trước khi tìm lỗi trong code. Cách xác định ai mở màn nào: `adb logcat -c` rồi `adb logcat -v time ActivityTaskManager:I *:S > x.txt`, đọc dòng `START u0` (file PowerShell ghi UTF-16, đọc bằng `iconv -f UTF-16 -t UTF-8`).
+- **Cài bản Compose đè lên bản XML trên cùng máy sẽ crash lúc mở DB** (2026-11-23, đo được qua `adb logcat -b crash`): hai repo cùng `applicationId` `gambi.global.os26launcher`; bản XML đã nâng Room lên v3 (RA), bản Compose đang v2, Room gặp hạ cấp và ném `IllegalStateException: A migration from 3 to 2 was required but not found`. Trên máy test: `adb uninstall gambi.global.os26launcher` (hoặc Cài đặt > Ứng dụng > Xóa dữ liệu) rồi cài lại bản Compose. Số `version` của `LauncherDatabase` ở Compose chỉ được tăng, không đánh lại.
 - Lúc `HomeActivity` đang làm launcher thì chưa có danh sách app (M2). Muốn xem icon của app trong danh sách, đổi sang launcher gốc của máy qua bộ chọn launcher.
 
 ## Viết docs
