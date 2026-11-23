@@ -145,6 +145,7 @@ Gộp từ kịch bản các Task (máy, thứ tự thao tác):
 | 2026-11-23 | 5 | `GlassTuningActivity`: API < 33 ẩn Khúc xạ, API < 31 ẩn thêm Độ mờ (giữ Độ bóng, Bo góc); `SettingsHubScreen`: hàng "Liquid Glass" (id `hub_glass`) mở thẳng `GlassTuningActivity`; `LiquidGlassSettingsScreen` chỉ còn hàng Tinh chỉnh kính (hàm `buildGlassCustomRows`, `showGlassDialog` còn trong file, không gọi → cảnh báo unused); `config-schema.md` ghi chú | Chưa build |
 | 2026-11-23 | 3 | Build của chủ dự án: Kotlin qua, `lintDebug` lỗi `RememberInComposition` (`HomeEnterExit.kt:139`, `Animatable` tạo lúc dựng). Sửa `rememberSlideOffset`: lúc dựng chỉ ghi chỗ xuất phát, `Animatable` tạo trong `LaunchedEffect`, giữ trong state; khung đầu vẽ ở chỗ xuất phát | Chờ build lại |
 | 2026-11-23 | — | Chủ dự án build lại và kiểm tay cả bài: đạt. Chốt plan, cập nhật tài liệu chung | Xong |
+| 2026-11-23 | 2 (sau chốt) | Chủ dự án thấy trên máy cũ: vuốt trái thoát Today về trang 1, cú vuốt ngay sau sang trang 2 bị nuốt. Nguyên nhân (đọc code, một điểm): `blockTouches()` của Today gắn ở khung phủ toàn màn, vẫn phủ khi Today đang trượt đóng (t > 0) nên chặn chạm dù bộ điều khiển (LB) đã nhường cho pager; Thư viện không bị vì lớp chặn gắn trên trang đang trượt. Sửa `today/HomeToday.kt`: chuyển `blockTouches()` xuống `TodayPage` sau `graphicsLayer { translationX }` | Chờ build + kiểm trên máy cũ |
 
 ## Bằng chứng Review Focus (điền khi chốt)
 | # | Dòng Review Focus | Bằng chứng | Kết quả |

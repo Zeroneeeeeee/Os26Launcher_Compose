@@ -140,7 +140,10 @@ internal fun HomeToday(
     val night = (LocalConfiguration.current.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
     val blurred = remember(backdrop) { backdrop?.let(::shrinkForBlur) }
     val todayBackdrop = rememberLayerBackdrop()
-    Box(modifier.fillMaxSize().blockTouches()) {
+    // PG1 G1 (2026-11-23, chủ dự án thấy trên máy cũ): lớp chặn chạm KHÔNG đặt ở khung phủ toàn màn — khung này còn phủ cả lúc Today đang trượt
+    // đóng (t > 0), nên cú vuốt kế tiếp (LB đã nhường cho pager) bị nuốt. Đặt trên trang Today (phần đang trượt) như Thư viện: Compose tính vùng
+    // chạm theo `translationX`, phần màn đã lộ ra nhận chạm của Home.
+    Box(modifier.fillMaxSize()) {
         Box(
             Modifier
                 .fillMaxSize()
@@ -172,6 +175,7 @@ internal fun HomeToday(
                     modifier = Modifier
                         .fillMaxSize()
                         .graphicsLayer { translationX = -size.width * (1f - t) }
+                        .blockTouches()
                 )
             }
         }
