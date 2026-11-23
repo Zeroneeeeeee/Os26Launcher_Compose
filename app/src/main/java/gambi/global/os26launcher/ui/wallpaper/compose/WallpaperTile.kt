@@ -59,7 +59,7 @@ fun WallpaperTile(
                 contentDescription = label
                 selected = chosen
             }
-            .clickable(role = Role.Button, onClick = onClick)
+            .clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onClick)
     ) {
         Image(painterResource(thumb), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
         BasicText(

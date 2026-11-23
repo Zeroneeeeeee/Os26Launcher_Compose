@@ -198,7 +198,7 @@ class ChangeIconSheet(
         val shape = RoundedCornerShape(size * CORNER_RATIO)
         var m = Modifier.size(size).clip(shape)
         if (ring) m = m.border(2.dp, RING_COLOR, shape)
-        if (onClick != null) m = m.clickable(role = Role.Button, onClickLabel = description, onClick = onClick)
+        if (onClick != null) m = m.clickable(interactionSource = null, indication = null, role = Role.Button, onClickLabel = description, onClick = onClick)
         Box(m.padding(size * RING_INSET)) {
             bitmap?.takeIf { !it.isRecycled }?.let {
                 Image(

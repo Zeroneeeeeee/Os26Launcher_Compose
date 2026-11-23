@@ -269,7 +269,7 @@ class CustomizeTilesActivity : AppCompatActivity() {
                 Modifier
                     .size(48.dp)
                     .semantics { contentDescription = actionDesc }
-                    .clickable(role = Role.Button, onClick = onAction),
+                    .clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onAction),
                 contentAlignment = Alignment.Center
             ) {
                 Box(

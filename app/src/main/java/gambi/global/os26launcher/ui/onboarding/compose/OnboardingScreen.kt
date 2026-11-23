@@ -229,7 +229,7 @@ private fun TopBar(ui: OnboardingUi, actions: OnboardingActions) {
                 modifier = Modifier
                     .heightIn(min = dimensionResource(R.dimen.ds_touch_min))
                     .clip(RoundedCornerShape(12.dp))
-                    .clickable(role = Role.Button, onClick = actions.onSkip)
+                    .clickable(interactionSource = null, indication = null, role = Role.Button, onClick = actions.onSkip)
                     .padding(horizontal = 8.dp, vertical = 15.dp)
             )
         }
@@ -413,7 +413,7 @@ private fun WallpaperPage(swatch: Int, onChoose: (Int) -> Unit) {
                         .clip(shape)
                         .background(Color.Black)
                         .semantics { contentDescription = presetName; this.selected = selected }
-                        .clickable(role = Role.Button) { onChoose(i) }
+                        .clickable(interactionSource = null, indication = null, role = Role.Button) { onChoose(i) }
                 ) {
                     Image(painterResource(preset.thumb), null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
                     if (selected) {

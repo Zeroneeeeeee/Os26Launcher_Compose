@@ -112,7 +112,7 @@ class WeatherSheetController(private val activity: ComponentActivity) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = 48.dp)
-                    .clickable(role = Role.Button) {
+                    .clickable(interactionSource = null, indication = null, role = Role.Button) {
                         try {
                             activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(activity.getString(R.string.weather_attribution_url))))
                         } catch (e: Exception) {

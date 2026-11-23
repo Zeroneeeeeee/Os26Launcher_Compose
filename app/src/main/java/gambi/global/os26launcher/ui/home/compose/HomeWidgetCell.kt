@@ -72,7 +72,7 @@ internal fun HomeWidgetCell(widget: PlacedWidget, onClick: (() -> Unit)? = null)
                 .fillMaxSize()
                 .dsGlass(DsSurface.CARD, DsCorner.Fixed(widgetRadius(maxWidth, maxHeight).value, glass = true))
                 .semantics { contentDescription = description }
-                .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier) // JH3d D4
+                .then(if (onClick != null) Modifier.clickable(interactionSource = null, indication = null, onClick = onClick) else Modifier) // JH3d D4
                 .drawBehind {
                     tick // đọc để vẽ lại theo nhịp (prepare đã chạy ở composition)
                     drawIntoCanvas { renderer.draw(it.nativeCanvas) }

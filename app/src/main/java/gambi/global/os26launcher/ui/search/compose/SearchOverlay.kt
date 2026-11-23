@@ -333,7 +333,7 @@ private fun SearchFieldRow(
                                 .size(48.dp)
                                 .clip(CircleShape)
                                 .semantics { contentDescription = clear }
-                                .clickable(role = Role.Button) { onValueChange(TextFieldValue("")) },
+                                .clickable(interactionSource = null, indication = null, role = Role.Button) { onValueChange(TextFieldValue("")) },
                             contentAlignment = Alignment.Center
                         ) {
                             Image(painterResource(R.drawable.ic_search_clear), null)
@@ -460,7 +460,7 @@ private fun GridCell(app: SearchResult.App, actions: SearchActions) {
         Modifier
             .fillMaxWidth()
             .height(dimensionResource(R.dimen.search_si_grid_cell_height))
-            .clickable(role = Role.Button) { actions.onTapped(app, rect) }
+            .clickable(interactionSource = null, indication = null, role = Role.Button) { actions.onTapped(app, rect) }
             .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -493,7 +493,7 @@ private fun WebRow(web: SearchResult.WebSuggestion, actions: SearchActions, divi
                     drawRect(dividerColor, Offset(insetPx, size.height - h), androidx.compose.ui.geometry.Size(size.width - insetPx, h))
                 }
             }
-            .clickable(role = Role.Button) { actions.onTapped(web, null) }
+            .clickable(interactionSource = null, indication = null, role = Role.Button) { actions.onTapped(web, null) }
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -543,7 +543,7 @@ private fun HeaderRow(header: SearchResult.Header, inset: androidx.compose.ui.un
             BasicText(
                 stringResource(if (collapsed) R.string.search_recent_expand else R.string.search_recent_collapse),
                 style = TextStyle(color = Color.White, fontSize = 13.sp),
-                modifier = Modifier.clickable(role = Role.Button) { onToggle(header) }.padding(start = 12.dp, bottom = 8.dp)
+                modifier = Modifier.clickable(interactionSource = null, indication = null, role = Role.Button) { onToggle(header) }.padding(start = 12.dp, bottom = 8.dp)
             )
         }
     }
@@ -668,7 +668,7 @@ private fun RowButton(icon: Int, description: String, onClick: () -> Unit) {
             .size(dimensionResource(R.dimen.search_contact_button_size))
             .clip(CircleShape)
             .semantics { contentDescription = description }
-            .clickable(role = Role.Button, onClick = onClick)
+            .clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onClick)
             .padding(12.dp)
     ) {
         Image(painterResource(icon), null, colorFilter = null, modifier = Modifier.fillMaxSize())

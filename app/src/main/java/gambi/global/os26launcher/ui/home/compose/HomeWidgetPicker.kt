@@ -234,7 +234,7 @@ internal class HomeWidgetPicker(
         Column(
             modifier
                 .semantics(mergeDescendants = true) { contentDescription = "$name, $variant" }
-                .clickable(role = Role.Button) {
+                .clickable(interactionSource = null, indication = null, role = Role.Button) {
                     openDetail(
                         if (f.kind == null) DetailSource.Recents(RECENTS_SIZES.indexOf(f.size).coerceAtLeast(0))
                         else DetailSource.Builtin(f.kind, f.kind.sizes.indexOf(f.size).coerceAtLeast(0))
@@ -277,7 +277,7 @@ internal class HomeWidgetPicker(
                     .fillMaxWidth()
                     .heightIn(min = ROW_HEIGHT)
                     .semantics(mergeDescendants = true) { contentDescription = app.appLabel }
-                    .clickable(role = Role.Button) { openDetail(DetailSource.App(app)) },
+                    .clickable(interactionSource = null, indication = null, role = Role.Button) { openDetail(DetailSource.App(app)) },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(Modifier.size(ROW_ICON)) { icon?.let { Image(it.asImageBitmap(), null, modifier = Modifier.size(ROW_ICON)) } }
@@ -578,7 +578,7 @@ internal class HomeWidgetPicker(
                     .graphicsLayer { alpha = if (action != null) 1f else 0.4f }
                     .clip(RoundedCornerShape(26.dp))
                     .background(colorResource(R.color.wp_add_blue))
-                    .clickable(enabled = action != null, role = Role.Button) { if (action?.invoke() == true) closeAll() },
+                    .clickable(interactionSource = null, indication = null, enabled = action != null, role = Role.Button) { if (action?.invoke() == true) closeAll() },
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {

@@ -66,7 +66,7 @@ private fun RateStars() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         for (i in 1..5) {
-            Box(Modifier.size(44.dp).clickable { rating = i }, contentAlignment = Alignment.Center) {
+            Box(Modifier.size(44.dp).clickable(interactionSource = null, indication = null) { rating = i }, contentAlignment = Alignment.Center) {
                 BasicText("\u2605", style = DsTextStyles.title.copy(color = if (i <= rating) on else off, fontSize = 34.sp))
             }
         }

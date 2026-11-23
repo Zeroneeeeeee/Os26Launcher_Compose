@@ -196,7 +196,7 @@ class PhotoWidgetActivity : AppCompatActivity() {
                 .clip(RoundedCornerShape(12.dp))
                 .dsGlass(DsSurface.CARD, DsCorner.Fixed(12f))
                 .semantics { contentDescription = desc }
-                .clickable(role = Role.Button) { viewModel.startEdit(ref) } // Task 4: bấm ô = cắt lại ảnh này
+                .clickable(interactionSource = null, indication = null, role = Role.Button) { viewModel.startEdit(ref) } // Task 4: bấm ô = cắt lại ảnh này
         ) {
             thumb?.let { Image(it.asImageBitmap(), null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize()) }
             Box(
@@ -205,7 +205,7 @@ class PhotoWidgetActivity : AppCompatActivity() {
                     .padding(6.dp)
                     .size(dimensionResource(R.dimen.ph_remove_size))
                     .semantics { contentDescription = removeDesc }
-                    .clickable(role = Role.Button) { confirmRemove(ref) },
+                    .clickable(interactionSource = null, indication = null, role = Role.Button) { confirmRemove(ref) },
                 contentAlignment = Alignment.Center
             ) {
                 Box(Modifier.size(26.dp).clip(CircleShape).background(Color(0x99000000)), contentAlignment = Alignment.Center) {
@@ -222,7 +222,7 @@ class PhotoWidgetActivity : AppCompatActivity() {
                 .padding(4.dp)
                 .aspectRatio(1f)
                 .dsGlass(DsSurface.CARD, DsCorner.Fixed(12f))
-                .clickable(role = Role.Button, onClick = ::launchPicker),
+                .clickable(interactionSource = null, indication = null, role = Role.Button, onClick = ::launchPicker),
             contentAlignment = Alignment.Center
         ) {
             BasicText(stringResource(R.string.ph_add_photo), style = DsTextStyles.bodyStrong.copy(color = colorResource(R.color.ds_text_primary)))

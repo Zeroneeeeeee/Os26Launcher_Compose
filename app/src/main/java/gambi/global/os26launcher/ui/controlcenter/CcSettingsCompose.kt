@@ -116,7 +116,7 @@ internal fun CcSwatch(color: Int, selected: Boolean, description: String, onClic
             .background(Color(color or 0xFF000000.toInt()))
             .border(if (selected) 4.dp else 1.dp, Color(0xFF8E8E93), CircleShape)
             .semantics { contentDescription = description; this.selected = selected }
-            .clickable(role = Role.RadioButton, onClick = onClick)
+            .clickable(interactionSource = null, indication = null, role = Role.RadioButton, onClick = onClick)
     )
 }
 

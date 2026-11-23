@@ -439,7 +439,7 @@ private fun BigIcon(app: AppItem, sizePx: Int, icons: HomeIcons, state: HomeLibr
  * Activity (Task 3) và gửi ACTION_CANCEL xuống nên cú bấm không thành.
  */
 private fun Modifier.libraryAppClick(app: AppItem, state: HomeLibraryState, rect: () -> ScreenRect?): Modifier =
-    clickable(role = Role.Button) {
+    clickable(interactionSource = null, indication = null, role = Role.Button) {
         if (!state.editing) rect()?.let { state.onAppClick(app, it) }
     }
 
@@ -473,7 +473,7 @@ private fun MiniCluster(apps: List<AppItem>, sz: LibrarySizes, icons: HomeIcons,
     val half = sz.mini / 2
     val inset = (sz.miniGap / 2).coerceAtLeast(1.dp)
     val iconPx = with(density) { (half - inset * 2).coerceAtLeast(1.dp).roundToPx() }
-    Column(Modifier.fillMaxSize().clearAndSetSemantics { contentDescription = label }.clickable(onClick = onClick)) {
+    Column(Modifier.fillMaxSize().clearAndSetSemantics { contentDescription = label }.clickable(interactionSource = null, indication = null, onClick = onClick)) {
         for (row in 0 until 2) {
             Row {
                 for (col in 0 until 2) {
@@ -728,7 +728,7 @@ private fun GroupApp(app: AppItem, iconPx: Int, icons: HomeIcons, state: HomeLib
     Column(
         Modifier
             .libraryHit(app, state, inGroup = true) { iconBounds } // LD Task 3
-            .clickable(role = Role.Button) {
+            .clickable(interactionSource = null, indication = null, role = Role.Button) {
                 if (!state.editing) rect?.let { // LD Task 2: ở chế độ sửa bấm không mở app
                     state.onAppClick(app, it)
                     state.onCloseGroup()
