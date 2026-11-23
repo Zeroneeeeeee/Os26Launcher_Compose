@@ -7,7 +7,7 @@
 | File | Nội dung | Số mục |
 |---|---|---|
 | [glass.md](glass.md) | **Kính (liquid glass).** Thư viện LiquidGlass, mức kính, áp kính theo phần tử, làm mới kính khi đổi nền, số đo hiệu năng kính. | 14 |
-| [drag-and-layout.md](drag-and-layout.md) | **Kéo-thả và bố cục lưới.** Custom ViewGroup của lưới, trạng thái kéo-thả, dock/lưới/trang, menu nhấn giữ (cả từ Thư viện/Tìm kiếm), bố cục và cỡ lưới, thư mục nhiều trang, Today View. | 16 |
+| [drag-and-layout.md](drag-and-layout.md) | **Kéo-thả và bố cục lưới.** Custom ViewGroup của lưới, trạng thái kéo-thả, dock/lưới/trang, menu nhấn giữ (cả từ Thư viện/Tìm kiếm), bố cục và cỡ lưới, thư mục nhiều trang, Today View, kéo thẻ từ bảng chọn widget. | 17 |
 | [startup-performance.md](startup-performance.md) | **Khởi động và đo hiệu năng.** Số đo nạp danh sách app, cold start, cache nhãn, bản debug so với release, R8. | 8 |
 | [search.md](search.md) | **Tìm kiếm.** Lõi tìm kiếm, lớp tìm kiếm, pill, trợ năng, mở rộng tìm kiếm, danh bạ. | 9 |
 | [widgets.md](widgets.md) | **Widget.** Widget Đồng hồ/Lịch và widget trên lưới. | 2 |
