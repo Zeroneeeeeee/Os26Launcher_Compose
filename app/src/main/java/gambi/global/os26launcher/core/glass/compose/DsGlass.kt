@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.kyant.backdrop.Backdrop
 import com.kyant.backdrop.drawBackdrop
+import com.kyant.backdrop.drawPlainBackdrop
 import com.kyant.backdrop.effects.blur
 import com.kyant.backdrop.effects.lens
 import com.kyant.backdrop.effects.vibrancy
@@ -56,10 +57,21 @@ val LocalDsBackdrop: ProvidableCompositionLocal<Backdrop?> = staticCompositionLo
  * Nội dung bên trong bị cắt theo hình bo, giống `clipToOutline` của `applyDsSurface`.
  *
  * [backdrop] `null` = lấy [LocalDsBackdrop].
+ *
+ * PG3 Task 2 (chủ dự án 2026-11-23): API < 31, CARD/SHEET có lớp nền mờ tĩnh ([frosted], `null` = [LocalDsFrostedBackdrop]) thì vẽ lát cắt nền
+ * đã mờ sẵn phía sau lớp bề mặt (`drawPlainBackdrop` không hiệu ứng, như kính tại chỗ của XML) thay cho bề mặt phẳng. API ≥ 31 không đổi.
  */
-fun Modifier.dsGlass(surface: DsSurface, corner: DsCorner, backdrop: Backdrop? = null, minBlurDp: Float = 0f): Modifier = composed {
+fun Modifier.dsGlass(
+    surface: DsSurface,
+    corner: DsCorner,
+    backdrop: Backdrop? = null,
+    minBlurDp: Float = 0f,
+    frosted: Backdrop? = null
+): Modifier = composed {
     val context = LocalContext.current
     val source = backdrop ?: LocalDsBackdrop.current
+    // Chỉ đọc dưới API 31: máy ≥ 31 không phụ thuộc lớp nền mờ (không dựng lại khi nó đổi).
+    val frostedSource = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) frosted ?: LocalDsFrostedBackdrop.current else null
     // JS1: màn Tinh chỉnh kính cho thông số đang kéo qua LocalGlassLookOverride (xem trước trước khi lưu).
     val lookState = LocalGlassLookOverride.current ?: rememberGlassLook()
     val look = lookState.value
@@ -104,6 +116,14 @@ fun Modifier.dsGlass(surface: DsSurface, corner: DsCorner, backdrop: Backdrop? =
                 )
             },
             shadow = null,
+            onDrawSurface = drawSurface
+        )
+    } else if (frostedSource != null && surface in REAL_GLASS && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+        // PG3: kính mờ tĩnh cho máy dưới API 31 (Android 8–11); lớp bề mặt DS3 vẽ đè lên như nhánh kính thật.
+        Modifier.drawPlainBackdrop(
+            backdrop = frostedSource,
+            shape = { RoundedCornerShape(radius.floatValue) },
+            effects = FrostedNoEffects,
             onDrawSurface = drawSurface
         )
     } else {

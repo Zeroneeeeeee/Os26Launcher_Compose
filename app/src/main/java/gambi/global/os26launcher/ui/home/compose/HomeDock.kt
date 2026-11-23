@@ -57,6 +57,11 @@ internal fun HomeDock(
                 .align(Alignment.Center)
                 .dsGlass(DsSurface.CARD, DsCorner.Fixed(CORNER_DP))
         )
+        // PG1 A1: icon rời dock không do kéo (dấu "−", ẩn) thu về 0 tại chỗ cũ; app mới vào dock không do kéo thì phình (AN Task 9d, DockView).
+        // "Thay tại chỗ" (thư mục ở dock giải tán còn một app) so theo chỉ số ô.
+        val tracker = remember { EnterExitTracker<DockSlot>(idOf = { it.item.itemId }, slotOf = { it.index }) }
+        val lastX = remember { HashMap<Long, Int>() }
+        tracker.update(dock.mapIndexed { i, item -> DockSlot(item, i) }, animate = edit.drag.session == null && edit.drag.settlingId == null)
         if (cells != null && widthPx > 0) {
             val dockCells = cells.copy(showLabels = false)
             val order = edit.drag.dockPreview ?: dock.map { it.itemId }
@@ -73,9 +78,12 @@ internal fun HomeDock(
                     )
                     val hidden = index < 0 || edit.drag.isHidden(item.itemId)
                     val merge = edit.drag.mergeTargetId == item.itemId
+                    lastX[item.itemId] = x
+                    val grow = item.itemId in tracker.growing
                     val cellModifier = Modifier
                         .offset { animatedX }
                         .width(with(density) { cells.cellWidth.toDp() })
+                        .then(if (grow) Modifier.popScale(0f, 0.5f) { tracker.growDone(item.itemId) } else Modifier)
                         .graphicsLayer { alpha = if (hidden) 0f else 1f }
                         .homeJiggle(edit.editMode && !hidden)
                     val folder = item.folder
@@ -86,7 +94,7 @@ internal fun HomeDock(
                                 folder, dockCells, icons,
                                 zoomed = merge && folder.appCount < FolderPlanner.MAX_ITEMS,
                                 badges = edit.badges,
-                                hiddenChildId = edit.drag.session?.item?.itemId, // P2-6: app con đang kéo ra khỏi bảng
+                                hiddenChildId = edit.drag.session?.item?.itemId ?: edit.drag.settlingId, // P2-6: app con đang kéo ra khỏi bảng; PG1 A1: app đang hạ cánh vào ô nhỏ
                                 onOpen = { edit.onOpenFolder(item.itemId) }
                             )
                         }
@@ -105,9 +113,35 @@ internal fun HomeDock(
                     }
                 }
             }
+            // PG1 A1: icon vừa rời dock, vẽ ở ô cũ và thu về 0.
+            tracker.leaving.forEach { slot ->
+                val id = slot.item.itemId
+                key("leaving", id) {
+                    val x = lastX[id] ?: 0
+                    val leaveModifier = Modifier
+                        .offset { IntOffset(x, 0) }
+                        .width(with(density) { cells.cellWidth.toDp() })
+                        .popScale(1f, 0.5f) {
+                            tracker.leaveDone(slot)
+                            lastX.remove(id)
+                        }
+                    val folder = slot.item.folder
+                    val app = slot.item.app
+                    if (folder != null) {
+                        Box(leaveModifier, propagateMinConstraints = true) {
+                            HomeFolderCell(folder, dockCells, icons, zoomed = false, badges = edit.badges, hiddenChildId = null, onOpen = {})
+                        }
+                    } else if (app != null) {
+                        HomeAppCell(app = app, cells = dockCells, icons = icons, modifier = leaveModifier, editMode = edit.editMode, badges = edit.badges, onRemove = {}, onClick = { _, _ -> })
+                    }
+                }
+            }
         }
     }
 }
+
+/** PG1 A1: một ô dock kèm chỉ số (so "thay tại chỗ" theo ô). */
+private data class DockSlot(val item: DockApp, val index: Int)
 
 // Cùng số với DockView (CORNER_RADIUS_DP, GLASS_PADDING_VERTICAL_DP).
 private const val CORNER_DP = 28f

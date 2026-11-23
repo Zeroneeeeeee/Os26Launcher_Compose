@@ -66,3 +66,13 @@ Mỗi mục giữ nguyên ngày, nhãn nguồn (đo được / đọc code / đ�
 - (W, 2026-11-13 và 2026-11-16, **đo được** Live 4) Id widget của host sống qua `pm clear` và qua `force-stop`; nhấn Home giữa lúc màn cấu hình chạy không trả `RESULT_CANCELED` và không `onDestroy`, nên id rò nếu ta không tự `abort()` (xử lý ở `HomeActivity.onNewIntent` và hết hạn 10 phút). Cần quét `getAppWidgetIds()` lúc khởi động.
 - (W, 2026-11-16, **đọc code**) `deleteAppWidgetId` là lệnh binder, không nằm trong transaction Room: ghi nhận id trong transaction, giải phóng ngay sau commit, quét khởi động là lưới an toàn.
 - (W, 2026-11-16, **đo được** Live 4, chủ dự án kiểm tay) Activity dùng AppCompat làm `RemoteViews` hỏng: inflater của `AppCompatActivity` đổi `ImageView` → `AppCompatImageView` (không có phương thức `@RemotableViewMethod`) nên `RemoteViews$ActionException`/`InflateException`, host hiện chữ lỗi (Lịch Vsmart, YouTube). Dựng host view bằng `ContextWrapper` của Activity trả `LayoutInflater` lấy từ application context (không factory AppCompat).
+
+## TV — dấu "−" hàng widget đầu của Today bị cắt (2026-11-20) (chép từ repo XML)
+
+> Chép từ repo XML (`E:\SourceTree\IosLauncher`) ngày 2026-11-23 (PG1 Task 1). Bài học viết cho bản View: tên class View (`IconGridView`, `DockView`, `FolderPanelView`, `DragHelper`...) chỉ để tham khảo cơ chế, bản Compose có thể đã làm khác.
+
+- **Gốc (đọc code):** widget Today nằm trong `NestedScrollView`. `ViewGroup.dispatchDraw` cắt con theo mép của chính nó khi `clipToPadding`
+  (mặc định `true`), **kể cả** khi `clipChildren = false`. Đệm trên 12dp của lưới không đủ cho dấu "−" (nhô r/2 + bóng) cộng góc widget nâng
+  lên khi rung ±1° (widget rộng ~344dp: ~3dp).
+- **Sửa:** `TodayView.GRID_TOP_DP` 12 → 20dp. Thứ trong khung cuộn mà vẽ tràn ra ngoài con (dấu, bóng, rung) phải chừa đệm trong khung,
+  `clipChildren = false` không cứu được.

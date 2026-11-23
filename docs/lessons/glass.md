@@ -188,3 +188,19 @@ Mỗi mục giữ nguyên ngày, nhãn nguồn (đo được / đọc code / đ�
 - **QWEA0 đã gỡ** (JX): mức API của kính dò bằng `Build.VERSION.SDK_INT`; cài đặt "Mức kính" và công tắc kính từng phần tử chưa tác động lên kính Compose (JX Q3, plan riêng).
 - **Nền mờ từ ảnh thu nhỏ bị vỡ điểm** (quan sát, JS): ảnh nền 96 px phải vẽ với `FilterQuality.High`, thêm `Modifier.blur(24.dp)` trên API ≥ 31 (`wallpaperSoftBlur()`).
 - **Nền CC quá trong** (chủ dự án, JS7b): blur sau panel 48 dp, `cc_blur_behind_radius` 56 dp; chủ dự án chốt "Vừa rồi".
+
+## Bổ sung chép từ repo XML (ở bản XML nằm cuối mục «HT — công tắc Home (2026-11-13, Vsmart Live 4). Nguồn: [knowledgements/HT-home-toggles.md](../knowledgements/HT-home-toggles.md)»)
+
+> Chép từ repo XML (`E:\SourceTree\IosLauncher`) ngày 2026-11-23 (PG1 Task 1). Bài học viết cho bản View: tên class View (`IconGridView`, `DockView`, `FolderPanelView`, `DragHelper`...) chỉ để tham khảo cơ chế, bản Compose có thể đã làm khác.
+
+- **(2026-11-19, P2-9e) Muốn kính thì menu phải nằm trong cửa sổ Home.** `PopupWindow`/`Dialog` là cửa sổ riêng, không có `backdrop_image` để `BackgroundGlass` lấy mẫu → chỉ được nền phẳng. Menu "Sửa" làm view thêm vào `home_root` + lớp phủ trong suốt bắt chạm ngoài để đóng (cùng cách `IconActionMenu`).
+- **(2026-11-19, polish) `View.setBackground` thay padding của view bằng padding của drawable.** Nền `InsetDrawable` (chỉ lề trên/dưới) xóa `paddingHorizontal` trong XML của nút "Sửa"/"Xong" — chỉnh lề mấy lần không đổi gì. Gán nền bằng code thì lưu padding trước, đặt lại sau (`GlassPillBackground`).
+
+## PG3 — kính mờ tĩnh trong Compose (2026-11-23, Vsmart Live 4 + Oppo PKD130). Nguồn: [plans/PG3-static-frosted-glass.md](../plans/PG3-static-frosted-glass.md)
+
+- **(2026-11-23, đọc mã nguồn Backdrop 2.0.1 + kiểm tay) Kính mờ tĩnh không cần tự bám vị trí: một `LayerBackdrop` thứ hai chứa ảnh nền đã mờ sẵn + `drawPlainBackdrop(..., effects = {})`.** Thư viện tính chỗ lấy mẫu bằng `layerCoordinates.localPositionOf(coordinates)` như kính thật, nên bám đúng khi lướt trang, Today / Thư viện trượt, rung, ảnh kéo; không RenderEffect nên chạy cả dưới API 31. `drawPlainBackdrop` = `drawBackdrop` không highlight / shadow.
+- **(2026-11-23, đọc mã nguồn) `LayerBackdropNode.draw` = `drawContent()` rồi ghi lớp bằng `onDraw` của `rememberLayerBackdrop`.** Muốn lớp chỉ để lấy mẫu mà không vẽ ra màn: để node rỗng và vẽ trong `onDraw`. Lớp chỉ ghi lại khi node vẽ lại: đọc state (bản mờ) trong một `drawBehind` của CÙNG node để node vẽ lại khi bản mờ tới.
+- **(2026-11-23, đọc code) `BlurredBackdropCache` chỉ giữ MỘT cỡ đích.** Nhiều nơi cùng xin (Home, Today, Thư viện) với cỡ khác nhau thì nó dựng lại qua lại mãi (mỗi lần xong báo mọi người nghe, người kia xin cỡ của mình). Mọi nơi xin cùng một cỡ (cỡ cửa sổ `LocalView`); bản nhỏ phủ toàn bộ bitmap gốc nên vẽ vào vùng cỡ nào cũng đúng hình học.
+- **(2026-11-23, đọc code) Ảnh chụp `GraphicsLayer.toImageBitmap()` có thể là bitmap HARDWARE:** chép sang `ARGB_8888` (ngoài main thread) trước khi đưa cho code đọc điểm ảnh (box blur). Chờ hai khung sau khi bật `layerBackdrop` thì lớp mới có nội dung để chụp.
+- **(2026-11-23, chủ dự án) Bảng thư mục dưới API 31 phải thấy icon phía sau:** ảnh nền mờ là không đủ; chụp lớp Home một lần lúc mở thư mục rồi làm mờ (bộ đệm riêng, bỏ khi đóng).
+- **(2026-11-23, chủ dự án thấy trên máy) Oppo PKD130 giật khi lướt trang Home kể cả khi chưa bật kính icon:** đừng thêm kính sau từng icon trước khi đo (G3); tấm kính sau icon kiểu "Kính" đã bỏ.

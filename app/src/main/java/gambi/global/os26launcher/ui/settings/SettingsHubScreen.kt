@@ -62,7 +62,14 @@ object SettingsHubLayout {
         ),
         HubGroup(
             "appearance", R.string.settings_hub_group_appearance, listOf(
-                screen(SettingsScreenId.GLASS, R.string.settings_hub_glass, tile(R.drawable.ds_ic_liquid_glass, DsTileColor.VIOLET)),
+                // PG1 F4: "Mức kính" và công tắc kính từng phần tử không còn tác dụng ở bản Compose (JX Q3) nên đã ẩn; màn 2.1 chỉ còn một hàng
+                // "Tinh chỉnh kính", nên hàng này mở thẳng màn đó. Giữ id "hub_glass" như `screen(SettingsScreenId.GLASS, ...)` tạo ra.
+                HubEntry(
+                    "hub_glass",
+                    R.string.settings_hub_glass,
+                    HubTarget.External(GlassTuningActivity::class.java),
+                    tile(R.drawable.ds_ic_liquid_glass, DsTileColor.VIOLET)
+                ),
                 screen(SettingsScreenId.WALLPAPER, R.string.settings_hub_wallpaper, tile(R.drawable.ds_ic_wallpaper, DsTileColor.PINK)),
                 screen(SettingsScreenId.ICON_SET, R.string.settings_hub_icon_set, tile(R.drawable.ds_ic_icon_pack, DsTileColor.ORANGE))
             )

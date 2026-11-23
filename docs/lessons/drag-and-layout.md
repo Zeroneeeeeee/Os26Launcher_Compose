@@ -195,3 +195,73 @@ Mỗi mục giữ nguyên ngày, nhãn nguồn (đo được / đọc code / đ�
 ## G3c — widget của app khác (2026-11-13/16, Live 4 + Oppo). Nguồn: [knowledgements/G3c-appwidget-host.md](../knowledgements/G3c-appwidget-host.md)
 
 - (D, 2026-11-13, **đọc code**) `ViewGroup` chỉ gọi `OnTouchListener`/`OnLongClickListener` của chính nó khi không con nào nhận chạm; ô chứa widget phải tự theo dõi ở `dispatchTouchEvent` và hủy con rồi nhấn giữ khi hết hạn.
+
+## Bổ sung chép từ repo XML (ở bản XML nằm cuối mục «G3c — widget của app khác (2026-11-13/16, Live 4 + Oppo). Nguồn: [knowledgements/G3c-appwidget-host.md](../knowledgements/G3c-appwidget-host.md)»)
+
+> Chép từ repo XML (`E:\SourceTree\IosLauncher`) ngày 2026-11-23 (PG1 Task 1). Bài học viết cho bản View: tên class View (`IconGridView`, `DockView`, `FolderPanelView`, `DragHelper`...) chỉ để tham khảo cơ chế, bản Compose có thể đã làm khác.
+
+- **(2026-11-19, đo được trên Live 4, P2-5) Mở rộng vùng nhấn giữ ra ngoài lưới thì phải mở rộng cả chạm để thoát edit mode.** Lưới có cặp nhấn giữ (vào edit mode, `GapLongPressGesture`) + chạm (thoát, `IconGridView.onEmptyAreaClick`). Cài nhấn giữ lên `home_content`/`home_root` mà quên chạm làm vùng hai bên pill thành vùng chết trong edit mode. Vùng nền nhận chạm "rơi xuống" khi không view con nào nhận: view con không clickable (như pill ở dạng chấm) cũng để chạm rơi xuống nền.
+- **(2026-11-19, chủ dự án thấy trên Live 4, P2-6) Đích gộp thư mục mà tự dịch chỗ thì phải có độ trễ trước khi dịch.** Bản đầu của dock xem trước chèn-dồn NGAY khi ngón tay vào dock. Dock chưa đủ ô thì cả hàng dàn lại, icon đích trượt khỏi ngón tay trước khi ngón tay tới vùng giữa. Bật gộp lại `clearPreview()` nên hàng trượt về, đích lại chạy khỏi ngón tay: gộp và đẩy-dồn giật qua lại. Cách sửa: mọi đích kéo-thả dùng chung máy trạng thái của lưới (`NONE/MERGE/PUSH`, gộp chờ 100 ms, đẩy-dồn chờ 500 ms và ngón tay phải dừng, đẩy vào icon đang bị đẩy thì giữ hàng).
+- **(2026-11-19, chủ dự án góp ý, P2-7) Ngưỡng lật mép cho vật lớn phải có cả luật ngón tay.** Chỉ dùng "tâm ảnh ra ngoài mép" thì người giữ sát mép phải widget không bao giờ lật được sang phải (tâm ảnh luôn ở bên trái ngón tay). Dùng "tâm ảnh ra ngoài mép **hoặc** ngón tay vào dải mép".
+- **(2026-11-19, chủ dự án thấy trên Live 4, P2-6) Ảnh kéo là ảnh chụp cả ô (icon + nhãn), nên hạ cánh theo tâm ô chỉ đúng khi ô nguồn và ô đích cao bằng nhau.** Dock không nhãn, lưới có nhãn: thả lưới vào dock thì icon rơi lệch lên nửa chiều cao nhãn, nhãn hiện rồi biến mất (dư ảnh); gộp thư mục co ảnh 0,4 thì nhãn co theo, lộ trên icon đích. Cách làm: đích đưa hình vuông icon (`DropSettle.iconAligned`), `DragHelper` cộng độ lệch icon trong ảnh × `endScale`; ảnh kéo có bản không nhãn cùng cỡ, đổi sang khi vào trạng thái gộp hoặc trên dock, giữ nguyên trạng thái đó suốt lúc hạ cánh.
+- **(2026-11-19, P2-6) Tô phẳng màu bán trong suốt đè lên kính thì thành mảng trắng.** Hover trong dock phải dùng cùng kính mờ (`BackdropBlurDrawable`, vai `FOLDER_CELL`) như lưới; chỉ tier FLAT mới tô phẳng.
+- **(2026-11-19, P2-6) "Thay tại chỗ" của dock so theo quan hệ id, không theo ô.** Lưới bỏ thu/phình khi item cũ và mới cùng ô. Dock dàn lại mỗi lần thêm/bớt nên chỉ số đổi; hai item là cùng một chỗ khi chung id (bản thân hoặc app con): app -> thư mục, thư mục -> app con còn lại, thư mục id tạm -> id thật. Item mới trượt (FLIP) từ chỗ nhìn thấy của item cũ.
+
+## FM — thư mục nhiều trang và sắp xếp trong thư mục: bài học (2026-11-20, chủ dự án kiểm trên máy). Nguồn: [plans/FM-folder-pages.md](../plans/FM-folder-pages.md) (chép từ repo XML)
+
+> Chép từ repo XML (`E:\SourceTree\IosLauncher`) ngày 2026-11-23 (PG1 Task 1). Bài học viết cho bản View: tên class View (`IconGridView`, `DockView`, `FolderPanelView`, `DragHelper`...) chỉ để tham khảo cơ chế, bản Compose có thể đã làm khác.
+
+- **(2026-11-20, FM-2, đọc mã nguồn Android) Nhiều trang trong một ViewGroup: đặt các trang cạnh nhau và cuộn bằng `scrollX`, không cần ViewPager.** Trong `dispatchDraw`/`onDraw` toạ độ đã tính cuộn (`updateDisplayListIfDirty` dịch `-mScrollX` trước khi vẽ), nên vùng cắt phải là `scrollX .. scrollX + width`; chạm và `getLocationOnScreen` của con cũng tự tính cuộn. Giữ khung đứng yên thì kính và hoạt ảnh mở/đóng của khung không phải đụng tới.
+- **(2026-11-20, FM-2) Con vẽ tràn ra đệm của cha bị cắt bởi `clipToPadding` của cha, không phải `clipChildren`.** Muốn vẽ chấm trang trong đệm dưới của khung panel phải đặt `panel.clipToPadding = false`, rồi tự cắt nội dung bằng `clipRect` để trang bên cạnh không lộ ra ngoài khung.
+- **(2026-11-20, FM-2) Vuốt đổi trang và giữ-để-kéo không giành nhau nhờ `IconDragGesture`.** Lưới chỉ cướp chạm (`onInterceptTouchEvent`) khi vuốt ngang quá slop; icon đã "giữ đủ lâu" thì tự gọi `requestDisallowInterceptTouchEvent(true)` nên lưới không cướp được nữa. Lưới một trang không nhận chạm, giữ nguyên hành vi cũ.
+- **(2026-11-20, chủ dự án góp ý, FM-3) Xem trước sắp xếp phải có độ trễ và trượt chậm.** Dời ngay mỗi lần ngón qua ô mới thì cả lưới nhảy theo khi kéo lướt; điểm kéo phải ở yên trên một ô 250 ms rồi mới dời. Tốc độ dời dùng chung `SpringProgress.Spec.REORDER` (độ cứng 300, chủ dự án tự chỉnh từ 350) cho lưới Home, dock và thư mục để cảm giác đồng bộ.
+- **(2026-11-20, FM-3) `SpringProgress.animateTo(newSpec = …)` đổi spec VĨNH VIỄN cho spring đó.** Hàm dùng chung (`IconCellView.springOffsetTo`) phải truyền spec mỗi lần (mặc định SLIDE), nếu không một lần trượt chậm sẽ làm mọi lần trượt sau của ô đó cũng chậm.
+- **(2026-11-20, FM-3) Thứ tự trong thư mục chỉ biết các app nhìn thấy.** Reconciler điền lại các chỗ của app nhìn thấy theo thứ tự mới, app không khả dụng (đã gỡ, tạm khóa) giữ chỗ cũ, rồi mới đánh lại `rank`; không đánh `rank` 0..n-1 thẳng theo danh sách UI.
+
+## DA — dư ảnh icon khi thả vào ô trống của dock / panel thư mục (2026-11-20) (chép từ repo XML)
+
+> Chép từ repo XML (`E:\SourceTree\IosLauncher`) ngày 2026-11-23 (PG1 Task 1). Bài học viết cho bản View: tên class View (`IconGridView`, `DockView`, `FolderPanelView`, `DragHelper`...) chỉ để tham khảo cơ chế, bản Compose có thể đã làm khác.
+
+- **Triệu chứng:** thả icon vào chỗ trống ở dock hoặc panel thư mục: ô đích hiện sẵn icon kèm dấu "−" trong lúc ảnh kéo còn bay tới,
+  thấy hai icon một thoáng. Lưới Home không bị.
+- **Gốc (đọc code):** `DragHelper.drop` đặt `settlingItemId` SAU `target.onDrop`. `HomeActivity` thu `uiState` trên `lifecycleScope`
+  (`Dispatchers.Main.immediate`), nên trạng thái lạc quan mà `onDrop` phát (item ở chỗ mới, `draggingItemId = null`) được render ngay
+  bên trong `onDrop`: `DockView`/`FolderPanelView` tính alpha với cả `hiddenItemId` lẫn `settlingItemId` đều null → ô hiện. Lưới thoát
+  vì bind qua `submitList`/DiffUtil của pager, chạy sau khi `drop` xong. Panel thư mục từng vá bằng `post { refreshAlpha() }` nên chỉ
+  lóe một frame; dock lộ suốt lúc hạ cánh.
+- **Sửa:** đặt `settlingItemId = session.itemId` TRƯỚC `onDrop`; không có hạ cánh thì xóa cờ và báo `onDragSettled` cho mọi phiên
+  (không chỉ khi có `returnRect`), vì target có thể đã giữ ô ẩn khi thấy cờ trong `onDrop`.
+- **Bài học:** với collector `Main.immediate`, mọi `_uiState.update` gọi từ callback UI là render đồng bộ ngay tại chỗ. Cờ mà render
+  đọc phải đặt xong TRƯỚC khi gọi callback có thể phát state.
+
+## TV — Today View: bài học (2026-11-20, chủ dự án kiểm trên máy). Nguồn: [plans/TV-today-view.md](../plans/TV-today-view.md) (chép từ repo XML)
+
+> Chép từ repo XML (`E:\SourceTree\IosLauncher`) ngày 2026-11-23 (PG1 Task 1). Bài học viết cho bản View: tên class View (`IconGridView`, `DockView`, `FolderPanelView`, `DragHelper`...) chỉ để tham khảo cơ chế, bản Compose có thể đã làm khác.
+
+- **(2026-11-20, TV-3) Chừa đệm để vẽ tràn (dấu "−") thì phải tắt cả `clipToPadding`, không chỉ `clipChildren`.** `ViewGroup` cắt con theo vùng TRONG đệm khi `clipToPadding` = true (mặc định), độc lập với `clipChildren`. Lưới Today có đệm trên cho dấu "−" của hàng đầu nhưng quên tắt `clipToPadding`, nên chỉ hàng đầu bị cắt; các hàng sau đã đúng sau khi tắt `clipChildren`.
+- **(2026-11-20, TV-1) Lớp phủ mở bằng cử chỉ ngang dùng chung một bộ điều khiển, chỉ khác chiều.** `LibraryOverlayController` nhận `openSign` (-1 Library vuốt trái, +1 Today vuốt phải); Today gọi sau Library trong `HomeTouchRouter`, mỗi bên chỉ tiếp quản đúng chiều của mình nên Home một trang không giành nhau. Hai lớp không mở chồng: điều kiện mở của bên này đòi bên kia đứng yên ở trạng thái đóng.
+- **(2026-11-20, TV-3) Cử chỉ ở mức Activity thấy chạm TRƯỚC cây view.** Kéo đổi chỗ widget trên Today bắt đầu trong view, nhưng cú di ngang đầu tiên đã tới bộ đóng Today trước; phải cho bộ đó hỏi cờ "đang nhấn giữ / đang kéo" của view (`canClose`), không chỉ "đang kéo".
+- **(2026-11-20, TV-3) Danh sách cuộn cần nhận nhấn giữ cả ở chỗ trống: `NestedScrollView.isFillViewport` + con giữ chiều cao tối thiểu EXACTLY.** Con tự đo theo nội dung sẽ bỏ qua chiều cao khung, chỗ trống dưới cùng (hoặc cả màn khi danh sách rỗng) không thuộc con nào.
+- **(2026-11-20, TV-3) Widget không có hàng `launcher_items` vẫn dùng chung kho đánh theo `itemId` (thời tiết, ảnh) nếu cấp id trong dải riêng xa id Room (2^40).** Quét mồ côi của các kho đó phải bỏ qua dải này, nếu không dữ liệu của widget Today bị xóa mỗi lần khởi động.
+- **(2026-11-20, TV-3) Mờ dần một con theo vị trí mà không đụng `alpha` của nó: vẽ con qua `saveLayerAlpha` trong `drawChild`.** `alpha` đang được hoạt ảnh thêm/xóa dùng; ghi đè sẽ giành nhau.
+
+## RA — menu nhấn giữ mở từ lớp phủ (Thư viện, Tìm kiếm): bài học (2026-11-21, Vsmart Live 4). Nguồn: [plans/RA-readd-home.md](../plans/RA-readd-home.md) (chép từ repo XML)
+
+> Chép từ repo XML (`E:\SourceTree\IosLauncher`) ngày 2026-11-23 (PG1 Task 1). Bài học viết cho bản View: tên class View (`IconGridView`, `DockView`, `FolderPanelView`, `DragHelper`...) chỉ để tham khảo cơ chế, bản Compose có thể đã làm khác.
+
+- **(2026-11-21, đọc code, RA) Dùng lại menu của Home cho nguồn mới thì rà mọi chỗ đang "đóng X khi `iconMenu != null`".** `AppLibraryController.render` (D14) đóng Thư viện khi có menu, nên menu mở từ Thư viện tự đóng chính Thư viện. Nguồn của menu đi trong state (`IconMenuState.source`), các luật cũ chỉ áp cho `HOME`; thêm cả chặn vuốt đóng Thư viện khi menu mở (`canClose`).
+- **(2026-11-21, đọc code, RA) Hai lớp phủ trước đây không bao giờ cùng mở thì thứ tự z và thứ tự Back đều phải xét lại khi cho chúng chồng nhau.** `search_overlay` từng nằm trên `icon_action_menu`, và `HomeBackController` đăng ký tìm kiếm sau menu (Back đóng tìm kiếm trước). Menu mở từ kết quả tìm kiếm cần cả hai đảo lại.
+- **(2026-11-21, đọc code, RA) Menu từ nguồn không có ô trên Home: `itemId = -1`, mọi nhánh dựa trên `itemId`/`container` (ẩn nhanh, kéo icon nổi, hộp xóa app) phải rẽ theo nguồn.** Ẩn từ Thư viện gọi thẳng `HideAppUseCase`; icon nổi không kéo được; "Gỡ cài đặt" mở thẳng `ACTION_DELETE` (hệ thống luôn hỏi xác nhận).
+
+## PG1 A1 — hoạt ảnh khi bố cục lưới / dock / thư mục đổi trong Compose (2026-11-23, Oppo PKD130). Nguồn: [plans/PG1-parity-batch-1.md](../plans/PG1-parity-batch-1.md)
+
+- **(2026-11-23, đọc code) Chỉ dời theo "ô xem trước" thì dữ liệu đổi là icon nhảy.** Thả nhanh trước `PUSH_ARM_MS`, gỡ/ẩn rồi dồn ô, bỏ ẩn đều đổi vị trí mà không qua xem trước. Cách Compose: vị trí tuyệt đối có hoạt ảnh khoá theo `itemId` (`rememberSlideOffset`), đích = ô xem trước hoặc ô thật; thả sau xem trước thì đích mới trùng ô xem trước nên không giật. Dock và bảng thư mục vốn đặt theo vị trí tuyệt đối nên đã trượt đúng từ trước.
+- **(2026-11-23, đọc code) Thu/phình chỉ khi bố cục đổi KHÔNG do kéo.** Đang kéo hoặc ảnh kéo đang hạ cánh (`session`, `settlingId`) thì chính ảnh kéo là hoạt ảnh; "thay tại chỗ" (thư mục tạo/giải tán) so theo ô. App kéo vào thư mục hạ cánh vào đúng ô nhỏ của nó trong icon thư mục và icon thư mục ẩn app đó tới khi hạ cánh xong (`hiddenChildId` gồm cả `settlingId`), không mờ biến mất (chủ dự án chốt).
+- **(2026-11-23, lint đo được) Không tạo `Animatable` lúc dựng ngoài `remember`** (lint `RememberInComposition` làm `lintDebug` thất bại). Muốn không cấp `Animatable` cho item đứng yên: lúc dựng chỉ ghi chỗ xuất phát vào biến thường, tạo `Animatable` trong `LaunchedEffect`, giữ trong `mutableStateOf` để hàm dời đọc trong pha layout thấy khi gán/bỏ; khung đầu vẽ ở chỗ xuất phát.
+
+## PG2 — kéo thẻ widget từ bảng chọn ra lưới Home (2026-11-23, Oppo PKD130). Nguồn: [plans/PG2-widget-card-drag.md](../plans/PG2-widget-card-drag.md)
+
+- **(2026-11-23, đọc code) Compose `Dialog` là cửa sổ riêng giữ cả chuỗi chạm, nên kéo từ trong nó ra lưới thì phải bỏ `Dialog`.** Tách thân sheet thành `DsBottomSheetLayer` (lớp mờ, trượt, kéo xuống, `BackHandler`) vẽ trong cây Compose của Home; `DsBottomSheet` = `Dialog { DsBottomSheetLayer }` cho các sheet khác giữ nguyên hành vi. Nút nhận cú nhấn xuống nhận tiếp mọi sự kiện của ngón đó kể cả khi ra ngoài nút, nên `pointerInput` của thẻ lái thẳng `HomeDragState` (một hệ toạ độ gốc qua `localToRoot`).
+- **(2026-11-23, đọc code) Cử chỉ sống lâu hơn bảng thì bảng không được rời composition giữa chừng.** Đang kéo: bảng chỉ mờ về alpha 0; gỡ bảng là coroutine cử chỉ bị huỷ, `finally` gọi `drag.cancel()`.
+- **(2026-11-23, kiểm tay) `graphicsLayer { alpha = 0f }` vẫn nhận chạm.** Ngón thứ hai chạm lớp mờ (`clickable { close() }`) của bảng đã mờ → đóng bảng → phiên kéo bị huỷ → widget mất. Sửa: khi đang kéo, đặt một lớp trong suốt trên cùng nuốt mọi ngón mới; ngón đang kéo đã gắn với nút của nó từ lúc nhấn xuống nên không qua lớp này.
+- **(2026-11-23, đọc code) Kéo item chưa có hàng DB: dùng lại `DragItem` có sẵn với id tạm âm, phiên mang cờ riêng để `drop` / `cancelDrop` rẽ nhánh** (thả = hàm VM riêng, không qua `onItemDropped`; huỷ = co + mờ tại chỗ vì không có ô nguồn). Nhờ vậy xem trước đẩy-dồn, chặn chồng widget, lật mép, trang tạm chạy như kéo widget có sẵn. Nút Home khi đang kéo = huỷ (chủ dự án chốt).

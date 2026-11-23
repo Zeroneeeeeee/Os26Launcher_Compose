@@ -21,19 +21,17 @@ class LiquidGlassSettingsScreen(private val ctx: SettingsScreenContext) : Settin
 
     override val titleRes: Int = R.string.settings_hub_glass
 
+    // PG1 F4 (chủ dự án 2026-11-23): "Mức kính" và khối công tắc kính từng phần tử (GS) chỉ điều khiển kính View cũ; kính Compose không đọc
+    // (JX Q3, không chỗ nào ngoài ui/settings gọi `GlassEnvironment.modeFor`), nên ẩn khỏi danh sách để không có nút vô tác dụng. Khóa config và
+    // code đọc/ghi giữ nguyên (`config-schema.md`). Trang chủ Cài đặt mở thẳng `GlassTuningActivity`; màn này chỉ còn để không gãy đăng ký.
     override fun rows(state: SettingsUiState): List<SettingsRow> = listOf(
-        SettingsRow.Value(
-            SettingsRow.ID_GLASS_LEVEL,
-            R.string.settings_glass_level,
-            activity.getString(state.glassOverride.shortLabelRes())
-        ),
         // GT: mở màn Tinh chỉnh kính (thanh trượt + xem trước); giá trị bên phải cho biết đang ở mặc định hay đã chỉnh
         SettingsRow.Value(
             SettingsRow.ID_GLASS_LOOK,
             R.string.gt_title,
             activity.getString(if (state.glassLook == GlassLook.DEFAULT) R.string.gt_state_default else R.string.gt_state_custom)
         )
-    ) + buildGlassCustomRows(state)
+    )
 
     override fun onValueClicked(row: SettingsRow.Value) {
         when (row.id) {
