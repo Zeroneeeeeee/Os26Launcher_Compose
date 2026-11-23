@@ -79,3 +79,4 @@ Không có tính năng nào. Giới hạn có thật đều của nền tảng /
 | 2026-11-23 | F2 | Xong (PG2, chủ dự án kiểm Oppo) |
 | 2026-11-23 | G4 | Viết plan `PG3-static-frosted-glass.md`, chờ duyệt |
 | 2026-11-23 | G4 | Xong (PG3, chủ dự án kiểm Live 4 + Oppo); phần đo chuyển sang G3 |
+| 2026-11-23 | G3, K1 | Viết plan `PG4-home-perf-and-device-checks.md` (chủ dự án: làm G3, K1 phía mình, chỉ bàn giao G4), chờ duyệt |
