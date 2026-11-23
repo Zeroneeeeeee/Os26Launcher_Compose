@@ -103,6 +103,10 @@ import gambi.global.os26launcher.ui.home.compose.HomeIcons
 import gambi.global.os26launcher.ui.home.compose.rememberHomeIcon
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import gambi.global.os26launcher.core.ui.TransitionMotion
+import gambi.global.os26launcher.domain.config.TransitionStyle
+import gambi.global.os26launcher.ui.home.compose.PanelStyleMotion
+import gambi.global.os26launcher.ui.home.compose.PanelTransform
 
 /**
  * JS4 — App Library bằng Compose, thay `CategoryPageView` + `CategoryGroupPanelView` + nền `blurredWallpaperScrim` (View, JH3c). Vẽ ở Activity
@@ -123,6 +127,8 @@ internal fun HomeLibrary(state: HomeLibraryState, icons: HomeIcons, backdrop: Bi
     val panel = remember { Animatable(0f) }
     var shownGroup by remember { mutableStateOf<CategoryGroupApps?>(null) }
     var origin by remember { mutableStateOf<ScreenRect?>(null) }
+    // PG1 F3: kiểu chuyển cảnh (màn 4.1) chốt lúc bắt đầu mỗi lần mở/đóng; tốc độ đổi độ cứng spring; "Không có" thì nhảy thẳng.
+    var panelStyle by remember { mutableStateOf(TransitionMotion.style) }
     // Đích của spring = có nhóm hay không; nội dung lúc đóng giữ tới khi spring dừng (như CategoryGroupPanelView).
     LaunchedEffect(group) {
         if (group != null) {
@@ -131,9 +137,11 @@ internal fun HomeLibrary(state: HomeLibraryState, icons: HomeIcons, backdrop: Bi
                 origin = state.tileRects[group.group]
             }
             shownGroup = group
-            panel.animateTo(1f, GROUP_SPRING)
+            panelStyle = TransitionMotion.style
+            if (TransitionMotion.isInstant) panel.snapTo(1f) else panel.animateTo(1f, groupSpring())
         } else if (shownGroup != null) {
-            panel.animateTo(0f, GROUP_SPRING)
+            panelStyle = TransitionMotion.style
+            if (TransitionMotion.isInstant) panel.snapTo(0f) else panel.animateTo(0f, groupSpring())
             shownGroup = null
         }
     }
@@ -185,7 +193,7 @@ internal fun HomeLibrary(state: HomeLibraryState, icons: HomeIcons, backdrop: Bi
         }
         // 3. Màn nhóm.
         val g = shownGroup
-        if (g != null && panelP > 0f) GroupPanel(g, panelP, origin, night, blurred, icons, state)
+        if (g != null && panelP > 0f) GroupPanel(g, panelP, panelStyle, origin, night, blurred, icons, state)
     }
 }
 
@@ -591,6 +599,7 @@ private inline fun androidx.compose.ui.graphics.drawscope.DrawScope.drawIntoCanv
 private fun GroupPanel(
     group: CategoryGroupApps,
     p: Float,
+    style: TransitionStyle,
     origin: ScreenRect?,
     night: Boolean,
     blurred: Bitmap?,
@@ -626,6 +635,7 @@ private fun GroupPanel(
         val column = (maxWidth - side * 2) / GROUP_COLUMNS
         val titleStart = side + ((column - iconSize) / 2).coerceAtLeast(0.dp)
         val topPad = top + dimensionResource(R.dimen.category_group_title_margin_top)
+        val hostHeightPx = with(density) { maxHeight.toPx() } // PG1 F3: kiểu Trượt
         Column(
             Modifier
                 .fillMaxWidth()
@@ -636,11 +646,16 @@ private fun GroupPanel(
                 .graphicsLayer {
                     // P2-3 (chủ dự án 2026-11-19): mở ra từ GIỮA màn hình và thu về giữa (trước P2-3: mọc từ ô nhóm, đóng về ô); [origin] không còn dùng.
                     val c = p.coerceIn(0f, 1.05f)
-                    alpha = ramp(p, 0f, PANEL_FADE_END)
                     val s0 = GROUP_CENTER_START_SCALE
-                    val s = s0 + (1f - s0) * c
-                    scaleX = s
-                    scaleY = s
+                    val smooth = PanelTransform(s0 + (1f - s0) * c, 0f, 0f, ramp(p, 0f, PANEL_FADE_END))
+                    // PG1 F3: khối căn giữa dọc nên đỉnh ≈ (cao màn − cao khối) / 2; kiểu Trượt cho đỉnh bắt đầu ở đáy màn.
+                    val slideFrom = (hostHeightPx + size.height) / 2f
+                    val m = PanelStyleMotion.transform(style, p, smooth, slideFrom)
+                    alpha = m.alpha
+                    scaleX = m.scale
+                    scaleY = m.scale
+                    translationX = m.translationX
+                    translationY = m.translationY
                     transformOrigin = TransformOrigin(0.5f, 0.5f)
                 }
                 .padding(top = topPad)
@@ -711,7 +726,8 @@ internal fun shrinkForBlur(src: Bitmap): Bitmap {
 private fun ramp(p: Float, start: Float, end: Float): Float =
     if (end <= start) (if (p >= end) 1f else 0f) else ((p - start) / (end - start)).coerceIn(0f, 1f)
 
-private val GROUP_SPRING = spring<Float>(dampingRatio = 0.82f, stiffness = 450f) // AppLibraryMotion.GROUP_PANEL_SPRING
+/** AppLibraryMotion.GROUP_PANEL_SPRING; PG1 F3: độ cứng theo tốc độ của màn 4.1 (đọc lúc bắt đầu mỗi lần mở/đóng). */
+private fun groupSpring() = PanelStyleMotion.scaledSpring(dampingRatio = 0.82f, stiffness = 450f)
 private const val OPEN_EPS = 0.001f
 private const val PANEL_FADE_END = 0.3f // AppLibraryMotion.GROUP_PANEL_FADE_END
 private const val GROUP_CENTER_START_SCALE = 0.6f // AppLibraryMotion.GROUP_PANEL_CENTER_START_SCALE (P2-3)

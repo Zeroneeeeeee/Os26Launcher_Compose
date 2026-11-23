@@ -81,6 +81,11 @@ import kotlinx.coroutines.withTimeoutOrNull
 import gambi.global.os26launcher.domain.model.WidgetKind
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.State
+import kotlin.math.abs
 
 /**
  * JH1 Task 2 — Home Compose: ảnh nền, các trang lưới, pill, dock. Bố cục như `activity_home.xml`: cột dọc trong vùng trừ thanh hệ thống
@@ -145,6 +150,32 @@ internal fun HomeScreen(
     val drag = remember { HomeDragState(scope, density.density) }
     var editMenuOpen by remember { androidx.compose.runtime.mutableStateOf(false) } // P2-9e: menu "Sửa" của thanh edit mode
     val barInsets = WindowInsets.systemBarsIgnoringVisibility
+    // PG1 G1: cổng mở Thư viện / Today đọc thẳng PagerState lúc chạm xuống (targetPage và "tay đang kéo" đổi liên tục khi cuộn, chép trong
+    // SideEffect thì có thể cũ đúng lúc lướt nhanh). Trượt nốt sau khi lớp phủ tiếp quản chạy trong scope của màn này.
+    val pagerDragged = pagerState.interactionSource.collectIsDraggedAsState()
+    DisposableEffect(pagerState) {
+        pagerInfo.pagerState = pagerState
+        pagerInfo.pagerDragged = pagerDragged
+        pagerInfo.settleTo = { page ->
+            scope.launch {
+                val busy = pagerState.isScrollInProgress
+                // Đang trượt đúng về trang đó, hoặc đã đứng yên ở đó: không làm gì (không cắt cú bám trang đang chạy).
+                if ((busy && pagerState.targetPage == page) ||
+                    (!busy && pagerState.currentPage == page && abs(pagerState.currentPageOffsetFraction) < SETTLED_FRACTION)
+                ) return@launch
+                if (page in 0 until pagerState.pageCount) {
+                    pagerState.animateScrollToPage(page, animationSpec = tween(PageMotion.FULL_MS, easing = EaseOutQuint))
+                }
+            }
+        }
+        onDispose {
+            if (pagerInfo.pagerState === pagerState) {
+                pagerInfo.pagerState = null
+                pagerInfo.pagerDragged = null
+                pagerInfo.settleTo = null
+            }
+        }
+    }
     SideEffect {
         pagerInfo.currentPage = pagerState.currentPage
         pagerInfo.scrolling = pagerState.isScrollInProgress
@@ -437,6 +468,7 @@ private fun Wallpaper(bitmap: Bitmap?, modifier: Modifier) {
 
 // Trọng số như activity_home.xml (pager 6 = GridMetrics.DEFAULT_ROWS, dock 1).
 private const val PAGER_WEIGHT = 6f
+private const val SETTLED_FRACTION = 0.01f // PG1 G1: lệch dưới 1 % bề rộng trang coi như đã đứng ở trang
 private const val DOCK_WEIGHT = 1f
 private const val PILL_IDLE_MS = 600L
 private const val PAGE_WAIT_MS = 2_000L
@@ -503,7 +535,28 @@ internal class HomePagerInfo {
     var realPageCount = 0
     var pagerWidth = 0
     var pagerHeight = 0
-    val settledOnLastPage: Boolean get() = !scrolling && realPageCount > 0 && currentPage == realPageCount - 1
+    /** PG1 G1: PagerState của Home đang hiện (gán/bỏ trong [HomeScreen]); null = chưa dựng. Đọc ở luồng chính lúc có sự kiện chạm. */
+    var pagerState: PagerState? = null
+
+    /** PG1 G1: tay đang kéo pager (`interactionSource.collectIsDraggedAsState`). Lật trang khi kéo icon dùng `animateScrollToPage`, không tính. */
+    var pagerDragged: State<Boolean>? = null
+
+    /** PG1 G1: cho pager trượt nốt tới trang [Int] (bản Compose của `finishSettleOnLastPage/FirstPage`); no-op nếu đã ở / đang về đúng trang. */
+    var settleTo: ((Int) -> Unit)? = null
+
+    /**
+     * PG1 G1 (FX7 D2/H1 + TV-1 của repo XML): trang pager "sẽ đứng" — đích đang trượt tới khi pager còn cuộn (sau fling hoặc lật trang), trang hiện tại khi
+     * đứng yên; null khi tay đang kéo pager (cú vuốt đổi trang thường không được nhường cho Thư viện / Today) hoặc chưa có pager.
+     * Trước đây cổng đòi pager đứng yên, nên cú vuốt nhanh tới lúc pager còn trượt nốt bị pager nhận và phải vuốt thêm lần nữa.
+     */
+    private fun restingPage(): Int? {
+        val ps = pagerState ?: return if (scrolling) null else currentPage
+        if (pagerDragged?.value == true) return null
+        return if (ps.isScrollInProgress) ps.targetPage else ps.currentPage
+    }
+
+    /** Pager đang ở / đang trượt nốt tới trang THẬT cuối (trang tạm không tính): điều kiện mở Thư viện lúc chạm xuống. */
+    val settledOnLastPage: Boolean get() = realPageCount > 0 && restingPage() == realPageCount - 1
 
     /** P2-11: pill dạng chấm đang nhận cử chỉ, và khung của nó (toạ độ gốc = cửa sổ). */
     var pillDotsInteractive = false
@@ -513,5 +566,5 @@ internal class HomePagerInfo {
     fun pillClaims(x: Float, y: Float): Boolean = pillDotsInteractive && pillRect.contains(Offset(x, y))
 
     /** TV: đứng yên ở trang thật đầu tiên (điều kiện mở màn Today, như [settledOnLastPage] cho Library). */
-    val settledOnFirstPage: Boolean get() = !scrolling && realPageCount > 0 && currentPage == 0
+    val settledOnFirstPage: Boolean get() = realPageCount > 0 && restingPage() == 0
 }

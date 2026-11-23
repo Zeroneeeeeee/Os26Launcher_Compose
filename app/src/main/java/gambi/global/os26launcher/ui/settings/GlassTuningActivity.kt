@@ -53,6 +53,7 @@ import gambi.global.os26launcher.domain.model.GlassLookParam
 import gambi.global.os26launcher.ui.settings.compose.SettingsList
 import gambi.global.os26launcher.ui.settings.compose.SettingsListActions
 import kotlinx.coroutines.launch
+import android.os.Build
 
 /**
  * GT: màn "Tinh chỉnh kính" (mở từ hàng cùng tên trong Cài đặt). Khung xem trước chạy theo ngón tay khi kéo; giá trị chỉ được GHI khi
@@ -104,11 +105,19 @@ class GlassTuningActivity : AppCompatActivity() {
         if (state.loading) return
         val look = state.glassLook
         previewLook.value = look // giá trị đã lưu là nguồn thật: sau khi nhả tay (hoặc đặt lại) khung về đúng nó
-        rows = listOf(
+        // PG1 F4: chỉ hiện thanh mà máy này có tác dụng, cùng mốc API với `DsGlass.kt` (thư viện Backdrop): khúc xạ (lens) từ API 33, làm mờ từ
+        // API 31; Độ bóng (viền sáng, cả thẻ tĩnh `DsSurfaceDrawable` dưới API 31) và Bo góc (`DsCorners`) có tác dụng ở mọi máy. Máy API ≥ 33
+        // giữ nguyên đủ 4 thanh như trước. Giá trị của thanh bị ẩn vẫn lưu nguyên (Đặt lại vẫn đưa cả bốn về mặc định).
+        val sdk = Build.VERSION.SDK_INT
+        rows = listOfNotNull(
             SettingsRow.Header("header_glass_look", R.string.gt_header),
-            SettingsRow.Slider(SettingsRow.ID_GLASS_LOOK_REFRACTION, R.string.gt_refraction, look.refraction, R.string.gt_refraction_desc),
+            if (sdk >= Build.VERSION_CODES.TIRAMISU) {
+                SettingsRow.Slider(SettingsRow.ID_GLASS_LOOK_REFRACTION, R.string.gt_refraction, look.refraction, R.string.gt_refraction_desc)
+            } else null,
             SettingsRow.Slider(SettingsRow.ID_GLASS_LOOK_GLOSS, R.string.gt_gloss, look.gloss, R.string.gt_gloss_desc),
-            SettingsRow.Slider(SettingsRow.ID_GLASS_LOOK_BLUR, R.string.gt_blur, look.blur, R.string.gt_blur_desc),
+            if (sdk >= Build.VERSION_CODES.S) {
+                SettingsRow.Slider(SettingsRow.ID_GLASS_LOOK_BLUR, R.string.gt_blur, look.blur, R.string.gt_blur_desc)
+            } else null,
             SettingsRow.Slider(SettingsRow.ID_GLASS_LOOK_CORNER, R.string.gt_corner, look.corner, R.string.gt_corner_desc),
             SettingsRow.Header("header_glass_look_reset", R.string.gt_reset_header),
             SettingsRow.Value(SettingsRow.ID_GLASS_LOOK_RESET, R.string.gt_reset, "", enabled = look != GlassLook.DEFAULT)

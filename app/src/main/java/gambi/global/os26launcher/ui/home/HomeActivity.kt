@@ -561,11 +561,29 @@ class HomeActivity : AppCompatActivity() {
         val libraryResult = library.onTouch(ev)
         if (libraryResult != LibraryOverlayController.Result.PASS) {
             if (libraryResult == LibraryOverlayController.Result.TAKEOVER) cancelInto(today::onTouch, ev)
-            return finishTakeover(libraryResult, ev)
+            val handled = finishTakeover(libraryResult, ev)
+            if (libraryResult == LibraryOverlayController.Result.TAKEOVER) settlePagerAfterTakeover(lastPage = true)
+            return handled
         }
         val todayResult = today.onTouch(ev)
         if (todayResult == LibraryOverlayController.Result.TAKEOVER) cancelInto(library::onTouch, ev)
-        return finishTakeover(todayResult, ev)
+        val handled = finishTakeover(todayResult, ev)
+        if (todayResult == LibraryOverlayController.Result.TAKEOVER) settlePagerAfterTakeover(lastPage = false)
+        return handled
+    }
+
+    /**
+     * PG1 G1 (FX7 D2/H1 + TV-1 của repo XML, `HomeTouchRouter` gọi `finishSettleOnLastPage/FirstPage`): Thư viện / Today vừa tiếp quản, có thể đúng
+     * lúc pager còn trượt nốt. `ACTION_CANCEL` giả vừa gửi làm pager bám về trang GẦN NHẤT (có thể là trang áp chót): cho pager trượt nốt tới trang
+     * thật cuối / đầu bên dưới lớp phủ, để đóng lớp phủ thì Home ở đúng trang. Đăng sau (post) để chạy sau khi Compose đã xử lý CANCEL; đã ở / đang về
+     * đúng trang thì không làm gì (`HomePagerInfo.settleTo`).
+     */
+    private fun settlePagerAfterTakeover(lastPage: Boolean) {
+        window.decorView.post {
+            val count = pagerInfo.realPageCount
+            if (count <= 0) return@post
+            pagerInfo.settleTo?.invoke(if (lastPage) count - 1 else 0)
+        }
     }
 
     /** PASS: cây view xử lý; TAKEOVER: gửi một `ACTION_CANCEL` giả xuống (Compose dọn nhấn giữ / pager) rồi nuốt; CONSUME: nuốt. */

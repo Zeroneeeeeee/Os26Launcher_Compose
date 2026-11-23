@@ -357,7 +357,28 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
         } else {
             actions.onFolderIntent(s.item.itemId, targetId)
         }
-        settle(s, rect, MERGE_END_SCALE, 0f)
+        // PG1 A1 (QĐ 7, chủ dự án 2026-11-23): app kéo vào thư mục co vào ĐÚNG ô nhỏ của nó trong icon thư mục (giữ rõ, không mờ biến mất):
+        // thư mục có sẵn thì app nối vào cuối (ô = số app hiện có), tạo thư mục mới thì app đích ô 0, app kéo ô 1. Ô ngoài 9 ô xem trước của
+        // icon thư mục thì giữ cách cũ (co + mờ).
+        val slot = targetFolder?.appCount ?: 1
+        val mini = folderMiniRect(rect, slot)
+        if (mini != null && floatSize.width > 0f) settle(s, mini, mini.width / floatSize.width, 1f)
+        else settle(s, rect, MERGE_END_SCALE, 0f)
+    }
+
+    /**
+     * PG1 A1: vùng ô nhỏ thứ [slot] (0..8) trong icon thư mục [iconRect], cùng hình học với `HomeFolderPlate` (đệm 12 %, khe 5 %, lưới 3 × 3);
+     * null khi ô nằm ngoài 9 ô xem trước.
+     */
+    private fun folderMiniRect(iconRect: Rect, slot: Int): Rect? {
+        if (slot !in 0 until FolderPlanner.PAGE_SIZE || iconRect.width <= 0f) return null
+        val size = iconRect.width
+        val pad = size * FOLDER_PLATE_PADDING_RATIO
+        val gap = size * FOLDER_PLATE_GAP_RATIO
+        val mini = (size - 2 * pad - 2 * gap) / FOLDER_PLATE_GRID
+        val left = iconRect.left + pad + (slot % FOLDER_PLATE_GRID) * (mini + gap)
+        val top = iconRect.top + pad + (slot / FOLDER_PLATE_GRID) * (mini + gap)
+        return Rect(left, top, left + mini, top + mini)
     }
 
     /**
@@ -930,6 +951,11 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
         private const val EDGE_FLIP_REST_MS = 500L
         private const val FLIP_MS = 450
         private const val MERGE_END_SCALE = 0.4f
+
+        // PG1 A1: cùng số với HomeGridPage.kt (FOLDER_PADDING_RATIO, FOLDER_GAP_RATIO, FOLDER_GRID) — hình icon thư mục 3 × 3.
+        private const val FOLDER_PLATE_PADDING_RATIO = 0.12f
+        private const val FOLDER_PLATE_GAP_RATIO = 0.05f
+        private const val FOLDER_PLATE_GRID = 3
         private const val LIFT_SCALE = 1.1f
         private val SETTLE_F = spring<Float>(dampingRatio = 0.8f, stiffness = 600f)
         private val SETTLE_O = spring<Offset>(dampingRatio = 0.8f, stiffness = 600f)
