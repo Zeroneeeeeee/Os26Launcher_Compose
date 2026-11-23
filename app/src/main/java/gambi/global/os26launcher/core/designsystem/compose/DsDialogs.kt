@@ -1,5 +1,6 @@
 package gambi.global.os26launcher.core.designsystem.compose
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -185,6 +186,36 @@ fun DsBottomSheet(
     showClose: Boolean = true,
     content: @Composable ColumnScope.() -> Unit
 ) {
+    // PG2: thân sheet tách ra [DsBottomSheetLayer] (dùng được trong cửa sổ của màn, không cần Dialog). Bản Dialog giữ đúng hành vi cũ: Back và
+    // chạm lớp mờ do lớp lo (đóng có hoạt ảnh), cửa sổ không tự đóng.
+    Dialog(
+        onDismissRequest = {},
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false,
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = false
+        )
+    ) {
+        (LocalView.current.parent as? DialogWindowProvider)?.window?.let { window ->
+            SideEffect { window.setDimAmount(0f) } // lớp mờ tự vẽ để nhạt dần theo độ kéo
+        }
+        DsBottomSheetLayer(onDismiss = onDismiss, title = title, showClose = showClose, content = content)
+    }
+}
+
+/**
+ * PG2 — thân của [DsBottomSheet] không có `Dialog`: lớp mờ toàn vùng + khối sheet ở đáy (trượt lên khi mở, kéo xuống để đóng, tay nắm, tiêu đề,
+ * nút đóng), Back đóng (có hoạt ảnh). Đặt trên cùng một lớp phủ toàn màn của màn đang hiện (vd bảng chọn widget của Home, để thẻ trong sheet kéo
+ * được ra lưới cùng cửa sổ). [onDismiss] gọi khi hoạt ảnh đóng xong. Không dùng kính thật (`LocalDsBackdrop = null`), như bản Dialog.
+ */
+@Composable
+fun DsBottomSheetLayer(
+    onDismiss: () -> Unit,
+    title: String? = null,
+    showClose: Boolean = true,
+    content: @Composable ColumnScope.() -> Unit
+) {
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current
     val offset = remember { Animatable(Float.MAX_VALUE) } // px dời xuống; MAX trước khi đo
@@ -207,13 +238,8 @@ fun DsBottomSheet(
         }
     }
 
-    Dialog(
-        onDismissRequest = { close() },
-        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
-    ) {
-        (LocalView.current.parent as? DialogWindowProvider)?.window?.let { window ->
-            SideEffect { window.setDimAmount(0f) } // lớp mờ tự vẽ để nhạt dần theo độ kéo
-        }
+    BackHandler { close() }
+    run {
         val fraction = if (sheetHeight > 0f) (offset.value / sheetHeight).coerceIn(0f, 1f) else 1f
         CompositionLocalProvider(LocalDsBackdrop provides null) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {

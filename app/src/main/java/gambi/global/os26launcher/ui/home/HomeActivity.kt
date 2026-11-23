@@ -14,6 +14,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.ViewTreeObserver
 import gambi.global.os26launcher.core.glass.GlassEnvironment
+import gambi.global.os26launcher.core.glass.compose.LocalDsFrostedBackdrop
+import gambi.global.os26launcher.core.glass.compose.rememberFrostedBackdrop
 import gambi.global.os26launcher.domain.config.GeneralConfigRepository
 import gambi.global.os26launcher.domain.model.IconStyleKey
 import gambi.global.os26launcher.ui.home.controller.RecreateGuard
@@ -293,6 +295,8 @@ class HomeActivity : AppCompatActivity() {
                 if (!toggles.libraryEnabled) library.closeIfOpen() // LO D2
             }
 
+            // PG3: lớp nền mờ tĩnh của ảnh nền (HomeScreen ghi lớp, ảnh kéo ở tầng Activity cũng đọc).
+            val frosted = rememberFrostedBackdrop(state.backdrop)
             Box(Modifier.fillMaxSize()) {
             // JS2: lớp tìm kiếm mở thì Home + Library phía sau nhoè (API 31+), như ảnh chụp mờ của SearchOverlayView.
             Box(
@@ -309,6 +313,7 @@ class HomeActivity : AppCompatActivity() {
                 CompositionLocalProvider(LocalHostedWidgets provides hostedWidgets) {
                 HomeScreen(
                     state = state,
+                    frosted = frosted,
                     icons = icons,
                     showSearch = toggles.searchPill,
                     showDots = toggles.pageDots,
@@ -358,9 +363,16 @@ class HomeActivity : AppCompatActivity() {
                 // JS4: App Library Compose phía trên Home (trước đây là View thêm bằng addContentView, JH3c).
                 HomeLibrary(library, icons, state.backdrop)
                 // LD Task 4: ảnh nổi kéo-thả trên cả Library (kéo app từ Library ra Home), toạ độ gốc = cửa sổ như HomeScreen.
-                homeDrag?.let { gambi.global.os26launcher.ui.home.compose.HomeDragLayer(it, it.cells, icons) }
+                homeDrag?.let {
+                    // PG3: ô thư mục đang kéo vẫn có kính mờ tĩnh.
+                    CompositionLocalProvider(LocalDsFrostedBackdrop provides frosted.backdropOrNull) {
+                        gambi.global.os26launcher.ui.home.compose.HomeDragLayer(it, it.cells, icons)
+                    }
+                }
             }
                 SearchOverlay(search, searchActions, state.backdrop, onProgress = { searchProgress.floatValue = it })
+                // PG2: bảng chọn widget là lớp phủ trong cửa sổ Home (không còn Dialog), trên Home / Today / Thư viện, để thẻ kéo được ra lưới.
+                widgetPicker.Render()
             }
             dsDialogs.Render() // JS1: hộp thoại Compose (gợi ý launcher mặc định...)
         }
@@ -427,6 +439,8 @@ class HomeActivity : AppCompatActivity() {
         override fun onMenuEditHome() = viewModel.onIconMenuAction(IconMenuAction.EditHome)
         override fun closeFolder() = viewModel.closeFolder()
         override fun onReorderFolder(folderId: Long, orderedChildIds: List<Long>) = viewModel.reorderFolder(folderId, orderedChildIds)
+        override fun onNewWidgetDropped(kindId: String, spanX: Int, spanY: Int, tempItemId: Long, targetPageId: Long, cell: GridPosition) =
+            viewModel.onNewWidgetDropped(kindId, spanX, spanY, tempItemId, targetPageId, cell) // PG2
     }
 
     /** Như `HomeActivity.handleEvent`. */
@@ -577,11 +591,29 @@ class HomeActivity : AppCompatActivity() {
         val libraryResult = library.onTouch(ev)
         if (libraryResult != LibraryOverlayController.Result.PASS) {
             if (libraryResult == LibraryOverlayController.Result.TAKEOVER) cancelInto(today::onTouch, ev)
-            return finishTakeover(libraryResult, ev)
+            val handled = finishTakeover(libraryResult, ev)
+            if (libraryResult == LibraryOverlayController.Result.TAKEOVER) settlePagerAfterTakeover(lastPage = true)
+            return handled
         }
         val todayResult = today.onTouch(ev)
         if (todayResult == LibraryOverlayController.Result.TAKEOVER) cancelInto(library::onTouch, ev)
-        return finishTakeover(todayResult, ev)
+        val handled = finishTakeover(todayResult, ev)
+        if (todayResult == LibraryOverlayController.Result.TAKEOVER) settlePagerAfterTakeover(lastPage = false)
+        return handled
+    }
+
+    /**
+     * PG1 G1 (FX7 D2/H1 + TV-1 của repo XML, `HomeTouchRouter` gọi `finishSettleOnLastPage/FirstPage`): Thư viện / Today vừa tiếp quản, có thể đúng
+     * lúc pager còn trượt nốt. `ACTION_CANCEL` giả vừa gửi làm pager bám về trang GẦN NHẤT (có thể là trang áp chót): cho pager trượt nốt tới trang
+     * thật cuối / đầu bên dưới lớp phủ, để đóng lớp phủ thì Home ở đúng trang. Đăng sau (post) để chạy sau khi Compose đã xử lý CANCEL; đã ở / đang về
+     * đúng trang thì không làm gì (`HomePagerInfo.settleTo`).
+     */
+    private fun settlePagerAfterTakeover(lastPage: Boolean) {
+        window.decorView.post {
+            val count = pagerInfo.realPageCount
+            if (count <= 0) return@post
+            pagerInfo.settleTo?.invoke(if (lastPage) count - 1 else 0)
+        }
     }
 
     /** PASS: cây view xử lý; TAKEOVER: gửi một `ACTION_CANCEL` giả xuống (Compose dọn nhấn giữ / pager) rồi nuốt; CONSUME: nuốt. */

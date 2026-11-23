@@ -186,3 +186,15 @@ Mỗi mục giữ nguyên ngày, nhãn nguồn (đo được / đọc code / đ�
 - **Quy tắc:** Activity mới nào tự vẽ tràn viền (`enableEdgeToEdge`/`setDecorFitsSystemWindows(false)`) phải gọi `reassertEdgeToEdge(window)` ngay sau `setContentView`, vì từ LG mọi Activity đều bị AppCompat `recreate()` khi đổi ngôn ngữ. Hiện có ở 6 Activity: Home, Settings, Onboarding, AppLibrary, GlassTuning, ThemeSettings.
 - **Cách chẩn đoán dùng lại được:** log mã DecorView, vị trí trên màn của `home_root`, và chuỗi cha tới DecorView (lớp, id, padding, `fitsSystemWindows`) ở `onCreate`, 6 lần layout đầu, `onResume`, mỗi lần nhận inset. So lần mở đầu với sau `recreate()` là thấy view nào ăn inset.
 - **Lùi bản trên máy thật:** `pm path` + `adb pull` để giữ APK đang lỗi; APK cài từ Android Studio có cờ `testOnly`, cài lại cần `adb install -t`. Hạ Room version (v2 → v1) phải gỡ app trước.
+
+## Bổ sung chép từ repo XML (ở bản XML nằm cuối mục «EF — mất tràn viền sau recreate() trên Tecno Spark 40 (2026-11-18, đo được bằng log `SBDBG`, Tecno KM5n Android 15 + Live 4)»)
+
+> Chép từ repo XML (`E:\SourceTree\IosLauncher`) ngày 2026-11-23 (PG1 Task 1). Bài học viết cho bản View: tên class View (`IconGridView`, `DockView`, `FolderPanelView`, `DragHelper`...) chỉ để tham khảo cơ chế, bản Compose có thể đã làm khác.
+
+- **(2026-11-19, chủ dự án kiểm Live 4, P2-11) Vùng chạm tính theo tỉ lệ view phải đối chiếu với nội dung vẽ bên trong.** Pill chỉ 112 dp; "rìa = 1/4 mỗi đầu" (28 dp) trùng đúng chấm ngoài cùng (±28 dp từ tâm), nên giữ lên chấm mép bị hiểu thành "giữ rìa" và nhảy trang. Rìa phải tính từ cụm chấm đang hiện (ngoài chấm ngoài cùng + nửa bước). Cử chỉ giữ-rồi-kéo: giữ xong **chưa làm gì**, để chuyển động tiếp theo (dời tay / đứng yên thêm) quyết định chế độ.
+- **(2026-11-19, P2-11) `requestDisallowInterceptTouchEvent` không chặn được cử chỉ ở cấp Activity.** Library và vuốt mở tìm kiếm đọc chạm trong `HomeTouchRouter` (trước cây view), nên view con muốn giữ cử chỉ phải được router hỏi ở DOWN (ở đây `SearchPillView.claimsTouchAt`).
+
+## PG1 G1 — lướt nhanh sang Thư viện / Today trong Home Compose (2026-11-23, Oppo PKD130). Nguồn: [plans/PG1-parity-batch-1.md](../plans/PG1-parity-batch-1.md)
+
+- **(2026-11-23, đọc code + kiểm tay) Cổng cử chỉ đọc trạng thái pager lúc chạm xuống thì đọc thẳng `PagerState`, đừng chép trong `SideEffect`.** `SideEffect` chỉ chạy khi màn dựng lại, nên `isScrollInProgress`/trang hiện tại có thể cũ đúng lúc lướt nhanh. `PagerState` là snapshot state, đọc ở luồng chính lúc nào cũng được: giữ tham chiếu (gán/bỏ trong `DisposableEffect`) cùng `interactionSource.collectIsDraggedAsState()`.
+- **(2026-11-23, kiểm tay) "Pager đứng ở trang N" = đích (`targetPage`) khi đang cuộn, trang hiện tại khi đứng yên; không tính khi tay đang kéo.** Đòi pager đứng yên hẳn (bản đầu của JH3c/TV) làm lại đúng lỗi FX7 D2 của bản View: cú vuốt nhanh tới lúc pager còn trượt nốt bị pager nhận. Kèm theo phải có bước cho pager trượt nốt tới trang đích sau khi lớp phủ tiếp quản (đăng `post` sau `ACTION_CANCEL` giả), nếu không đóng lớp phủ có thể thấy trang áp chót.

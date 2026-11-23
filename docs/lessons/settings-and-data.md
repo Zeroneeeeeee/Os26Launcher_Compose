@@ -135,3 +135,18 @@ Mỗi mục giữ nguyên ngày, nhãn nguồn (đo được / đọc code / đ�
 ## JH3d — sao lưu/khôi phục dữ liệu app khi kiểm bằng adb (2026-11-20, Samsung SM-A176B). Nguồn: [knowledgements/JH3d-compose-home-widgets.md](../knowledgements/JH3d-compose-home-widgets.md)
 
 - **`am force-stop` không giữ tiến trình tắt** (đo được): dịch vụ đọc thông báo nằm trong tiến trình app nên hệ thống dựng lại tiến trình ngay. Khôi phục `run-as tar xf -` trong lúc đó có thể không khớp. Cách làm: `force-stop` → giải nén → so `launcher.db`/`-wal` từng byte → nếu lệch thì giải nén lại → `force-stop` thêm lần nữa → so lại (để tiến trình mới mở DB đã khôi phục, không giữ chỉ mục WAL cũ trong bộ nhớ).
+
+## Bổ sung chép từ repo XML (ở bản XML nằm cuối mục «LG — ngôn ngữ app (2026-11-18)»)
+
+> Chép từ repo XML (`E:\SourceTree\IosLauncher`) ngày 2026-11-23 (PG1 Task 1). Bài học viết cho bản View: tên class View (`IconGridView`, `DockView`, `FolderPanelView`, `DragHelper`...) chỉ để tham khảo cơ chế, bản Compose có thể đã làm khác.
+
+- **(2026-11-19, quy tắc, P2-4) Áp hình nền hệ thống: hỏi đích TRƯỚC khi đổi bất cứ gì; hủy = không đổi gì.** Ảnh từ máy giữ `Uri` chờ (`SettingsViewModel.pendingImage`) tới khi chọn đích ở bottom sheet rồi mới nhập làm nền launcher và áp hệ thống. Bottom sheet gọi dismiss listener cả sau khi chọn (qua Handler, như `Dialog.dismiss`) nên phân biệt "chọn" và "hủy" bằng cờ đặt trong callback chọn. Áp ảnh cài sẵn đọc thẳng tài nguyên (`applyPresetAsWallpaper`), không qua bộ đệm lựa chọn nguồn nền của repository (bộ đệm cập nhật bất đồng bộ sau `appearance.update`).
+
+## RA — bỏ khỏi Home khác ẩn, Room v2 → v3: bài học (2026-11-21, Vsmart Live 4). Nguồn: [plans/RA-readd-home.md](../plans/RA-readd-home.md) (chép từ repo XML)
+
+> Chép từ repo XML (`E:\SourceTree\IosLauncher`) ngày 2026-11-23 (PG1 Task 1). Bài học viết cho bản View: tên class View (`IconGridView`, `DockView`, `FolderPanelView`, `DragHelper`...) chỉ để tham khảo cơ chế, bản Compose có thể đã làm khác.
+
+- **(2026-11-21, đọc code, RA) Một cờ mang hai nghĩa thì tách cột, đừng đổi nghĩa cột cũ.** "Xóa khỏi Màn hình chính" từng ghi `hidden = 1` (riêng tư, chỉ hiện ở màn 5.1), trong khi hộp thoại hứa app còn ở Thư viện. Cột mới `offHome` không bị truy vấn `hidden` nào đọc, nên Thư viện, Tìm kiếm, Today View, Cài đặt tự đúng mà không phải sửa. Phía `LayoutReconciler` gom hai cờ thành một tập "không tự đặt" (`parkedRows`).
+- **(2026-11-21, đọc code, RA) Bảng "một hàng = ít nhất một tùy chỉnh" có `pruneEmpty` ở MỌI DAO ghi bảng đó.** `app_overrides` có hai bản (`HiddenAppDao`, `AppOverrideDao`); thêm cột mà chỉ sửa một bản thì khôi phục tên/icon sẽ xóa hàng chỉ mang cờ mới. Thêm cột vào bảng này: `grep "customIconPath IS NULL"` và sửa mọi chỗ.
+- **(2026-11-21, đo được trên Live 4, RA) Migration chỉ chạy khi cài đè lên DB cũ.** Cài mới hoàn toàn tạo thẳng schema mới, không thử được Migration. Máy không còn bản cũ thì dựng lại: `adb uninstall` (Room không hạ version), `git worktree add ..\IosLauncher-v2 <commit cũ>` + chép `local.properties`, `installDebug` ở đó, tạo dữ liệu, rồi `installDebug` bản mới ở thư mục chính (cùng khóa debug nên cài đè được).
+- **(2026-11-21, đọc tài liệu Room, RA) `ALTER TABLE ... ADD COLUMN ... NOT NULL DEFAULT 0` phải đi cùng `@ColumnInfo(defaultValue = "0")` trên entity**: Room so cả giá trị mặc định khi kiểm schema sau Migration; lệch thì báo "Migration didn't properly handle".

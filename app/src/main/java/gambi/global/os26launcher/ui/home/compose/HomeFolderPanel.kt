@@ -110,21 +110,26 @@ internal fun HomeFolderPanel(
     onAppClick: (AppItem, ScreenRect?) -> Unit,
     onRemoveApp: (ComponentKey) -> Unit,
     onRename: (Long, String) -> Unit,
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    /** PG3 Task 2 Step 3: nền mờ tĩnh của bảng dưới API 31 (ảnh chụp lớp Home đã mờ, hoặc ảnh nền mờ khi ảnh chụp chưa xong). */
+    frostedBackdrop: Backdrop? = null
 ) {
     val drag = edit.drag
     var shown by remember { mutableStateOf(folder) }
     var shownOrigin by remember { mutableStateOf(originIcon) }
+    // PG1 F3: kiểu chuyển cảnh (màn 4.1) chốt lúc bắt đầu mỗi lần mở/đóng; tốc độ đổi độ cứng spring; "Không có" thì nhảy thẳng.
+    var style by remember { mutableStateOf(TransitionMotion.style) }
     LaunchedEffect(folder?.itemId) {
+        style = TransitionMotion.style
+        val target = if (folder != null) 1f else 0f
         if (folder != null) {
             shown = folder
             shownOrigin = originIcon
             drag.resetFolder() // FM-2 (Q3): mở thư mục luôn vào trang 1
-            progress.animateTo(1f, spring(dampingRatio = 0.85f, stiffness = 400f))
-        } else {
-            progress.animateTo(0f, spring(dampingRatio = 0.85f, stiffness = 400f))
-            shown = null
         }
+        if (TransitionMotion.isInstant) progress.snapTo(target)
+        else progress.animateTo(target, PanelStyleMotion.scaledSpring(dampingRatio = 0.85f, stiffness = 400f))
+        if (folder == null) shown = null
     }
     if (folder != null && folder.itemId == shown?.itemId) shown = folder // nội dung đổi khi đang mở (ẩn app, kéo ra, sắp xếp)
     val f = shown
@@ -181,9 +186,13 @@ internal fun HomeFolderPanel(
     // Phóng từ ô thư mục: tỉ lệ ban đầu = cạnh icon / cạnh bảng, tâm đi từ tâm icon tới tâm màn.
     val origin = shownOrigin
     val s0 = if (origin != null) (origin.width / panelSide).coerceIn(0.05f, 1f) else 0.85f
-    val scale = s0 + (1f - s0) * p
-    val dx = if (origin != null) (origin.center.x - panelRect.center.x) * (1f - p) else 0f
-    val dy = if (origin != null) (origin.center.y - panelRect.center.y) * (1f - p) else 0f
+    val smooth = PanelTransform(
+        scale = s0 + (1f - s0) * p,
+        translationX = if (origin != null) (origin.center.x - panelRect.center.x) * (1f - p) else 0f,
+        translationY = if (origin != null) (origin.center.y - panelRect.center.y) * (1f - p) else 0f,
+        alpha = (p / 0.4f).coerceIn(0f, 1f)
+    )
+    val motion = PanelStyleMotion.transform(style, p, smooth, slideFromPx = rootHeight - top) // PG1 F3
     val focus = LocalFocusManager.current
 
     val interaction = remember { MutableInteractionSource() }
@@ -199,17 +208,17 @@ internal fun HomeFolderPanel(
                 .offset { IntOffset(left.roundToInt(), top.roundToInt()) }
                 .size(with(density) { panelSide.toDp() })
                 .graphicsLayer {
-                    translationX = dx
-                    translationY = dy
-                    scaleX = scale
-                    scaleY = scale
-                    alpha = (p / 0.4f).coerceIn(0f, 1f)
+                    translationX = motion.translationX
+                    translationY = motion.translationY
+                    scaleX = motion.scale
+                    scaleY = motion.scale
+                    alpha = motion.alpha
                     transformOrigin = TransformOrigin.Center
                 }
                 // Kính sáng như FolderPanelView (GlassRole.FOLDER_PANEL, tint folder_panel_glass_tint); nền SHEET của DS quá tối cho thư mục.
                 // Lớp Home (lưới + dock), không chỉ ảnh nền. Như iOS, panel luôn mờ đục: sàn 24 dp kể cả khi "Độ mờ" kính đặt rất thấp (không
                 // thì icon/nhãn Home sắc nét lọt qua sau app của thư mục).
-                .dsGlass(DsSurface.CARD, DsCorner.Fixed(PANEL_RADIUS_DP, glass = true), backdrop, minBlurDp = FOLDER_MIN_BLUR_DP)
+                .dsGlass(DsSurface.CARD, DsCorner.Fixed(PANEL_RADIUS_DP, glass = true), backdrop, minBlurDp = FOLDER_MIN_BLUR_DP, frosted = frostedBackdrop)
                 .background(colorResource(R.color.folder_panel_glass_tint))
                 .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { focus.clearFocus() } // chạm trong bảng không đóng
                 .then(
@@ -236,6 +245,13 @@ internal fun HomeFolderPanel(
         ) {
             val page = drag.folderPage
             val previewing = drag.folderPreview != null
+            // PG1 A1: app bị bỏ khỏi thư mục không do kéo (dấu "−") thu về 0 tại ô cũ (AN Task 9d, FolderPanelView); các app sau trượt như cũ.
+            val tracker = remember(f.itemId) { EnterExitTracker<FolderChild>(idOf = { it.childId }, slotOf = { it.index }) }
+            val lastPos = remember(f.itemId) { HashMap<Long, IntOffset>() }
+            tracker.update(
+                f.previewApps.indices.map { FolderChild(f.childIds[it], f.previewApps[it], it) },
+                animate = drag.session == null && drag.settlingId == null
+            )
             f.previewApps.indices.forEach { i ->
                 val childId = f.childIds[i]
                 val app = f.previewApps[i]
@@ -247,6 +263,7 @@ internal fun HomeFolderPanel(
                     val x = padding + slotPage * side + cells.paddingLeft + (within % FolderPanelGeometry.COLUMNS) * (cells.cellWidth + cells.gutterX)
                     val y = padding + cells.paddingTop + (within / FolderPanelGeometry.COLUMNS) * (cells.cellHeight + cells.gutterY)
                     val target = IntOffset(x, y)
+                    lastPos[childId] = target
                     // FM-3: dời bằng lò xo REORDER khi xem trước sắp xếp; còn lại SLIDE như khi ẩn app.
                     val animated by animateIntOffsetAsState(target, if (previewing) ReorderSpring else SlideSpring, label = "folderSlot")
                     val hidden = drag.isHidden(childId)
@@ -266,6 +283,27 @@ internal fun HomeFolderPanel(
                             onAppClick(item, rect)
                             onClose()
                         }
+                    )
+                }
+            }
+            tracker.leaving.forEach { child ->
+                key("leaving", child.childId) {
+                    val pos = lastPos[child.childId] ?: IntOffset.Zero
+                    HomeAppCell(
+                        app = child.app,
+                        cells = cells,
+                        icons = icons,
+                        modifier = Modifier
+                            .offset { IntOffset(pos.x - scroll.value.roundToInt(), pos.y) }
+                            .width(with(density) { cells.cellWidth.toDp() })
+                            .popScale(1f, (cells.iconSize / 2f / cells.cellHeight.coerceAtLeast(1)).coerceIn(0f, 1f)) {
+                                tracker.leaveDone(child)
+                                lastPos.remove(child.childId)
+                            },
+                        editMode = edit.editMode,
+                        badges = edit.badges,
+                        onRemove = {},
+                        onClick = { _, _ -> }
                     )
                 }
             }
@@ -434,5 +472,7 @@ private const val OVERSCROLL_LIMIT = 0.25f
 /** Như `DecelerateInterpolator(SNAP_DECELERATE)`: 1 − (1 − t)^(2 × hệ số). */
 private val SnapDecelerate = Easing { t -> 1f - Math.pow((1f - t).toDouble(), (2f * SNAP_DECELERATE).toDouble()).toFloat() }
 
-/** SpringProgress.Spec.SLIDE (800 / 0,8): ô trượt về chỗ khi dữ liệu đổi (ẩn app, thêm app). */
-private val SlideSpring = spring(dampingRatio = 0.8f, stiffness = 800f, visibilityThreshold = IntOffset(1, 1))
+// PG1 A1: `SlideSpring` chuyển sang HomeGridPage.kt (internal), dùng chung cho lưới, dock và bảng thư mục.
+
+/** PG1 A1: một app con của thư mục kèm chỉ số (so "thay tại chỗ" theo ô). */
+private data class FolderChild(val childId: Long, val app: AppItem, val index: Int)

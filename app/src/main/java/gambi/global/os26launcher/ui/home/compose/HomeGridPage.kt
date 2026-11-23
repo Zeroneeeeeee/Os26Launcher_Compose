@@ -9,7 +9,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import gambi.global.os26launcher.domain.model.PlacedWidgetBase
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -39,7 +38,6 @@ import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -53,6 +51,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
 import gambi.global.os26launcher.R
 import gambi.global.os26launcher.core.designsystem.compose.dsPressable
+import gambi.global.os26launcher.core.glass.GlassRole
+import gambi.global.os26launcher.core.glass.compose.dsFrosted
 import gambi.global.os26launcher.core.ui.GridMetrics
 import gambi.global.os26launcher.domain.layout.FolderPlanner
 import gambi.global.os26launcher.domain.model.AppItem
@@ -60,6 +60,7 @@ import gambi.global.os26launcher.domain.model.HomePage
 import gambi.global.os26launcher.domain.model.PlacedApp
 import gambi.global.os26launcher.domain.model.PlacedAppWidget
 import gambi.global.os26launcher.domain.model.PlacedFolder
+import gambi.global.os26launcher.domain.model.GridPosition
 import gambi.global.os26launcher.domain.model.PlacedItem
 import gambi.global.os26launcher.domain.model.PlacedWidget
 import gambi.global.os26launcher.domain.model.ScreenRect
@@ -94,8 +95,11 @@ internal class HomeEditContext(
  * tính với `IconGridView.onLayout`): góc trên-trái `padding + pos × (ô + khe)`, cỡ `span × ô + (span − 1) × khe`. Nhờ vậy Home Compose và
  * Home View trùng điểm ảnh, so cạnh nhau được.
  *
- * JH2: mỗi item được dời (lò xo SLIDE 800/0.8) tới ô xem trước của [HomeDragState.preview] mà không đổi bố cục thật, và ẩn khi đang kéo/đang
- * bay về/bị đẩy sang trang sau.
+ * JH2: mỗi item được dời tới ô xem trước của [HomeDragState.preview] mà không đổi bố cục thật, và ẩn khi đang kéo/đang bay về/bị đẩy sang trang sau.
+ *
+ * PG1 A1 (AN Task 8, 9d của repo XML): vị trí có hoạt ảnh theo `itemId` ([rememberSlideOffset]) nên item trượt cả khi bố cục đổi do dữ liệu (thả
+ * nhanh lên ô có icon, gỡ/ẩn rồi dồn ô, bỏ ẩn, dọn trang trống); item biến mất không do kéo thì thu về 0 tại chỗ, item mới thì phình từ 0
+ * ([EnterExitTracker]). Đổi cỡ lưới hoặc đổi trang: đặt thẳng, không trượt.
  */
 @Composable
 internal fun HomeGridPage(
@@ -106,27 +110,63 @@ internal fun HomeGridPage(
     onAppClick: (AppItem, ScreenRect?) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val drag = edit.drag
+    // PG1 A1: thu/phình chỉ khi bố cục đổi KHÔNG do kéo-thả (đang kéo hoặc ảnh kéo đang hạ cánh thì chính ảnh kéo là hoạt ảnh) và cùng cỡ lưới.
+    val tracker = remember(page.pageId) {
+        EnterExitTracker<PlacedItem>(idOf = { it.itemId }, slotOf = { it.position.x to it.position.y }, isWidget = { it is PlacedWidgetBase })
+    }
+    val geometry = remember(page.pageId) { GeometryHolder() }
+    val sameGeometry = geometry.cells == null || geometry.cells == cells
+    geometry.cells = cells
+    tracker.update(page.items, animate = sameGeometry && drag.session == null && drag.settlingId == null)
+    val leaving = tracker.leaving
+    val all = if (leaving.isEmpty()) page.items else page.items + leaving
     Layout(
         modifier = modifier,
         content = {
             page.items.forEach { item ->
                 key(item.itemId) {
+                    val base = cellOffset(item.position, cells)
+                    val previewPos = drag.preview[item.itemId]
+                    val slide = rememberSlideOffset(
+                        base = base,
+                        target = if (previewPos != null) cellOffset(previewPos, cells) else base,
+                        geometryKey = cells,
+                        snap = drag.isHidden(item.itemId),
+                        previewing = previewPos != null,
+                        delayUntil = { tracker.slideDelayUntil }
+                    )
+                    val grow = item.itemId in tracker.growing
                     // propagateMinConstraints: ô app/thư mục luôn rộng ĐÚNG bằng ô lưới (nhãn chỉ rộng ~icon nên tự co thì hẹp hơn), để
                     // icon căn giữa như IconCellView và badge / nút "−" (tính theo cellWidth) nằm đúng góc icon.
-                    Box(Modifier.homeItemDecor(item, cells, edit), propagateMinConstraints = true) {
+                    Box(
+                        Modifier
+                            .then(if (slide != null) Modifier.offset { slide() } else Modifier)
+                            .then(if (grow) Modifier.popScale(0f, pivotYOf(item, cells)) { tracker.growDone(item.itemId) } else Modifier)
+                            .homeItemDecor(item, edit),
+                        propagateMinConstraints = true
+                    ) {
                         HomeGridItem(item, cells, icons, edit, onAppClick)
+                    }
+                }
+            }
+            // PG1 A1: item vừa biến mất (gỡ, ẩn, bỏ khỏi Home) vẽ tiếp ở chỗ cũ và thu về 0 quanh tâm icon (LeavingIcons của repo XML).
+            leaving.forEach { item ->
+                key("leaving", item.itemId) {
+                    Box(Modifier.popScale(1f, pivotYOf(item, cells)) { tracker.leaveDone(item) }, propagateMinConstraints = true) {
+                        HomeGridItem(item, cells, icons, edit, onAppClick = { _, _ -> })
                     }
                 }
             }
         }
     ) { measurables, constraints ->
         val placeables = measurables.mapIndexed { i, m ->
-            val p = page.items[i].position
+            val p = all[i].position
             m.measure(Constraints.fixed(spanPx(p.spanX, cells.cellWidth, cells.gutterX), spanPx(p.spanY, cells.cellHeight, cells.gutterY)))
         }
         layout(constraints.maxWidth, constraints.maxHeight) {
             placeables.forEachIndexed { i, placeable ->
-                val p = page.items[i].position
+                val p = all[i].position
                 placeable.place(
                     cells.paddingLeft + p.x * (cells.cellWidth + cells.gutterX),
                     cells.paddingTop + p.y * (cells.cellHeight + cells.gutterY)
@@ -137,6 +177,21 @@ internal fun HomeGridPage(
 }
 
 private fun spanPx(span: Int, cell: Int, gutter: Int): Int = span * cell + (span - 1) * gutter
+
+/** PG1 A1: góc trên-trái của ô [pos] trong trang (cùng phép tính với pha layout ở trên). */
+private fun cellOffset(pos: GridPosition, cells: GridMetrics.Cells): IntOffset = IntOffset(
+    cells.paddingLeft + pos.x * (cells.cellWidth + cells.gutterX),
+    cells.paddingTop + pos.y * (cells.cellHeight + cells.gutterY)
+)
+
+/** PG1 A1: tâm thu/phình theo chiều dọc (phần của chiều cao ô): giữa icon cho app/thư mục (icon ở đỉnh ô), giữa widget cho widget. */
+private fun pivotYOf(item: PlacedItem, cells: GridMetrics.Cells): Float =
+    if (item is PlacedWidgetBase || cells.cellHeight <= 0) 0.5f else (cells.iconSize / 2f / cells.cellHeight).coerceIn(0f, 1f)
+
+/** PG1 A1: cỡ lưới của lần dựng trước (đổi cỡ lưới thì không thu/phình, không trượt). */
+private class GeometryHolder {
+    var cells: GridMetrics.Cells? = null
+}
 
 @Composable
 private fun HomeGridItem(
@@ -161,7 +216,7 @@ private fun HomeGridItem(
             item, cells, icons,
             zoomed = merge && item.appCount < FolderPlanner.MAX_ITEMS, // thư mục đầy: vẫn gộp (thả bị từ chối) nhưng không phóng
             badges = edit.badges,
-            hiddenChildId = edit.drag.session?.item?.itemId,
+            hiddenChildId = edit.drag.session?.item?.itemId ?: edit.drag.settlingId,
             onOpen = { edit.onOpenFolder(item.itemId) }
         )
         is PlacedWidgetBase -> {
@@ -184,19 +239,13 @@ private fun HomeGridItem(
  * JH2 — trang trí chung của item trên lưới: ẩn (đang kéo / đang bay về / bị đẩy sang trang sau), dời tới ô xem trước bằng lò xo SLIDE, rung khi
  * ở edit mode (widget nửa biên độ).
  */
-private fun Modifier.homeItemDecor(item: PlacedItem, cells: GridMetrics.Cells, edit: HomeEditContext): Modifier {
-    val drag = edit.drag
-    val target = drag.preview[item.itemId]
-    val hidden = drag.isHidden(item.itemId)
-    // Không kéo, không edit mode, không ẩn: item tĩnh, bỏ composed{}/Animatable để tránh overhead mỗi item mỗi lần grid recompose (scroll).
-    if (target == null && !hidden && !edit.editMode) return this
+private fun Modifier.homeItemDecor(item: PlacedItem, edit: HomeEditContext): Modifier {
+    val hidden = edit.drag.isHidden(item.itemId)
+    // Không edit mode, không ẩn: item tĩnh, bỏ composed{} để tránh overhead mỗi item mỗi lần grid recompose (scroll).
+    // PG1 A1: độ dời tới ô xem trước chuyển sang [rememberSlideOffset] (cùng cơ chế với trượt khi dữ liệu đổi).
+    if (!hidden && !edit.editMode) return this
     return composed {
-        val dx = if (target == null) 0 else (target.x - item.position.x) * (cells.cellWidth + cells.gutterX)
-        val dy = if (target == null) 0 else (target.y - item.position.y) * (cells.cellHeight + cells.gutterY)
-        // FM-3: lò xo REORDER (SpringProgress.Spec.REORDER 300/0.85), cùng tốc độ với dock và sắp xếp trong thư mục.
-        val offset by animateIntOffsetAsState(IntOffset(dx, dy), ReorderSpring, label = "preview")
         this
-            .offset { offset }
             .graphicsLayer { alpha = if (hidden) 0f else 1f }
             .homeJiggle(edit.editMode && !hidden, if (item is PlacedWidgetBase) WIDGET_JIGGLE_SCALE else 1f)
     }
@@ -252,8 +301,8 @@ internal fun HomeAppCell(
                                 scaleY = s
                                 alpha = plate.coerceIn(0f, 1f)
                             }
-                            .clip(RoundedCornerShape(cells.iconSize * HOVER_GLASS_SCALE * FOLDER_CORNER_RATIO))
-                            .background(colorResource(R.color.folder_background))
+                            // PG3 (G4): tấm kính khi hover gộp thư mục là kính mờ tĩnh như ô thư mục.
+                            .dsFrosted(GlassRole.FOLDER_CELL, RoundedCornerShape(cells.iconSize * HOVER_GLASS_SCALE * FOLDER_CORNER_RATIO))
                     )
                 }
                 if (bitmap != null) Image(bitmap, contentDescription = null, modifier = Modifier.fillMaxSize())
@@ -344,8 +393,8 @@ internal fun HomeFolderPlate(folder: PlacedFolder, sizePx: Int, icons: HomeIcons
     Box(
         modifier
             .requiredSize(with(density) { size.toDp() })
-            .clip(RoundedCornerShape(size * FOLDER_CORNER_RATIO))
-            .background(colorResource(R.color.folder_background))
+            // PG3 (G4): kính mờ tĩnh như ô thư mục bản XML (GlassRole.FOLDER_CELL); chưa có bản mờ / ảnh nền màu thì phẳng `folder_background` như cũ.
+            .dsFrosted(GlassRole.FOLDER_CELL, RoundedCornerShape(size * FOLDER_CORNER_RATIO))
     ) {
         shown.take(FolderPlanner.PAGE_SIZE).forEachIndexed { i, app ->
             val bitmap = rememberHomeIcon(icons, app, miniPx)
@@ -388,3 +437,6 @@ private const val LABEL_WIDTH_RATIO = 1.3f // 2026-11-21: 1 -> 1.3 (nhãn iOS r�
 
 /** FM-3 — SpringProgress.Spec.REORDER (300 / 0,85): icon dời chỗ để chừa ô cho icon đang kéo, dùng chung cho lưới, dock và bảng thư mục. */
 internal val ReorderSpring = spring(dampingRatio = 0.85f, stiffness = 300f, visibilityThreshold = IntOffset(1, 1))
+
+/** SpringProgress.Spec.SLIDE (800 / 0,8): ô trượt về chỗ khi dữ liệu đổi (ẩn app, thêm app). PG1 A1: dùng chung cho lưới, dock và bảng thư mục. */
+internal val SlideSpring = spring(dampingRatio = 0.8f, stiffness = 800f, visibilityThreshold = IntOffset(1, 1))
