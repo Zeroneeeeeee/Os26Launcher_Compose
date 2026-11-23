@@ -203,13 +203,17 @@ internal fun HomeScreen(
     LaunchedEffect(pages.size) {
         if (drag.ghostFlipPending && state.ghostPage) {
             drag.ghostFlipPending = false
-            drag.flipTo(pages.size - 1)
+            // Job riêng của scope: pages.size đổi giữa lúc lật (key effect đổi) không được huỷ animation, nếu không pager bị lệch.
+            val target = pages.size - 1
+            scope.launch { drag.flipTo(target) }
         }
     }
+    // Chỉ bỏ trang tạm khi pager đã dừng hẳn trên một trang thật: bỏ giữa lúc đang lật về (currentPage đổi ở nửa đường)
+    // làm số trang giảm khi đang cuộn → animation dừng lệch.
     LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }.collect { page ->
+        snapshotFlow { pagerState.settledPage to pagerState.isScrollInProgress }.collect { (page, scrolling) ->
             val s = currentState
-            if (s.ghostPage && drag.session != null && page < s.pages.size) actions.onGhostPageLeft()
+            if (!scrolling && s.ghostPage && drag.session != null && page < s.pages.size) actions.onGhostPageLeft()
         }
     }
     LaunchedEffect(pagerState) {

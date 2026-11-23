@@ -888,7 +888,9 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
         }
         val target = current + dir
         if (target !in 0 until pages.size) return
-        flipTo(target)
+        // Animation lật chạy trong job riêng của scope: đổi hướng / rời mép / thả giữa lúc lật chỉ huỷ edgeJob (vòng chờ),
+        // không huỷ animateScrollToPage — nếu huỷ, pager dừng ở offset lẻ và trang bị lệch.
+        scope.launch { flipTo(target) }.join()
     }
 
     var ghostFlipPending = false
