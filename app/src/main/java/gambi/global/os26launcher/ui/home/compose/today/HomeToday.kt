@@ -215,9 +215,13 @@ internal class TodayActions(
     val onReorder: (List<Long>) -> Unit
 )
 
-/** Khung (trái, trên, rộng) của từng widget theo thứ tự [list] — cùng phép xếp cho bố cục và cho dò ô đích khi kéo (`TodayGridLayout.slots`). */
-internal fun todaySlots(list: List<TodayWidget>, c: GridMetrics.Cells, top: Int): List<IntArray> {
-    val step = 2 * (c.cellHeight + c.gutterY)
+/**
+ * Khung (trái, trên, rộng) của từng widget theo thứ tự [list] — cùng phép xếp cho bố cục và cho dò ô đích khi kéo (`TodayGridLayout.slots`).
+ * 2026-11-24 (chủ dự án): khe DỌC giữa 2 hàng widget = [gapY] (lề 2 bên, không còn c.gutterY — 8dp, quá sát) — cộng NGOÀI [blockHeight] (chiều
+ * cao khối THẬT, không còn gồm gutter cũ), nên hàng dưới cách hàng trên đúng [gapY].
+ */
+internal fun todaySlots(list: List<TodayWidget>, c: GridMetrics.Cells, top: Int, gapY: Int): List<IntArray> {
+    val step = blockHeight(c) + gapY
     val half = 2 * c.cellWidth + c.gutterX
     val full = 4 * c.cellWidth + 3 * c.gutterX
     var row = 0
@@ -239,7 +243,8 @@ internal fun todaySlots(list: List<TodayWidget>, c: GridMetrics.Cells, top: Int)
     }
 }
 
-private fun blockHeight(c: GridMetrics.Cells): Int = 2 * c.cellHeight + c.gutterY
+/** 2026-11-24: chiều cao THẬT của một khối widget (2 hàng ô Home) — không còn cộng gutterY cũ (khe giữa hàng tách riêng, xem [todaySlots]). */
+private fun blockHeight(c: GridMetrics.Cells): Int = 2 * c.cellHeight
 
 @Composable
 private fun TodayPage(
@@ -272,9 +277,17 @@ private fun TodayPage(
     val gridTop = scrollTop + px(GRID_TOP_DP) // đệm trên: chỗ cho dấu "−" của hàng đầu nhô lên
     val spanW = 4 * cells.cellWidth + 3 * cells.gutterX
     val bh = blockHeight(cells)
+    // 2026-11-24 (chủ dự án): khe NGANG giữa 2 widget nửa-hàng = lề 2 bên (cells.paddingLeft), không còn là gutterX (8dp, nhỏ hơn lề) — giữ
+    // TỔNG chiều rộng khối 4 cột ([spanW], neo lề trái/phải không đổi), chỉ chia lại: ô widget hiệu dụng co lại tương ứng để chỗ cho khe lớn
+    // hơn. Chỉ áp cho layout NGANG (vị trí/độ rộng widget); nội dung widget (icon, nhãn…) vẫn dùng [cells] gốc.
+    val widgetGapX = cells.paddingLeft
+    val widgetCellWidth = (spanW - 3 * widgetGapX) / 4
+    val layoutCells = cells.copy(cellWidth = widgetCellWidth, gutterX = widgetGapX)
+    // 2026-11-24 (chủ dự án): khe DỌC giữa 2 hàng widget cũng = lề 2 bên — cùng [widgetGapX], y hệt khe ngang.
+    val widgetGapY = cells.paddingLeft
 
     val entries = model.entries.toList()
-    val slots = todaySlots(entries, cells, gridTop)
+    val slots = todaySlots(entries, layoutCells, gridTop, widgetGapY)
     val slotById = HashMap<Long, IntArray>(slots.size * 2).also { m -> entries.forEachIndexed { i, w -> m[w.id] = slots[i] } }
     SideEffect {
         model.layout = TodayGridModel.Layout(entries.map { it.id }, slots, bh, scrollTop)
@@ -325,7 +338,7 @@ private fun TodayPage(
                 // Widget đang rời (vừa xóa): thu nhỏ + mờ tại chỗ rồi mới gỡ.
                 model.leaving.forEach { leaving ->
                     key("leaving-${leaving.widget.id}") {
-                        TodayLeaving(model, leaving, cells, bh, apps, icons)
+                        TodayLeaving(model, leaving, cells, layoutCells, bh, apps, icons)
                     }
                 }
                 entries.forEach { w ->
@@ -451,6 +464,7 @@ private fun TodayLeaving(
     model: TodayGridModel,
     leaving: TodayGridModel.Leaving,
     cells: GridMetrics.Cells,
+    layoutCells: GridMetrics.Cells,
     blockH: Int,
     apps: List<AppItem>?,
     icons: HomeIcons
@@ -461,7 +475,7 @@ private fun TodayLeaving(
         exit.animateTo(1f, tween(EXIT_MS, easing = AccelerateEasing))
         model.leaving.remove(leaving)
     }
-    val w = if (leaving.widget.wide) 4 * cells.cellWidth + 3 * cells.gutterX else 2 * cells.cellWidth + cells.gutterX
+    val w = if (leaving.widget.wide) 4 * layoutCells.cellWidth + 3 * layoutCells.gutterX else 2 * layoutCells.cellWidth + layoutCells.gutterX
     Box(
         Modifier
             .offset { IntOffset(leaving.at.x.toInt(), leaving.at.y.toInt()) }
