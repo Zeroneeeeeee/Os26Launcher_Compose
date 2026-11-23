@@ -3,4 +3,9 @@
     <!-- RA: hộp thoại xác nhận xóa app (RemoveAppDialog). -->
     <color name="remove_app_card">#F0F2F2F7</color>
     <color name="remove_app_button">#14000000</color>
+    <!-- RA4 (2026-11-24): thẻ kính trong cây Compose (RemoveAppOverlay) — nền tối đậm, chữ trắng cho dễ đọc; dùng chung sáng/tối. -->
+    <color name="remove_app_glass_tint">#401A1919</color>
+    <color name="remove_app_glass_button">#26242424</color>
+    <color name="remove_app_glass_text">#FFFFFFFF</color>
+    <color name="remove_app_glass_destructive">#FFFF453A</color>
 </resources>

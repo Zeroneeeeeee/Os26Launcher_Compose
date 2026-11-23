@@ -493,7 +493,7 @@ class HomeActivity : AppCompatActivity() {
     private fun confirmRemoveWidget(itemId: Long) = confirmRemove { viewModel.onRemoveWidget(itemId) }
 
     /** Hộp xác nhận gỡ widget, dùng chung cho lưới Home và màn Today (TV Task 4). UI sync U3: cùng kiểu thẻ iOS với hộp xóa app. */
-    private fun confirmRemove(onConfirm: () -> Unit) = showRemoveWidgetDialog(this, onRemove = onConfirm)
+    private fun confirmRemove(onConfirm: () -> Unit) = showRemoveWidgetDialog(this, inHome = true, onRemove = onConfirm)
 
     /** TV Task 4 — việc của màn Today. */
     private val todayActions by lazy {

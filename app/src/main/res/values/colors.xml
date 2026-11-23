@@ -53,7 +53,7 @@
     <color name="widget_preview_bg">#FF2C2C2E</color>
 
     <!-- SM: menu nhấn giữ icon (kính, theo sáng/tối). Điểm xuất phát, chỉnh theo mắt trên Oppo. Bản tối: values-night/colors.xml. -->
-    <color name="shortcut_menu_glass_tint">#40F5F5F7</color>
+    <color name="shortcut_menu_glass_tint">#595B5B5B</color>
     <color name="shortcut_menu_glass_border">#66FFFFFF</color>
     <color name="shortcut_menu_flat">#F2F2F2F7</color>
     <color name="shortcut_menu_text">#FF1C1C1E</color>
