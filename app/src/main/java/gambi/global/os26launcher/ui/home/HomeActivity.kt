@@ -349,6 +349,8 @@ class HomeActivity : AppCompatActivity() {
                 HomeLibrary(library, icons, state.backdrop)
             }
                 SearchOverlay(search, searchActions, state.backdrop, onProgress = { searchProgress.floatValue = it })
+                // PG2: bảng chọn widget là lớp phủ trong cửa sổ Home (không còn Dialog), trên Home / Today / Thư viện, để thẻ kéo được ra lưới.
+                widgetPicker.Render()
             }
             dsDialogs.Render() // JS1: hộp thoại Compose (gợi ý launcher mặc định...)
         }
@@ -413,6 +415,8 @@ class HomeActivity : AppCompatActivity() {
         override fun onMenuEditHome() = viewModel.onIconMenuAction(IconMenuAction.EditHome)
         override fun closeFolder() = viewModel.closeFolder()
         override fun onReorderFolder(folderId: Long, orderedChildIds: List<Long>) = viewModel.reorderFolder(folderId, orderedChildIds)
+        override fun onNewWidgetDropped(kindId: String, spanX: Int, spanY: Int, tempItemId: Long, targetPageId: Long, cell: GridPosition) =
+            viewModel.onNewWidgetDropped(kindId, spanX, spanY, tempItemId, targetPageId, cell) // PG2
     }
 
     /** Như `HomeActivity.handleEvent`. */

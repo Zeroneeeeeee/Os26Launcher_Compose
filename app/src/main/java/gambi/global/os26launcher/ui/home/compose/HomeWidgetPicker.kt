@@ -71,11 +71,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import gambi.global.os26launcher.R
 import gambi.global.os26launcher.core.appwidget.AppWidgetAssets
-import gambi.global.os26launcher.core.designsystem.compose.DsBottomSheet
-import gambi.global.os26launcher.core.designsystem.compose.DsDialogHandle
+import gambi.global.os26launcher.core.designsystem.compose.DsBottomSheetLayer
 import gambi.global.os26launcher.core.designsystem.compose.DsSearchField
 import gambi.global.os26launcher.core.designsystem.compose.DsTextStyles
-import gambi.global.os26launcher.core.designsystem.compose.dsDialogs
 import gambi.global.os26launcher.core.ui.GridMetrics
 import gambi.global.os26launcher.domain.layout.AppWidgetSizePlanner
 import gambi.global.os26launcher.domain.model.AppWidgetAppEntry
@@ -91,6 +89,16 @@ import gambi.global.os26launcher.ui.widget.host.AppWidgetAddRequest
 import java.text.Normalizer
 import java.time.ZonedDateTime
 import kotlin.math.abs
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.ui.composed
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalHapticFeedback
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * P2-9 (REF a013dd8 `WidgetPickerController`) — bảng chọn widget kiểu iOS của Home Compose, qua host hộp thoại của Activity (bottom sheet DS3).
@@ -101,7 +109,12 @@ import kotlin.math.abs
  * thống. Thêm xong thì đóng cả hai bảng.
  *
  * TV-3: [show] với `forToday = true` (viên "+" của Today): có "App gần đây", KHÔNG có widget của app khác, "Thêm" ghi vào CUỐI Today.
- * Chưa port: nhấn giữ rồi kéo thẻ ra lưới Home (REF `CardDragGesture`, G2c Task 13) — lưới Compose chưa nhận phiên kéo từ cửa sổ khác (JH4 D5).
+ *
+ * PG2 (F2, hướng B, chủ dự án 2026-11-23): bảng không còn là cửa sổ `Dialog` mà là lớp phủ vẽ bằng [Render] trong cây Compose của `HomeActivity`
+ * (`DsBottomSheetLayer`), nên ở trang chi tiết, nhấn giữ khung xem trước của widget tự vẽ rồi kéo ([pickerCardDrag]) thì chính chuỗi chạm đó lái
+ * phiên kéo "widget mới" của `HomeDragState` (REF `CardDragGesture` + `beginNewWidgetDrag`, G2c Task 13): bảng mờ đi, ảnh widget đúng cỡ ô theo
+ * ngón tay, thả lên lưới thì `HomeViewModel.onNewWidgetDropped`; xong (nhận hay không) đóng cả hai bảng. Widget của app khác vẫn chỉ "Thêm tiện ích"
+ * (như XML: luồng gắn / cấu hình của hệ thống).
  */
 internal class HomeWidgetPicker(
     private val activity: ComponentActivity,
@@ -114,28 +127,70 @@ internal class HomeWidgetPicker(
     /** P3-7: gói chỉ còn app đã ẩn (packageName, userSerial): widget của chúng không được lộ trong bảng chọn. */
     private val hiddenOnlyPackages: suspend () -> Set<Pair<String, Long>> = { emptySet() }
 ) {
-    private var handle: DsDialogHandle? = null
-    private var detail: DsDialogHandle? = null
+    // PG2: trạng thái của lớp phủ (trước đây là hai DsDialogHandle). Đọc trong [Render].
+    private var open by mutableStateOf(false)
+    private var detail by mutableStateOf<DetailContent?>(null)
+
+    /** PG2: đang kéo một thẻ ra lưới: bảng mờ về 0 (Q4) nhưng vẫn ở trong composition để cử chỉ của thẻ không bị huỷ. */
+    private var dragging by mutableStateOf(false)
+    private var tempIdSeq = 0L
 
     /** TV-3: bảng mở từ viên "+" của Today View. */
     private var forToday = false
+
+    /** PG2: nội dung trang chi tiết đang mở (trước đây dựng thẳng trong `dsDialogs.show`). */
+    private class DetailContent(
+        val name: @Composable () -> String,
+        val icon: @Composable (Modifier) -> Unit,
+        val pages: List<DetailPage>,
+        val start: Int
+    )
 
     /** Một ô gợi ý của bảng: [kind] null = widget "App gần đây" (TV-3). */
     private data class Featured(val kind: WidgetKind?, val size: WidgetSize)
 
     /** P2-9e: mục "Thêm tiện ích" của menu "Sửa" (Home); TV-3: viên "+" của Today ([forToday] = true). */
     fun show(forToday: Boolean = false) {
-        if (handle?.isShowing == true) return
+        if (open) return
         this.forToday = forToday
-        handle = activity.dsDialogs.show { h ->
-            DsBottomSheet(onDismiss = h::dismiss, showClose = false) {
-                HideStatusBarOfSheet()
-                Gallery()
+        detail = null
+        dragging = false
+        open = true
+    }
+
+    /**
+     * PG2: vẽ bảng (gọi một lần trong `setContent` của `HomeActivity`, trên các lớp khác). Trang chi tiết đè lên trang danh sách; Back đóng lớp trên
+     * cùng trước (BackHandler của lớp khai báo sau được hỏi trước). Cùng cửa sổ Home nên edit mode đã ẩn thanh trạng thái (C19 không cần xử lý riêng).
+     */
+    @Composable
+    fun Render() {
+        if (!open) return
+        val fade by animateFloatAsState(if (dragging) 0f else 1f, tween(DRAG_FADE_MS), label = "pickerFade")
+        Box(Modifier.fillMaxSize().graphicsLayer { alpha = fade }) {
+            DsBottomSheetLayer(onDismiss = ::closeAll, showClose = false) { Gallery() }
+            val d = detail
+            if (d != null) {
+                androidx.compose.runtime.key(d) {
+                    DsBottomSheetLayer(onDismiss = { if (detail === d) detail = null }, showClose = false) {
+                        Detail(d.name, d.icon, d.pages, d.start.coerceIn(0, d.pages.lastIndex), onClose = { if (detail === d) detail = null })
+                    }
+                }
             }
-        }.also {
-            it.setOnDismissListener {
-                handle = null
-                detail?.dismiss()
+            // PG2 (ngón thứ hai, chủ dự án 2026-11-23): đang kéo thì bảng chỉ mờ về 0 nhưng vẫn phủ màn và nhận chạm; ngón MỚI chạm lớp mờ /
+            // thân sheet sẽ đóng bảng → cử chỉ của thẻ bị huỷ → widget mất. Lớp trên cùng này nuốt mọi ngón mới; ngón đang kéo đã gắn với khung
+            // xem trước từ lúc nhấn xuống nên không đi qua đây.
+            if (dragging) {
+                Box(
+                    Modifier.fillMaxSize().pointerInput(Unit) {
+                        awaitEachGesture {
+                            awaitFirstDown(requireUnconsumed = false).consume()
+                            do {
+                                val event = awaitPointerEvent()
+                                event.changes.forEach { it.consume() }
+                            } while (event.changes.any { it.pressed })
+                        }
+                    }
+                )
             }
         }
     }
@@ -147,8 +202,9 @@ internal class HomeWidgetPicker(
 
     /** B10 (FX2): nút Home và thoát edit mode đóng bảng. An toàn khi gọi nhiều lần. P2-9: đóng cả bảng chi tiết. */
     fun closeIfOpen() {
-        detail?.dismiss()
-        handle?.dismiss()
+        detail = null
+        open = false
+        dragging = false
     }
 
     /** Thêm xong: đóng cả hai bảng. */
@@ -163,18 +219,7 @@ internal class HomeWidgetPicker(
         return AppWidgetSizePlanner.Grid(c.cellWidth / density, c.cellHeight / density, c.gutterX / density, c.gutterY / density)
     }
 
-    /** C19 (FX2) + JS3: edit mode ẩn thanh trạng thái (TL1); cửa sổ sheet đang giữ focus phải ẩn riêng, nếu không thanh hiện lại đè lên nút. */
-    @Composable
-    private fun HideStatusBarOfSheet() {
-        val view = androidx.compose.ui.platform.LocalView.current
-        LaunchedEffect(view) {
-            if (!viewModel.uiState.value.editMode) return@LaunchedEffect
-            var p: android.view.ViewParent? = view.parent
-            while (p != null && p !is androidx.compose.ui.window.DialogWindowProvider) p = p.parent
-            val window = (p as? androidx.compose.ui.window.DialogWindowProvider)?.window ?: return@LaunchedEffect
-            androidx.core.view.WindowInsetsControllerCompat(window, window.decorView).hide(androidx.core.view.WindowInsetsCompat.Type.statusBars())
-        }
-    }
+    // PG2: `HideStatusBarOfSheet` (C19) bỏ: bảng vẽ trong cửa sổ Home, edit mode của Home đã ẩn thanh trạng thái.
 
     // ---- P2-9a: trang danh sách (tìm kiếm, lưới gợi ý, danh sách nguồn) ----
 
@@ -366,11 +411,13 @@ internal class HomeWidgetPicker(
         val preview: @Composable (Modifier) -> Unit,
         /** Cỡ của widget tự vẽ (bề ngang khung xem trước theo cỡ); null = widget của app khác (ảnh xem trước tự đo). */
         val previewSize: WidgetSize?,
-        val add: (() -> Boolean)?
+        val add: (() -> Boolean)?,
+        /** PG2: loại widget tự vẽ kéo được ra lưới từ khung xem trước (cỡ = [previewSize]); null = không kéo (Today, "App gần đây", widget app). */
+        val dragKind: WidgetKind? = null
     )
 
     private fun openDetail(source: DetailSource) {
-        if (detail?.isShowing == true) return
+        if (detail != null) return
         val start: Int
         val pages: List<DetailPage>
         val name: @Composable () -> String
@@ -387,6 +434,7 @@ internal class HomeWidgetPicker(
                         description = { stringResource(variantDescRes(kind, size)) },
                         preview = { m -> Preview(kind, size, m) },
                         previewSize = size,
+                        dragKind = if (forToday) null else kind, // PG2 (QĐ 3): bảng của Today không kéo ra lưới
                         add = {
                             if (forToday) viewModel.addTodayWidget(kind.id, size.spanX >= 4) // TV-3: thêm vào cuối Today
                             else viewModel.onAddWidget(kind, size.spanX, size.spanY, pagerInfo.currentPage)
@@ -441,12 +489,7 @@ internal class HomeWidgetPicker(
             }
         }
         if (pages.isEmpty()) return
-        detail = activity.dsDialogs.show { h ->
-            DsBottomSheet(onDismiss = h::dismiss, showClose = false) {
-                HideStatusBarOfSheet()
-                Detail(name, icon, pages, start.coerceIn(0, pages.lastIndex), onClose = h::dismiss)
-            }
-        }.also { it.setOnDismissListener { detail = null } }
+        detail = DetailContent(name, icon, pages, start)
     }
 
     @Composable
@@ -548,7 +591,8 @@ internal class HomeWidgetPicker(
                             val m = if (shown != null) {
                                 Modifier.width(previewW * if (shown.spanX >= 4) PREVIEW_WIDE_FRACTION else PREVIEW_SMALL_FRACTION)
                             } else Modifier
-                            page.preview(m)
+                            val kind = page.dragKind
+                            page.preview(if (kind != null && shown != null) m.pickerCardDrag(kind, shown) else m)
                         }
                     }
                 }
@@ -587,6 +631,71 @@ internal class HomeWidgetPicker(
                 BasicText(stringResource(R.string.wp_add_widget), style = TextStyle(color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold))
             }
         }
+    }
+
+    /**
+     * PG2 — cử chỉ trên khung xem trước ở trang chi tiết (REF `CardDragGesture`): giữ đủ `longPressTimeout` trong touch slop thì rung và "arm"; từ đó
+     * tiêu thụ mọi sự kiện (khung không cuộn pager / kéo sheet, nhả tay không di thì không làm gì). Di quá slop sau khi arm thì mở phiên kéo widget
+     * mới ở `HomeDragState` (toạ độ đổi sang gốc cửa sổ, cùng hệ với lưới); mỗi lần di → `move`, nhấc ngón đó → `drop`, cử chỉ bị huỷ → `cancel`.
+     * Kéo xong (nhận hay không) đóng cả hai bảng (Q3, như XML `onNewWidgetDragFinished`). Di quá slop TRƯỚC khi arm: không phải của ta (pager
+     * chi tiết lật trang, sheet kéo xuống). Nút nhận cú nhấn xuống nhận tiếp mọi sự kiện kể cả khi ngón ra ngoài khung, nên bảng chỉ mờ đi, không gỡ.
+     */
+    private fun Modifier.pickerCardDrag(kind: WidgetKind, size: WidgetSize): Modifier = composed {
+        val haptic = LocalHapticFeedback.current
+        val coords = remember { arrayOfNulls<LayoutCoordinates>(1) }
+        this
+            .onGloballyPositioned { coords[0] = it }
+            .pointerInput(kind, size) {
+                awaitEachGesture {
+                    val down = awaitFirstDown(requireUnconsumed = false)
+                    val slop = viewConfiguration.touchSlop
+                    // null = giữ đủ lâu trong slop (arm); true = nhấc tay / di quá slop / bị nút khác tiêu thụ trước đó.
+                    val notArmed = withTimeoutOrNull(viewConfiguration.longPressTimeoutMillis) {
+                        while (true) {
+                            val change = awaitPointerEvent().changes.firstOrNull { it.id == down.id }
+                            if (change == null || !change.pressed || change.isConsumed ||
+                                (change.position - down.position).getDistance() > slop
+                            ) break
+                        }
+                        true
+                    }
+                    if (notArmed != null) return@awaitEachGesture
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    val drag = pagerInfo.drag ?: return@awaitEachGesture
+                    var started = false
+                    var finished = false
+                    try {
+                        while (true) {
+                            val event = awaitPointerEvent()
+                            val change = event.changes.firstOrNull { it.id == down.id }
+                            event.changes.forEach { it.consume() }
+                            if (change == null || !change.pressed) {
+                                if (started) drag.drop()
+                                finished = true
+                                break
+                            }
+                            val c = coords[0]?.takeIf { it.isAttached } ?: continue
+                            val root = c.localToRoot(change.position)
+                            if (!started) {
+                                if ((change.position - down.position).getDistance() > slop) {
+                                    started = drag.startNewWidget(kind, size, TEMP_ID_BASE - (++tempIdSeq), root)
+                                    if (!started) {
+                                        finished = true
+                                        break
+                                    }
+                                    dragging = true
+                                    drag.move(root)
+                                }
+                            } else {
+                                drag.move(root)
+                            }
+                        }
+                    } finally {
+                        if (started && !finished) drag.cancel()
+                        if (started) closeAll()
+                    }
+                }
+            }
     }
 
     /** Bấm "Thêm" của widget app: dựng yêu cầu (cỡ dp của khung, trang đang xem) và bắt đầu luồng thêm. Trả true nếu luồng đã bắt đầu. */
@@ -672,6 +781,12 @@ internal class HomeWidgetPicker(
         const val ENTER_SCALE = 0.85f
         const val ENTER_MS = 260
         const val SHEET_HEIGHT_FRACTION = 0.85f
+
+        /** PG2 (Q4): bảng mờ về 0 trong chừng này ms khi bắt đầu kéo thẻ. */
+        const val DRAG_FADE_MS = 150
+
+        /** PG2: id tạm của widget mới đang kéo (âm, xa mọi id Room và các hằng âm khác: -1 app con thư mục, ContainerId, DOCK_GAP). */
+        const val TEMP_ID_BASE = -(1L shl 40)
         val DecelerateEasing = Easing { DecelerateInterpolator().getInterpolation(it) }
     }
 }

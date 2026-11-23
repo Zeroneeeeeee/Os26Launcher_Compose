@@ -156,6 +156,7 @@ internal fun HomeScreen(
     DisposableEffect(pagerState) {
         pagerInfo.pagerState = pagerState
         pagerInfo.pagerDragged = pagerDragged
+        pagerInfo.drag = drag // PG2: bảng chọn widget (lớp phủ ngoài HomeScreen) lái phiên kéo widget mới
         pagerInfo.settleTo = { page ->
             scope.launch {
                 val busy = pagerState.isScrollInProgress
@@ -173,6 +174,7 @@ internal fun HomeScreen(
                 pagerInfo.pagerState = null
                 pagerInfo.pagerDragged = null
                 pagerInfo.settleTo = null
+                pagerInfo.drag = null
             }
         }
     }
@@ -543,6 +545,9 @@ internal class HomePagerInfo {
 
     /** PG1 G1: cho pager trượt nốt tới trang [Int] (bản Compose của `finishSettleOnLastPage/FirstPage`); no-op nếu đã ở / đang về đúng trang. */
     var settleTo: ((Int) -> Unit)? = null
+
+    /** PG2: trạng thái kéo-thả của Home đang hiện (gán/bỏ trong [HomeScreen]); bảng chọn widget dùng để mở phiên kéo widget mới. */
+    var drag: HomeDragState? = null
 
     /**
      * PG1 G1 (FX7 D2/H1 + TV-1 của repo XML): trang pager "sẽ đứng" — đích đang trượt tới khi pager còn cuộn (sau fling hoặc lật trang), trang hiện tại khi

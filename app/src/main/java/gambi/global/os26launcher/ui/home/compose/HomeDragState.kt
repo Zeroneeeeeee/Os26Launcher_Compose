@@ -35,6 +35,9 @@ import kotlinx.coroutines.launch
 import kotlin.math.floor
 import kotlin.math.hypot
 import kotlin.math.max
+import gambi.global.os26launcher.domain.model.PlacedWidget
+import gambi.global.os26launcher.domain.model.WidgetKind
+import gambi.global.os26launcher.domain.model.WidgetSize
 
 /** Việc ghi của kéo-thả, nối thẳng vào `HomeViewModel` (JH2 D4). */
 interface HomeDragActions {
@@ -59,6 +62,12 @@ interface HomeDragActions {
 
     /** FM-3: thả app con vào chỗ mới trong bảng thư mục: [orderedChildIds] là thứ tự mới của các app nhìn thấy. */
     fun onReorderFolder(folderId: Long, orderedChildIds: List<Long>)
+
+    /**
+     * PG2 (G2c Task 13): thả widget tự vẽ kéo từ bảng chọn (CHƯA có hàng DB) xuống [cell] của trang [targetPageId] (`PageId.NEW` = trang tạm);
+     * [tempItemId] là id tạm của phiên kéo. Nối tới `HomeViewModel.onNewWidgetDropped`.
+     */
+    fun onNewWidgetDropped(kindId: String, spanX: Int, spanY: Int, tempItemId: Long, targetPageId: Long, cell: GridPosition)
 }
 
 /** Thứ đang được kéo. App và thư mục có thể đến từ lưới hoặc dock; widget chỉ từ lưới. */
@@ -95,7 +104,9 @@ class HomeDragSession(
      * P2-7: tâm ảnh kéo trừ ngón tay lúc bắt đầu. Khác 0 (widget) = ảnh giữ nguyên chỗ so với ngón tay (widget nhấn giữ ở góc vẫn nằm dưới
      * ngón ở góc đó); đích được tính tại "điểm ảnh" = ngón tay + độ lệch. 0 = ảnh căn giữa ngón tay (icon, thư mục).
      */
-    val grabOffset: Offset = Offset.Zero
+    val grabOffset: Offset = Offset.Zero,
+    /** PG2: phiên kéo widget tự vẽ mới từ bảng chọn (item là `PlacedWidget` tạm, id âm, chưa có hàng DB); null = item có sẵn. */
+    val newWidget: WidgetKind? = null
 ) {
     val isWidget: Boolean get() = item is DragItem.Widget
 }
@@ -273,6 +284,37 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
         actions.onDragStarted(hit.item.itemId)
     }
 
+    /**
+     * PG2 — mở phiên kéo widget tự vẽ [kind] cỡ [size] CHƯA có hàng DB (từ bảng chọn, REF `WidgetPickerController.beginNewWidgetDrag`): ảnh là
+     * widget đúng cỡ ô lưới, tâm ở ngón tay [pos] (toạ độ gốc); thả qua [drop] như kéo widget có sẵn (xem trước đẩy-dồn, chặn chồng widget, lật mép,
+     * trang tạm), rẽ nhánh ở chỗ ghi. Trả false nếu đang có phiên khác hoặc chưa đo được lưới.
+     */
+    fun startNewWidget(kind: WidgetKind, size: WidgetSize, tempId: Long, pos: Offset): Boolean {
+        if (session != null) return false
+        val c = cells ?: return false
+        val w = (size.spanX * c.cellWidth + (size.spanX - 1) * c.gutterX).toFloat()
+        val h = (size.spanY * c.cellHeight + (size.spanY - 1) * c.gutterY).toFloat()
+        if (w <= 0f || h <= 0f) return false
+        settlingId = null // C14
+        settlingItem = null
+        val rect = Rect(pos.x - w / 2f, pos.y - h / 2f, pos.x + w / 2f, pos.y + h / 2f)
+        val widget = PlacedWidget(tempId, GridPosition(0, 0, size.spanX, size.spanY), kind)
+        session = HomeDragSession(
+            DragItem.Widget(widget), NEW_WIDGET_CONTAINER, null, GridPosition(0, 0), rect, size.spanX, size.spanY,
+            pointerId = PointerId(-1L), newWidget = kind
+        )
+        floatSize = rect.size
+        finger = pos
+        scope.launch {
+            floatCenter.snapTo(pos)
+            floatAlpha.snapTo(1f)
+            floatScale.snapTo(1f)
+            floatScale.animateTo(LIFT_SCALE, SETTLE_F) // H4
+        }
+        actions.onDragStarted(tempId)
+        return true
+    }
+
     fun move(pos: Offset) {
         val s = session ?: return
         finger = pos
@@ -340,7 +382,13 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
                 if (s.sourceContainer == ContainerId.HOME && s.sourcePageId == page.pageId && cell == GridPosition(s.sourceCell.x, s.sourceCell.y)) {
                     return cancelDrop(s)
                 }
-                actions.onItemDropped(s.item.itemId, ContainerId.HOME, page.pageId, cell)
+                val newKind = s.newWidget
+                if (newKind != null) {
+                    // PG2: widget mới chưa có hàng DB: VM thêm lạc quan với id tạm rồi ghi bằng AddWidgetUseCase (không qua onItemDropped).
+                    actions.onNewWidgetDropped(newKind.id, s.spanX, s.spanY, s.item.itemId, page.pageId, cell)
+                } else {
+                    actions.onItemDropped(s.item.itemId, ContainerId.HOME, page.pageId, cell)
+                }
                 settle(s, visualRect(GridPosition(cell.x, cell.y, s.spanX, s.spanY), s.isWidget), 1f, 1f)
             }
 
@@ -410,6 +458,12 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
 
     private fun cancelDrop(s: HomeDragSession) {
         actions.onDragCancelled()
+        if (s.newWidget != null) {
+            // PG2 (Q3, như XML returnRect = null): widget mới chưa có chỗ cũ để bay về: ảnh co + mờ tại chỗ rồi mất, không thêm gì.
+            val pt = point(s)
+            settle(s, Rect(pt.x - floatSize.width / 2f, pt.y - floatSize.height / 2f, pt.x + floatSize.width / 2f, pt.y + floatSize.height / 2f), MERGE_END_SCALE, 0f)
+            return
+        }
         // Bay về ô nguồn nếu nó còn ở trang đang xem (View: returnRect null khi trang nguồn lệch > 1/4 màn); dock bay về ô dock.
         val panel = folderPanel
         if (panel != null && panel.folderId == s.sourceContainer) {
@@ -951,6 +1005,9 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
         private const val EDGE_FLIP_REST_MS = 500L
         private const val FLIP_MS = 450
         private const val MERGE_END_SCALE = 0.4f
+
+        /** PG2: "container nguồn" của widget mới kéo từ bảng chọn (không phải HOME/DOCK/TODAY, không phải id thư mục). */
+        private const val NEW_WIDGET_CONTAINER = Long.MIN_VALUE + 2
 
         // PG1 A1: cùng số với HomeGridPage.kt (FOLDER_PADDING_RATIO, FOLDER_GAP_RATIO, FOLDER_GRID) — hình icon thư mục 3 × 3.
         private const val FOLDER_PLATE_PADDING_RATIO = 0.12f
