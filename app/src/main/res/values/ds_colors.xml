@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DS3 Task 1: màu hệ thống thiết kế v3, chép từ Figma paint styles (đọc 2026-11-16). ARGB; độ mờ theo Figma.
+     Bảng nguồn: docs/plans/DS3-design-system-v3.md Task 1 Step 2. Chỉ dùng cho màn v3; không thay màu cũ ở colors.xml. -->
+<resources>
+    <color name="ds_bg_base">#FF07080E</color>
+    <color name="ds_on_light">#FF0B1020</color>
+
+    <color name="ds_text_primary">#FFF5F7FF</color>
+    <color name="ds_text_secondary">#ADF5F7FF</color>
+    <color name="ds_text_tertiary">#79F5F7FF</color>
+
+    <color name="ds_surface_control">#2EFFFFFF</color>
+    <color name="ds_surface_fill">#330F121C</color>
+    <color name="ds_surface_sheet">#F0181E3A</color>
+    <color name="ds_divider">#1AF5F7FF</color>
+
+    <color name="ds_accent">#FF4370FF</color>
+    <color name="ds_accent_light">#FF6E95FF</color>
+    <color name="ds_primary_start">#FF3B57E8</color>
+    <color name="ds_primary_end">#FF6440E6</color>
+    <color name="ds_primary_glow">#FF5A4BF5</color>
+
+    <color name="ds_aurora_blue">#FF4F6DFF</color>
+    <color name="ds_aurora_purple">#FF9B5CFF</color>
+    <color name="ds_aurora_cyan">#FF00C2B8</color>
+    <color name="ds_aurora_pink">#FFFF7AB6</color>
+
+    <color name="ds_status_warning">#FFFFB74D</color>
+    <color name="ds_status_danger">#FFFF4D4F</color>
+    <color name="ds_status_warning_text">#FFFFD08A</color>
+    <color name="ds_status_danger_text">#FFFF8A8A</color>
+
+    <color name="ds_badge_base">#8C171A27</color>
+    <color name="ds_tile_base">#D9171A27</color>
+
+    <!-- Màu nền ô icon (v2/Tile/Fill/*) -->
+    <color name="ds_tile_blue">#FF5B8CFF</color>
+    <color name="ds_tile_violet">#FFA78BFA</color>
+    <color name="ds_tile_sky">#FF38BDF8</color>
+    <color name="ds_tile_amber">#FFF5B83D</color>
+    <color name="ds_tile_green">#FF34D399</color>
+    <color name="ds_tile_teal">#FF2DD4BF</color>
+    <color name="ds_tile_orange">#FFFB923C</color>
+    <color name="ds_tile_pink">#FFF472B6</color>
+    <color name="ds_tile_red">#FFF87171</color>
+    <color name="ds_tile_slate">#FF94A3B8</color>
+
+    <!-- Màu nét icon trong ô (Core/Icon Glyph/*) -->
+    <color name="ds_glyph_blue">#FF7AA2FF</color>
+    <color name="ds_glyph_violet">#FFB9A3FB</color>
+    <color name="ds_glyph_sky">#FF7DD3FC</color>
+    <color name="ds_glyph_amber">#FFFDE68A</color>
+    <color name="ds_glyph_green">#FF4ADE80</color>
+    <color name="ds_glyph_teal">#FF2DD4BF</color>
+    <color name="ds_glyph_orange">#FFFDBA74</color>
+    <color name="ds_glyph_pink">#FFF9A8D4</color>
+    <color name="ds_glyph_red">#FFFCA5A5</color>
+    <color name="ds_glyph_slate">#FFB4C0D3</color>
+
+    <!-- HF: Hero Card trạng thái "Đã mặc định" (Figma 464:2198) -->
+    <color name="ds_hero_link">#FFB0BAFF</color>
+    <color name="ds_hero_version_chip_text">#CCF5F7FF</color>
+    <color name="ds_hero_version_chip_border">#2EFFFFFF</color>
+    <!-- BG: card xin quyền (Figma 3.4 302:2488, Card/Fill/Warning): cam #FFB74D 10% → 3%, viền trắng 19% -->
+    <color name="ds_card_warning_top">#1AFFB74D</color>
+    <color name="ds_card_warning_bottom">#08FFB74D</color>
+    <color name="ds_card_warning_border">#30FFFFFF</color>
+</resources>

@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Quyền thường: cho phép đặt ảnh làm wallpaper hệ thống (WallpaperApplier) -->
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+
+    <!-- M7 Task 10: mục "Gỡ cài đặt" của menu nhấn giữ icon. Từ target SDK 28 thiếu quyền này thì hệ thống IM LẶNG bỏ qua
+         lệnh gỡ (startActivity không lỗi, hộp thoại không hiện, lỗi chỉ nằm ở logcat của system). Quyền thường, không cần xin lúc chạy. -->
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+
+    <!-- G3a: tìm danh bạ trong ô tìm kiếm. Quyền runtime, chỉ xin khi người dùng bấm hàng "Hiện danh bạ". Chỉ đọc, không lưu bản sao
+         (allowBackup="true", xem AGENTS.md M8d). Không cần CALL_PHONE: nút gọi chỉ mở ACTION_DIAL. Không cần thêm <queries>. -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <!-- G3e: widget thời tiết. INTERNET (quyền thường) để gọi OpenWeatherMap; ACCESS_COARSE_LOCATION (quyền chạy) chỉ xin MỘT LẦN
+         khi người dùng bấm "Dùng vị trí hiện tại" trong bảng Thời tiết, lúc app đang mở. KHÔNG có ACCESS_BACKGROUND_LOCATION,
+         không ACCESS_FINE_LOCATION. Vị trí là tính năng tùy chọn nên không bắt buộc phần cứng.
+         INTERNET còn dùng cho gợi ý tìm kiếm web (WebSuggestRepositoryImpl gọi suggestqueries.google.com). Thiếu quyền này thì
+         HttpURLConnection ném SecurityException, gợi ý rỗng và chỉ còn hàng truy vấn vừa gõ. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- G3d: Trung tâm điều khiển toàn hệ thống (plan G3d). Dải mép và panel là cửa sổ TYPE_APPLICATION_OVERLAY: quyền đặc biệt,
+         người dùng tự cấp ở màn hệ thống (ControlCenterSettingsActivity mở giúp). -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- G3d: độ sáng và khóa xoay ghi Settings.System. Quyền đặc biệt (người dùng cấp ở "Sửa đổi cài đặt hệ thống"). -->
+    <uses-permission
+        android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+    <!-- G3d: ô Wi-Fi. Đọc trạng thái; API < 29 bật/tắt trực tiếp (từ 29 mở Settings.Panel, D5). Quyền thường. -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <!-- G3d: ô Bluetooth (D6). API ≤ 30 dùng hai quyền cũ; API 31-32 bật/tắt trực tiếp cần BLUETOOTH_CONNECT (quyền runtime);
+         từ 33 đi qua intent hệ thống. -->
+    <uses-permission
+        android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_ADMIN"
+        android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <!-- G3d: ô Không làm phiền; người dùng còn phải cấp quyền "Không làm phiền" cho app. KHÔNG khai
+         REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: chính sách Google Play hạn chế quyền đó (D12), chỉ mở danh sách tối ưu pin. -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <!-- G3d: ô Đồng bộ ở trang Mạng (RE mục 5.1). Quyền thường: đọc/ghi ContentResolver.setMasterSyncAutomatically. -->
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+
+    <!-- G3c: host widget của app khác. BIND_APPWIDGET là quyền chỉ dành cho hệ thống: ta KHÔNG được cấp thật, chỉ khai để hệ thống cho phép
+         luồng "Cho phép / Luôn cho phép" của ACTION_APPWIDGET_BIND (đọc tài liệu trang AppWidgetHost; Task 1 của G3c đo có cần khai hay không). -->
+    <uses-permission
+        android:name="android.permission.BIND_APPWIDGET"
+        tools:ignore="ProtectedPermissions" />
+
+    <uses-feature
+        android:name="android.hardware.location"
+        android:required="false" />
+
+    <!-- WN: thông báo thời tiết. POST_NOTIFICATIONS là quyền chạy từ Android 13 (xin lúc người dùng bật công tắc ở Cài đặt -> Thời tiết, Task 5);
+         RECEIVE_BOOT_COMPLETED (quyền thường) để đặt lại báo thức sau khi khởi động máy. Không SCHEDULE_EXACT_ALARM: báo thức không chính xác. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Android 11+ lọc package theo tầm nhìn: khai 3 intent này để resolveActivity() thấy được màn chọn launcher
+         mặc định của hệ thống. Không phải QUERY_ALL_PACKAGES. -->
+    <queries>
+        <intent>
+            <action android:name="android.app.role.action.REQUEST_ROLE" />
+        </intent>
+        <intent>
+            <action android:name="android.settings.HOME_SETTINGS" />
+        </intent>
+        <intent>
+            <action android:name="android.settings.SETTINGS" />
+        </intent>
+        <!-- Android 11+ lọc package theo tầm nhìn: khai intent này để LauncherApps thấy mọi activity mở được.
+             Launcher KHÔNG nằm trong 8 nhóm được miễn trừ tự động, kể cả khi đang giữ ROLE_HOME.
+             Đây là khai báo hiển thị package, không phải quyền, nên không cần khai gì trên Play Console. -->
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+
+        <!-- G3c: Android 11+ lọc package theo tầm nhìn, getInstalledProviders cũng bị lọc (đọc tài liệu); provider widget khai intent-filter
+             APPWIDGET_UPDATE. Task 1 của G3c đo xem khối này có đủ thấy mọi provider không. -->
+        <intent>
+            <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+        </intent>
+
+        <!-- M3 Task 4: dock. Đo trên Vsmart Live 4 (2026-10-26) - PHONE (ACTION_DIAL) và MESSAGES
+             (ACTION_MAIN + CATEGORY_APP_MESSAGING) resolveActivity() TÌM RA mà không cần khai ở đây
+             (nằm trong nhóm được Android tự miễn trừ tầm nhìn). BROWSER và CAMERA thì KHÔNG - phải
+             khai 2 khối dưới đây, resolveActivity() mới thấy được app trình duyệt/máy ảnh đã cài. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="http" />
+        </intent>
+        <intent>
+            <action android:name="android.media.action.STILL_IMAGE_CAMERA" />
+        </intent>
+
+        <!-- IP: tìm gói biểu tượng (chuẩn ADW/Nova) bằng intent, không dùng QUERY_ALL_PACKAGES. Phải khớp DISCOVERY_INTENTS trong
+             IconPackManager. Gói đã cài nhưng thiếu khai báo ở đây sẽ không hiện (Android 11+ lọc package theo tầm nhìn). -->
+        <intent>
+            <action android:name="org.adw.launcher.THEMES" />
+        </intent>
+        <intent>
+            <action android:name="org.adw.ActivityStarter.THEMES" />
+        </intent>
+        <intent>
+            <action android:name="com.novalauncher.THEME" />
+        </intent>
+        <intent>
+            <action android:name="com.anddoes.launcher.THEME" />
+        </intent>
+        <intent>
+            <action android:name="com.gau.go.launcherex.theme" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="com.anddoes.launcher.THEME" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="com.teslacoilsw.launcher.THEME" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="com.fede.launcher.THEME_ICONPACK" />
+        </intent>
+        <!-- G3d: lối tắt Hẹn giờ / Máy tính của Trung tâm điều khiển (resolveActivity cần thấy app nhận intent; Máy ảnh đã có ở M3). -->
+        <intent>
+            <action android:name="android.intent.action.SHOW_TIMERS" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.APP_CALCULATOR" />
+        </intent>
+    </queries>
+
+    <application
+        android:name=".LauncherApp"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:localeConfig="@xml/locales_config"
+        android:theme="@style/Theme.Os26Launcher">
+        <!-- Màn hình chính thật: giữ HOME. Lý do từng thuộc tính: project_structure.md mục 4.
+             RR: "nosensor" = hướng tự nhiên của máy, không theo cảm biến, không chịu khóa xoay của người dùng. KHÔNG dùng "locked"
+             (ghim góc xoay đang có: về từ game ngang là Home ngang) hay "portrait" (hướng cố định, dễ bị letterbox ở split-screen).
+             Xem docs/plans/RR-rotation-recovery.md. -->
+        <activity
+            android:name=".ui.home.HomeActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:stateNotNeeded="true"
+            android:clearTaskOnLaunch="true"
+            android:resizeableActivity="true"
+            android:screenOrientation="nosensor"
+            android:configChanges="keyboard|keyboardHidden|navigation|screenSize|smallestScreenSize|screenLayout|orientation"
+            android:windowSoftInputMode="adjustNothing"
+            android:enableOnBackInvokedCallback="true"
+            android:theme="@style/Theme.Os26Launcher">
+            <!-- HC Task 2: bỏ LAUNCHER (icon app mở Cài đặt); giữ HOME để vẫn là launcher. Theme thường, không còn theme khởi động: Home
+                 không là điểm vào app nữa, theme khởi động làm lóe logo splash mỗi lần mở Home từ "Trải nghiệm"/"Khám phá" (2026-11-18).
+                 Splash của app nằm ở LauncherEntryActivity. -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- OB: Onboarding lần đầu, chỉ mở từ HomeActivity (cùng task: nút Home dọn nó, plan OB Q6). Luôn tối (theme DS3). -->
+        <activity
+            android:name=".ui.onboarding.OnboardingActivity"
+            android:exported="false"
+            android:screenOrientation="nosensor"
+            android:theme="@style/Theme.Os26Launcher.Ds" />
+
+        <!-- M8a Task 3: màn Cài đặt (mở từ HomeActivity edit mode, hoặc từ LauncherEntryActivity khi bấm icon app, HC Task 2). -->
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Os26Launcher.Ds"
+            android:screenOrientation="nosensor" />
+
+        <!-- HC Task 2: điểm vào app từ icon: splash (theme khởi động) rồi mở Cài đặt, đóng ngay. Task riêng để không lẫn với task Home;
+             Cài đặt mở từ đây (không cờ NEW_TASK) nằm trong task này. -->
+        <activity
+            android:name=".ui.settings.LauncherEntryActivity"
+            android:exported="true"
+            android:excludeFromRecents="false"
+            android:screenOrientation="nosensor"
+            android:taskAffinity="gambi.global.os26launcher.settings"
+            android:theme="@style/Theme.Os26Launcher.Starting">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- WN: lịch thông báo thời tiết. Receiver không xuất ra ngoài: báo thức đặt bằng PendingIntent tường minh theo gói; các broadcast hệ thống
+             (BOOT_COMPLETED, TIME_SET, TIMEZONE_CHANGED được miễn giới hạn broadcast ngầm; MY_PACKAGE_REPLACED gửi thẳng tới app) do hệ thống gửi, được nhận
+             dù exported=false (đọc tài liệu; CHƯA ĐO trên Live 4/Oppo, Task 3 kiểm). -->
+        <receiver
+            android:name=".ui.weather.notify.WeatherNotificationReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="gambi.global.os26launcher.WN_FIRE" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".ui.weather.notify.WeatherNotificationJobService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <!-- G3b: màn "Ảnh của tiện ích" (chọn ảnh, cắt), chỉ mở từ HomeActivity khi bấm widget Ảnh. -->
+        <activity
+            android:name=".ui.photo.PhotoWidgetActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Os26Launcher.Ds"
+            android:screenOrientation="nosensor" />
+
+        <!-- G3d: service chủ của Trung tâm điều khiển. Là NotificationListenerService để hệ thống tự bind và giữ process sau khi
+             người dùng cấp "Truy cập thông báo" (như LauncherNotificationService của Launcher OS, RE mục 2), và để đọc phiên media.
+             Không xử lý thông báo nào. -->
+        <service
+            android:name=".ui.controlcenter.ControlCenterService"
+            android:exported="true"
+            android:label="@string/cc_service_label"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <!-- G3d: màn bật Trung tâm điều khiển và cấp quyền, mở từ Cài đặt hoặc từ ô thiếu quyền. -->
+        <activity
+            android:name=".ui.controlcenter.ControlCenterSettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Os26Launcher.Ds" />
+
+        <!-- G3d: màn con của cài đặt Trung tâm điều khiển (RE mục 5.4). -->
+        <activity
+            android:name=".ui.controlcenter.CustomizeTilesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Os26Launcher.Ds" />
+        <activity
+            android:name=".ui.controlcenter.EdgeSettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Os26Launcher.Ds" />
+        <activity
+            android:name=".ui.controlcenter.NightShiftSettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Os26Launcher.Ds" />
+
+        <!-- RS Task 6: màn 1.1 Màn hình chính mặc định, chỉ mở từ trang chủ Cài đặt. -->
+        <activity
+            android:name=".ui.settings.ThemeSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="nosensor"
+            android:theme="@style/Theme.Os26Launcher.Ds" />
+
+        <!-- GT: màn Tinh chỉnh kính, chỉ mở từ SettingsActivity. -->
+        <activity
+            android:name=".ui.settings.GlassTuningActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Os26Launcher.Ds" />
+
+        <!-- LG: API < 33 AppCompat tự lưu ngôn ngữ app (setApplicationLocales) và áp lại khi mở Activity. API 33+ hệ thống lo. -->
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
+        </service>
+
+    </application>
+
+</manifest>

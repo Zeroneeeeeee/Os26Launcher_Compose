@@ -1,0 +1,102 @@
+# Khung tính năng Os26Launcher
+
+Trạng thái: bản khung, tạo 2026-10-16. Chưa đi vào chi tiết; khi làm tới tính năng nào thì viết rõ tính năng đó (mục riêng trong file này hoặc file riêng trong `docs/`).
+
+Nguồn của danh sách:
+- **App mẫu:** mô tả trên Google Play của Launcher OS 27: Liquid Glass (HK Crafted), đọc 2026-10-16. Chỉ có mô tả tiếp thị và ghi chú phiên bản, chưa xem ảnh chụp màn hình.
+- **Nền tảng:** những thứ một launcher bắt buộc phải có, không nằm trong mô tả của app mẫu (Claude bổ sung).
+- Các lựa chọn đánh dấu "tạm thời" là của người dùng nhưng có thể đổi theo tình hình dự án.
+
+Tài liệu liên quan: [LiquidGlass-Demo.md](LiquidGlass-Demo.md) (demo đã đóng 2026-10-16), [LiquidGlass-Android.md](LiquidGlass-Android.md) (tài liệu thư viện).
+
+## 1. Ràng buộc đã chốt từ demo
+
+- UI: View/XML, `minSdk 26`, thư viện `liquidglass` v2.0.11. **Từ JC (2026-11-19):** có thêm Jetpack Compose (BOM `2026.09.00`) và kính Compose Backdrop (`io.github.kyant0:backdrop:2.0.1`); màn 1.1 đã chuyển sang Compose. Chủ dự án chốt **đi tiếp có điều kiện** hướng B: viết lại tầng UI bằng Compose, giữ `data`/`domain`/ViewModel (lộ trình JD → JH → JS → JX ở [plans/JC-compose-pilot.md](plans/JC-compose-pilot.md), điều kiện ở [knowledgements/JC-compose-pilot.md](knowledgements/JC-compose-pilot.md) mục 6).
+- Kính thật từ Android 13+ (tier LENS) và 31-32 (tier CLASSIC_GPU); Android 26-30 (tier CLASSIC_CPU) dùng nền mờ tĩnh `StaticBlurSurface` thay kính thật (Quyết định 5b) — **đã làm và đo xong ở M6** (2026-10-28), xem [plans/M6-glass-layer.md](plans/M6-glass-layer.md).
+- Nguồn nền cho kính: phương án A (người dùng chọn ảnh, app lưu bản sao). Áp dụng wallpaper cho cả ba đích (Quyết định 2). Ảnh có viền trong suốt được cắt viền khi nhập (5a).
+- Hiệu năng đã đo: Oppo (Android 14) giữ được 6 kính (nền chuyển động, demo). Vsmart Live 4 (Android 11), nền tĩnh trên màn hình chính thật (4b, M6 Task 2, 2026-10-28): kính thật `RealGlassSurface` 10.29% Janky (median +9ms so với không kính) → không đạt; card mờ `StaticBlurSurface` 2.13% Janky → chốt dùng cho tier CLASSIC.
+
+## 2. Quyết định tạm thời
+
+| Chủ đề | Quyết định tạm thời | Ghi chú |
+|---|---|---|
+| Widget | Tự vẽ trước, AppWidgetHost sau | Mục tiêu: hơn app mẫu nếu làm được AppWidgetHost |
+| Tìm kiếm | Bản đầu: tìm app + danh mục Cài đặt tự lập; danh bạ để sau | |
+| Kiếm tiền | Kết hợp: quảng cáo nhẹ + gói Pro bỏ quảng cáo | Do cấp trên quyết, triển khai rất muộn |
+| Thời tiết | **Xong một vị trí** (G3e, 2026-11-10): tech lead chọn OpenWeatherMap | Khóa `OWM_API_KEY` trong `local.properties`, không commit; gọi thẳng từ app, thiết kế sẵn để thêm proxy |
+| Nguồn dữ liệu thời tiết | Giao diện `WeatherProvider`, dùng OpenWeatherMap (tech lead chọn 2026-11-09; trước đó dự tính Open-Meteo) | Gói Free: 60 lệnh/phút, 1.000.000 lệnh/tháng; điều kiện ghi nguồn xét trước phát hành |
+| Gọi API thời tiết | Gọi thẳng từ app khi phát triển, thiết kế sẵn để thêm proxy sau | Key trong APK có thể bị lấy |
+| Vị trí cho thời tiết | Cài đặt → Vị trí: Tự động (vị trí thô, lấy khi bấm hoặc tối đa 2 giờ/lần lúc widget "Vị trí hiện tại" đang hiện, chỉ đổi khi đi xa > 5 km) hoặc Chọn thủ công (không cần quyền) — WX 2026-11-13 | Không chạy nền, không xin quyền vị trí nền |
+
+## 3. Danh sách tính năng (cơ bản đến nâng cao)
+
+Giai đoạn: **G1** bản đầu dùng được, **G2** hoàn thiện giao diện và tổ chức, **G3** dữ liệu ngoài và quyền. Trạng thái: "Chưa" là chưa bắt đầu.
+
+### Cấp 1: bắt buộc để chạy được launcher (G1)
+
+| # | Tính năng | Nguồn | Trạng thái | Ghi chú |
+|---|---|---|---|---|
+| 1 | Khai báo HOME, nhận biết launcher mặc định, nút đặt mặc định | Nền tảng | **Xong** (M1, 2026-10-16) | Đã kèm việc hỏi áp dụng wallpaper đúng một lần (Quyết định 2). Đã thử trên Oppo A3x và Vsmart Live 4 |
+| 2 | Đọc danh sách app, mở app, cập nhật khi cài/gỡ | Nền tảng | **Xong** (M2, 2026-10-26) | Đủ app trên Oppo A3x (344/344) và Vsmart Live 4 (87/87) nhờ `<queries><intent>` MAIN/LAUNCHER (Task 1B), không dùng `QUERY_ALL_PACKAGES`; đo cả khi chưa là launcher mặc định. Icon + cache RAM (Task 2) đo cả hai máy; mở app và tự cập nhật khi cài/gỡ/bật-tắt (Task 3, 4) đo trên Live 4. Work profile: đạt trên Live 4 (app hiện trùng dòng). Chưa thử `adb install -r` bằng APK thật. Giao diện hiện là danh sách debug, lưới thật ở M3 (TT#3) |
+| 3 | Lưới icon nhiều trang và dock | Nền tảng, app mẫu | **Xong** (M3, 2026-10-27) | Đo trên Vsmart Live 4: 4×6/trang, vuốt nhiều trang, chỉ báo trang, dock 4 ô mặc định (điện thoại/tin nhắn/trình duyệt/máy ảnh, bù app đầu bảng chữ cái nếu thiếu role). **Chỉ đọc** — chưa kéo-thả/sắp xếp lại (M7), chưa lưu bố cục nên mỗi lần mở lại là bố cục mặc định (M4). Dock **có kính thật từ M6** (2026-10-28): `RealGlassSurface` (tier LENS/CLASSIC_GPU) hoặc `StaticBlurSurface` (tier CLASSIC_CPU) theo máy, xem TT#6. Ô lưới có `GridPosition.spanX/spanY` để sẵn cho widget/thư mục nhưng chưa dùng (M4+) |
+| 4 | Lưu bố cục | Nền tảng | **Xong** (M4, 2026-10-27) | Room 3 bảng (`launcher_items`/`home_pages`/`hidden_apps`), sống qua khởi động lại, tự đồng bộ khi cài/gỡ/disable-enable app — kể cả lúc launcher không chạy (`LayoutReconciler.catchUp`). Đo trên Vsmart Live 4. **Chưa có:** kéo-thả/chế độ chỉnh sửa, UI ẩn app (bảng `hidden_apps` đã có nhưng chưa ai ghi), thư mục, widget — tất cả để M7/G2. App gỡ khỏi dock không tự lấp và mất vị trí tới M7 (quyết định 2026-10-27, xem room-schema.md mục 7) |
+| 5 | Back/Home, insets, xoay màn hình, sáng/tối | Nền tảng | **Xong** (M5, 2026-10-27) | Đo trên Vsmart Live 4. Back no-op và inset (M1); M5: khóa xoay (nay là `screenOrientation="nosensor"` = hướng tự nhiên của máy, RR 2026-11-12; `locked` cũ ghim hướng ngang khi về từ game ngang), sáng/tối theo theme hệ thống (không có cài đặt riêng), system bar trong suốt + màu icon theo theme, inset top/bottom áp cho nội dung (hàng 1 không còn nằm dưới thanh trạng thái), lưới + dock co theo split-screen. **Giới hạn đã biết:** màu icon system bar theo theme chứ không theo độ sáng ảnh nền; đổi theme làm Activity tái tạo nên trở về trang 0 (chấp nhận); canh cột dock đủ 4 icon với lưới chưa thử tay |
+| 6 | Hình nền và kính dock theo tier | App mẫu | **Xong** (M1 phần ảnh nền, 2026-10-16; M6 phần kính, 2026-10-28) | Ảnh nền + áp wallpaper chạy trên `HomeActivity` (M1). Kính dock theo tier máy (`GlassTierResolver` đọc `effectiveApiLevel`): `RealGlassSurface` tier LENS/CLASSIC_GPU, `StaticBlurSurface` tier CLASSIC_CPU; có khóa `glass_level_override` (auto/ép thấp/ép cao); UI đổi mức kính và đổi ảnh nền có từ M8a (2026-10-30, TT#20), đổi mức kính thì Home tự tạo lại, đổi ảnh thì dock được làm mới ngay. Đo trên Oppo A3x + Vsmart Live 4, xem [plans/M6-glass-layer.md](plans/M6-glass-layer.md) **GL (2026-11-04):** kính mờ tĩnh cho ô thư mục, panel, ô nhóm Library, thanh tìm kiếm, pill; hai panel là kính thật khi máy có đường Lens (API 33+), một khung trễ mỗi lần mở được chủ dự án chấp nhận. `CLASSIC_GPU` chỉ chạy thử trên Oppo bằng giả lập API, chưa đo trên máy Android 12 thật. **Lỗi còn mở:** đổi ảnh nền rồi về Home thì kính chưa vẽ lại (xem nhánh AN). Xem [plans/GL-glass-pass.md](plans/GL-glass-pass.md) |
+
+### Cấp 2: thao tác và tìm kiếm (G1)
+
+| # | Tính năng | Nguồn | Trạng thái | Ghi chú |
+|---|---|---|---|---|
+| 7 | Menu nhấn giữ icon (shortcut, thông tin app, gỡ cài đặt) | Nền tảng | **Xong** (M7, 2026-10-29) | Nhấn giữ icon (lưới hoặc dock) → nền mờ tối + icon nổi + menu: shortcut động/manifest (tối đa 4, **chỉ đọc được khi launcher là mặc định**), Thông tin ứng dụng, Ẩn ứng dụng, Sửa màn hình chính, Gỡ cài đặt (cần `REQUEST_DELETE_PACKAGES`). Giữ rồi di tay không nhấc → vào edit mode và kéo luôn; nhấc tay rồi nhấn giữ lại icon nổi → edit mode. Nền mờ là scrim tối đơn giản, chưa blur thật. Đo trên Vsmart Live 4 và Oppo A3x |
+| 8 | Chế độ chỉnh sửa: kéo thả, ẩn/xóa icon khỏi trang | Nền tảng | **Xong** (M7, 2026-10-29) | Nhấn giữ khoảng trống trang Home cũng vào edit mode (GP, 2026-11-05). Icon rung + dấu "−" ở edit mode; kéo thả trong trang, giữa các trang (tự lật trang khi sát mép, trang trống tạm ở cuối), dock ↔ lưới (dock tối đa 4); thả đè = đẩy-dồn, trang đầy thì cascade sang trang kế/trang mới. Ẩn icon (dấu "−" hoặc menu) = dồn trong cùng trang; app đã ẩn xem/bỏ ẩn ở màn **Ứng dụng đã ẩn** (vào từ Cài đặt; từ 2026-10-30 chỉ còn danh sách đã ẩn, không chia tab, nút Thư viện ở edit mode đã bỏ vì App Library ở Home đã liệt kê app chưa ẩn). Dọn `hidden_apps` khi gỡ thật app. Một phiên kéo chỉ theo ngón đã bắt đầu: nhấc ngón đó thì thả tại đó, ngón còn lại bị bỏ qua tới hết cử chỉ (FX7, 2026-11-12). Nút Home và rời launcher (`onStop`, trừ khi dựng lại do đổi cấu hình) thoát edit mode; bảng chọn widget và bảng thời tiết đóng khi bấm Home (FX2, 2026-11-11). **Chưa có:** TalkBack cho dấu "−", thư mục (G2), chọn nhiều icon. Đo trên Vsmart Live 4 và Oppo A3x |
+| 9 | Tìm kiếm app và danh mục Cài đặt, vuốt xuống ở giữa màn hình | App mẫu | **Xong** (M8b 2026-10-30, M8d 2026-11-05) | **Đã có (M8d):** khoảng 25 mục Cài đặt hệ thống, shortcut app (khi là launcher mặc định), Gần đây và Gợi ý từ lịch sử mở app của chính launcher (file ngoài sao lưu), khối "Tìm kiếm" trong Cài đặt. Mép trên màn hình thuộc về hệ thống nên không bắt cử chỉ ở đó. Danh mục Cài đặt tự lập từ các intent `Settings.ACTION_*` **Chốt 2026-10-29:** M8b chỉ tìm app đã cài (trừ app ẩn), khớp bỏ dấu tiếng Việt; danh mục Cài đặt, shortcut, gợi ý/app dùng gần đây để sau; pill lồng chấm trang ở M8c **Đã có (M8b):** vuốt xuống ≥ 64dp ở giữa màn hình (dưới thanh trạng thái + 48dp, trên dock) mở lớp tìm kiếm (nền tối, ô nhập phẳng, bàn phím tự hiện); chỉ app đã cài trừ app ẩn; khớp không phân biệt hoa thường và dấu tiếng Việt (`đ` = `d`), xếp hạng nhãn bắt đầu → đầu từ → chuỗi con; bấm kết quả mở app, thất bại thì Toast và giữ lớp; đóng bằng Back / chạm nền / Home. **Đã có (M8c):** pill "Tìm kiếm" cố định 144dp trên dock thay hàng chấm trang — đứng yên hiện kính lúp + chữ (bấm mở tìm kiếm), đang lướt/edit mode/kéo-thả chuyển thành hàng chấm kiểu ổ quay số (cửa sổ 5 ô, chấm sáng giữ ô giữa ở trang giữa, nhiều trang thì cả hàng trượt). **Còn lại:** danh mục Cài đặt hệ thống, shortcut, gợi ý/app gần đây. Xem [plans/M8b-search.md](plans/M8b-search.md) |
+| 20 | Màn hình cài đặt của launcher (tối thiểu ở G1, mở rộng dần) | Claude bổ sung | **Một phần** (M8a xong 2026-10-30) | Mức kính có thêm Tùy chỉnh: công tắc kính thật/mờ cho dock, panel, thanh tìm kiếm, pill; máy dưới API 33 có cảnh báo (GS, 2026-11-05). Đặt mặc định, cỡ lưới, kiểu icon, cấu hình tìm kiếm, hình nền; app mẫu cũng có phần cấu hình tìm kiếm **Đã có (M8a):** mở từ nút "Cài đặt" trong edit mode; launcher mặc định (trạng thái + đặt; nếu hệ thống không hiện hộp thoại xin vai trò Home vì đã chọn "Không hỏi lại" thì mở màn Ứng dụng màn hình chính của hệ thống, FX6), cỡ lưới theo preset 4×5 / 4×6 / 5×6 kèm re-flow bố cục có hộp xác nhận, bật/tắt nhãn, mức kính (Tự động / Ép thấp / Ép cao), đổi ảnh nền (hỏi áp wallpaper mỗi lần), lối vào app đã ẩn. **Còn lại:** cấu hình tìm kiếm (M8b), cỡ lưới tự do, hoàn tác re-flow (đã quyết không làm). Xem [plans/M8a-settings.md](plans/M8a-settings.md) |
+
+### Cấp 3: tổ chức và hình thức (G2)
+
+| # | Tính năng | Nguồn | Trạng thái | Ghi chú |
+|---|---|---|---|---|
+| 10 | Thư mục | Nền tảng | **Xong** (G2a, 2026-10-30; kính xong ở GL, 2026-11-04) | Kéo app đè lên app (hoặc lên thư mục) để tạo/thêm, giữ mép ≥ 500 ms mới đẩy-dồn; panel mở/đóng, đổi tên (≤ 30 ký tự), kéo app ra (thả lên app tạo thư mục mới, lên thư mục thì thêm, về thư mục nguồn thì giữ), gỡ/ẩn app trong thư mục, giải tán khi còn 1 app. Giới hạn đã biết: tối đa 9 app; không có "−" trên ô thư mục; không có thư mục trong dock (thả vào dock thì thư mục trở về ô cũ); ô và panel đang nền phẳng, chưa kính. Đã kiểm trên Vsmart Live 4; chưa kiểm tay `recreate()` khi panel mở. Phần tử kính theo bảng ở Quyết định 3 |
+| 11 | App Library (tự phân nhóm app) | App mẫu | **Xong** (G2a, 2026-10-30; kính xong ở GL, 2026-11-04) | Lớp phủ NGOÀI `ViewPager2` (vuốt trái từ trang thật cuối; vuốt phải/Back/Home đóng; không mở được khi edit mode/kéo/menu/panel thư mục), nền tối cùng màu lớp tìm kiếm, Home mờ dần; thanh tìm kiếm trên cùng mở lớp tìm kiếm với danh sách a–z (trừ app ẩn); lưới 2 cột ô nhóm (4 icon nhỏ hoặc 3 + "+N"), bấm ô mở panel nhóm (3 cột, cuộn dọc, bấm = mở app). Nhóm theo `ApplicationInfo.category` (Mạng xã hội, Giải trí, Trò chơi, Năng suất, Tin tức, Bản đồ), luật dự phòng: app hệ thống vào Tiện ích, còn lại vào Khác. Giới hạn: chỉ đọc (không kéo-thả/ẩn), nền phẳng. Đã kiểm trên Vsmart Live 4; Oppo A3x (344 app) và TalkBack chưa kiểm. Nhóm do nhà phát triển khai báo có thể trống nên máy nhiều app tự cài sẽ có nhiều app ở "Khác" (Live 4: 34/85) |
+| 12 | Kiểu icon (tô màu, 3D) | App mẫu | **Xong** (TL2 + G2b, 2026-11-04) | Mọi icon cùng hình bo góc liên tục (TL2). Cài đặt chọn Mặc định, Tô màu (5 màu; ô tối chung, hình một màu), 3D. Icon không tách được hình (legacy, kín viền, dạng ảnh) dùng cách hai tông nên trông khác một chút. Xem [plans/G2b-icon-styles.md](plans/G2b-icon-styles.md) Thêm 2026-11-10 (IP): hỗ trợ gói icon bên thứ ba kiểu Nova/ADW (Cài đặt → "Gói biểu tượng"), không đóng gói icon Apple. Thêm 2026-11-11 (FX5): icon đổi theo cập nhật app, huy hiệu hồ sơ công việc (nhãn "M2" đã hoãn). |
+| 13 | Widget tự vẽ: đồng hồ, lịch | App mẫu | **Xong** (G2c, 2026-11-05) | Đồng hồ 2×2, 4×2 và Lịch 2×2, 4×2. Thêm từ nút "Tiện ích" ở edit mode: bấm thẻ lấy ô trống đầu tiên, kéo thẻ thì đặt đúng chỗ thả. Bấm widget mở app Đồng hồ/Lịch; "−" hỏi xác nhận. Không gồm thời tiết, kim giây, sự kiện lịch, cấu hình, đổi cỡ tại chỗ. Xem [plans/G2c-clock-calendar-widgets.md](plans/G2c-clock-calendar-widgets.md) |
+
+### Cấp 4: dữ liệu ngoài, quyền, nâng cao (G3)
+
+| # | Tính năng | Nguồn | Trạng thái | Ghi chú |
+|---|---|---|---|---|
+| 14 | Thời tiết (một vị trí, rồi nhiều vị trí) | App mẫu | **Xong** (G3e 2026-11-10 một vị trí; WX 2026-11-13 nhiều địa điểm) | Widget 2x2 và 4x2, °C/°F (WU). Tối đa 3 địa điểm kể cả vị trí hiện tại; mỗi widget chọn địa điểm bằng cách bấm widget; mỗi địa điểm làm mới tối đa 2 giờ/lần, chỉ khi có widget hiện (≤ 72 lệnh/ngày). Xem [plans/WX-weather-cities.md](plans/WX-weather-cities.md). Chưa làm: thẻ "hiện tại + theo giờ" của màn 1.4 |
+| 15 | Widget ảnh (bố cục Mosaic, chọn và sửa ảnh) | App mẫu | **Xong** (G3b, 2026-11-16) | Widget 2×2/4×2: một ảnh hoặc bộ tối đa 10 ảnh đổi mỗi giờ khi Home đang hiện; chọn bằng bộ chọn ảnh hệ thống (không xin quyền), cắt theo khung widget; bản sao thu nhỏ, bỏ EXIF/GPS, ở `no_backup/photo_widgets/`. Không làm bố cục Mosaic. Xem [plans/G3b-photo-widget.md](plans/G3b-photo-widget.md) |
+| 16 | Bộ sưu tập hình nền, tự đổi, báo hình mới | App mẫu | Chưa | Mốc G3f. Cần nguồn nội dung và có thể cần máy chủ; chưa quyết |
+| 17 | Thông báo thời tiết (dự báo, cảnh báo) | App mẫu | **Xong** (WN, 2026-11-16) | Hai thông báo: dự báo hôm nay 07:00 và ngày mai 21:00 (có thể trễ tới ~1 giờ, báo thức không chính xác), dùng "Vị trí hiện tại" đã lưu, quy tắc 2 giờ của WX. Cảnh báo thời tiết xấu không làm (One Call 3.0 là gói riêng). Chạm mở Home (mở bảng Thời tiết để sau). Xem [plans/WN-weather-notifications.md](plans/WN-weather-notifications.md) |
+| 18 | Tìm danh bạ | App mẫu (mô tả có ghi tìm danh bạ) | **Xong** (G3a, 2026-11-09) | Hàng "Hiện danh bạ" xin quyền `READ_CONTACTS`; tên chỉ trong RAM; tối đa 5 người, sau app; gọi/nhắn/mở danh bạ; công tắc trong Cài đặt. Khớp theo số điện thoại từ CP (2026-11-13): từ 3 chữ số, bỏ dấu cách/gạch/chấm/ngoặc, `+84` ≡ `0`, hàng hiện số đã khớp; xem [plans/CP-contacts-phone.md](plans/CP-contacts-phone.md). Xem [plans/G3a-contacts-search.md](plans/G3a-contacts-search.md) |
+| 19 | AppWidgetHost, chứa widget của app khác | Nâng cao, tùy chọn | **Xong (v1)** (G3c, 2026-11-16) | Bảng "Tiện ích": widget tự vẽ trước, rồi mỗi app một mục (thu gọn, ảnh xem trước tải lười, chip cỡ làm tròn theo ô, tối đa 4×4). Thêm: cấp id → hộp thoại "Tạo tiện ích" khi cần → màn cấu hình khi cần → đặt ở trang hiện tại hoặc trang mới; mọi đường hủy giải phóng id. Thẻ kính sau mọi widget (chủ dự án chọn), bo góc. Không đổi cỡ trên Home, không kéo thẻ xuống lưới (v2). Để sau: cấu hình lại, hồ sơ công việc. Xem [plans/G3c-appwidget-host.md](plans/G3c-appwidget-host.md) |
+| 21 | Bảng tiện ích kiểu Trung tâm điều khiển | Nâng cao, tùy chọn | Chưa | Android hạn chế app tự bật/tắt Wi-Fi, thường chỉ mở bảng cài đặt của hệ thống |
+
+## 4. Ý tưởng chưa xếp vào khung (Claude gợi ý, chưa xác nhận)
+
+- Sao lưu và khôi phục bố cục.
+- Đa ngôn ngữ.
+- Trợ năng (cỡ chữ, độ tương phản, TalkBack).
+- Chấm thông báo trên icon.
+- Cử chỉ phụ (chạm đúp khóa màn hình, vuốt lên mở App Library).
+
+- **Dashboard** (G2d, **xong 2026-11-12**, PR #47: trang chủ Cài đặt + màn con theo nhóm, xem [plans/G2d-settings-hub.md](plans/G2d-settings-hub.md); chủ dự án chốt lại 2026-11-05): màn trung tâm của app giống dashboard của app mẫu, có thể là chính màn Cài đặt được dựng lại hoặc màn nằm trên nó. ~~Chờ designer quyết luồng màn hình~~ **Bỏ chặn 2026-11-12**: bản nháp Figma cho luồng home cài đặt + màn con theo nhóm; G2d dựng lại Cài đặt theo luồng đó, giữ kiểu hiển thị cũ (xem [Figma-Draft.md](Figma-Draft.md)). Việc thoát khỏi Home trống không còn phụ thuộc Dashboard: GP làm nhấn giữ khoảng trống để vào edit mode.
+- Từ M8c: TalkBack cho pill, split-screen hẹp và cỡ chữ hệ thống lớn chưa kiểm tay.
+- Từ M8b: đệm bàn phím cho API 26–29 chưa kiểm (chưa có máy); Oppo A3x 344 app gõ nhanh chưa đo; nhãn app chứa emoji chưa thử tay.
+- TalkBack cho dấu "−" ở edit mode (nợ từ M7).
+- Từ M8a: lối vào Cài đặt chỉ có trong edit mode; Home trống vẫn vào được nhờ nhấn giữ khoảng trống (GP). Cài đặt còn thiếu: kiểu icon (TT#12), cấu hình tìm kiếm (M8b).
+- Lỗi một lần thấy rồi không tái hiện lại (2026-10-30): "icon dồn sai / hàng lệch" khi đổi lưới lớn → nhỏ; cách bật lại log chẩn đoán ở `lessons/settings-and-data.md` mục "M8a Task 6".
+- Nợ kiểm chứng M8 (TalkBack cho pill, split-screen hẹp, cỡ chữ hệ thống lớn, Oppo A3x 344 app, đệm bàn phím API 26–29, bốn ca chỉ đọc code ở M8a/M8c): chốt 2026-10-30 là bỏ qua cho bản demo, không chặn G2a; làm lại khi chuẩn bị phát hành.
+
+## 4b. Task phụ đã xếp lịch (ngoài luồng mốc chính)
+
+| # | Việc | Khi nào | Vì sao chờ |
+|---|---|---|---|
+| P1 | Đo cold start thật trên Oppo A3x (344 app) và quyết có cache nhãn app xuống đĩa hay không | **Đã đo 2026-11-05 (Oppo, 345 app, APK debug):** lưới hiện sau ~6.5 giây, riêng đọc nhãn ~5.4 giây; cửa sổ hiện sau ~1.2 giây. Đã làm cache nhãn (LC, merge 2026-11-05). Oppo: có trang để vẽ ~1.6 giây, nhãn vẽ xong ~1.75 giây, icon cuối cùng ~2.4 giây (tính từ lúc tiến trình bắt đầu; chủ dự án ước lượng bằng mắt ~3 giây từ lúc mở). Live 4: có trang ~1.2 giây. Xem `plans/LC-label-cache.md` | M6 là mốc duy nhất cần Oppo (A9), đã dùng xong cho phần kính. Hiện chỉ biết khoảng 1,8–6,0 giây, chưa đủ để quyết (xem `lessons/startup-performance.md`, mục nạp danh sách app). Chốt 2026-10-27: không làm cache ở M4 (room-schema Q6) |
+
+## 5. Cần xin ý kiến
+
+- **Thời tiết:** có triển khai không, dùng nguồn nào, có backend không (lead/sếp). **Ghi nhận 2026-11-05:** tech lead nói đã gọi API của OpenWeatherMap; chủ dự án muốn thử và làm widget thời tiết. Còn cần chốt: khóa API của ai, gọi thẳng từ app hay qua backend, cách lấy vị trí, điều khoản nguồn dữ liệu cho bản phát hành.
+- **Kiếm tiền:** mô hình cuối cùng (sếp).
+- **AppWidgetHost và tìm danh bạ:** có nằm trong phạm vi bản phát hành đầu không.

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DS3 Task 3: icon v3 "weather" từ Figma (build/figma-v3/icons/weather.svg). Nét trắng, màu đặt bằng tint; bỏ bóng (filter) và clip-path 24x24 của Figma. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M8 3.5V2.5M3.8 5.3L3 4.5M12.2 5.3L13 4.5M4.8 9.5C4.83941 8.81519 5.09124 8.15967 5.52047 7.62462C5.9497 7.08956 6.53499 6.70156 7.19496 6.51457C7.85493 6.32758 8.55676 6.35089 9.20287 6.58127C9.84897 6.81165 10.4072 7.23764 10.8 7.8"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M8 20H17C18.0609 20 19.0783 19.5786 19.8284 18.8284C20.5786 18.0783 21 17.0609 21 16C21 14.9391 20.5786 13.9217 19.8284 13.1716C19.0783 12.4214 18.0609 12 17 12C16.4635 10.9271 15.591 10.059 14.5154 9.52805C13.4398 8.99706 12.22 8.83228 11.0421 9.05881C9.86413 9.28534 8.79253 9.89076 7.99058 10.7828C7.18862 11.6749 6.70029 12.8046 6.6 14C5.80435 14.1856 5.11504 14.6798 4.68371 15.3736C4.25237 16.0675 4.11435 16.9043 4.3 17.7C4.48565 18.4956 4.97977 19.1849 5.67366 19.6163C6.36754 20.0476 7.20435 20.1856 8 20Z"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

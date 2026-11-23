@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DS3 Task 1: android:windowLightNavigationBar chỉ có từ API 27. -->
+<resources>
+    <style name="Theme.Os26Launcher.Ds" parent="Base.Theme.Os26Launcher.Ds">
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+</resources>

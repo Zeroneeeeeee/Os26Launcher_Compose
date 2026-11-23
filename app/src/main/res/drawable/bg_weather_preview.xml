@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RS Task 7: nền card xem trước thời tiết (Figma 1.4 302:1900): xanh đêm đậm, quầng xanh sáng góc dưới phải thay vệt sóng của Figma. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/ds_radius_card_large" />
+            <gradient
+                android:angle="315"
+                android:endColor="#FF162A6B"
+                android:startColor="#FF0A1024"
+                android:type="linear" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/ds_radius_card_large" />
+            <gradient
+                android:centerX="0.95"
+                android:centerY="1.0"
+                android:endColor="#002563EB"
+                android:gradientRadius="180dp"
+                android:startColor="#B32F6BFF"
+                android:type="radial" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/ds_radius_card_large" />
+            <stroke
+                android:width="1dp"
+                android:color="#26FFFFFF" />
+        </shape>
+    </item>
+</layer-list>

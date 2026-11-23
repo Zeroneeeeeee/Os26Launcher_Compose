@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DS3 Task 1: quy ước khoảng cách và bố cục cho mọi màn v3 (docs/plans/DS3-design-system-v3.md mục "Quy ước khoảng cách").
+     Khoảng cách GIỮA các khối chỉ lấy từ thang ds_space_*. Kích thước nội bộ của thành phần thêm ở Task 2-7, cuối file này. -->
+<resources>
+    <!-- Thang khoảng cách bố cục (lưới 8 dp, thêm bước 4, 12, 20) -->
+    <dimen name="ds_space_4">4dp</dimen>
+    <dimen name="ds_space_8">8dp</dimen>
+    <dimen name="ds_space_12">12dp</dimen>
+    <dimen name="ds_space_16">16dp</dimen>
+    <dimen name="ds_space_20">20dp</dimen>
+    <dimen name="ds_space_24">24dp</dimen>
+
+    <!-- Màn hình -->
+    <dimen name="ds_screen_margin_h">16dp</dimen>
+    <dimen name="ds_screen_content_top">8dp</dimen>
+    <dimen name="ds_screen_content_bottom">32dp</dimen>
+    <dimen name="ds_section_header_gap">12dp</dimen>
+
+    <!-- Bo góc: card, card nổi bật, sheet là BÁN KÍNH GỐC, bán kính thật = gốc nhân theo thanh "Bo góc" của kính (GT,
+         GlassTuning.cornerRadius). Ô icon (tile) cố định tới khi có cơ chế bo góc icon (IS). Thành phần không đọc thẳng 4 dimen
+         này mà hỏi qua DsCorner/DsCorners (quyết định 7 của plan DS3). -->
+    <dimen name="ds_radius_card">20dp</dimen>
+    <dimen name="ds_radius_card_large">24dp</dimen>
+    <dimen name="ds_radius_sheet">28dp</dimen>
+    <dimen name="ds_radius_tile">8dp</dimen>
+
+    <!-- Card và hàng -->
+    <dimen name="ds_row_min_height">56dp</dimen>
+    <dimen name="ds_row_padding_start">12dp</dimen>
+    <dimen name="ds_row_padding_end">12dp</dimen>
+    <dimen name="ds_row_padding_v">10dp</dimen>
+    <dimen name="ds_row_gap">12dp</dimen>
+    <dimen name="ds_divider">1dp</dimen>
+
+    <!-- Icon và vùng chạm -->
+    <dimen name="ds_tile_size">32dp</dimen>
+    <dimen name="ds_icon_size">24dp</dimen>
+    <dimen name="ds_touch_min">48dp</dimen>
+
+    <!-- Khung footer nút cố định đáy màn: đệm 16/16/28/16, khe 8 -->
+    <dimen name="ds_footer_padding_start">16dp</dimen>
+    <dimen name="ds_footer_padding_end">16dp</dimen>
+    <dimen name="ds_footer_padding_bottom">28dp</dimen>
+    <dimen name="ds_footer_gap">8dp</dimen>
+
+    <!-- Task 7: thanh trên Onboarding cao 56; hộp thoại rộng 312 (tối đa bề rộng màn − 2 × ds_space_24). -->
+    <dimen name="ds_onboarding_bar_height">56dp</dimen>
+    <dimen name="ds_dialog_width">312dp</dimen>
+</resources>

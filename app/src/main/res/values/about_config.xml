@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    AB: configuration of the settings "Contact us" group (rate, more apps, privacy policy).
+
+    PRE-RELEASE RULE: every value containing the word PLACEHOLDER is a stand-in. `bundleRelease` fails (task
+    checkNoAboutPlaceholders in app/build.gradle.kts) while any remains. Replace them with real values before a store build.
+    If the developer has no other published apps yet, set about_more_apps_enabled to false: the "more apps" entry is then
+    hidden from the settings hub and the about_more_app_* strings are not checked.
+
+    The Play link is not configured here: it is built from the applicationId.
+    These values are not translated (translatable="false").
+-->
+<resources>
+    <!-- 6.3: privacy policy page, opened in the browser. -->
+    <string name="about_privacy_url" translatable="false">https://example.com/PLACEHOLDER-privacy-policy</string>
+
+    <!-- 6.2: developer name and apps. App 0 is the featured one. -->
+    <string name="about_developer_name" translatable="false">[PLACEHOLDER Tên nhà phát triển]</string>
+    <bool name="about_more_apps_enabled">true</bool>
+
+    <string name="about_more_app_0_name" translatable="false">[PLACEHOLDER Tên ứng dụng nổi bật]</string>
+    <string name="about_more_app_0_package" translatable="false">com.example.PLACEHOLDER.app0</string>
+    <string name="about_more_app_1_name" translatable="false">[PLACEHOLDER Tên ứng dụng 1]</string>
+    <string name="about_more_app_1_package" translatable="false">com.example.PLACEHOLDER.app1</string>
+    <string name="about_more_app_2_name" translatable="false">[PLACEHOLDER Tên ứng dụng 2]</string>
+    <string name="about_more_app_2_package" translatable="false">com.example.PLACEHOLDER.app2</string>
+    <string name="about_more_app_3_name" translatable="false">[PLACEHOLDER Tên ứng dụng 3]</string>
+    <string name="about_more_app_3_package" translatable="false">com.example.PLACEHOLDER.app3</string>
+    <string name="about_more_app_4_name" translatable="false">[PLACEHOLDER Tên ứng dụng 4]</string>
+    <string name="about_more_app_4_package" translatable="false">com.example.PLACEHOLDER.app4</string>
+    <string name="about_more_app_5_name" translatable="false">[PLACEHOLDER Tên ứng dụng 5]</string>
+    <string name="about_more_app_5_package" translatable="false">com.example.PLACEHOLDER.app5</string>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DS3 Task 3: icon v3 "badge" từ Figma (build/figma-v3/icons/badge.svg). HC Task 4: vẽ lại theo bản Figma 2026-11-18 (302:1649, khung 16 × 16). Nét trắng, màu đặt bằng tint; bỏ bóng (filter) và clip-path 24x24 của Figma. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M14.3226 4.54417C13.3754 4.12475 12.3339 3.94295 11.2947 4.01561C10.2554 4.08827 9.25192 4.41303 8.3771 4.95984C7.50229 5.50664 6.78442 6.25781 6.28997 7.14381C5.79551 8.0298 5.54045 9.02198 5.54839 10.0285V15.0142L4 17.0085H19.4839L17.9355 15.0142V10.0285M9.67742 20H13.8065"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M20 6C20 7.10457 19.1046 8 18 8C16.8954 8 16 7.10457 16 6C16 4.89543 16.8954 4 18 4C19.1046 4 20 4.89543 20 6Z"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TR: mũi tên giữa hai khung xem trước màn 4.1 (Figma 302:2560 "Arrow", 28×28, nét Core/Accent/Light). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="28dp"
+    android:height="28dp"
+    android:viewportWidth="28"
+    android:viewportHeight="28">
+    <path
+        android:pathData="M4.66667 14H23.3333M16.3333 21L23.3333 14L16.3333 7"
+        android:strokeColor="@color/ds_accent_light"
+        android:strokeWidth="2.33333"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

@@ -1,0 +1,713 @@
+<resources>
+    <!-- LG: bản dịch máy (Claude, 2026-11-18), chưa có người bản ngữ duyệt. -->
+    <string name="app_name">OS26 Launcher</string>
+
+    <string name="app_launch_failed">%1$s を開けませんでした。アプリがアンインストールされた可能性があります。</string>
+    <string name="home_set_default_failed">デフォルトのランチャーを選ぶ画面を開けませんでした</string>
+
+    <!-- M7 Task 4: nút thoát chế độ chỉnh sửa. -->
+    <string name="home_done">完了</string>
+
+    <string name="wallpaper_dialog_title">壁紙に設定</string>
+    <string name="wallpaper_dialog_skip">設定しない</string>
+    <string name="wallpaper_target_home">ホーム画面</string>
+    <string name="wallpaper_target_lock">ロック画面</string>
+    <string name="wallpaper_target_both">両方</string>
+    <string name="wallpaper_applied">壁紙を設定しました: %1$s</string>
+    <string name="wallpaper_failed">壁紙を設定できませんでした: %1$s</string>
+    <string name="common_unknown">原因不明</string>
+
+    <!-- M7 Task 9: Thư viện ứng dụng -->
+    <!-- M8a Task 3: màn Cài đặt -->
+    <string name="settings_loading">設定を読み込み中</string>
+    <string name="settings_hidden_apps">非表示のアプリ</string>
+    <string name="settings_show_labels">アプリ名を表示</string>
+    <string name="settings_nav_bar_hidden">ナビゲーションバーを隠す</string>
+    <string name="settings_nav_bar_hidden_description">ホーム画面のみ。下端から上にスワイプすると一時的に表示されます。</string>
+    <string name="settings_backdrop">壁紙</string>
+    <string name="settings_backdrop_set">画像を選択済み</string>
+    <string name="settings_backdrop_unset">未選択</string>
+    <string name="settings_backdrop_failed">この画像を読み込めませんでした。現在の壁紙のままです。</string>
+    <string name="settings_wallpaper_unavailable">アプリ内の壁紙は変更しました。システムの壁紙は設定できませんでした: %1$s</string>
+    <string name="settings_grid_preset">グリッドのサイズ</string>
+    <string name="settings_grid_value">%1$d × %2$d</string>
+    <string name="settings_grid_option">%1$d × %2$d(1 ページに %3$d 個)</string>
+    <string name="settings_grid_confirm_title">%1$d × %2$d のグリッドに変更しますか?</string>
+    <string name="settings_grid_confirm_message">アイコンは現在の順番で並べ直されます。元に戻すことはできません。適用しますか?</string>
+    <string name="settings_grid_confirm_apply">適用</string>
+    <string name="settings_grid_failed">グリッドのサイズを変更できませんでした</string>
+    <string name="settings_glass_level">ガラスのレベル</string>
+    <string name="settings_glass_auto">自動</string>
+    <string name="settings_glass_low">低</string>
+    <string name="settings_glass_high">高</string>
+    <string name="settings_glass_auto_desc">自動(端末に合わせる)</string>
+    <string name="settings_glass_low_desc">低に固定(すりガラスのカード、軽い)</string>
+    <string name="settings_glass_high_desc">高に固定(本物のガラス、負荷が大きい)</string>
+    <string name="settings_cancel">キャンセル</string>
+    <string name="settings_save_failed">設定を保存できませんでした</string>
+    <string name="home_settings">設定</string>
+
+    <string name="library_title">非表示のアプリ</string>
+    <string name="library_hidden_empty">非表示のアプリはありません</string>
+    <string name="library_launch_failed">アプリを開けませんでした</string>
+    <string name="library_unhide_failed">アプリを再表示できませんでした</string>
+
+    <!-- M7 Task 10: menu nhấn giữ icon -->
+    <string name="menu_app_info">アプリ情報</string>
+    <string name="menu_hide_app">アプリを非表示</string>
+    <string name="menu_edit_home">ホーム画面を編集</string>
+    <string name="menu_uninstall">アンインストール</string>
+    <string name="menu_action_failed">操作を完了できませんでした</string>
+    <string name="remove_app_title">「%1$s」を取り除きますか?</string>
+    <string name="remove_app_message">ホーム画面から取り除いても、アプリは App ライブラリに残ります。</string>
+    <string name="remove_app_delete">アプリを削除</string>
+    <string name="remove_app_from_home">ホーム画面から取り除く</string>
+    <string name="remove_app_cancel">キャンセル</string>
+
+    <!-- M8b: tìm kiếm -->
+    <string name="search_field_hint">検索</string>
+    <string name="search_idle_hint">アプリ名を入力</string>
+    <string name="search_no_results">アプリが見つかりません</string>
+    <string name="search_pill_label">検索</string>
+    <string name="search_pill_page_description">%2$d ページ中 %1$d ページ目</string>
+    <string name="search_clear">検索をクリア</string>
+    <string name="search_cancel">キャンセル</string>
+    <!-- G2a A1a: tên hiển thị khi thư mục chưa đặt tên -->
+    <string name="folder_default_title">フォルダ</string>
+    <!-- G2a B2: trang App Library ở cuối pager -->
+    <string name="library_page_group_social">ソーシャル</string>
+    <string name="library_page_group_entertainment">エンターテイメント</string>
+    <string name="library_page_group_game">ゲーム</string>
+    <string name="library_page_group_productivity">仕事効率化</string>
+    <string name="library_page_group_news">ニュース</string>
+    <string name="library_page_group_maps">マップ</string>
+    <string name="library_page_group_utilities">ユーティリティ</string>
+    <string name="library_page_group_other">その他</string>
+    <string name="lo_enable">アプリライブラリを有効にする</string>
+    <string name="lo_enable_description">ホーム画面の最後のページから先へスワイプ</string>
+    <string name="lo_style_header">表示スタイル</string>
+    <string name="lo_style_folders">カテゴリフォルダ</string>
+    <string name="lo_style_list">A–Z リスト</string>
+    <string name="lo_auto_categorize">アプリを自動で分類</string>
+    <string name="lo_auto_categorize_description">SNS、ユーティリティ、エンターテインメント…</string>
+    <string name="lo_suggestions">「提案」と「最近追加した項目」を表示</string>
+    <string name="lo_suggestions_description">ライブラリの最初の 2 つのフォルダ</string>
+    <string name="library_page_group_suggested">提案</string>
+    <string name="library_page_group_recent">最近追加した項目</string>
+    <string name="library_page_group_all">すべてのアプリ</string>
+    <string name="library_page_empty">アプリはまだありません</string>
+
+    <!-- G2b: kiểu icon -->
+    <string name="settings_icon_style">アイコンのスタイル</string>
+    <string name="settings_icon_style_default">デフォルト</string>
+    <string name="settings_icon_style_transparent">クリア</string>
+    <string name="settings_icon_style_tinted">色付き</string>
+    <string name="settings_icon_style_3d">3D</string>
+    <string name="settings_icon_style_glass">ガラス</string>
+    <string name="settings_icon_tint">色</string>
+    <string name="settings_icon_tint_blue">ブルー</string>
+    <string name="settings_icon_tint_pink">ピンク</string>
+    <string name="settings_icon_tint_green">グリーン</string>
+    <string name="settings_icon_tint_orange">オレンジ</string>
+    <string name="settings_icon_tint_graphite">グラファイト</string>
+    <!-- IP -->
+    <string name="settings_icon_pack">アイコンパック</string>
+    <string name="settings_icon_pack_none">なし</string>
+    <string name="settings_icon_pack_empty">アイコンパックが見つかりません。アプリストアからアイコンパックをインストールしてから、ここに戻ってください。</string>
+    <string name="settings_icon_pack_ok">閉じる</string>
+
+    <!-- AN Task 5: nhãn trợ năng cho "+N" trong cụm icon mini của ô nhóm -->
+
+    <!-- G2c: widget tự vẽ -->
+    <string name="widget_clock_description">時計、%1$s</string>
+    <string name="widget_calendar_description">カレンダー、%1$s</string>
+    <string name="home_add_widget">ウィジェット</string>
+    <string name="widget_picker_title">ウィジェットを追加</string>
+    <string name="widget_name_clock">時計</string>
+    <string name="widget_name_calendar">カレンダー</string>
+    <string name="widget_size_label">%1$d×%2$d</string>
+    <string name="widget_remove_title">ウィジェットを削除しますか?</string>
+    <string name="widget_remove_message">ウィジェットはホーム画面から削除されます。ウィジェットボタンから再び追加できます。</string>
+    <string name="widget_remove_confirm">削除</string>
+    <string name="widget_remove_cancel">キャンセル</string>
+    <!-- GS: mức kính Tùy chỉnh -->
+    <string name="gs_level_custom">カスタム</string>
+    <string name="gs_level_custom_desc">カスタム(下で要素ごとに本物のガラスかすりガラスかを選択)</string>
+    <string name="gs_custom_header">カスタムガラス(オン = 本物のガラス、オフ = すりガラス)</string>
+    <string name="gs_custom_dock">Dock</string>
+    <string name="gs_custom_panels">パネル(フォルダ、ライブラリのグループ)</string>
+    <string name="gs_custom_search_bar">検索バー</string>
+    <string name="gs_custom_pill">検索ボタン / ページドット</string>
+    <string name="gs_warn_title">本物のガラスは重くなることがあります</string>
+    <string name="gs_warn_message">この端末は Android 13 未満のため、本物のガラスは CPU で描画され、特にパネルを開くときに表示がカクつくことがあります(Vsmart Live 4 で計測: 本物のガラスのパネルは大きくカクつきました)。いつでもオフに戻せます。</string>
+    <string name="gs_warn_enable">それでもオンにする</string>
+    <!-- M8d Task 3: mục Cài đặt hệ thống trong kết quả tìm kiếm. *_kw là từ khóa phân cách bằng dấu phẩy (gõ không dấu cũng khớp). -->
+    <string name="search_extras_setting_wifi">Wi-Fi</string>
+    <string name="search_extras_setting_bluetooth">Bluetooth</string>
+    <string name="search_extras_setting_airplane">機内モード</string>
+    <string name="search_extras_setting_mobile">モバイルネットワーク</string>
+    <string name="search_extras_setting_data_usage">データ使用量</string>
+    <string name="search_extras_setting_display">ディスプレイ</string>
+    <string name="search_extras_setting_sound">音</string>
+    <string name="search_extras_setting_notification">通知</string>
+    <string name="search_extras_setting_dnd">サイレントモード</string>
+    <string name="search_extras_setting_battery">電池とバッテリーセーバー</string>
+    <string name="search_extras_setting_location">位置情報</string>
+    <string name="search_extras_setting_datetime">日付と時刻</string>
+    <string name="search_extras_setting_language">言語</string>
+    <string name="search_extras_setting_storage">ストレージ</string>
+    <string name="search_extras_setting_security">セキュリティ</string>
+    <string name="search_extras_setting_privacy">プライバシー</string>
+    <string name="search_extras_setting_accessibility">ユーザー補助</string>
+    <string name="search_extras_setting_apps">アプリ</string>
+    <string name="search_extras_setting_default_apps">デフォルトのアプリ</string>
+    <string name="search_extras_setting_keyboard">キーボード</string>
+    <string name="search_extras_setting_cast">画面のキャスト</string>
+    <string name="search_extras_setting_nfc">NFC</string>
+    <string name="search_extras_setting_vpn">VPN</string>
+    <string name="search_extras_setting_about">デバイス情報</string>
+    <string name="search_extras_setting_home">設定</string>
+    <string name="search_extras_kind_setting">設定</string>
+    <string name="search_extras_setting_description">設定: %1$s</string>
+    <string name="search_recent_collapse">表示を減らす</string>
+    <string name="search_recent_expand">さらに表示</string>
+
+    <!-- M8d Task 5: tiêu đề nhóm khi ô tìm kiếm trống -->
+    <string name="search_extras_header_recent">最近</string>
+    <string name="search_extras_header_frequent">おすすめ</string>
+    <string name="search_extras_header_trending">人気の検索</string>
+
+    <!-- M8d Task 4 -->
+    <string name="search_extras_shortcut_description">%1$s、%2$s のショートカット</string>
+
+    <!-- M8d Task 6: khối "Tìm kiếm" trong Cài đặt -->
+    <string name="settings_search_system">システム設定</string>
+    <string name="settings_search_shortcuts">アプリのショートカット</string>
+    <string name="settings_search_shortcuts_need_default">ショートカットを使うにはデフォルトのランチャーに設定してください</string>
+    <string name="settings_search_suggestions">おすすめと最近のアプリ</string>
+    <string name="settings_search_suggestions_off_message">オフにすると、端末に保存されたアプリの履歴が削除されます。</string>
+    <string name="settings_search_suggestions_off_confirm">オフにして削除</string>
+    <string name="settings_search_clear">アプリの履歴を消去</string>
+    <string name="settings_search_clear_message">端末に保存された最近のアプリとおすすめを削除しますか?</string>
+    <string name="settings_search_clear_confirm">削除</string>
+
+    <!-- SM: công tắc kính của menu nhấn giữ icon (khối Tùy chỉnh, cùng nghĩa bốn công tắc trên) -->
+    <string name="gs_custom_menu_header">アイコン長押しメニュー(オン = 本物のガラス、オフ = すりガラス)</string>
+    <string name="gs_custom_icon_menu">長押しメニューのガラス</string>
+
+    <!-- G3a: tìm danh bạ trong ô tìm kiếm -->
+    <string name="search_contacts_kind">連絡先</string>
+    <string name="search_contacts_prompt_title">連絡先を表示</string>
+    <string name="search_contacts_prompt_subtitle">連絡先へのアクセスを許可すると、ここで人を検索できます。連絡先は端末内で読み取るだけで、保存されません。</string>
+    <string name="search_contacts_prompt_settings_subtitle">設定を開いて連絡先の権限を許可してください</string>
+    <string name="search_contacts_prompt_dismiss">連絡先の候補を非表示</string>
+    <string name="search_contacts_call">%1$s に電話</string>
+    <string name="search_contacts_message">%1$s にメッセージ</string>
+    <string name="search_contacts_action_failed">連絡先、電話、メッセージを開けませんでした</string>
+    <string name="settings_search_contacts">連絡先を検索</string>
+    <string name="settings_search_contacts_description">オフにしても検索から連絡先が非表示になるだけで、Android の権限は取り消されません。</string>
+
+    <!-- WP: nhãn dòng Ảnh nền khi dùng ảnh mặc định (ảnh iOS 27 chỉ để thử, xóa trước bản cửa hàng) -->
+    <string name="settings_backdrop_default">デフォルト(iOS 27、テスト画像)</string>
+
+    <!-- G3e: widget thời tiết (khối weather_) -->
+    <string name="weather_name">天気</string>
+    <string name="weather_no_key">天気を利用できません</string>
+    <string name="weather_no_location">都市を選択</string>
+    <string name="weather_no_location_hint">タップして選択</string>
+    <string name="weather_loading">読み込み中…</string>
+    <string name="weather_error_network">接続なし</string>
+    <string name="weather_error_key">無効なキー</string>
+    <string name="weather_error_rate">リクエスト上限を超えました</string>
+    <string name="weather_error_not_found">場所が見つかりません</string>
+    <string name="weather_error_generic">データエラー</string>
+    <string name="weather_cond_clear">晴れ</string>
+    <string name="weather_cond_partly_cloudy">晴れ時々曇り</string>
+    <string name="weather_cond_cloudy">曇り</string>
+    <string name="weather_cond_rain">雨</string>
+    <string name="weather_cond_thunderstorm">雷雨</string>
+    <string name="weather_cond_snow">雪</string>
+    <string name="weather_cond_fog">霧</string>
+    <string name="weather_cond_unknown">不明</string>
+    <!-- Cao/thấp là trong 24 giờ tới, KHÔNG phải cả ngày dương lịch (gói Free không có trường đó) -->
+    <string name="weather_updated_at">%1$s に更新</string>
+    <string name="weather_description">%1$s、%2$d %6$s、%3$s。今後 24 時間の最高 %4$d %6$s、最低 %5$d %6$s</string>
+    <string name="weather_description_state">天気: %1$s</string>
+
+    <!-- G3e: bảng Thời tiết (bottom sheet mở khi bấm widget) -->
+    <string name="weather_sheet_title">天気</string>
+    <string name="weather_sheet_hint">都市名</string>
+    <string name="weather_sheet_search">検索</string>
+    <string name="weather_sheet_no_key">現在、天気を利用できません。しばらくしてからもう一度お試しください。</string>
+    <string name="weather_sheet_searching">検索中…</string>
+    <string name="weather_sheet_not_found">都市が見つかりません</string>
+    <string name="weather_sheet_refreshing">更新中…</string>
+    <string name="weather_sheet_hi_lo_note">最高/最低は今後 24 時間の値で、1 日全体の値ではありません。</string>
+
+    <!-- G3d: Trung tâm điều khiển (khối cc_) -->
+    <string name="cc_service_label">OS26 Launcher のコントロールセンター</string>
+    <string name="cc_title">コントロールセンター</string>
+    <string name="cc_state_on">オン</string>
+    <string name="cc_state_off">オフ</string>
+    <string name="cc_enable">コントロールセンターをオンにする</string>
+    <string name="cc_enable_desc">どの画面でも右上の角から下にスワイプ</string>
+    <string name="cc_enable_needs_permissions">表示するには下の最初の 2 つの権限を許可してください</string>
+    <string name="cc_header_permissions">権限</string>
+    <string name="cc_perm_overlay">他のアプリの上に重ねて表示</string>
+    <string name="cc_perm_listener">通知へのアクセス</string>
+    <string name="cc_perm_battery">バッテリーの制限なし(推奨)</string>
+    <string name="cc_perm_write_settings">システム設定の変更</string>
+    <string name="cc_perm_dnd">サイレントモードへのアクセス</string>
+    <string name="cc_perm_bluetooth">付近のデバイス(Bluetooth)</string>
+    <string name="cc_perm_granted">許可済み</string>
+    <string name="cc_perm_missing">未許可</string>
+    <string name="cc_perm_open_failed">この端末では権限の画面を開けません</string>
+    <string name="cc_tile_airplane">機内モード</string>
+    <string name="cc_tile_cellular">モバイルデータ</string>
+    <string name="cc_tile_wifi">Wi-Fi</string>
+    <string name="cc_tile_bluetooth">Bluetooth</string>
+    <string name="cc_tile_rotation">画面の向きのロック</string>
+    <string name="cc_tile_dnd">サイレントモード</string>
+    <string name="cc_tile_flashlight">ライト</string>
+    <string name="cc_tile_timer">タイマー</string>
+    <string name="cc_tile_calculator">計算機</string>
+    <string name="cc_tile_camera">カメラ</string>
+    <string name="cc_brightness">明るさ</string>
+    <string name="cc_volume">音量</string>
+    <string name="cc_media_idle">再生していません</string>
+    <string name="cc_no_app">対応するアプリが見つかりません</string>
+    <string name="cc_unavailable">この端末は対応していません</string>
+    <string name="cc_auto_brightness">明るさの自動調節</string>
+    <string name="cc_screen_timeout">画面消灯</string>
+    <string name="cc_timeout_seconds">%1$d秒</string>
+    <string name="cc_timeout_minutes">%1$d分</string>
+    <string name="cc_battery_percent">%1$d%%</string>
+    <string name="cc_block_connectivity">接続。長押しで展開</string>
+    <string name="cc_block_media">ミュージック。長押しでプレーヤーを開く</string>
+    <string name="cc_open_settings">コントロールセンターの設定</string>
+    <string name="cc_page_main">コントロールのページ</string>
+    <string name="cc_page_media">ミュージックのページ</string>
+    <string name="cc_page_network">接続のページ</string>
+    <string name="cc_media_play">再生</string>
+    <string name="cc_media_pause">一時停止</string>
+    <string name="cc_media_next">次の曲</string>
+    <string name="cc_media_previous">前の曲</string>
+    <string name="cc_media_unknown_artist">不明なアーティスト</string>
+    <string name="cc_media_output_phone">このスマートフォン</string>
+    <string name="cc_media_output">出力先</string>
+    <string name="cc_tile_sync">同期</string>
+    <string name="cc_tile_hotspot">インターネット共有</string>
+    <string name="cc_tile_screen_record">画面収録</string>
+    <string name="cc_tile_battery">低電力モード</string>
+    <string name="cc_tile_voice_memo">ボイスメモ</string>
+    <string name="cc_tile_settings">設定</string>
+    <string name="cc_tile_dark_mode">ダークモード</string>
+    <string name="cc_tile_notes">メモ</string>
+    <string name="cc_tile_night_shift">Night Shift</string>
+    <string name="cc_tile_app">アプリ</string>
+    <string name="cc_customize_tiles">コントロールをカスタマイズ</string>
+    <string name="cc_tiles_count">%1$d 個</string>
+    <string name="cc_tiles_included">使用中</string>
+    <string name="cc_tiles_more">その他のコントロール</string>
+    <string name="cc_tiles_apps">アプリ</string>
+    <string name="cc_tiles_add">%1$s を追加</string>
+    <string name="cc_tiles_remove">%1$s を削除</string>
+    <string name="cc_tiles_reorder">ドラッグで並べ替え</string>
+    <string name="cc_tiles_full">最大 %1$d 個です。先に 1 つ削除してください</string>
+    <string name="cc_vibrate">開くときに振動</string>
+    <string name="cc_header_look">外観</string>
+    <string name="cc_header_features">機能</string>
+    <string name="cc_background">背景</string>
+    <string name="cc_background_wallpaper">ランチャーの壁紙</string>
+    <string name="cc_background_custom">選んだ画像</string>
+    <string name="cc_background_none">画像なし(後ろのアプリが見える)</string>
+    <string name="cc_background_failed">この画像を読み込めませんでした</string>
+    <string name="cc_blur">背景をぼかす</string>
+    <string name="cc_recorder_app">画面収録アプリ</string>
+    <string name="cc_recorder_none">未選択</string>
+    <string name="cc_edge_settings">スワイプ領域</string>
+    <string name="cc_edge_position">位置</string>
+    <string name="cc_edge_shape">サイズ</string>
+    <string name="cc_edge_color">線の色</string>
+    <string name="cc_edge_top_right">上端、右側</string>
+    <string name="cc_edge_top_left">上端、左側</string>
+    <string name="cc_edge_right_side">右端</string>
+    <string name="cc_edge_left_side">左端</string>
+    <string name="cc_edge_length">長さ</string>
+    <string name="cc_edge_thickness">タッチ領域の太さ</string>
+    <string name="cc_edge_offset">画面上端からの距離</string>
+    <string name="cc_edge_note">調整するとスワイプ領域が画面上ですぐに変わります。左端または右端では、内側へのスワイプでも下へのスワイプでも開けます。</string>
+    <string name="cc_night_shift_manual">今すぐオン</string>
+    <string name="cc_night_shift_warmth">色温度</string>
+    <string name="cc_night_shift_schedule">スケジュール</string>
+    <string name="cc_night_shift_scheduled">時間指定</string>
+    <string name="cc_night_shift_from">開始</string>
+    <string name="cc_night_shift_to">終了</string>
+    <string name="cc_night_shift_scheduled_summary">%1$s → %2$s</string>
+    <string name="cc_night_shift_note">Night Shift は画面に暖色のレイヤーを重ねます。コントロールセンターと同じく「他のアプリの上に重ねて表示」と「通知へのアクセス」の権限が必要です。スクリーンショットの色は変わりません。</string>
+    <!-- G2d: trang chủ Cài đặt (tiền tố settings_hub_) -->
+    <string name="settings_hub_group_general">一般</string>
+    <string name="settings_hub_group_appearance">外観</string>
+    <string name="settings_hub_group_home_screen">ホーム画面</string>
+    <string name="settings_hub_group_transitions">トランジション</string>
+    <string name="settings_hub_group_icons">アイコンのカスタマイズ</string>
+    <string name="settings_hub_group_contact">お問い合わせ</string>
+    <string name="settings_hub_theme">デフォルトのホーム画面</string>
+    <string name="settings_hub_general">一般</string>
+    <string name="settings_hub_language">言語</string>
+    <string name="settings_hub_weather">天気</string>
+    <string name="settings_hub_location">位置情報</string>
+    <string name="settings_hub_glass">Liquid Glass</string>
+    <string name="settings_hub_wallpaper">壁紙</string>
+    <string name="settings_hub_icon_set">アイコン</string>
+    <string name="settings_hub_swipe">ページのスクロール</string>
+    <string name="settings_hub_library">App ライブラリ</string>
+    <string name="settings_hub_search">検索の設定</string>
+    <string name="settings_hub_badges">通知バッジ</string>
+    <string name="settings_hub_transitions">トランジション効果</string>
+    <string name="settings_hub_app_effects">アプリの効果</string>
+    <string name="settings_hub_change_icon">アプリのアイコンを変更</string>
+    <string name="settings_hub_rename_apps">アプリ名を変更</string>
+    <string name="settings_hub_rate">アプリを評価</string>
+    <string name="settings_hub_more_apps">他のアプリ</string>
+    <string name="settings_hub_privacy">プライバシーポリシー</string>
+    <!-- RS Task 2: card "Launcher hiện tại" đầu trang chủ Cài đặt (Figma 302:1522). -->
+    <string name="settings_launcher_card_current">選択中のホーム画面</string>
+    <string name="settings_launcher_card_not_default">デフォルトに未設定</string>
+    <string name="settings_launcher_card_custom">カスタム</string>
+    <string name="settings_launcher_card_welcome">ようこそ</string>
+    <string name="settings_launcher_card_welcome_desc">あなただけのコントロールセンター。細部までカスタマイズして、ホーム画面をあなたらしいスタイルに。</string>
+    <string name="settings_launcher_card_explore">見てみる</string>
+    <!-- HC Task 1: Hero Card, nút trạng thái "Chưa" và toast Chưa → Đã (Figma 464:2199/464:2648). -->
+    <string name="hero_try">試してみる</string>
+    <string name="hero_default_set_toast">デフォルトに設定しました</string>
+    <!-- HC Task 3: tiêu đề màn 6.2 (Figma "Ứng dụng khác"; hàng trên trang chủ giữ settings_hub_more_apps). -->
+    <string name="settings_more_apps_title">他のアプリ</string>
+    <!-- RS Task 6: màn 1.1 Màn hình chính mặc định (Figma 302:1738). -->
+    <string name="settings_theme_subtitle">ランチャーごとにホーム画面、アイコン、効果が変わります。</string>
+    <string name="settings_theme_apply_default">適用してデフォルトに設定</string>
+    <string name="settings_theme_apply">適用</string>
+    <!-- RS Task 7: card xem trước thời tiết (dữ liệu mẫu) ở màn 1.4. -->
+    <string name="settings_weather_preview_degree">%1$d°</string>
+    <string name="settings_weather_preview_high_low">最高 %1$s · 最低 %2$s</string>
+    <string name="settings_weather_preview_now">今</string>
+    <string name="settings_weather_preview_hour">%1$d時</string>
+    <!-- RS Task 8: hỏi trước khi đặt nền màu từ ô giữ chỗ ở màn 2.2. -->
+    <string name="wallpaper_color_confirm_title">「%1$s」を壁紙にしますか?</string>
+    <string name="wallpaper_color_confirm_message">ホーム画面にこの壁紙が使われます。</string>
+    <string name="wallpaper_color_confirm_ok">確認</string>
+    <!-- WI: tên 5 hình nền cài sẵn (ảnh thử, xem plan WI) ở 0.3 và 2.2; nút ngắn của hộp hỏi đặt mặc định khi về Home. -->
+    <string name="default_prompt_set">今すぐ設定</string>
+    <!-- RS Task 8: giờ minh họa trên ô ảnh nền (Figma 2.2). -->
+    <string name="settings_theme_note">ホーム画面のアプリを選ぶシステムのダイアログが開きます。</string>
+    <string name="settings_hub_version">バージョン %1$s</string>
+    <!-- AB: nhóm Liên hệ (tiền tố about_) -->
+    <string name="about_rate_title">このアプリはいかがですか?</string>
+    <string name="about_rate_message">評価はランチャーの改善に役立ちます。</string>
+    <string name="about_rate_later">あとで</string>
+    <string name="about_rate_send">評価を送信</string>
+    <string name="about_open_failed">この端末ではリンクを開けませんでした</string>
+    <string name="about_privacy_open">ブラウザで開く</string>
+    <string name="about_privacy_footer">ポリシーはウェブサイトから読み込まれ、端末のブラウザで開きます。</string>
+    <string name="about_more_apps_featured">おすすめ</string>
+    <string name="about_more_apps_others">他のアプリ</string>
+    <string name="about_more_apps_download">入手</string>
+    <string name="about_more_apps_footer">提供: %1$s</string>
+
+    <!-- WU: Cài đặt → Thời tiết (tiền tố settings_weather_) -->
+    <string name="settings_weather_unit">温度の単位</string>
+    <string name="settings_weather_unit_value_c">°C</string>
+    <string name="settings_weather_unit_value_f">°F</string>
+    <string name="settings_weather_a11y_c">摂氏</string>
+    <string name="settings_weather_a11y_f">華氏</string>
+    <!-- HT: công tắc Màn hình chính (tiền tố ht_) -->
+    <string name="ht_search_open_header">開き方</string>
+    <string name="ht_search_in_header">検索対象</string>
+    <string name="ht_search_swipe_down">下にスワイプして検索</string>
+    <string name="ht_search_swipe_down_description">ホーム画面の中央で下にスワイプ</string>
+    <string name="ht_search_pill">画面上の検索ボタン</string>
+    <string name="ht_search_pill_description">Dock の上に表示</string>
+    <string name="ht_swipe_page_dots">ページドットを表示</string>
+    <string name="ht_swipe_page_dots_description">Dock の上にページの位置を表示</string>
+    <string name="tv_swipe_today">ウィジェット画面</string>
+    <string name="tv_swipe_today_description">最初のページで右にスワイプしてウィジェットを開きます</string>
+    <string name="tv_edit">編集</string>
+    <!-- RN: Thay đổi tên ứng dụng (tiền tố settings_rename_) -->
+    <string name="settings_rename_header">アプリに好きな名前を付けられます。元の名前にいつでも戻せます。</string>
+    <string name="settings_rename_original">元の名前: %1$s</string>
+    <string name="settings_rename_dialog_title">アプリ名を変更</string>
+    <string name="settings_rename_hint">新しい名前</string>
+    <string name="settings_rename_save">保存</string>
+    <string name="settings_rename_restore">元に戻す</string>
+    <!-- WX: thời tiết nhiều địa điểm (tiền tố wx_) -->
+    <string name="wx_places_header">登録した場所</string>
+    <string name="wx_places_current">現在地</string>
+    <string name="wx_places_current_unset">不明</string>
+    <string name="wx_places_current_manual">%1$s(手動で選択)</string>
+    <string name="wx_places_add">+ 場所を追加</string>
+    <string name="wx_places_full">%1$d 件に達しました</string>
+    <string name="wx_places_hint">天気ウィジェットごとに、このリストから場所を 1 つ表示します(ウィジェットをタップ)。</string>
+    <string name="wx_places_duplicate">この場所はすでにリストにあります</string>
+    <string name="wx_places_remove_title">場所を削除しますか?</string>
+    <string name="wx_places_remove_message">%1$s をリストから削除します。この場所を表示しているウィジェットは現在地に切り替わります。</string>
+    <string name="wx_places_remove_confirm">削除</string>
+    <string name="wx_search_add_title">場所を追加</string>
+    <string name="wx_loc_perm_header">位置情報の権限</string>
+    <string name="wx_loc_perm">位置情報の権限</string>
+    <string name="wx_loc_perm_granted">許可済み</string>
+    <string name="wx_loc_perm_denied">未許可</string>
+    <string name="wx_loc_mode_header">位置の決め方</string>
+    <string name="wx_loc_mode_auto">自動</string>
+    <string name="wx_loc_mode_manual">手動で選択</string>
+    <!-- RS Task 3: dòng mô tả hai hàng radio (Figma 1.5 302:1971). -->
+    <string name="wx_loc_mode_auto_desc">移動すると更新されます</string>
+    <string name="wx_loc_mode_manual_desc">位置情報の権限は不要です</string>
+    <string name="wx_loc_update">位置を更新</string>
+    <string name="wx_loc_updating">現在地を取得中…</string>
+    <string name="wx_loc_city">都市</string>
+    <string name="wx_loc_city_unset">未選択</string>
+    <string name="wx_loc_pick_city">都市を選択</string>
+    <string name="wx_loc_unavailable">現在地を取得できませんでした。位置情報サービスをオンにするか、都市を手動で選んでください。</string>
+    <string name="wx_loc_denied">位置情報の権限がありません。都市を手動で選ぶこともできます。</string>
+    <string name="wx_loc_denied_settings">位置情報の権限がブロックされています。アプリの設定で許可してください。</string>
+    <string name="wx_loc_privacy">おおよその位置情報のみを使い、その都度 1 回だけ取得します: 「位置を更新」をタップしたとき、または(自動モードで権限がある場合)現在地を使う天気ウィジェットが表示されている間に最大 2 時間に 1 回です。位置は 5 km 以上移動したときだけ変わります。バックグラウンドでは動作せず、継続的な追跡もしません。手動で選択するモードは権限が不要で、位置情報を読み取りません。</string>
+    <string name="wx_sheet_for_widget">このウィジェットの表示:</string>
+    <string name="wx_sheet_current_named">現在地: %1$s</string>
+    <string name="wx_sheet_current_unset">現在地(不明)</string>
+    <string name="wx_sheet_no_location">現在地が不明です。設定 → 位置情報 で設定してください。</string>
+    <string name="wx_sheet_manage">場所を管理</string>
+
+    <!-- GT: tinh chỉnh kính dùng chung -->
+    <string name="gt_title">ガラスの調整</string>
+    <string name="gt_state_default">デフォルト</string>
+    <string name="gt_state_custom">調整済み</string>
+    <string name="gt_preview">ガラスのプレビュー</string>
+    <string name="gt_header">すべてのガラス面に適用され、ホーム画面に戻ると反映されます</string>
+    <string name="gt_reset_header">元に戻す</string>
+    <string name="gt_refraction">屈折</string>
+    <string name="gt_refraction_desc">ガラス越しに見える背景を拡大します。0 = 拡大なし。</string>
+    <string name="gt_gloss">光沢</string>
+    <string name="gt_gloss_desc">50 より上で明るく、50 より下で暗くなります。</string>
+    <string name="gt_blur">ぼかし</string>
+    <string name="gt_blur_desc">ガラスの後ろの背景のぼかし具合です。</string>
+    <string name="gt_corner">角の丸み</string>
+    <string name="gt_corner_desc">50 = そのまま、0 = 四角。アプリのアイコンの形は変わりません。</string>
+    <string name="gt_reset">デフォルトに戻す</string>
+
+    <!-- WN: thông báo thời tiết (tiền tố wn_) -->
+    <string name="wn_channel_group">天気</string>
+    <string name="wn_channel_daily">毎日の予報</string>
+    <string name="wn_channel_tomorrow">明日の予報</string>
+    <string name="wn_title_today">%1$s · 今日</string>
+    <string name="wn_title_tomorrow">%1$s · 明日</string>
+    <string name="wn_text">%1$s、最高 %2$d%4$s、最低 %3$d%4$s</string>
+    <string name="wn_precip">%1$s から %2$s まで雨または雪</string>
+    <string name="wn_public_title">天気予報</string>
+    <string name="wn_public_today">今日の予報</string>
+    <string name="wn_public_tomorrow">明日の予報</string>
+    <string name="wn_settings_header">通知</string>
+    <string name="wn_switch_daily">毎日の予報</string>
+    <string name="wn_switch_daily_desc">毎朝 7:00</string>
+    <string name="wn_switch_tomorrow">明日の予報</string>
+    <string name="wn_switch_tomorrow_desc">毎晩 21:00</string>
+    <string name="wn_footer_hint">保存されている現在地を使い、バックグラウンドで位置情報を取得することはありません。Android の電池の節約のため、通知が最大 1 時間ほど遅れることがあります。接続が必要です。接続がない場合は、保存されたデータが新しければそれを使います。</string>
+    <string name="wn_footer_no_key">天気の通知には OpenWeatherMap のキーが必要ですが、このビルドには設定されていません。</string>
+    <string name="wn_footer_no_place">現在地が不明なため、通知はまだ送られていません。設定 → 位置情報 で設定してください。</string>
+    <string name="wn_footer_blocked">アプリの通知がシステム設定でオフになっているため、通知は表示されません。アプリの通知設定でオンに戻してください。</string>
+    <string name="wn_toast_denied">通知の権限がないため、オンにできませんでした。</string>
+    <string name="wn_toast_blocked">アプリの通知がオフまたはブロックされています。アプリの通知設定でオンにしてください。</string>
+    <!-- G3b: widget Ảnh (khối ph_) -->
+    <string name="ph_name">写真</string>
+    <string name="ph_empty_title">タップして写真を選択</string>
+    <string name="ph_desc_empty">写真、写真なし、タップして選択</string>
+    <string name="ph_desc_photos">写真、%1$d 枚</string>
+    <string name="ph_activity_title">ウィジェットの写真</string>
+    <string name="ph_add_photo">+ 写真を追加</string>
+    <string name="ph_choose_photo">写真を選択</string>
+    <string name="ph_empty_hint">ウィジェットに表示する写真を選んでください</string>
+    <string name="ph_rotates">複数の写真があると、ホーム画面の表示中に 1 時間ごとに切り替わります。</string>
+    <string name="ph_importing">写真を読み込み中</string>
+    <string name="ph_remove_glyph">✕</string>
+    <string name="ph_remove_desc">写真 %1$d を削除</string>
+    <string name="ph_thumb_desc">写真 %1$d</string>
+    <string name="ph_remove_title">写真を削除しますか?</string>
+    <string name="ph_remove_message">写真はこのウィジェットから削除されます。</string>
+    <string name="ph_remove_confirm">削除</string>
+    <string name="ph_cancel">キャンセル</string>
+    <string name="ph_import_failed">一部の写真を読み込めませんでした。</string>
+    <string name="ph_too_many">1 つのウィジェットには最大 %1$d 枚までです。最初の写真だけを追加しました。</string>
+    <string name="ph_full">このウィジェットにはすでに %1$d 枚あります。別の写真を追加するには何枚か削除してください。</string>
+    <string name="ph_crop_title">写真 %1$d/%2$d を切り抜き</string>
+    <string name="ph_crop_edit_title">切り抜き直す</string>
+    <string name="ph_crop_hint">ドラッグで移動、ピンチで拡大</string>
+    <string name="ph_crop_desc">切り抜き範囲。ドラッグで移動、ピンチで拡大。</string>
+    <string name="ph_crop_done">完了</string>
+    <string name="ph_crop_skip">この写真をスキップ</string>
+    <string name="ph_discard_title">切り抜いていない写真を破棄しますか?</string>
+    <string name="ph_discard_message">切り抜いていない写真 %1$d 枚を破棄しますか?切り抜き済みの写真は残ります。</string>
+    <string name="ph_discard_confirm">破棄</string>
+    <string name="ph_discard_keep">切り抜きを続ける</string>
+    <!-- G3c: AppWidgetHost (tiền tố aw_) -->
+    <string name="aw_unavailable">ウィジェットを利用できません</string>
+    <string name="aw_error_load">ウィジェットを読み込めませんでした</string>
+    <string name="aw_section_title">アプリのウィジェット</string>
+    <string name="aw_section_loading">リストを読み込み中…</string>
+    <plurals name="aw_widget_count">
+        <item quantity="other">%1$d 個のウィジェット</item>
+    </plurals>
+    <string name="aw_chip_description">サイズ %1$d×%2$d を追加</string>
+    <string name="aw_too_large">グリッドには大きすぎます</string>
+    <string name="aw_busy">別のウィジェットを追加中です</string>
+    <string name="aw_add_failed">ウィジェットを追加できませんでした</string>
+
+    <!-- DS3: chuỗi của thành phần v3 (core/designsystem). -->
+    <string name="ds_back">戻る</string>
+    <string name="ds_nav_back_default">設定</string>
+    <string name="ds_nav_back_desc">戻る、%1$s</string>
+    <string name="ds_close">閉じる</string>
+    <string name="ds_onboarding_skip">スキップ</string>
+
+    <!-- OB: Onboarding 0.1–0.5 (chữ theo Figma 302:3673) -->
+    <string name="onboarding_start">はじめる</string>
+    <string name="onboarding_continue">続ける</string>
+    <string name="onboarding_set_default">デフォルトに設定</string>
+    <string name="onboarding_later">あとで</string>
+    <string name="onboarding_go_settings">設定へ</string>
+    <string name="onboarding_welcome_title">スマートフォンにリキッドグラスの見た目を</string>
+    <string name="onboarding_welcome_subtitle">透明なアイコン、鮮やかな壁紙、なめらかな効果 — 数ステップで始められます。</string>
+    <string name="onboarding_theme_title">スタイルを選択</string>
+    <string name="onboarding_theme_subtitle">設定でいつでも変更できます。</string>
+    <string name="onboarding_theme_liquid_glass_27">Liquid Glass 27</string>
+    <string name="onboarding_theme_liquid_glass_27_desc">透明、屈折</string>
+    <string name="onboarding_theme_classic_26">Classic 26</string>
+    <string name="onboarding_theme_classic_26_desc">温かみ、やわらかい色のアイコン</string>
+    <string name="onboarding_theme_minimal">Minimal</string>
+    <string name="onboarding_theme_minimal_desc">シンプル、細い線</string>
+    <string name="onboarding_theme_dark_pro">Dark Pro</string>
+    <string name="onboarding_theme_dark_pro_desc">暗い背景、丸いアイコン</string>
+    <string name="onboarding_badge_new">新着</string>
+    <string name="onboarding_wallpaper_title">壁紙を選択</string>
+    <string name="onboarding_wallpaper_subtitle">良い壁紙はガラスの効果をより引き立てます。</string>
+    <string name="onboarding_default_title">%1$s をホーム画面に設定</string>
+    <string name="onboarding_default_subtitle">これでホームボタンを押すたびに新しい見た目が表示されます。</string>
+    <string name="onboarding_default_step1">下の「デフォルトに設定」をタップ</string>
+    <string name="onboarding_default_step2">システムのダイアログで %1$s を選択</string>
+    <string name="onboarding_done_title">準備ができました!</string>
+    <string name="onboarding_done_subtitle">新しい見た目を楽しみ、設定でいつでも調整できます。</string>
+    <string name="onboarding_done_theme">スタイル</string>
+    <string name="onboarding_done_wallpaper">壁紙</string>
+    <string name="onboarding_done_home">ホーム画面</string>
+    <string name="onboarding_done_home_set">デフォルトに設定済み</string>
+    <string name="onboarding_done_home_not_set">未設定</string>
+
+    <!-- LG: màn Ngôn ngữ (1.3), chip ngôn ngữ Onboarding 0.1, lý do lỗi đặt wallpaper -->
+    <string name="lang_system">システムに従う</string>
+    <string name="lang_system_desc">端末の言語を使用</string>
+    <string name="lang_search_hint">言語を検索</string>
+    <string name="lang_no_results">言語が見つかりません</string>
+    <string name="lang_chip_desc">言語: %1$s</string>
+    <string name="lang_name_vi">ベトナム語</string>
+    <string name="lang_name_en">英語</string>
+    <string name="lang_name_es">スペイン語</string>
+    <string name="lang_name_pt">ポルトガル語</string>
+    <string name="lang_name_id">インドネシア語</string>
+    <string name="lang_name_th">タイ語</string>
+    <string name="lang_name_ja">日本語</string>
+    <string name="lang_name_ko">韓国語</string>
+    <string name="lang_name_hi">ヒンディー語</string>
+    <string name="wallpaper_reason_unsupported">この端末は壁紙の設定に対応していません</string>
+    <string name="wallpaper_reason_not_allowed">システムがこのアプリに壁紙の設定を許可していません</string>
+    <string name="wallpaper_reason_read_failed">保存した画像を読み込めませんでした</string>
+    <string name="wallpaper_reason_out_of_memory">メモリが不足しています</string>
+    <!-- BG: màn 3.4 Huy hiệu thông báo (tiền tố badges_) -->
+    <string name="badges_perm_title">通知へのアクセスが必要です</string>
+    <string name="badges_perm_desc">アプリごとの未読通知を数えるために使います</string>
+    <string name="badges_perm_action">許可する</string>
+    <string name="badges_perm_open_failed">通知へのアクセス設定を開けませんでした</string>
+    <string name="badges_show">バッジを表示</string>
+    <string name="badges_style_header">バッジのスタイル</string>
+    <string name="badges_style_number">数字</string>
+    <string name="badges_style_dot">ドット</string>
+    <string name="badges_per_app_header">アプリごと</string>
+    <!-- TR: màn 4.1 Hiệu ứng chuyển cảnh -->
+    <string name="tr_intro">フォルダ、検索、アプリライブラリ、クイック設定を開くとき。</string>
+    <string name="tr_preview_description">プレビュー：フォルダを開く</string>
+    <string name="tr_style_smooth">スムーズ</string>
+    <string name="tr_style_smooth_description">デフォルト</string>
+    <string name="tr_style_fade">フェード</string>
+    <string name="tr_style_slide">スライド</string>
+    <string name="tr_style_zoom">ズーム</string>
+    <string name="tr_style_none">なし</string>
+    <string name="tr_style_none_description">最速</string>
+    <string name="tr_speed">速度</string>
+    <string name="tr_speed_slow">遅い</string>
+    <string name="tr_speed_medium">普通</string>
+    <string name="tr_speed_fast">速い</string>
+    <string name="tr_reduce_motion">視差効果を減らす</string>
+    <string name="tr_reduce_motion_description">ズーム／スライドの代わりにフェードを使用</string>
+    <!-- JS7: nút của hộp chọn giờ Night Shift (Compose) -->
+    <string name="cc_time_done">完了</string>
+    <!-- P2-9 / P2-9e (REF a013dd8): bảng chọn widget kiểu iOS, menu Sửa của edit mode; TV-2/TV-3 (REF 3ab9c20): Today View -->
+    <string name="wp_search_hint">ウィジェットを検索</string>
+    <string name="wp_add_widget">ウィジェットを追加</string>
+    <string name="wp_close">閉じる</string>
+    <string name="home_edit">編集</string>
+    <string name="home_wallpapers">壁紙</string>
+    <string name="wp_clock_small_title">アナログ時計</string>
+    <string name="wp_clock_small_desc">現在の時刻を表示します。</string>
+    <string name="wp_clock_wide_title">デジタル時計</string>
+    <string name="wp_clock_wide_desc">日付付きの大きなデジタル時刻。</string>
+    <string name="wp_calendar_small_title">今日</string>
+    <string name="wp_calendar_small_desc">今日の日付を表示します。</string>
+    <string name="wp_calendar_wide_title">月</string>
+    <string name="wp_calendar_wide_desc">今日の日付と今月のカレンダー。</string>
+    <string name="wp_weather_small_title">現在の天気</string>
+    <string name="wp_weather_small_desc">現在地の今の天気。</string>
+    <string name="wp_weather_wide_title">1時間ごとの予報</string>
+    <string name="wp_weather_wide_desc">現在の天気とこの先数時間。</string>
+    <string name="wp_photo_small_title">写真</string>
+    <string name="wp_photo_small_desc">写真または1時間ごとに変わるアルバムを表示します。</string>
+    <string name="wp_photo_wide_title">ワイド写真</string>
+    <string name="wp_photo_wide_desc">1時間ごとに変わる横長の写真またはアルバム。</string>
+    <string name="today_recents_empty">最近開いたアプリがここに表示されます</string>
+    <string name="today_recents_name">最近使ったアプリ</string>
+    <string name="today_recents_small_title">4個のアプリ</string>
+    <string name="today_recents_small_desc">最近開いた4個のアプリ。</string>
+    <string name="today_recents_wide_title">8個のアプリ</string>
+    <string name="today_recents_wide_desc">最近開いた8個のアプリ。</string>
+    <string name="today_widget_remove_message">ウィジェットは「今日」から削除されます。＋ボタンで再度追加できます。</string>
+
+    <!-- Dong bo tu REF HEAD -->
+    <string name="wallpaper_preset_lake">湖</string>
+    <string name="wallpaper_preset_blue_wave">ブルーウェーブ</string>
+    <string name="wallpaper_preset_red">レッド</string>
+    <string name="wallpaper_preset_sunset">夕焼け</string>
+    <string name="wallpaper_preset_silk">シルク</string>
+    <string name="wallpaper_preset_night_street">夜の街</string>
+    <string name="ds_step_indicator_desc">ステップ %1$d / %2$d</string>
+    <string name="wallpaper_target_sheet_title">壁紙を設定する画面</string> <!-- P3-2: Figma 2.2 popup 302:2090 -->
+    <string name="settings_search_recent_apps">最近使ったアプリ</string>
+    <string name="settings_search_recent_apps_description">最近開いたアプリを表示します。オフにすると記録は止まりますが、保存済みの履歴は残ります。</string>
+    <string name="ci_search_hint">アプリを検索</string>
+    <string name="ci_changed">変更済み</string>
+    <string name="ci_choose_new">新しいアイコンを選択</string>
+    <string name="ci_from_photos">写真から選ぶ</string>
+    <string name="ci_restore">元に戻す</string>
+    <string name="ci_save">保存</string>
+    <string name="ci_save_failed">アイコンを保存できませんでした</string>
+    <string name="ci_image_failed">この画像を開けませんでした</string>
+    <string name="ci_no_results">アプリが見つかりません</string>
+    <string name="ci_variant_description">アイコン候補 %1$d</string>
+    <string name="hl_intro">非表示のアプリはホーム画面、ライブラリ、検索結果に表示されません。</string>
+    <string name="hl_all_apps">すべてのアプリ</string>
+    <string name="hl_lock">指紋 / PIN でロック</string>
+    <string name="hl_lock_description">表示する前に認証</string>
+    <string name="hl_auth_title">非表示のアプリを開く</string>
+    <string name="hl_auth_subtitle">非表示のアプリを見るには本人確認をしてください</string>
+    <string name="hl_auth_use_device">画面ロックを使用</string>
+    <plurals name="hl_hidden_count">
+        <item quantity="other">%d 個を非表示</item>
+    </plurals>
+    <string name="icon_style_preview_description">選択中のアイコンスタイルのプレビュー</string>
+    <string name="settings_search_suggestions_description">検索欄が空のときに話題の検索を表示</string>
+</resources>

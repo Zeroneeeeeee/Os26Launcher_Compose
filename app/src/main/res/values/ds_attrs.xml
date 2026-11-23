@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DS3: attr của thành phần v3. Attr dùng chung giữa nhiều thành phần (vd dsTileColor cho DsIconTileView và DsRowView ở Task 6)
+     khai MỘT lần ở cấp ngoài, trong declare-styleable chỉ tham chiếu. -->
+<resources>
+    <!-- Thứ tự giá trị = thứ tự enum DsTileColor. -->
+    <attr name="dsTileColor" format="enum">
+        <enum name="blue" value="0" />
+        <enum name="violet" value="1" />
+        <enum name="sky" value="2" />
+        <enum name="amber" value="3" />
+        <enum name="green" value="4" />
+        <enum name="teal" value="5" />
+        <enum name="orange" value="6" />
+        <enum name="pink" value="7" />
+        <enum name="red" value="8" />
+        <enum name="slate" value="9" />
+    </attr>
+    <attr name="dsTileIcon" format="reference" />
+    <!-- Task 6, 7: dùng chung giữa DsRowView, DsNavBar, DsOnboardingTopBar. -->
+    <attr name="dsTitle" format="string" />
+    <attr name="dsShowBack" format="boolean" />
+
+    <declare-styleable name="DsIconTileView">
+        <attr name="dsTileIcon" />
+        <attr name="dsTileColor" />
+    </declare-styleable>
+
+    <!-- Task 4 -->
+    <declare-styleable name="DsButton">
+        <attr name="dsButtonVariant" format="enum">
+            <enum name="primary" value="0" />
+            <enum name="secondary" value="1" />
+        </attr>
+        <attr name="dsButtonSize" format="enum">
+            <enum name="l" value="0" />
+            <enum name="m" value="1" />
+            <enum name="s" value="2" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="DsBadgeView">
+        <attr name="dsBadgeType" format="enum">
+            <enum name="warning" value="0" />
+            <enum name="danger" value="1" />
+            <enum name="new_item" value="2" />
+        </attr>
+    </declare-styleable>
+
+    <!-- Task 5 -->
+    <declare-styleable name="DsSliderRow">
+        <attr name="dsLabel" format="string" />
+    </declare-styleable>
+
+    <!-- Task 6. Thứ tự giá trị = thứ tự enum DsRowType. -->
+    <declare-styleable name="DsRowView">
+        <attr name="dsRowType" format="enum">
+            <enum name="chevron" value="0" />
+            <enum name="value_row" value="1" />
+            <enum name="toggle" value="2" />
+            <enum name="radio" value="3" />
+            <enum name="plain" value="4" />
+        </attr>
+        <attr name="dsTitle" />
+        <attr name="dsDescription" format="string" />
+        <attr name="dsValue" format="string" />
+        <attr name="dsTileIcon" />
+        <attr name="dsTileColor" />
+        <attr name="dsShowDivider" format="boolean" />
+    </declare-styleable>
+
+    <!-- Task 7 -->
+    <declare-styleable name="DsNavBar">
+        <attr name="dsTitle" />
+        <attr name="dsBackLabel" format="string" />
+        <attr name="dsShowBack" />
+    </declare-styleable>
+
+    <declare-styleable name="DsOnboardingTopBar">
+        <attr name="dsShowBack" />
+        <attr name="dsShowSkip" format="boolean" />
+    </declare-styleable>
+</resources>

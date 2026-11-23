@@ -1,0 +1,11 @@
+# RB: keep rules cho ban release (R8 bat qua optimization.enable = true).
+# AGP gop moi file trong src/main/keepRules. Rule mac dinh (includeDefault = true, tuong duong
+# proguard-android-optimize.txt) van duoc ap dung; cac rule duoi day chi them cai du an can.
+# Rule nao cung phai co ly do. Khong dung rule rong kieu "-keep class gambi.** { *; }".
+
+# Lan dau KHONG doi ten class/field/method: giam rui ro reflection/JNI, giu stack trace va ten trong perfetto/dumpsys.
+# Xem xet bo dong nay sau khi hoi quy qua (plan RB, muc "Ngoai pham vi").
+-dontobfuscate
+
+# Giu so dong de stack trace tren ban release doc duoc.
+-keepattributes SourceFile,LineNumberTable

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- RA: hộp thoại xác nhận xóa app (RemoveAppDialog). -->
+    <color name="remove_app_card">#F02C2C2E</color>
+    <color name="remove_app_button">#1FFFFFFF</color>
+</resources>

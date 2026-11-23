@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- OB: dấu tick trắng trong ô chọn (Figma Check, nét 1.75 trên khung 14). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="14dp"
+    android:height="14dp"
+    android:viewportWidth="14"
+    android:viewportHeight="14">
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M2.92,7.29L5.83,9.92L11.08,4.08"
+        android:strokeWidth="1.75"
+        android:strokeColor="@color/ds_text_primary"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

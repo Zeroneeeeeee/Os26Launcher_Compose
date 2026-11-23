@@ -1,0 +1,717 @@
+<resources>
+    <!-- LG: bản dịch máy (Claude, 2026-11-18), tiếng Bồ Đào Nha Brazil, chưa có người bản ngữ duyệt. -->
+    <string name="app_name">OS26 Launcher</string>
+
+    <string name="app_launch_failed">Não foi possível abrir %1$s. O app pode ter sido desinstalado.</string>
+    <string name="home_set_default_failed">Não foi possível abrir o seletor de launcher padrão</string>
+
+    <!-- M7 Task 4: nút thoát chế độ chỉnh sửa. -->
+    <string name="home_done">Concluído</string>
+
+    <string name="wallpaper_dialog_title">Definir como plano de fundo</string>
+    <string name="wallpaper_dialog_skip">Não aplicar</string>
+    <string name="wallpaper_target_home">Tela inicial</string>
+    <string name="wallpaper_target_lock">Tela de bloqueio</string>
+    <string name="wallpaper_target_both">Ambas</string>
+    <string name="wallpaper_applied">Plano de fundo aplicado em: %1$s</string>
+    <string name="wallpaper_failed">Não foi possível aplicar o plano de fundo: %1$s</string>
+    <string name="common_unknown">motivo desconhecido</string>
+
+    <!-- M7 Task 9: Thư viện ứng dụng -->
+    <!-- M8a Task 3: màn Cài đặt -->
+    <string name="settings_loading">Carregando configurações</string>
+    <string name="settings_hidden_apps">Apps ocultos</string>
+    <string name="settings_show_labels">Mostrar nomes dos apps</string>
+    <string name="settings_nav_bar_hidden">Ocultar barra de navegação</string>
+    <string name="settings_nav_bar_hidden_description">Somente na tela inicial. Deslize para cima a partir da borda inferior para mostrá-la por um momento.</string>
+    <string name="settings_backdrop">Plano de fundo</string>
+    <string name="settings_backdrop_set">Imagem definida</string>
+    <string name="settings_backdrop_unset">Não escolhido</string>
+    <string name="settings_backdrop_failed">Não foi possível ler esta imagem. O plano de fundo atual foi mantido.</string>
+    <string name="settings_wallpaper_unavailable">Plano de fundo alterado no app. Não foi possível definir o plano de fundo do sistema: %1$s</string>
+    <string name="settings_grid_preset">Tamanho da grade</string>
+    <string name="settings_grid_value">%1$d × %2$d</string>
+    <string name="settings_grid_option">%1$d × %2$d (%3$d ícones por página)</string>
+    <string name="settings_grid_confirm_title">Mudar para uma grade %1$d × %2$d?</string>
+    <string name="settings_grid_confirm_message">Os ícones serão reorganizados na ordem atual. Não é possível desfazer. Aplicar?</string>
+    <string name="settings_grid_confirm_apply">Aplicar</string>
+    <string name="settings_grid_failed">Não foi possível alterar o tamanho da grade</string>
+    <string name="settings_glass_level">Nível do vidro</string>
+    <string name="settings_glass_auto">Automático</string>
+    <string name="settings_glass_low">Baixo</string>
+    <string name="settings_glass_high">Alto</string>
+    <string name="settings_glass_auto_desc">Automático (de acordo com o aparelho)</string>
+    <string name="settings_glass_low_desc">Forçar baixo (cartões foscos, mais leve)</string>
+    <string name="settings_glass_high_desc">Forçar alto (vidro real, usa mais recursos)</string>
+    <string name="settings_cancel">Cancelar</string>
+    <string name="settings_save_failed">Não foi possível salvar as configurações</string>
+    <string name="home_settings">Configurações</string>
+
+    <string name="library_title">Apps ocultos</string>
+    <string name="library_hidden_empty">Nenhum app oculto</string>
+    <string name="library_launch_failed">Não foi possível abrir o app</string>
+    <string name="library_unhide_failed">Não foi possível reexibir o app</string>
+
+    <!-- M7 Task 10: menu nhấn giữ icon -->
+    <string name="menu_app_info">Informações do app</string>
+    <string name="menu_hide_app">Ocultar app</string>
+    <string name="menu_edit_home">Editar tela inicial</string>
+    <string name="menu_uninstall">Desinstalar</string>
+    <string name="menu_action_failed">Não foi possível concluir a ação</string>
+    <string name="remove_app_title">Remover “%1$s”?</string>
+    <string name="remove_app_message">Ao remover da tela inicial, o app continua na Biblioteca de apps.</string>
+    <string name="remove_app_delete">Apagar app</string>
+    <string name="remove_app_from_home">Remover da tela inicial</string>
+    <string name="remove_app_cancel">Cancelar</string>
+
+    <!-- M8b: tìm kiếm -->
+    <string name="search_field_hint">Pesquisar</string>
+    <string name="search_idle_hint">Digite o nome de um app</string>
+    <string name="search_no_results">Nenhum app encontrado</string>
+    <string name="search_pill_label">Pesquisar</string>
+    <string name="search_pill_page_description">Página %1$d de %2$d</string>
+    <string name="search_clear">Limpar pesquisa</string>
+    <string name="search_cancel">Cancelar</string>
+    <!-- G2a A1a: tên hiển thị khi thư mục chưa đặt tên -->
+    <string name="folder_default_title">Pasta</string>
+    <!-- G2a B2: trang App Library ở cuối pager -->
+    <string name="library_page_group_social">Redes sociais</string>
+    <string name="library_page_group_entertainment">Entretenimento</string>
+    <string name="library_page_group_game">Jogos</string>
+    <string name="library_page_group_productivity">Produtividade</string>
+    <string name="library_page_group_news">Notícias</string>
+    <string name="library_page_group_maps">Mapas</string>
+    <string name="library_page_group_utilities">Utilitários</string>
+    <string name="library_page_group_other">Outros</string>
+    <string name="lo_enable">Ativar a Biblioteca de Apps</string>
+    <string name="lo_enable_description">Deslize além da última página da tela inicial</string>
+    <string name="lo_style_header">Estilo de exibição</string>
+    <string name="lo_style_folders">Pastas por categoria</string>
+    <string name="lo_style_list">Lista A–Z</string>
+    <string name="lo_auto_categorize">Categorizar apps automaticamente</string>
+    <string name="lo_auto_categorize_description">Redes sociais, Utilitários, Entretenimento…</string>
+    <string name="lo_suggestions">Mostrar Sugestões e Adicionados recentemente</string>
+    <string name="lo_suggestions_description">As duas primeiras pastas da biblioteca</string>
+    <string name="library_page_group_suggested">Sugestões</string>
+    <string name="library_page_group_recent">Adicionados recentemente</string>
+    <string name="library_page_group_all">Todos os apps</string>
+    <string name="library_page_empty">Nenhum app ainda</string>
+
+    <!-- G2b: kiểu icon -->
+    <string name="settings_icon_style">Estilo dos ícones</string>
+    <string name="settings_icon_style_default">Padrão</string>
+    <string name="settings_icon_style_transparent">Transparente</string>
+    <string name="settings_icon_style_tinted">Colorido</string>
+    <string name="settings_icon_style_3d">3D</string>
+    <string name="settings_icon_style_glass">Vidro</string>
+    <string name="settings_icon_tint">Cor</string>
+    <string name="settings_icon_tint_blue">Azul</string>
+    <string name="settings_icon_tint_pink">Rosa</string>
+    <string name="settings_icon_tint_green">Verde</string>
+    <string name="settings_icon_tint_orange">Laranja</string>
+    <string name="settings_icon_tint_graphite">Grafite</string>
+    <!-- IP -->
+    <string name="settings_icon_pack">Pacote de ícones</string>
+    <string name="settings_icon_pack_none">Nenhum</string>
+    <string name="settings_icon_pack_empty">Nenhum pacote de ícones encontrado. Instale um pela loja de apps e volte aqui.</string>
+    <string name="settings_icon_pack_ok">Fechar</string>
+
+    <!-- AN Task 5: nhãn trợ năng cho "+N" trong cụm icon mini của ô nhóm -->
+
+    <!-- G2c: widget tự vẽ -->
+    <string name="widget_clock_description">Relógio, %1$s</string>
+    <string name="widget_calendar_description">Agenda, %1$s</string>
+    <string name="home_add_widget">Widgets</string>
+    <string name="widget_picker_title">Adicionar widget</string>
+    <string name="widget_name_clock">Relógio</string>
+    <string name="widget_name_calendar">Agenda</string>
+    <string name="widget_size_label">%1$d×%2$d</string>
+    <string name="widget_remove_title">Remover widget?</string>
+    <string name="widget_remove_message">O widget será removido da tela inicial. Você pode adicioná-lo de novo pelo botão Widgets.</string>
+    <string name="widget_remove_confirm">Remover</string>
+    <string name="widget_remove_cancel">Cancelar</string>
+    <!-- GS: mức kính Tùy chỉnh -->
+    <string name="gs_level_custom">Personalizado</string>
+    <string name="gs_level_custom_desc">Personalizado (escolha vidro real ou fosco para cada elemento no final)</string>
+    <string name="gs_custom_header">Vidro personalizado (ativado = vidro real, desativado = fosco)</string>
+    <string name="gs_custom_dock">Dock</string>
+    <string name="gs_custom_panels">Painéis (pastas, grupos da Biblioteca)</string>
+    <string name="gs_custom_search_bar">Barra de pesquisa</string>
+    <string name="gs_custom_pill">Pílula de pesquisa / pontos de página</string>
+    <string name="gs_warn_title">O vidro real pode ficar lento</string>
+    <string name="gs_warn_message">Este aparelho usa Android anterior ao 13, então o vidro real é desenhado pela CPU e pode travar a interface, principalmente ao abrir painéis (medido em um Vsmart Live 4: painéis com vidro real travam bastante). Você pode desativar quando quiser.</string>
+    <string name="gs_warn_enable">Ativar mesmo assim</string>
+    <!-- M8d Task 3: mục Cài đặt hệ thống trong kết quả tìm kiếm. *_kw là từ khóa phân cách bằng dấu phẩy (gõ không dấu cũng khớp). -->
+    <string name="search_extras_setting_wifi">Wi-Fi</string>
+    <string name="search_extras_setting_bluetooth">Bluetooth</string>
+    <string name="search_extras_setting_airplane">Modo avião</string>
+    <string name="search_extras_setting_mobile">Rede móvel</string>
+    <string name="search_extras_setting_data_usage">Uso de dados</string>
+    <string name="search_extras_setting_display">Tela</string>
+    <string name="search_extras_setting_sound">Som</string>
+    <string name="search_extras_setting_notification">Notificações</string>
+    <string name="search_extras_setting_dnd">Não perturbe</string>
+    <string name="search_extras_setting_battery">Bateria e economia de bateria</string>
+    <string name="search_extras_setting_location">Localização</string>
+    <string name="search_extras_setting_datetime">Data e hora</string>
+    <string name="search_extras_setting_language">Idioma</string>
+    <string name="search_extras_setting_storage">Armazenamento</string>
+    <string name="search_extras_setting_security">Segurança</string>
+    <string name="search_extras_setting_privacy">Privacidade</string>
+    <string name="search_extras_setting_accessibility">Acessibilidade</string>
+    <string name="search_extras_setting_apps">Apps</string>
+    <string name="search_extras_setting_default_apps">Apps padrão</string>
+    <string name="search_extras_setting_keyboard">Teclado</string>
+    <string name="search_extras_setting_cast">Transmitir tela</string>
+    <string name="search_extras_setting_nfc">NFC</string>
+    <string name="search_extras_setting_vpn">VPN</string>
+    <string name="search_extras_setting_about">Sobre o telefone</string>
+    <string name="search_extras_setting_home">Configurações</string>
+    <string name="search_extras_kind_setting">Configurações</string>
+    <string name="search_extras_setting_description">Configurações: %1$s</string>
+    <string name="search_recent_collapse">Mostrar menos</string>
+    <string name="search_recent_expand">Mostrar mais</string>
+
+    <!-- M8d Task 5: tiêu đề nhóm khi ô tìm kiếm trống -->
+    <string name="search_extras_header_recent">Recentes</string>
+    <string name="search_extras_header_frequent">Sugestões</string>
+    <string name="search_extras_header_trending">Pesquisas em alta</string>
+
+    <!-- M8d Task 4 -->
+    <string name="search_extras_shortcut_description">%1$s, atalho de %2$s</string>
+
+    <!-- M8d Task 6: khối "Tìm kiếm" trong Cài đặt -->
+    <string name="settings_search_system">Configurações do sistema</string>
+    <string name="settings_search_shortcuts">Atalhos de apps</string>
+    <string name="settings_search_shortcuts_need_default">Os atalhos exigem que este seja o launcher padrão</string>
+    <string name="settings_search_suggestions">Sugestões e apps recentes</string>
+    <string name="settings_search_suggestions_off_message">Desativar apaga o histórico de apps salvo neste aparelho.</string>
+    <string name="settings_search_suggestions_off_confirm">Desativar e apagar</string>
+    <string name="settings_search_clear">Limpar histórico de apps</string>
+    <string name="settings_search_clear_message">Apagar os apps recentes e sugestões salvos neste aparelho?</string>
+    <string name="settings_search_clear_confirm">Apagar</string>
+
+    <!-- SM: công tắc kính của menu nhấn giữ icon (khối Tùy chỉnh, cùng nghĩa bốn công tắc trên) -->
+    <string name="gs_custom_menu_header">Menu ao tocar e segurar um ícone (ativado = vidro real, desativado = fosco)</string>
+    <string name="gs_custom_icon_menu">Vidro no menu de tocar e segurar</string>
+
+    <!-- G3a: tìm danh bạ trong ô tìm kiếm -->
+    <string name="search_contacts_kind">Contatos</string>
+    <string name="search_contacts_prompt_title">Mostrar contatos</string>
+    <string name="search_contacts_prompt_subtitle">Permita o acesso aos contatos para encontrar pessoas aqui mesmo. Os contatos são lidos apenas neste aparelho e nunca são salvos.</string>
+    <string name="search_contacts_prompt_settings_subtitle">Abra as Configurações para conceder a permissão de Contatos</string>
+    <string name="search_contacts_prompt_dismiss">Ocultar sugestão de contatos</string>
+    <string name="search_contacts_call">Ligar para %1$s</string>
+    <string name="search_contacts_message">Enviar mensagem para %1$s</string>
+    <string name="search_contacts_action_failed">Não foi possível abrir os contatos, o discador ou as mensagens</string>
+    <string name="settings_search_contacts">Pesquisar nos contatos</string>
+    <string name="settings_search_contacts_description">Desativar apenas oculta os contatos da pesquisa. A permissão do Android não é revogada.</string>
+
+    <!-- WP: nhãn dòng Ảnh nền khi dùng ảnh mặc định (ảnh iOS 27 chỉ để thử, xóa trước bản cửa hàng) -->
+    <string name="settings_backdrop_default">Padrão (iOS 27, imagem de teste)</string>
+
+    <!-- G3e: widget thời tiết (khối weather_) -->
+    <string name="weather_name">Clima</string>
+    <string name="weather_no_key">Clima indisponível</string>
+    <string name="weather_no_location">Escolha uma cidade</string>
+    <string name="weather_no_location_hint">Toque para escolher</string>
+    <string name="weather_loading">Carregando…</string>
+    <string name="weather_error_network">Sem conexão</string>
+    <string name="weather_error_key">Chave inválida</string>
+    <string name="weather_error_rate">Limite de consultas excedido</string>
+    <string name="weather_error_not_found">Local não encontrado</string>
+    <string name="weather_error_generic">Erro nos dados</string>
+    <string name="weather_cond_clear">Céu limpo</string>
+    <string name="weather_cond_partly_cloudy">Parcialmente nublado</string>
+    <string name="weather_cond_cloudy">Nublado</string>
+    <string name="weather_cond_rain">Chuva</string>
+    <string name="weather_cond_thunderstorm">Tempestade</string>
+    <string name="weather_cond_snow">Neve</string>
+    <string name="weather_cond_fog">Neblina</string>
+    <string name="weather_cond_unknown">Desconhecido</string>
+    <!-- Cao/thấp là trong 24 giờ tới, KHÔNG phải cả ngày dương lịch (gói Free không có trường đó) -->
+    <string name="weather_updated_at">Atualizado %1$s</string>
+    <string name="weather_description">%1$s, %2$d %6$s, %3$s. Próximas 24 horas máx. %4$d %6$s, mín. %5$d %6$s</string>
+    <string name="weather_description_state">Clima: %1$s</string>
+
+    <!-- G3e: bảng Thời tiết (bottom sheet mở khi bấm widget) -->
+    <string name="weather_sheet_title">Clima</string>
+    <string name="weather_sheet_hint">Nome da cidade</string>
+    <string name="weather_sheet_search">Pesquisar</string>
+    <string name="weather_sheet_no_key">O clima está indisponível no momento. Tente novamente mais tarde.</string>
+    <string name="weather_sheet_searching">Pesquisando…</string>
+    <string name="weather_sheet_not_found">Cidade não encontrada</string>
+    <string name="weather_sheet_refreshing">Atualizando…</string>
+    <string name="weather_sheet_hi_lo_note">Máx./mín. referem-se às próximas 24 horas, não ao dia inteiro.</string>
+
+    <!-- G3d: Trung tâm điều khiển (khối cc_) -->
+    <string name="cc_service_label">Central de controle do OS26 Launcher</string>
+    <string name="cc_title">Central de controle</string>
+    <string name="cc_state_on">Ativada</string>
+    <string name="cc_state_off">Desativada</string>
+    <string name="cc_enable">Ativar Central de controle</string>
+    <string name="cc_enable_desc">Deslize para baixo a partir do canto superior direito, em qualquer tela</string>
+    <string name="cc_enable_needs_permissions">Conceda as duas primeiras permissões abaixo para exibi-la</string>
+    <string name="cc_header_permissions">Permissões</string>
+    <string name="cc_perm_overlay">Sobrepor a outros apps</string>
+    <string name="cc_perm_listener">Acesso às notificações</string>
+    <string name="cc_perm_battery">Bateria sem restrições (recomendado)</string>
+    <string name="cc_perm_write_settings">Modificar configurações do sistema</string>
+    <string name="cc_perm_dnd">Acesso ao Não perturbe</string>
+    <string name="cc_perm_bluetooth">Dispositivos próximos (Bluetooth)</string>
+    <string name="cc_perm_granted">Concedida</string>
+    <string name="cc_perm_missing">Não concedida</string>
+    <string name="cc_perm_open_failed">Este aparelho não consegue abrir a tela de permissões</string>
+    <string name="cc_tile_airplane">Modo avião</string>
+    <string name="cc_tile_cellular">Dados móveis</string>
+    <string name="cc_tile_wifi">Wi-Fi</string>
+    <string name="cc_tile_bluetooth">Bluetooth</string>
+    <string name="cc_tile_rotation">Bloqueio de rotação</string>
+    <string name="cc_tile_dnd">Não perturbe</string>
+    <string name="cc_tile_flashlight">Lanterna</string>
+    <string name="cc_tile_timer">Timer</string>
+    <string name="cc_tile_calculator">Calculadora</string>
+    <string name="cc_tile_camera">Câmera</string>
+    <string name="cc_brightness">Brilho</string>
+    <string name="cc_volume">Volume</string>
+    <string name="cc_media_idle">Nada tocando</string>
+    <string name="cc_no_app">Nenhum app compatível encontrado</string>
+    <string name="cc_unavailable">Não compatível com este aparelho</string>
+    <string name="cc_auto_brightness">Brilho automático</string>
+    <string name="cc_screen_timeout">Tempo limite da tela</string>
+    <string name="cc_timeout_seconds">%1$d s</string>
+    <string name="cc_timeout_minutes">%1$d min</string>
+    <string name="cc_battery_percent">%1$d%%</string>
+    <string name="cc_block_connectivity">Conectividade. Toque e segure para expandir</string>
+    <string name="cc_block_media">Música. Toque e segure para abrir o player</string>
+    <string name="cc_open_settings">Configurações da Central de controle</string>
+    <string name="cc_page_main">Página de controles</string>
+    <string name="cc_page_media">Página de música</string>
+    <string name="cc_page_network">Página de conectividade</string>
+    <string name="cc_media_play">Tocar</string>
+    <string name="cc_media_pause">Pausar</string>
+    <string name="cc_media_next">Próxima</string>
+    <string name="cc_media_previous">Anterior</string>
+    <string name="cc_media_unknown_artist">Artista desconhecido</string>
+    <string name="cc_media_output_phone">Este telefone</string>
+    <string name="cc_media_output">Dispositivo de saída</string>
+    <string name="cc_tile_sync">Sincronizar</string>
+    <string name="cc_tile_hotspot">Hotspot pessoal</string>
+    <string name="cc_tile_screen_record">Gravar tela</string>
+    <string name="cc_tile_battery">Modo de pouca energia</string>
+    <string name="cc_tile_voice_memo">Gravador de voz</string>
+    <string name="cc_tile_settings">Configurações</string>
+    <string name="cc_tile_dark_mode">Modo escuro</string>
+    <string name="cc_tile_notes">Notas</string>
+    <string name="cc_tile_night_shift">Night Shift</string>
+    <string name="cc_tile_app">App</string>
+    <string name="cc_customize_tiles">Personalizar controles</string>
+    <string name="cc_tiles_count">%1$d controles</string>
+    <string name="cc_tiles_included">INCLUÍDOS</string>
+    <string name="cc_tiles_more">MAIS CONTROLES</string>
+    <string name="cc_tiles_apps">APPS</string>
+    <string name="cc_tiles_add">Adicionar %1$s</string>
+    <string name="cc_tiles_remove">Remover %1$s</string>
+    <string name="cc_tiles_reorder">Arraste para reordenar</string>
+    <string name="cc_tiles_full">No máximo %1$d controles. Remova um primeiro</string>
+    <string name="cc_vibrate">Vibrar ao abrir</string>
+    <string name="cc_header_look">Aparência</string>
+    <string name="cc_header_features">Recursos</string>
+    <string name="cc_background">Fundo</string>
+    <string name="cc_background_wallpaper">Plano de fundo do launcher</string>
+    <string name="cc_background_custom">Imagem personalizada</string>
+    <string name="cc_background_none">Sem imagem (mostra o app atrás)</string>
+    <string name="cc_background_failed">Não foi possível ler esta imagem</string>
+    <string name="cc_blur">Desfocar fundo</string>
+    <string name="cc_recorder_app">App de gravação de tela</string>
+    <string name="cc_recorder_none">Não escolhido</string>
+    <string name="cc_edge_settings">Faixa de deslize</string>
+    <string name="cc_edge_position">POSIÇÃO</string>
+    <string name="cc_edge_shape">TAMANHO</string>
+    <string name="cc_edge_color">COR DA FAIXA</string>
+    <string name="cc_edge_top_right">Borda superior, direita</string>
+    <string name="cc_edge_top_left">Borda superior, esquerda</string>
+    <string name="cc_edge_right_side">Lado direito</string>
+    <string name="cc_edge_left_side">Lado esquerdo</string>
+    <string name="cc_edge_length">Comprimento</string>
+    <string name="cc_edge_thickness">Espessura da área de toque</string>
+    <string name="cc_edge_offset">Distância do topo da tela</string>
+    <string name="cc_edge_note">A faixa é atualizada na tela enquanto você ajusta. Nas laterais, deslizar para dentro ou para baixo abre a central.</string>
+    <string name="cc_night_shift_manual">Ativar agora</string>
+    <string name="cc_night_shift_warmth">Temperatura da cor</string>
+    <string name="cc_night_shift_schedule">PROGRAMAÇÃO</string>
+    <string name="cc_night_shift_scheduled">Programado</string>
+    <string name="cc_night_shift_from">De</string>
+    <string name="cc_night_shift_to">Até</string>
+    <string name="cc_night_shift_scheduled_summary">%1$s → %2$s</string>
+    <string name="cc_night_shift_note">O Night Shift adiciona uma camada de cor quente sobre a tela. Assim como a Central de controle, ele precisa das permissões \"Sobrepor a outros apps\" e \"Acesso às notificações\". As capturas de tela mantêm as cores originais.</string>
+    <!-- G2d: trang chủ Cài đặt (tiền tố settings_hub_) -->
+    <string name="settings_hub_group_general">Geral</string>
+    <string name="settings_hub_group_appearance">Aparência</string>
+    <string name="settings_hub_group_home_screen">Tela inicial</string>
+    <string name="settings_hub_group_transitions">Transições</string>
+    <string name="settings_hub_group_icons">Personalização de ícones</string>
+    <string name="settings_hub_group_contact">Fale conosco</string>
+    <string name="settings_hub_theme">Tela inicial padrão</string>
+    <string name="settings_hub_general">Geral</string>
+    <string name="settings_hub_language">Idioma</string>
+    <string name="settings_hub_weather">Clima</string>
+    <string name="settings_hub_location">Localização</string>
+    <string name="settings_hub_glass">Liquid Glass</string>
+    <string name="settings_hub_wallpaper">Plano de fundo</string>
+    <string name="settings_hub_icon_set">Ícones</string>
+    <string name="settings_hub_swipe">Rolagem de páginas</string>
+    <string name="settings_hub_library">Biblioteca de apps</string>
+    <string name="settings_hub_search">Configurações de pesquisa</string>
+    <string name="settings_hub_badges">Selos de notificação</string>
+    <string name="settings_hub_transitions">Efeitos de transição</string>
+    <string name="settings_hub_app_effects">Efeitos dos apps</string>
+    <string name="settings_hub_change_icon">Mudar ícones dos apps</string>
+    <string name="settings_hub_rename_apps">Renomear apps</string>
+    <string name="settings_hub_rate">Avaliar o app</string>
+    <string name="settings_hub_more_apps">Mais apps</string>
+    <string name="settings_hub_privacy">Política de privacidade</string>
+    <!-- RS Task 2: card "Launcher hiện tại" đầu trang chủ Cài đặt (Figma 302:1522). -->
+    <string name="settings_launcher_card_current">Tela inicial atual</string>
+    <string name="settings_launcher_card_not_default">Não definido como padrão</string>
+    <string name="settings_launcher_card_custom">Personalizado</string>
+    <string name="settings_launcher_card_welcome">Boas-vindas</string>
+    <string name="settings_launcher_card_welcome_desc">Sua própria central de controle. Personalize cada detalhe para deixar a tela inicial com o seu estilo.</string>
+    <string name="settings_launcher_card_explore">Explorar</string>
+    <!-- HC Task 1: Hero Card, nút trạng thái "Chưa" và toast Chưa → Đã (Figma 464:2199/464:2648). -->
+    <string name="hero_try">Experimentar</string>
+    <string name="hero_default_set_toast">Definido como padrão</string>
+    <!-- HC Task 3: tiêu đề màn 6.2 (Figma "Ứng dụng khác"; hàng trên trang chủ giữ settings_hub_more_apps). -->
+    <string name="settings_more_apps_title">Mais apps</string>
+    <!-- RS Task 6: màn 1.1 Màn hình chính mặc định (Figma 302:1738). -->
+    <string name="settings_theme_subtitle">Cada launcher muda sua tela inicial, os ícones e os efeitos.</string>
+    <string name="settings_theme_apply_default">Aplicar e definir como padrão</string>
+    <string name="settings_theme_apply">Aplicar</string>
+    <!-- RS Task 7: card xem trước thời tiết (dữ liệu mẫu) ở màn 1.4. -->
+    <string name="settings_weather_preview_degree">%1$d°</string>
+    <string name="settings_weather_preview_high_low">Máx. %1$s · Mín. %2$s</string>
+    <string name="settings_weather_preview_now">Agora</string>
+    <string name="settings_weather_preview_hour">%1$d h</string>
+    <!-- RS Task 8: hỏi trước khi đặt nền màu từ ô giữ chỗ ở màn 2.2. -->
+    <string name="wallpaper_color_confirm_title">Usar \"%1$s\" como plano de fundo?</string>
+    <string name="wallpaper_color_confirm_message">A tela inicial usará este papel de parede.</string>
+    <string name="wallpaper_color_confirm_ok">Confirmar</string>
+    <!-- WI: tên 5 hình nền cài sẵn (ảnh thử, xem plan WI) ở 0.3 và 2.2; nút ngắn của hộp hỏi đặt mặc định khi về Home. -->
+    <string name="default_prompt_set">Definir agora</string>
+    <!-- RS Task 8: giờ minh họa trên ô ảnh nền (Figma 2.2). -->
+    <string name="settings_theme_note">Uma caixa de diálogo do sistema será aberta para você escolher o app da tela inicial.</string>
+    <string name="settings_hub_version">Versão %1$s</string>
+    <!-- AB: nhóm Liên hệ (tiền tố about_) -->
+    <string name="about_rate_title">O que você está achando do app?</string>
+    <string name="about_rate_message">Sua avaliação nos ajuda a melhorar o launcher.</string>
+    <string name="about_rate_later">Mais tarde</string>
+    <string name="about_rate_send">Enviar avaliação</string>
+    <string name="about_open_failed">Não foi possível abrir o link neste aparelho</string>
+    <string name="about_privacy_open">Abrir no navegador</string>
+    <string name="about_privacy_footer">A política é carregada do site e aberta no seu navegador.</string>
+    <string name="about_more_apps_featured">Destaque</string>
+    <string name="about_more_apps_others">Mais apps</string>
+    <string name="about_more_apps_download">Baixar</string>
+    <string name="about_more_apps_footer">Por %1$s</string>
+
+    <!-- WU: Cài đặt → Thời tiết (tiền tố settings_weather_) -->
+    <string name="settings_weather_unit">Unidade de temperatura</string>
+    <string name="settings_weather_unit_value_c">°C</string>
+    <string name="settings_weather_unit_value_f">°F</string>
+    <string name="settings_weather_a11y_c">graus Celsius</string>
+    <string name="settings_weather_a11y_f">graus Fahrenheit</string>
+    <!-- HT: công tắc Màn hình chính (tiền tố ht_) -->
+    <string name="ht_search_open_header">Como abrir</string>
+    <string name="ht_search_in_header">Pesquisar em</string>
+    <string name="ht_search_swipe_down">Deslize para baixo para pesquisar</string>
+    <string name="ht_search_swipe_down_description">Deslize para baixo no meio da tela inicial</string>
+    <string name="ht_search_pill">Botão de pesquisa na tela</string>
+    <string name="ht_search_pill_description">Aparece acima do Dock</string>
+    <string name="ht_swipe_page_dots">Mostrar pontos de página</string>
+    <string name="ht_swipe_page_dots_description">Indicador de página acima do Dock</string>
+    <string name="tv_swipe_today">Tela de widgets</string>
+    <string name="tv_swipe_today_description">Deslize para a direita na primeira página para abrir os widgets</string>
+    <string name="tv_edit">Editar</string>
+    <!-- RN: Thay đổi tên ứng dụng (tiền tố settings_rename_) -->
+    <string name="settings_rename_header">Dê seus próprios nomes aos apps. O nome original sempre pode ser restaurado.</string>
+    <string name="settings_rename_original">Nome original: %1$s</string>
+    <string name="settings_rename_dialog_title">Renomear app</string>
+    <string name="settings_rename_hint">Novo nome</string>
+    <string name="settings_rename_save">Salvar</string>
+    <string name="settings_rename_restore">Restaurar</string>
+    <!-- WX: thời tiết nhiều địa điểm (tiền tố wx_) -->
+    <string name="wx_places_header">Locais acompanhados</string>
+    <string name="wx_places_current">Localização atual</string>
+    <string name="wx_places_current_unset">Desconhecida</string>
+    <string name="wx_places_current_manual">%1$s (escolhido manualmente)</string>
+    <string name="wx_places_add">+ Adicionar local</string>
+    <string name="wx_places_full">Limite de %1$d locais atingido</string>
+    <string name="wx_places_hint">Cada widget de clima mostra um local desta lista (toque no widget).</string>
+    <string name="wx_places_duplicate">Este local já está na lista</string>
+    <string name="wx_places_remove_title">Remover local?</string>
+    <string name="wx_places_remove_message">Remover %1$s da lista. Os widgets que mostram este local passarão para Localização atual.</string>
+    <string name="wx_places_remove_confirm">Remover</string>
+    <string name="wx_search_add_title">Adicionar local</string>
+    <string name="wx_loc_perm_header">Permissão de localização</string>
+    <string name="wx_loc_perm">Permissão de localização</string>
+    <string name="wx_loc_perm_granted">Concedida</string>
+    <string name="wx_loc_perm_denied">Não concedida</string>
+    <string name="wx_loc_mode_header">Como determinar a localização</string>
+    <string name="wx_loc_mode_auto">Automático</string>
+    <string name="wx_loc_mode_manual">Escolher manualmente</string>
+    <!-- RS Task 3: dòng mô tả hai hàng radio (Figma 1.5 302:1971). -->
+    <string name="wx_loc_mode_auto_desc">Atualiza quando você se desloca</string>
+    <string name="wx_loc_mode_manual_desc">Não precisa de permissão de localização</string>
+    <string name="wx_loc_update">Atualizar localização</string>
+    <string name="wx_loc_updating">Obtendo localização…</string>
+    <string name="wx_loc_city">Cidade</string>
+    <string name="wx_loc_city_unset">Não escolhida</string>
+    <string name="wx_loc_pick_city">Escolher cidade</string>
+    <string name="wx_loc_unavailable">Não foi possível obter sua localização. Ative os serviços de localização ou escolha uma cidade manualmente.</string>
+    <string name="wx_loc_denied">Permissão de localização não concedida. Você ainda pode escolher uma cidade manualmente.</string>
+    <string name="wx_loc_denied_settings">A permissão de localização está bloqueada. Conceda nas configurações do app.</string>
+    <string name="wx_loc_privacy">Só é usada a localização aproximada, obtida uma vez a cada vez: quando você toca em Atualizar localização ou (modo Automático com permissão) no máximo a cada 2 horas enquanto um widget de clima com Localização atual está visível, e ela só muda se você se deslocar mais de 5 km. Nada roda em segundo plano nem há rastreamento contínuo. O modo Escolher manualmente não precisa de permissão e nunca lê sua localização.</string>
+    <string name="wx_sheet_for_widget">Este widget mostra:</string>
+    <string name="wx_sheet_current_named">Localização atual: %1$s</string>
+    <string name="wx_sheet_current_unset">Localização atual (desconhecida)</string>
+    <string name="wx_sheet_no_location">A localização atual é desconhecida. Defina em Configurações → Localização.</string>
+    <string name="wx_sheet_manage">Gerenciar locais</string>
+
+    <!-- GT: tinh chỉnh kính dùng chung -->
+    <string name="gt_title">Ajuste do vidro</string>
+    <string name="gt_state_default">Padrão</string>
+    <string name="gt_state_custom">Personalizado</string>
+    <string name="gt_preview">Prévia do vidro</string>
+    <string name="gt_header">Vale para todas as superfícies de vidro e tem efeito na tela inicial</string>
+    <string name="gt_reset_header">Restaurar</string>
+    <string name="gt_refraction">Refração</string>
+    <string name="gt_refraction_desc">Amplia o fundo visto através do vidro. 0 = sem ampliação.</string>
+    <string name="gt_gloss">Brilho</string>
+    <string name="gt_gloss_desc">Acima de 50 o vidro fica mais claro; abaixo de 50, mais escuro.</string>
+    <string name="gt_blur">Desfoque</string>
+    <string name="gt_blur_desc">Quanto o fundo atrás do vidro fica desfocado.</string>
+    <string name="gt_corner">Arredondamento</string>
+    <string name="gt_corner_desc">50 = sem mudança, 0 = quadrado. Não muda o formato dos ícones dos apps.</string>
+    <string name="gt_reset">Restaurar padrão</string>
+
+    <!-- WN: thông báo thời tiết (tiền tố wn_) -->
+    <string name="wn_channel_group">Clima</string>
+    <string name="wn_channel_daily">Previsão diária</string>
+    <string name="wn_channel_tomorrow">Previsão para amanhã</string>
+    <string name="wn_title_today">%1$s · Hoje</string>
+    <string name="wn_title_tomorrow">%1$s · Amanhã</string>
+    <string name="wn_text">%1$s, máx. %2$d%4$s, mín. %3$d%4$s</string>
+    <string name="wn_precip">Chuva ou neve das %1$s às %2$s</string>
+    <string name="wn_public_title">Previsão do tempo</string>
+    <string name="wn_public_today">Previsão para hoje</string>
+    <string name="wn_public_tomorrow">Previsão para amanhã</string>
+    <string name="wn_settings_header">Notificações</string>
+    <string name="wn_switch_daily">Previsão diária</string>
+    <string name="wn_switch_daily_desc">Às 07:00 todas as manhãs</string>
+    <string name="wn_switch_tomorrow">Previsão para amanhã</string>
+    <string name="wn_switch_tomorrow_desc">Às 21:00 todas as noites</string>
+    <string name="wn_footer_hint">Usa a Localização atual salva e nunca lê sua localização em segundo plano. A entrega pode atrasar até cerca de 1 hora por causa da economia de bateria do Android. Precisa de conexão; sem ela, usa os dados salvos se ainda forem recentes.</string>
+    <string name="wn_footer_no_key">As notificações de clima precisam de uma chave do OpenWeatherMap, que esta versão não tem.</string>
+    <string name="wn_footer_no_place">A localização atual é desconhecida, por isso nenhuma notificação foi enviada. Defina em Configurações → Localização.</string>
+    <string name="wn_footer_blocked">As notificações do app estão desativadas nas configurações do sistema, por isso você não verá nenhuma. Ative de novo nas configurações de notificação do app.</string>
+    <string name="wn_toast_denied">Permissão de notificações não concedida, por isso não foi possível ativar.</string>
+    <string name="wn_toast_blocked">As notificações do app estão desativadas ou bloqueadas. Ative nas configurações de notificação do app.</string>
+    <!-- G3b: widget Ảnh (khối ph_) -->
+    <string name="ph_name">Fotos</string>
+    <string name="ph_empty_title">Toque para escolher fotos</string>
+    <string name="ph_desc_empty">Fotos, nenhuma foto ainda, toque para escolher</string>
+    <string name="ph_desc_photos">Fotos, %1$d fotos</string>
+    <string name="ph_activity_title">Fotos do widget</string>
+    <string name="ph_add_photo">+ Adicionar fotos</string>
+    <string name="ph_choose_photo">Escolher fotos</string>
+    <string name="ph_empty_hint">Escolha fotos para mostrar no widget</string>
+    <string name="ph_rotates">Com várias fotos, o widget mostra uma diferente a cada hora enquanto a tela inicial está visível.</string>
+    <string name="ph_importing">Importando fotos</string>
+    <string name="ph_remove_glyph">✕</string>
+    <string name="ph_remove_desc">Remover foto %1$d</string>
+    <string name="ph_thumb_desc">Foto %1$d</string>
+    <string name="ph_remove_title">Remover foto?</string>
+    <string name="ph_remove_message">A foto será removida deste widget.</string>
+    <string name="ph_remove_confirm">Remover</string>
+    <string name="ph_cancel">Cancelar</string>
+    <string name="ph_import_failed">Não foi possível importar algumas fotos.</string>
+    <string name="ph_too_many">Cada widget aceita até %1$d fotos; só as primeiras foram adicionadas.</string>
+    <string name="ph_full">Este widget já tem %1$d fotos. Remova algumas para adicionar outras.</string>
+    <string name="ph_crop_title">Cortar foto %1$d/%2$d</string>
+    <string name="ph_crop_edit_title">Cortar de novo</string>
+    <string name="ph_crop_hint">Arraste para mover, faça pinça para ampliar</string>
+    <string name="ph_crop_desc">Área de corte. Arraste para mover, faça pinça para ampliar.</string>
+    <string name="ph_crop_done">Concluído</string>
+    <string name="ph_crop_skip">Pular esta foto</string>
+    <string name="ph_discard_title">Descartar fotos não cortadas?</string>
+    <string name="ph_discard_message">Descartar %1$d fotos não cortadas? As fotos já cortadas são mantidas.</string>
+    <string name="ph_discard_confirm">Descartar</string>
+    <string name="ph_discard_keep">Continuar cortando</string>
+    <!-- G3c: AppWidgetHost (tiền tố aw_) -->
+    <string name="aw_unavailable">Widget indisponível</string>
+    <string name="aw_error_load">Não foi possível carregar o widget</string>
+    <string name="aw_section_title">Widgets de apps</string>
+    <string name="aw_section_loading">Carregando lista…</string>
+    <plurals name="aw_widget_count">
+        <item quantity="one">%1$d widget</item>
+        <item quantity="many">%1$d widgets</item>
+        <item quantity="other">%1$d widgets</item>
+    </plurals>
+    <string name="aw_chip_description">Adicionar tamanho %1$d×%2$d</string>
+    <string name="aw_too_large">Grande demais para a grade</string>
+    <string name="aw_busy">Adicionando outro widget</string>
+    <string name="aw_add_failed">Não foi possível adicionar o widget</string>
+
+    <!-- DS3: chuỗi của thành phần v3 (core/designsystem). -->
+    <string name="ds_back">Voltar</string>
+    <string name="ds_nav_back_default">Configurações</string>
+    <string name="ds_nav_back_desc">Voltar, %1$s</string>
+    <string name="ds_close">Fechar</string>
+    <string name="ds_onboarding_skip">Pular</string>
+
+    <!-- OB: Onboarding 0.1–0.5 (chữ theo Figma 302:3673) -->
+    <string name="onboarding_start">Começar</string>
+    <string name="onboarding_continue">Continuar</string>
+    <string name="onboarding_set_default">Definir como padrão</string>
+    <string name="onboarding_later">Mais tarde</string>
+    <string name="onboarding_go_settings">Ir para Configurações</string>
+    <string name="onboarding_welcome_title">Um visual de vidro líquido para o seu celular</string>
+    <string name="onboarding_welcome_subtitle">Ícones transparentes, planos de fundo vibrantes e efeitos suaves — só alguns passos para começar.</string>
+    <string name="onboarding_theme_title">Escolha um estilo</string>
+    <string name="onboarding_theme_subtitle">Você pode mudar quando quiser nas Configurações.</string>
+    <string name="onboarding_theme_liquid_glass_27">Liquid Glass 27</string>
+    <string name="onboarding_theme_liquid_glass_27_desc">Transparente, refrativo</string>
+    <string name="onboarding_theme_classic_26">Classic 26</string>
+    <string name="onboarding_theme_classic_26_desc">Quente, ícones em cores suaves</string>
+    <string name="onboarding_theme_minimal">Minimal</string>
+    <string name="onboarding_theme_minimal_desc">Simples, linhas finas</string>
+    <string name="onboarding_theme_dark_pro">Dark Pro</string>
+    <string name="onboarding_theme_dark_pro_desc">Fundo escuro, ícones redondos</string>
+    <string name="onboarding_badge_new">NOVO</string>
+    <string name="onboarding_wallpaper_title">Escolha um plano de fundo</string>
+    <string name="onboarding_wallpaper_subtitle">Um bom plano de fundo destaca ainda mais o efeito de vidro.</string>
+    <string name="onboarding_default_title">Defina %1$s como tela inicial</string>
+    <string name="onboarding_default_subtitle">Assim o novo visual aparece sempre que você toca no botão Início.</string>
+    <string name="onboarding_default_step1">Toque em \"Definir como padrão\" abaixo</string>
+    <string name="onboarding_default_step2">Escolha %1$s na caixa de diálogo do sistema</string>
+    <string name="onboarding_done_title">Tudo pronto!</string>
+    <string name="onboarding_done_subtitle">Explore o novo visual e ajuste quando quiser nas Configurações.</string>
+    <string name="onboarding_done_theme">Estilo</string>
+    <string name="onboarding_done_wallpaper">Plano de fundo</string>
+    <string name="onboarding_done_home">Tela inicial</string>
+    <string name="onboarding_done_home_set">Definido como padrão</string>
+    <string name="onboarding_done_home_not_set">Não definido</string>
+
+    <!-- LG: màn Ngôn ngữ (1.3), chip ngôn ngữ Onboarding 0.1, lý do lỗi đặt wallpaper -->
+    <string name="lang_system">Padrão do sistema</string>
+    <string name="lang_system_desc">Usar o idioma do aparelho</string>
+    <string name="lang_search_hint">Pesquisar idioma</string>
+    <string name="lang_no_results">Nenhum idioma encontrado</string>
+    <string name="lang_chip_desc">Idioma: %1$s</string>
+    <string name="lang_name_vi">Vietnamita</string>
+    <string name="lang_name_en">Inglês</string>
+    <string name="lang_name_es">Espanhol</string>
+    <string name="lang_name_pt">Português</string>
+    <string name="lang_name_id">Indonésio</string>
+    <string name="lang_name_th">Tailandês</string>
+    <string name="lang_name_ja">Japonês</string>
+    <string name="lang_name_ko">Coreano</string>
+    <string name="lang_name_hi">Hindi</string>
+    <string name="wallpaper_reason_unsupported">este aparelho não permite definir planos de fundo</string>
+    <string name="wallpaper_reason_not_allowed">o sistema não permite que este app defina planos de fundo</string>
+    <string name="wallpaper_reason_read_failed">não foi possível ler a imagem salva</string>
+    <string name="wallpaper_reason_out_of_memory">memória insuficiente</string>
+    <!-- BG: màn 3.4 Huy hiệu thông báo (tiền tố badges_) -->
+    <string name="badges_perm_title">É preciso acesso às notificações</string>
+    <string name="badges_perm_desc">Para contar as notificações não lidas de cada app</string>
+    <string name="badges_perm_action">Conceder acesso</string>
+    <string name="badges_perm_open_failed">Não foi possível abrir o acesso a notificações</string>
+    <string name="badges_show">Mostrar selos</string>
+    <string name="badges_style_header">Estilo do selo</string>
+    <string name="badges_style_number">Número</string>
+    <string name="badges_style_dot">Ponto</string>
+    <string name="badges_per_app_header">Por app</string>
+    <!-- TR: màn 4.1 Hiệu ứng chuyển cảnh -->
+    <string name="tr_intro">Ao abrir pastas, a pesquisa, a Biblioteca de apps e as Configurações rápidas.</string>
+    <string name="tr_preview_description">Prévia: abrir uma pasta</string>
+    <string name="tr_style_smooth">Suave</string>
+    <string name="tr_style_smooth_description">Padrão</string>
+    <string name="tr_style_fade">Esmaecer</string>
+    <string name="tr_style_slide">Deslizar</string>
+    <string name="tr_style_zoom">Zoom</string>
+    <string name="tr_style_none">Nenhum</string>
+    <string name="tr_style_none_description">Mais rápido</string>
+    <string name="tr_speed">Velocidade</string>
+    <string name="tr_speed_slow">Lenta</string>
+    <string name="tr_speed_medium">Média</string>
+    <string name="tr_speed_fast">Rápida</string>
+    <string name="tr_reduce_motion">Reduzir movimento</string>
+    <string name="tr_reduce_motion_description">Usar esmaecimento em vez de zoom / deslizar</string>
+    <!-- JS7: nút của hộp chọn giờ Night Shift (Compose) -->
+    <string name="cc_time_done">Concluído</string>
+    <!-- P2-9 / P2-9e (REF a013dd8): bảng chọn widget kiểu iOS, menu Sửa của edit mode; TV-2/TV-3 (REF 3ab9c20): Today View -->
+    <string name="wp_search_hint">Pesquisar widgets</string>
+    <string name="wp_add_widget">Adicionar widget</string>
+    <string name="wp_close">Fechar</string>
+    <string name="home_edit">Editar</string>
+    <string name="home_wallpapers">Planos de fundo</string>
+    <string name="wp_clock_small_title">Relógio analógico</string>
+    <string name="wp_clock_small_desc">Mostra a hora atual.</string>
+    <string name="wp_clock_wide_title">Relógio digital</string>
+    <string name="wp_clock_wide_desc">Hora digital grande com a data.</string>
+    <string name="wp_calendar_small_title">Hoje</string>
+    <string name="wp_calendar_small_desc">Mostra a data de hoje.</string>
+    <string name="wp_calendar_wide_title">Mês</string>
+    <string name="wp_calendar_wide_desc">A data de hoje com o calendário do mês.</string>
+    <string name="wp_weather_small_title">Condições atuais</string>
+    <string name="wp_weather_small_desc">O tempo atual na sua localização.</string>
+    <string name="wp_weather_wide_title">Previsão por hora</string>
+    <string name="wp_weather_wide_desc">O tempo atual e as próximas horas.</string>
+    <string name="wp_photo_small_title">Foto</string>
+    <string name="wp_photo_small_desc">Mostra uma foto ou um álbum que muda a cada hora.</string>
+    <string name="wp_photo_wide_title">Foto larga</string>
+    <string name="wp_photo_wide_desc">Uma foto ou álbum mais largo que muda a cada hora.</string>
+    <string name="today_recents_empty">Os apps que você abriu recentemente aparecerão aqui</string>
+    <string name="today_recents_name">Apps recentes</string>
+    <string name="today_recents_small_title">4 apps</string>
+    <string name="today_recents_small_desc">Os quatro apps que você abriu mais recentemente.</string>
+    <string name="today_recents_wide_title">8 apps</string>
+    <string name="today_recents_wide_desc">Os oito apps que você abriu mais recentemente.</string>
+    <string name="today_widget_remove_message">O widget será removido de Hoje. Você pode adicioná-lo de novo com o botão +.</string>
+
+    <!-- Dong bo tu REF HEAD -->
+    <string name="wallpaper_preset_lake">Lago</string>
+    <string name="wallpaper_preset_blue_wave">Onda azul</string>
+    <string name="wallpaper_preset_red">Vermelho</string>
+    <string name="wallpaper_preset_sunset">Pôr do sol</string>
+    <string name="wallpaper_preset_silk">Seda</string>
+    <string name="wallpaper_preset_night_street">Rua à noite</string>
+    <string name="ds_step_indicator_desc">Etapa %1$d de %2$d</string>
+    <string name="wallpaper_target_sheet_title">Definir papel de parede para</string> <!-- P3-2: Figma 2.2 popup 302:2090 -->
+    <string name="settings_search_recent_apps">Apps recentes</string>
+    <string name="settings_search_recent_apps_description">Mostra os apps abertos recentemente. Ao desativar, para de registrar, mas mantém o histórico salvo.</string>
+    <string name="ci_search_hint">Pesquisar apps</string>
+    <string name="ci_changed">Alterado</string>
+    <string name="ci_choose_new">Escolha um novo ícone</string>
+    <string name="ci_from_photos">Das fotos</string>
+    <string name="ci_restore">Restaurar</string>
+    <string name="ci_save">Salvar</string>
+    <string name="ci_save_failed">Não foi possível salvar o ícone</string>
+    <string name="ci_image_failed">Não foi possível abrir esta imagem</string>
+    <string name="ci_no_results">Nenhum app encontrado</string>
+    <string name="ci_variant_description">Opção de ícone %1$d</string>
+    <string name="hl_intro">Apps ocultos não aparecem na tela inicial, na biblioteca nem nos resultados da pesquisa.</string>
+    <string name="hl_all_apps">Todos os apps</string>
+    <string name="hl_lock">Bloquear com digital / PIN</string>
+    <string name="hl_lock_description">Verificar antes de ver</string>
+    <string name="hl_auth_title">Abrir apps ocultos</string>
+    <string name="hl_auth_subtitle">Confirme sua identidade para ver os apps ocultos</string>
+    <string name="hl_auth_use_device">Usar bloqueio de tela</string>
+    <plurals name="hl_hidden_count">
+        <item quantity="one">%d oculto</item>
+        <item quantity="many">%d ocultos</item>
+        <item quantity="other">%d ocultos</item>
+    </plurals>
+    <string name="icon_style_preview_description">Prévia do estilo de ícone selecionado</string>
+    <string name="settings_search_suggestions_description">Pesquisas em alta quando o campo de pesquisa está vazio</string>
+</resources>

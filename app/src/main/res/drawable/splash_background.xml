@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- OB 0.0: nền cửa sổ khởi động của HomeActivity trên API 26–30 (API 31+ dùng splash hệ thống, values-v31/themes.xml):
+     nền ds_bg_base + logo splash Figma 302:3676 (ngôi sao trắng 120 dp) kèm quầng sáng #4F6DFF (302:3675) vẽ sẵn trong ảnh 288 dp.
+     HomeActivity đặt lại theme thường trước super.onCreate. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/ds_bg_base" />
+    <item
+        android:width="288dp"
+        android:height="288dp"
+        android:drawable="@drawable/splash_logo"
+        android:gravity="center" />
+</layer-list>

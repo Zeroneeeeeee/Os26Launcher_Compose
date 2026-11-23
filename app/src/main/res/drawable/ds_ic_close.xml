@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DS3 Task 3: icon v3 "close" từ Figma (build/figma-v3/icons/close.svg). Nét trắng, màu đặt bằng tint; bỏ bóng (filter) và clip-path 24x24 của Figma. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="20"
+    android:viewportHeight="20">
+    <path
+        android:pathData="M5.83331 5.83331L9.99998 9.99998M9.99998 9.99998L14.1666 14.1666M9.99998 9.99998L14.1666 5.83331M9.99998 9.99998L5.83331 14.1666"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

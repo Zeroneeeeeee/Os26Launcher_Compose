@@ -1,0 +1,12 @@
+<resources>
+    <!-- G3c Task 1: CHỈ BẢN DEBUG. Nhãn tiếng Anh vì là công cụ đo, không phải chữ cho người dùng. -->
+    <string name="probe_loading" translatable="false">G3c probe</string>
+    <string name="probe_label_a" translatable="false">G3c probe A (no config)</string>
+    <string name="probe_label_b" translatable="false">G3c probe B (config required)</string>
+    <string name="probe_label_c" translatable="false">G3c probe C (config never finishes)</string>
+    <string name="probe_label_d" translatable="false">G3c probe D (reconfigurable, optional config)</string>
+    <string name="probe_label_e" translatable="false">G3c probe E (button + list)</string>
+    <string name="probe_button" translatable="false">Probe button</string>
+    <string name="probe_desc" translatable="false">Debug-only widget used to measure AppWidgetHost behaviour.</string>
+    <string name="probe_config_hang" translatable="false">G3c probe C configuration: this screen never finishes by itself. Press Back or Home.</string>
+</resources>

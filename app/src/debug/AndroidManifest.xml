@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!-- CP: CHỈ BẢN DEBUG (file này ở src/debug, không vào release). exported="true" vì `adb shell am broadcast` chạy dưới uid
+             shell (2000), khác uid của app và không phải root; receiver exported="false" chỉ nhận từ cùng uid/root/system nên
+             nhiều khả năng không nhận được (đọc tài liệu/AOSP, chưa đo; điều phối kiểm ở Task 1). Receiver chỉ đổi chuỗi chế độ
+             danh bạ giả, không trả dữ liệu nào. android:permission=DUMP: uid shell có quyền DUMP còn app thường thì không, nên adb
+             vẫn gửi được nhưng app khác trên máy không bật được chế độ giả (đọc tài liệu, chưa đo; điều phối kiểm trên máy). -->
+        <receiver
+            android:name="gambi.global.os26launcher.debug.FakeContactsModeReceiver"
+            android:exported="true"
+            android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="gambi.global.os26launcher.CP_FAKE_MODE" />
+            </intent-filter>
+        </receiver>
+
+        <!-- WN: CHỈ BẢN DEBUG. Công cụ gỡ lỗi thông báo thời tiết (xem WeatherNotificationDebugReceiver). Cùng cách bảo vệ như CP: exported=true để
+             `adb shell am broadcast` gửi được, android:permission=DUMP để app khác không bật được. -->
+        <receiver
+            android:name="gambi.global.os26launcher.debug.WeatherNotificationDebugReceiver"
+            android:exported="true"
+            android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="gambi.global.os26launcher.WN_DEBUG_FIRE" />
+                <action android:name="gambi.global.os26launcher.WN_DEBUG_SHIFT" />
+                <action android:name="gambi.global.os26launcher.WN_DEBUG_ENABLE" />
+                <action android:name="gambi.global.os26launcher.WN_DEBUG_STATE" />
+            </intent-filter>
+        </receiver>
+        <!-- G3c Task 1 — CHỈ BẢN DEBUG. Công cụ đo AppWidgetHost (docs/plans/G3c-appwidget-host.md Task 1). Receiver và Activity exported + DUMP như mẫu CP
+             (uid shell có DUMP, app khác trên máy thì không). Bốn provider thử A-D là widget thật để các Task sau còn dùng. -->
+        <receiver
+            android:name="gambi.global.os26launcher.debug.AwProbeReceiver"
+            android:exported="true"
+            android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="gambi.global.os26launcher.AW_PROBE" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="gambi.global.os26launcher.debug.AwProbeActivity"
+            android:exported="true"
+            android:permission="android.permission.DUMP" />
+
+        <activity
+            android:name="gambi.global.os26launcher.debug.ProbeConfigActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="gambi.global.os26launcher.debug.ProbeConfigHangActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name="gambi.global.os26launcher.debug.ProbeProviderA"
+            android:exported="true"
+            android:label="@string/probe_label_a">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/probe_a" />
+        </receiver>
+        <receiver
+            android:name="gambi.global.os26launcher.debug.ProbeProviderB"
+            android:exported="true"
+            android:label="@string/probe_label_b">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/probe_b" />
+        </receiver>
+        <receiver
+            android:name="gambi.global.os26launcher.debug.ProbeProviderC"
+            android:exported="true"
+            android:label="@string/probe_label_c">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/probe_c" />
+        </receiver>
+        <receiver
+            android:name="gambi.global.os26launcher.debug.ProbeProviderD"
+            android:exported="true"
+            android:label="@string/probe_label_d">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/probe_d" />
+        </receiver>
+
+        <receiver
+            android:name="gambi.global.os26launcher.debug.ProbeProviderE"
+            android:exported="true"
+            android:label="@string/probe_label_e">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/probe_e" />
+        </receiver>
+        <service
+            android:name="gambi.global.os26launcher.debug.ProbeListService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <receiver
+            android:name="gambi.global.os26launcher.debug.ProbeClickReceiver"
+            android:exported="false" />
+
+        <!-- JD — CHỈ BẢN DEBUG. Catalog design system bằng Compose (cạnh DsCatalogActivity bản View). Cùng cách bảo vệ như probe JC. -->
+        <activity
+            android:name="gambi.global.os26launcher.debug.DsComposeCatalogActivity"
+            android:exported="true"
+            android:permission="android.permission.DUMP"
+            android:theme="@style/Theme.Os26Launcher.Ds" />
+        <!-- CF: CHỈ BẢN DEBUG. Áp theme bằng adb (xem ThemeDebugReceiver). Cùng cách bảo vệ như CP/WN: exported=true để `adb shell am broadcast`
+             gửi được, android:permission=DUMP để app khác không áp được. -->
+        <receiver
+            android:name="gambi.global.os26launcher.debug.ThemeDebugReceiver"
+            android:exported="true"
+            android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="gambi.global.os26launcher.CF_APPLY_THEME" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

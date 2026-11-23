@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DS3: style của thành phần v3 dựa trên widget sẵn có (Task 5). Thành phần có hành vi riêng là custom view ở core/designsystem. -->
+<resources>
+    <!-- Công tắc (Figma Toggle 302:3331): ray 51 x 31, núm 27. Tắt tint mặc định để drawable giữ đúng màu. -->
+
+    <!-- Radio (Figma 302:3336): 22 x 22, vùng chạm 48. -->
+
+    <!-- Thanh trượt (Figma Slider 302:3493): ray 4 dp bo 2, núm 10. Chiều cao view (vùng chạm) đặt 48 ở layout. -->
+
+
+
+    <!-- Task 6: tiêu đề nhóm ("Chung", "Giao diện") và chân trang ("Phiên bản 1.0.0").
+         KHÔNG đặt android:accessibilityHeading ở đây: attr chỉ có từ API 28, lint báo NewApi trên minSdk 26. View dùng style này gọi
+         ViewCompat.setAccessibilityHeading(view, true) trong code (phủ cả API 26–27). -->
+
+    <!-- HC Task 3: TextView mặc định của theme v3: font Be Vietnam Pro qua textAppearance (không qua fontFamily ở theme, xem ds_themes.xml). -->
+    <style name="Widget.Os26.Ds.TextView" parent="android:Widget.TextView">
+        <item name="android:textAppearance">@style/TextAppearance.Os26.Ds.Body</item>
+    </style>
+
+
+</resources>

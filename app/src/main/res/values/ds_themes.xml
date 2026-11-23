@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DS3 Task 1: theme cho màn v3. Luôn tối, kể cả khi máy đặt giao diện sáng (quyết định 6): parent là Dark, không phải DayNight,
+     và không có bản values-night. Thanh hệ thống trong suốt; nội dung tự đệm theo inset (edge-to-edge). -->
+<resources>
+    <style name="Base.Theme.Os26Launcher.Ds" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@color/ds_bg_base</item>
+        <item name="colorPrimary">@color/ds_accent</item>
+        <item name="colorError">@color/ds_status_danger</item>
+        <!-- HC Task 3: KHÔNG đặt android:fontFamily / fontFamily ở theme: TextView đọc thuộc tính trực tiếp (kể cả giá trị theme) sau
+             textAppearance nên họ font theme (400) đè font đậm của TextAppearance.Os26.Ds.Title/Card/... (chữ tiêu đề ra Regular).
+             Font mặc định đi qua textViewStyle -> textAppearance; TextView có textAppearance riêng thì dùng của nó. -->
+        <item name="android:textViewStyle">@style/Widget.Os26.Ds.TextView</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <style name="Theme.Os26Launcher.Ds" parent="Base.Theme.Os26Launcher.Ds" />
+
+    <!-- Task 7: cửa sổ hộp thoại v3. Nền cửa sổ trong suốt (nền SHEET do nội dung vẽ), lớp mờ 60%, bề rộng đặt bằng code (312 dp). -->
+
+</resources>

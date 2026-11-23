@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- OB 0.0: API 27–30 — như values/themes.xml, thêm windowLightNavigationBar (có từ API 27) để icon thanh điều hướng sáng trên nền
+     splash tối. API 31+: values-v31/themes.xml. -->
+<resources>
+    <style name="Theme.Os26Launcher.Starting" parent="Theme.Os26Launcher">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:statusBarColor">@color/ds_bg_base</item>
+        <item name="android:navigationBarColor">@color/ds_bg_base</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+</resources>

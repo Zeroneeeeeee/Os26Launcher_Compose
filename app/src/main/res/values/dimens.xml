@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- IconCellView (M3 Task 2): bóng nhãn để đọc được trên ảnh nền bất kỳ (bắt buộc, không phải
+         trang trí — tương phản không kiểm soát được, mục 7 project_structure.md). -->
+    <dimen name="icon_label_shadow_radius">4dp</dimen>
+    <dimen name="icon_label_text_size">10sp</dimen>
+
+    <!-- M5 Task 4: màn hình chính. Giá trị khởi điểm, chỉnh sau khi xem trên máy.
+         home_dock_margin_horizontal PHẢI <= GridMetrics.PADDING_DP (8dp) để dock đủ 4 icon thẳng cột với lưới. -->
+    <dimen name="home_dock_margin_horizontal">8dp</dimen>
+    <dimen name="home_dock_margin_bottom">8dp</dimen>
+
+    <!-- M7 Task 4: thanh công cụ edit mode canh giữa trên cùng. -->
+
+    <!-- M7 Task 8: dấu "−" ẩn nhanh trên icon ở chế độ chỉnh sửa. Hình 24dp, vùng chạm tối thiểu 48dp (chuẩn). -->
+    <dimen name="icon_badge_hit_size">48dp</dimen>
+
+    <!-- M7 Task 9: màn Thư viện ứng dụng -->
+    <dimen name="library_icon_size">48dp</dimen>
+    <dimen name="home_edit_toolbar_margin_horizontal">16dp</dimen>
+
+    <!-- M8a Task 3: màn Cài đặt (nhóm bo góc kiểu iOS) -->
+    <dimen name="settings_group_margin">16dp</dimen>
+    <dimen name="glass_preview_height">260dp</dimen> <!-- GT: khung xem trước của màn Tinh chỉnh kính -->
+
+    <!-- M7 Task 10 -->
+
+    <!-- M8b: lớp tìm kiếm (8dp grid) -->
+    <dimen name="search_field_height">48dp</dimen>
+    <dimen name="search_field_margin_top">8dp</dimen>
+    <dimen name="search_field_margin_horizontal">16dp</dimen>
+    <dimen name="search_idle_margin_top">32dp</dimen>
+    <dimen name="search_result_row_height">64dp</dimen>
+    <dimen name="search_result_icon_size">48dp</dimen>
+    <!-- M8c: pill kích thước cố định (D6), chứa 5 chấm = 5x6dp + 4x8dp = 62dp; vùng chạm 48dp -->
+    <dimen name="search_pill_width">112dp</dimen>
+    <dimen name="search_pill_height">26dp</dimen>
+    <dimen name="search_pill_touch_height">48dp</dimen>
+    <!-- G2a A2: panel thư mục. Giá trị khởi điểm, chỉnh sau khi xem trên máy. -->
+    <!-- FP 2026-11-18: khung chỉ còn lưới 3x3, vuông; tiêu đề nằm ngoài, phía trên khung. -->
+    <!-- Lề/đệm nhỏ để icon trong khung không bé hơn icon Home (40/24dp làm icon ~52dp trên Live 4; 24/16dp ~64dp, ước tính). -->
+    <dimen name="folder_panel_margin">24dp</dimen>
+    <dimen name="folder_panel_padding">16dp</dimen>
+    <dimen name="folder_panel_max_size">360dp</dimen>
+    <!-- Vùng chạm tối thiểu của tiêu đề (cao), không phải cỡ chữ. -->
+    <dimen name="folder_title_height">48dp</dimen>
+    <!-- FP: theo ảnh mẫu iOS 26 (chủ dự án gửi 2026-11-18): chữ lớn, căn trái theo lưới, sát khung. -->
+    <dimen name="folder_title_text_size">34sp</dimen>
+    <!-- Chủ dự án 2026-11-18: thêm 8dp khoảng dọc tiêu đề -> khung (8 -> 16dp). -->
+    <dimen name="folder_title_gap">16dp</dimen>
+    <dimen name="folder_title_padding_h">12dp</dimen>    <dimen name="folder_title_min_width">96dp</dimen>
+    <dimen name="folder_title_shadow_radius">2dp</dimen>
+    <!-- G2a B2: trang App Library (ô nhóm phẳng, kính ở mốc "Áp kính") -->
+    <dimen name="category_page_padding">16dp</dimen>
+    <!-- Chỗ dành cho thanh tìm kiếm trên cùng: 8dp lề trên + 48dp ô + 8dp đệm dưới. -->
+    <dimen name="category_search_area_height">64dp</dimen>
+    <!-- Lề mỗi bên của ô nhóm: khoảng cách giữa 2 ô liền kề = 2 × giá trị này (20dp, bằng 1/3 bản đầu). -->
+    <dimen name="category_tile_gap">10dp</dimen>
+    <dimen name="category_tile_radius">24dp</dimen>
+    <dimen name="library_list_icon_size">40dp</dimen> <!-- LO D4: icon hàng danh sách A–Z -->
+    <dimen name="library_letter_index_width">28dp</dimen> <!-- LO D10: cột chữ cái kéo nhanh -->
+    <dimen name="category_tile_padding">12dp</dimen>
+    <!-- Cỡ icon nhỏ chỉ là mặc định thiết kế; CategoryPageView tính lại theo bề rộng ô để khung icon lấp đầy ô. -->
+    <dimen name="category_mini_icon_gap">4dp</dimen>
+    <!-- G2a B3: panel nhóm (lưới 3 cột, cuộn dọc) -->
+    <dimen name="category_group_icon_size">56dp</dimen>
+    <dimen name="category_group_item_padding">8dp</dimen>
+    <!-- AP vòng 2: màn nhóm toàn màn hình kiểu iOS 27 -->
+    <dimen name="category_group_title_margin_top">64dp</dimen>
+    <dimen name="category_group_side_margin">20dp</dimen>
+    <dimen name="category_group_list_margin_top">20dp</dimen>
+    <!-- TL1 Task 5: pill Cài đặt / Xong của edit mode. Nền nhìn 28dp, hộp chạm 48dp (insetTop/insetBottom = (48-28)/2). -->
+    <dimen name="home_edit_pill_height">28dp</dimen>
+    <dimen name="home_edit_pill_touch">48dp</dimen>
+    <dimen name="home_edit_pill_corner">14dp</dimen>
+    <dimen name="home_edit_pill_padding_horizontal">14dp</dimen>
+    <!-- Khe giữa hộp chạm và dấu "−"; phần dấu "−" nhô lên trên icon hàng đầu (cạnh = iconSize*0.5, nhô iconSize/4; chặn trên). -->
+    <dimen name="home_edit_pill_gap">2dp</dimen>
+    <dimen name="home_edit_badge_overhang">16dp</dimen>
+
+    <!-- G2c: widget tự vẽ -->
+    <dimen name="widget_pill_margin_start">8dp</dimen>
+
+    <!-- SM: menu nhấn giữ icon. Số đo từ launcher mẫu trên Oppo (2 px/dp): bảng 200dp, bo 24dp, hàng 35dp nhìn thấy + khe 4dp.
+         SW: 200dp là rộng tối thiểu; bảng nở tới 260dp khi chữ (cỡ chữ hệ thống lớn) không vừa 200dp (xem IconMenuWidth). -->
+    <dimen name="shortcut_menu_min_width">200dp</dimen>
+    <dimen name="shortcut_menu_max_width">260dp</dimen>
+    <dimen name="shortcut_menu_padding_horizontal">8dp</dimen>
+    <dimen name="shortcut_menu_padding_vertical">6dp</dimen>
+    <!-- Hộp chạm 39dp liền nhau = hàng nhìn thấy 35dp + 2dp thụt mỗi phía (nền nhấn thụt, nhìn như khe 4dp). -->
+    <dimen name="shortcut_menu_row_height">39dp</dimen>
+    <dimen name="shortcut_menu_row_inset">2dp</dimen>
+    <dimen name="shortcut_menu_row_radius">16dp</dimen>
+    <dimen name="shortcut_menu_row_padding_start">8dp</dimen>
+    <dimen name="shortcut_menu_row_padding_end">8dp</dimen>
+    <dimen name="shortcut_menu_text_size">15sp</dimen>
+    <dimen name="shortcut_menu_icon_size">20dp</dimen>
+    <dimen name="shortcut_menu_icon_padding">8dp</dimen>
+    <dimen name="shortcut_menu_divider">1dp</dimen>
+    <dimen name="shortcut_menu_divider_inset">8dp</dimen>
+    <dimen name="shortcut_menu_divider_margin">2dp</dimen>
+    <dimen name="shortcut_menu_gap">10dp</dimen>
+    <dimen name="shortcut_menu_margin">8dp</dimen>
+
+    <!-- G3a -->
+    <dimen name="search_contact_button_size">48dp</dimen>
+
+    <!-- SI: Spotlight dimensions -->
+    <!-- Cao cố định của ô app (đệm 8 + icon 60 + 4 + nhãn 12sp + đệm 8): SearchCapacity tính số hàng web vừa khít theo số này -->
+    <dimen name="search_si_grid_cell_height">96dp</dimen>
+    <dimen name="search_si_web_row_height">56dp</dimen>
+    <!-- Cao cố định của tiêu đề nhóm (item_search_header.xml): khoảng trống trên + chữ 13sp + đệm dưới 8 -->
+    <dimen name="search_si_header_height">40dp</dimen>
+    <!-- G3e: bảng Thời tiết (khối weather_) -->
+
+    <!-- G3d: Trung tâm điều khiển (khối cc_) -->
+    <dimen name="cc_pad">24dp</dimen>
+    <dimen name="cc_gap">14dp</dimen>
+    <dimen name="cc_max_width">420dp</dimen>
+    <dimen name="cc_block_radius">38dp</dimen>
+    <dimen name="cc_glass_rim">1dp</dimen>
+    <dimen name="cc_icon_size">26dp</dimen>
+    <dimen name="cc_reveal_threshold">40dp</dimen>
+    <dimen name="cc_handle_width">36dp</dimen>
+    <dimen name="cc_handle_height">4dp</dimen>
+    <dimen name="cc_fling_min_distance">50dp</dimen>
+    <dimen name="cc_status_height">32dp</dimen>
+    <dimen name="cc_status_icon">18dp</dimen>
+    <dimen name="cc_page_dot">26dp</dimen>
+    <dimen name="cc_media_button">44dp</dimen>
+    <dimen name="cc_media_volume_height">44dp</dimen>
+    <dimen name="cc_detail_icon">36dp</dimen>
+    <dimen name="cc_app_icon">40dp</dimen>
+    <dimen name="cc_swatch">36dp</dimen>
+
+    <!-- G3b: màn Ảnh của tiện ích (khối ph_) -->
+    <dimen name="ph_grid_padding">12dp</dimen>
+    <dimen name="ph_remove_size">40dp</dimen>
+    <!-- G3c Task 4: lề trong giữa thẻ kính và host view của widget app (CHỈNH TAY, mặc định 0 = host view phủ kín thẻ như renderer của widget tự vẽ) -->
+    <dimen name="aw_card_inset">0dp</dimen>
+    <!-- CG: bán kính làm mờ màn phía sau (blur xuyên cửa sổ, API 31+) khi panel mở hẳn -->
+    <dimen name="cc_blur_behind_radius">56dp</dimen>
+</resources>

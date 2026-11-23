@@ -1,0 +1,713 @@
+<resources>
+    <!-- LG: bản dịch máy (Claude, 2026-11-18), chưa có người bản ngữ duyệt. -->
+    <string name="app_name">OS26 Launcher</string>
+
+    <string name="app_launch_failed">เปิด %1$s ไม่ได้ แอปอาจเพิ่งถูกถอนการติดตั้ง</string>
+    <string name="home_set_default_failed">เปิดหน้าเลือกตัวเรียกใช้งานเริ่มต้นไม่ได้</string>
+
+    <!-- M7 Task 4: nút thoát chế độ chỉnh sửa. -->
+    <string name="home_done">เสร็จ</string>
+
+    <string name="wallpaper_dialog_title">ตั้งเป็นวอลเปเปอร์</string>
+    <string name="wallpaper_dialog_skip">ไม่ตั้ง</string>
+    <string name="wallpaper_target_home">หน้าจอหลัก</string>
+    <string name="wallpaper_target_lock">หน้าจอล็อก</string>
+    <string name="wallpaper_target_both">ทั้งสองอย่าง</string>
+    <string name="wallpaper_applied">ตั้งวอลเปเปอร์ให้: %1$s แล้ว</string>
+    <string name="wallpaper_failed">ตั้งวอลเปเปอร์ไม่ได้: %1$s</string>
+    <string name="common_unknown">ไม่ทราบสาเหตุ</string>
+
+    <!-- M7 Task 9: Thư viện ứng dụng -->
+    <!-- M8a Task 3: màn Cài đặt -->
+    <string name="settings_loading">กำลังโหลดการตั้งค่า</string>
+    <string name="settings_hidden_apps">แอปที่ซ่อน</string>
+    <string name="settings_show_labels">แสดงชื่อแอป</string>
+    <string name="settings_nav_bar_hidden">ซ่อนแถบนำทาง</string>
+    <string name="settings_nav_bar_hidden_description">เฉพาะในหน้าจอหลัก ปัดขึ้นจากขอบล่างเพื่อแสดงชั่วคราว</string>
+    <string name="settings_backdrop">วอลเปเปอร์</string>
+    <string name="settings_backdrop_set">เลือกรูปแล้ว</string>
+    <string name="settings_backdrop_unset">ยังไม่ได้เลือก</string>
+    <string name="settings_backdrop_failed">อ่านรูปนี้ไม่ได้ จึงใช้วอลเปเปอร์เดิม</string>
+    <string name="settings_wallpaper_unavailable">เปลี่ยนวอลเปเปอร์ในแอปแล้ว แต่ตั้งวอลเปเปอร์ของระบบไม่ได้: %1$s</string>
+    <string name="settings_grid_preset">ขนาดตาราง</string>
+    <string name="settings_grid_value">%1$d × %2$d</string>
+    <string name="settings_grid_option">%1$d × %2$d (%3$d ไอคอนต่อหน้า)</string>
+    <string name="settings_grid_confirm_title">เปลี่ยนเป็นตาราง %1$d × %2$d ไหม</string>
+    <string name="settings_grid_confirm_message">ไอคอนจะถูกจัดเรียงใหม่ตามลำดับปัจจุบัน และย้อนกลับไม่ได้ ใช้เลยไหม</string>
+    <string name="settings_grid_confirm_apply">ใช้</string>
+    <string name="settings_grid_failed">เปลี่ยนขนาดตารางไม่ได้</string>
+    <string name="settings_glass_level">ระดับกระจก</string>
+    <string name="settings_glass_auto">อัตโนมัติ</string>
+    <string name="settings_glass_low">ต่ำ</string>
+    <string name="settings_glass_high">สูง</string>
+    <string name="settings_glass_auto_desc">อัตโนมัติ (ตามเครื่อง)</string>
+    <string name="settings_glass_low_desc">บังคับต่ำ (การ์ดฝ้า เบาเครื่อง)</string>
+    <string name="settings_glass_high_desc">บังคับสูง (กระจกจริง ใช้ทรัพยากรมากกว่า)</string>
+    <string name="settings_cancel">ยกเลิก</string>
+    <string name="settings_save_failed">บันทึกการตั้งค่าไม่ได้</string>
+    <string name="home_settings">การตั้งค่า</string>
+
+    <string name="library_title">แอปที่ซ่อน</string>
+    <string name="library_hidden_empty">ไม่มีแอปที่ซ่อน</string>
+    <string name="library_launch_failed">เปิดแอปไม่ได้</string>
+    <string name="library_unhide_failed">เลิกซ่อนแอปไม่ได้</string>
+
+    <!-- M7 Task 10: menu nhấn giữ icon -->
+    <string name="menu_app_info">ข้อมูลแอป</string>
+    <string name="menu_hide_app">ซ่อนแอป</string>
+    <string name="menu_edit_home">แก้ไขหน้าจอหลัก</string>
+    <string name="menu_uninstall">ถอนการติดตั้ง</string>
+    <string name="menu_action_failed">ทำรายการไม่สำเร็จ</string>
+    <string name="remove_app_title">เอา “%1$s” ออกไหม</string>
+    <string name="remove_app_message">การเอาออกจากหน้าจอหลักจะยังเก็บแอปไว้ในคลังแอป</string>
+    <string name="remove_app_delete">ลบแอป</string>
+    <string name="remove_app_from_home">เอาออกจากหน้าจอหลัก</string>
+    <string name="remove_app_cancel">ยกเลิก</string>
+
+    <!-- M8b: tìm kiếm -->
+    <string name="search_field_hint">ค้นหา</string>
+    <string name="search_idle_hint">พิมพ์ชื่อแอป</string>
+    <string name="search_no_results">ไม่พบแอป</string>
+    <string name="search_pill_label">ค้นหา</string>
+    <string name="search_pill_page_description">หน้า %1$d จาก %2$d</string>
+    <string name="search_clear">ล้างการค้นหา</string>
+    <string name="search_cancel">ยกเลิก</string>
+    <!-- G2a A1a: tên hiển thị khi thư mục chưa đặt tên -->
+    <string name="folder_default_title">โฟลเดอร์</string>
+    <!-- G2a B2: trang App Library ở cuối pager -->
+    <string name="library_page_group_social">โซเชียล</string>
+    <string name="library_page_group_entertainment">บันเทิง</string>
+    <string name="library_page_group_game">เกม</string>
+    <string name="library_page_group_productivity">ประสิทธิภาพการทำงาน</string>
+    <string name="library_page_group_news">ข่าว</string>
+    <string name="library_page_group_maps">แผนที่</string>
+    <string name="library_page_group_utilities">ยูทิลิตี้</string>
+    <string name="library_page_group_other">อื่นๆ</string>
+    <string name="lo_enable">เปิดใช้คลังแอป</string>
+    <string name="lo_enable_description">ปัดเลยหน้าสุดท้ายของหน้าจอหลัก</string>
+    <string name="lo_style_header">รูปแบบการแสดง</string>
+    <string name="lo_style_folders">โฟลเดอร์ตามหมวดหมู่</string>
+    <string name="lo_style_list">รายการ A–Z</string>
+    <string name="lo_auto_categorize">จัดหมวดหมู่แอปอัตโนมัติ</string>
+    <string name="lo_auto_categorize_description">โซเชียล ยูทิลิตี้ ความบันเทิง…</string>
+    <string name="lo_suggestions">แสดงคำแนะนำและเพิ่มล่าสุด</string>
+    <string name="lo_suggestions_description">สองโฟลเดอร์แรกของคลัง</string>
+    <string name="library_page_group_suggested">คำแนะนำ</string>
+    <string name="library_page_group_recent">เพิ่มล่าสุด</string>
+    <string name="library_page_group_all">แอปทั้งหมด</string>
+    <string name="library_page_empty">ยังไม่มีแอป</string>
+
+    <!-- G2b: kiểu icon -->
+    <string name="settings_icon_style">สไตล์ไอคอน</string>
+    <string name="settings_icon_style_default">ค่าเริ่มต้น</string>
+    <string name="settings_icon_style_transparent">โปร่งใส</string>
+    <string name="settings_icon_style_tinted">แต่งสี</string>
+    <string name="settings_icon_style_3d">3D</string>
+    <string name="settings_icon_style_glass">กระจก</string>
+    <string name="settings_icon_tint">สีที่แต่ง</string>
+    <string name="settings_icon_tint_blue">น้ำเงิน</string>
+    <string name="settings_icon_tint_pink">ชมพู</string>
+    <string name="settings_icon_tint_green">เขียว</string>
+    <string name="settings_icon_tint_orange">ส้ม</string>
+    <string name="settings_icon_tint_graphite">เทาเข้ม</string>
+    <!-- IP -->
+    <string name="settings_icon_pack">ชุดไอคอน</string>
+    <string name="settings_icon_pack_none">ไม่ใช้</string>
+    <string name="settings_icon_pack_empty">ไม่พบชุดไอคอน ติดตั้งชุดไอคอนจากร้านค้าแอปแล้วกลับมาที่นี่</string>
+    <string name="settings_icon_pack_ok">ปิด</string>
+
+    <!-- AN Task 5: nhãn trợ năng cho "+N" trong cụm icon mini của ô nhóm -->
+
+    <!-- G2c: widget tự vẽ -->
+    <string name="widget_clock_description">นาฬิกา, %1$s</string>
+    <string name="widget_calendar_description">ปฏิทิน, %1$s</string>
+    <string name="home_add_widget">วิดเจ็ต</string>
+    <string name="widget_picker_title">เพิ่มวิดเจ็ต</string>
+    <string name="widget_name_clock">นาฬิกา</string>
+    <string name="widget_name_calendar">ปฏิทิน</string>
+    <string name="widget_size_label">%1$d×%2$d</string>
+    <string name="widget_remove_title">นำวิดเจ็ตออกไหม</string>
+    <string name="widget_remove_message">วิดเจ็ตจะถูกนำออกจากหน้าจอหลัก คุณเพิ่มกลับได้จากปุ่มวิดเจ็ต</string>
+    <string name="widget_remove_confirm">นำออก</string>
+    <string name="widget_remove_cancel">ยกเลิก</string>
+    <!-- GS: mức kính Tùy chỉnh -->
+    <string name="gs_level_custom">กำหนดเอง</string>
+    <string name="gs_level_custom_desc">กำหนดเอง (เลือกกระจกจริงหรือกระจกฝ้าสำหรับแต่ละส่วนที่ด้านล่าง)</string>
+    <string name="gs_custom_header">กระจกแบบกำหนดเอง (เปิด = กระจกจริง ปิด = กระจกฝ้า)</string>
+    <string name="gs_custom_dock">Dock</string>
+    <string name="gs_custom_panels">แผง (โฟลเดอร์ กลุ่มในคลังแอป)</string>
+    <string name="gs_custom_search_bar">แถบค้นหา</string>
+    <string name="gs_custom_pill">ปุ่มค้นหา / จุดบอกหน้า</string>
+    <string name="gs_warn_title">กระจกจริงอาจช้า</string>
+    <string name="gs_warn_message">เครื่องนี้ใช้ Android ต่ำกว่า 13 กระจกจริงจึงวาดด้วย CPU และอาจทำให้หน้าจอกระตุก โดยเฉพาะตอนเปิดแผง (วัดบน Vsmart Live 4: แผงกระจกจริงกระตุกมาก) คุณปิดได้ทุกเมื่อ</string>
+    <string name="gs_warn_enable">เปิดต่อ</string>
+    <!-- M8d Task 3: mục Cài đặt hệ thống trong kết quả tìm kiếm. *_kw là từ khóa phân cách bằng dấu phẩy (gõ không dấu cũng khớp). -->
+    <string name="search_extras_setting_wifi">Wi-Fi</string>
+    <string name="search_extras_setting_bluetooth">บลูทูธ</string>
+    <string name="search_extras_setting_airplane">โหมดเครื่องบิน</string>
+    <string name="search_extras_setting_mobile">เครือข่ายมือถือ</string>
+    <string name="search_extras_setting_data_usage">การใช้ข้อมูล</string>
+    <string name="search_extras_setting_display">การแสดงผล</string>
+    <string name="search_extras_setting_sound">เสียง</string>
+    <string name="search_extras_setting_notification">การแจ้งเตือน</string>
+    <string name="search_extras_setting_dnd">ห้ามรบกวน</string>
+    <string name="search_extras_setting_battery">แบตเตอรี่และโหมดประหยัดแบตเตอรี่</string>
+    <string name="search_extras_setting_location">ตำแหน่ง</string>
+    <string name="search_extras_setting_datetime">วันที่และเวลา</string>
+    <string name="search_extras_setting_language">ภาษา</string>
+    <string name="search_extras_setting_storage">พื้นที่เก็บข้อมูล</string>
+    <string name="search_extras_setting_security">ความปลอดภัย</string>
+    <string name="search_extras_setting_privacy">ความเป็นส่วนตัว</string>
+    <string name="search_extras_setting_accessibility">การช่วยเหลือพิเศษ</string>
+    <string name="search_extras_setting_apps">แอป</string>
+    <string name="search_extras_setting_default_apps">แอปเริ่มต้น</string>
+    <string name="search_extras_setting_keyboard">แป้นพิมพ์</string>
+    <string name="search_extras_setting_cast">แคสต์หน้าจอ</string>
+    <string name="search_extras_setting_nfc">NFC</string>
+    <string name="search_extras_setting_vpn">VPN</string>
+    <string name="search_extras_setting_about">เกี่ยวกับโทรศัพท์</string>
+    <string name="search_extras_setting_home">การตั้งค่า</string>
+    <string name="search_extras_kind_setting">การตั้งค่า</string>
+    <string name="search_extras_setting_description">การตั้งค่า: %1$s</string>
+    <string name="search_recent_collapse">แสดงน้อยลง</string>
+    <string name="search_recent_expand">แสดงเพิ่มเติม</string>
+
+    <!-- M8d Task 5: tiêu đề nhóm khi ô tìm kiếm trống -->
+    <string name="search_extras_header_recent">ล่าสุด</string>
+    <string name="search_extras_header_frequent">คำแนะนำ</string>
+    <string name="search_extras_header_trending">คำค้นหายอดนิยม</string>
+
+    <!-- M8d Task 4 -->
+    <string name="search_extras_shortcut_description">%1$s, ทางลัดของ %2$s</string>
+
+    <!-- M8d Task 6: khối "Tìm kiếm" trong Cài đặt -->
+    <string name="settings_search_system">การตั้งค่าระบบ</string>
+    <string name="settings_search_shortcuts">ทางลัดของแอป</string>
+    <string name="settings_search_shortcuts_need_default">ทางลัดต้องตั้งแอปนี้เป็นตัวเรียกใช้งานเริ่มต้น</string>
+    <string name="settings_search_suggestions">คำแนะนำและแอปล่าสุด</string>
+    <string name="settings_search_suggestions_off_message">การปิดจะลบประวัติการเปิดแอปที่บันทึกไว้ในเครื่อง</string>
+    <string name="settings_search_suggestions_off_confirm">ปิดและลบ</string>
+    <string name="settings_search_clear">ล้างประวัติแอป</string>
+    <string name="settings_search_clear_message">ลบแอปล่าสุดและคำแนะนำที่บันทึกไว้ในเครื่องไหม</string>
+    <string name="settings_search_clear_confirm">ลบ</string>
+
+    <!-- SM: công tắc kính của menu nhấn giữ icon (khối Tùy chỉnh, cùng nghĩa bốn công tắc trên) -->
+    <string name="gs_custom_menu_header">เมนูกดไอคอนค้าง (เปิด = กระจกจริง ปิด = กระจกฝ้า)</string>
+    <string name="gs_custom_icon_menu">กระจกสำหรับเมนูกดค้าง</string>
+
+    <!-- G3a: tìm danh bạ trong ô tìm kiếm -->
+    <string name="search_contacts_kind">รายชื่อติดต่อ</string>
+    <string name="search_contacts_prompt_title">แสดงรายชื่อติดต่อ</string>
+    <string name="search_contacts_prompt_subtitle">อนุญาตให้เข้าถึงรายชื่อติดต่อเพื่อค้นหาคนได้ที่นี่ รายชื่อจะถูกอ่านในเครื่องเท่านั้นและไม่ถูกบันทึก</string>
+    <string name="search_contacts_prompt_settings_subtitle">เปิดการตั้งค่าเพื่ออนุญาตสิทธิ์รายชื่อติดต่อ</string>
+    <string name="search_contacts_prompt_dismiss">ซ่อนคำแนะนำรายชื่อติดต่อ</string>
+    <string name="search_contacts_call">โทรหา %1$s</string>
+    <string name="search_contacts_message">ส่งข้อความถึง %1$s</string>
+    <string name="search_contacts_action_failed">เปิดรายชื่อติดต่อ โทรศัพท์ หรือข้อความไม่ได้</string>
+    <string name="settings_search_contacts">ค้นหาในรายชื่อติดต่อ</string>
+    <string name="settings_search_contacts_description">การปิดจะซ่อนรายชื่อติดต่อจากการค้นหาเท่านั้น ไม่ได้เพิกถอนสิทธิ์ของ Android</string>
+
+    <!-- WP: nhãn dòng Ảnh nền khi dùng ảnh mặc định (ảnh iOS 27 chỉ để thử, xóa trước bản cửa hàng) -->
+    <string name="settings_backdrop_default">ค่าเริ่มต้น (iOS 27 รูปทดสอบ)</string>
+
+    <!-- G3e: widget thời tiết (khối weather_) -->
+    <string name="weather_name">สภาพอากาศ</string>
+    <string name="weather_no_key">ไม่มีข้อมูลสภาพอากาศ</string>
+    <string name="weather_no_location">เลือกเมือง</string>
+    <string name="weather_no_location_hint">แตะเพื่อเลือก</string>
+    <string name="weather_loading">กำลังโหลด…</string>
+    <string name="weather_error_network">ไม่มีการเชื่อมต่อ</string>
+    <string name="weather_error_key">คีย์ไม่ถูกต้อง</string>
+    <string name="weather_error_rate">เกินขีดจำกัดการเรียกใช้</string>
+    <string name="weather_error_not_found">ไม่พบสถานที่</string>
+    <string name="weather_error_generic">ข้อมูลผิดพลาด</string>
+    <string name="weather_cond_clear">ท้องฟ้าแจ่มใส</string>
+    <string name="weather_cond_partly_cloudy">มีเมฆบางส่วน</string>
+    <string name="weather_cond_cloudy">มีเมฆมาก</string>
+    <string name="weather_cond_rain">ฝนตก</string>
+    <string name="weather_cond_thunderstorm">พายุฝนฟ้าคะนอง</string>
+    <string name="weather_cond_snow">หิมะ</string>
+    <string name="weather_cond_fog">หมอก</string>
+    <string name="weather_cond_unknown">ไม่ทราบ</string>
+    <!-- Cao/thấp là trong 24 giờ tới, KHÔNG phải cả ngày dương lịch (gói Free không có trường đó) -->
+    <string name="weather_updated_at">อัปเดต %1$s</string>
+    <string name="weather_description">%1$s, %2$d %6$s, %3$s 24 ชั่วโมงข้างหน้าสูงสุด %4$d %6$s ต่ำสุด %5$d %6$s</string>
+    <string name="weather_description_state">สภาพอากาศ: %1$s</string>
+
+    <!-- G3e: bảng Thời tiết (bottom sheet mở khi bấm widget) -->
+    <string name="weather_sheet_title">สภาพอากาศ</string>
+    <string name="weather_sheet_hint">ชื่อเมือง</string>
+    <string name="weather_sheet_search">ค้นหา</string>
+    <string name="weather_sheet_no_key">ข้อมูลสภาพอากาศไม่พร้อมใช้งานชั่วคราว โปรดลองอีกครั้งภายหลัง</string>
+    <string name="weather_sheet_searching">กำลังค้นหา…</string>
+    <string name="weather_sheet_not_found">ไม่พบเมืองนี้</string>
+    <string name="weather_sheet_refreshing">กำลังอัปเดต…</string>
+    <string name="weather_sheet_hi_lo_note">สูงสุด/ต่ำสุดเป็นของ 24 ชั่วโมงข้างหน้า ไม่ใช่ทั้งวัน</string>
+
+    <!-- G3d: Trung tâm điều khiển (khối cc_) -->
+    <string name="cc_service_label">ศูนย์ควบคุมของ OS26 Launcher</string>
+    <string name="cc_title">ศูนย์ควบคุม</string>
+    <string name="cc_state_on">เปิด</string>
+    <string name="cc_state_off">ปิด</string>
+    <string name="cc_enable">เปิดศูนย์ควบคุม</string>
+    <string name="cc_enable_desc">ปัดลงจากมุมขวาบน ได้ทุกหน้าจอ</string>
+    <string name="cc_enable_needs_permissions">อนุญาตสิทธิ์สองรายการแรกด้านล่างก่อนจึงจะแสดงได้</string>
+    <string name="cc_header_permissions">สิทธิ์</string>
+    <string name="cc_perm_overlay">แสดงทับแอปอื่น</string>
+    <string name="cc_perm_listener">การเข้าถึงการแจ้งเตือน</string>
+    <string name="cc_perm_battery">ไม่จำกัดแบตเตอรี่ (แนะนำ)</string>
+    <string name="cc_perm_write_settings">แก้ไขการตั้งค่าระบบ</string>
+    <string name="cc_perm_dnd">สิทธิ์ห้ามรบกวน</string>
+    <string name="cc_perm_bluetooth">อุปกรณ์ใกล้เคียง (บลูทูธ)</string>
+    <string name="cc_perm_granted">อนุญาตแล้ว</string>
+    <string name="cc_perm_missing">ยังไม่อนุญาต</string>
+    <string name="cc_perm_open_failed">เครื่องนี้เปิดหน้าสิทธิ์ไม่ได้</string>
+    <string name="cc_tile_airplane">โหมดเครื่องบิน</string>
+    <string name="cc_tile_cellular">อินเทอร์เน็ตมือถือ</string>
+    <string name="cc_tile_wifi">Wi-Fi</string>
+    <string name="cc_tile_bluetooth">บลูทูธ</string>
+    <string name="cc_tile_rotation">ล็อกการหมุน</string>
+    <string name="cc_tile_dnd">ห้ามรบกวน</string>
+    <string name="cc_tile_flashlight">ไฟฉาย</string>
+    <string name="cc_tile_timer">ตัวจับเวลา</string>
+    <string name="cc_tile_calculator">เครื่องคิดเลข</string>
+    <string name="cc_tile_camera">กล้อง</string>
+    <string name="cc_brightness">ความสว่าง</string>
+    <string name="cc_volume">ระดับเสียง</string>
+    <string name="cc_media_idle">ไม่ได้เล่น</string>
+    <string name="cc_no_app">ไม่พบแอปที่ใช้ได้</string>
+    <string name="cc_unavailable">เครื่องนี้ไม่รองรับ</string>
+    <string name="cc_auto_brightness">ความสว่างอัตโนมัติ</string>
+    <string name="cc_screen_timeout">ระยะหมดเวลาหน้าจอ</string>
+    <string name="cc_timeout_seconds">%1$d วิ</string>
+    <string name="cc_timeout_minutes">%1$d นาที</string>
+    <string name="cc_battery_percent">%1$d%%</string>
+    <string name="cc_block_connectivity">การเชื่อมต่อ กดค้างเพื่อขยาย</string>
+    <string name="cc_block_media">เพลง กดค้างเพื่อเปิดเครื่องเล่น</string>
+    <string name="cc_open_settings">การตั้งค่าศูนย์ควบคุม</string>
+    <string name="cc_page_main">หน้าควบคุม</string>
+    <string name="cc_page_media">หน้าเพลง</string>
+    <string name="cc_page_network">หน้าการเชื่อมต่อ</string>
+    <string name="cc_media_play">เล่น</string>
+    <string name="cc_media_pause">หยุดชั่วคราว</string>
+    <string name="cc_media_next">เพลงถัดไป</string>
+    <string name="cc_media_previous">เพลงก่อนหน้า</string>
+    <string name="cc_media_unknown_artist">ไม่ทราบศิลปิน</string>
+    <string name="cc_media_output_phone">โทรศัพท์เครื่องนี้</string>
+    <string name="cc_media_output">อุปกรณ์เล่นเสียง</string>
+    <string name="cc_tile_sync">ซิงค์</string>
+    <string name="cc_tile_hotspot">ฮอตสปอตส่วนตัว</string>
+    <string name="cc_tile_screen_record">บันทึกหน้าจอ</string>
+    <string name="cc_tile_battery">โหมดพลังงานต่ำ</string>
+    <string name="cc_tile_voice_memo">บันทึกเสียง</string>
+    <string name="cc_tile_settings">การตั้งค่า</string>
+    <string name="cc_tile_dark_mode">โหมดมืด</string>
+    <string name="cc_tile_notes">โน้ต</string>
+    <string name="cc_tile_night_shift">Night Shift</string>
+    <string name="cc_tile_app">แอป</string>
+    <string name="cc_customize_tiles">ปรับแต่งปุ่มควบคุม</string>
+    <string name="cc_tiles_count">%1$d ปุ่ม</string>
+    <string name="cc_tiles_included">ที่ใช้อยู่</string>
+    <string name="cc_tiles_more">ปุ่มควบคุมเพิ่มเติม</string>
+    <string name="cc_tiles_apps">แอป</string>
+    <string name="cc_tiles_add">เพิ่ม %1$s</string>
+    <string name="cc_tiles_remove">นำ %1$s ออก</string>
+    <string name="cc_tiles_reorder">ลากเพื่อจัดลำดับ</string>
+    <string name="cc_tiles_full">สูงสุด %1$d ปุ่ม นำออกหนึ่งปุ่มก่อน</string>
+    <string name="cc_vibrate">สั่นเมื่อเปิด</string>
+    <string name="cc_header_look">รูปลักษณ์</string>
+    <string name="cc_header_features">ฟีเจอร์</string>
+    <string name="cc_background">พื้นหลัง</string>
+    <string name="cc_background_wallpaper">วอลเปเปอร์ของตัวเรียกใช้งาน</string>
+    <string name="cc_background_custom">รูปที่เลือกเอง</string>
+    <string name="cc_background_none">ไม่มีรูป (เห็นแอปด้านหลัง)</string>
+    <string name="cc_background_failed">อ่านรูปนี้ไม่ได้</string>
+    <string name="cc_blur">เบลอพื้นหลัง</string>
+    <string name="cc_recorder_app">แอปบันทึกหน้าจอ</string>
+    <string name="cc_recorder_none">ยังไม่ได้เลือก</string>
+    <string name="cc_edge_settings">แถบปัดเปิด</string>
+    <string name="cc_edge_position">ตำแหน่ง</string>
+    <string name="cc_edge_shape">ขนาด</string>
+    <string name="cc_edge_color">สีของแถบ</string>
+    <string name="cc_edge_top_right">ขอบบน ด้านขวา</string>
+    <string name="cc_edge_top_left">ขอบบน ด้านซ้าย</string>
+    <string name="cc_edge_right_side">ขอบขวา</string>
+    <string name="cc_edge_left_side">ขอบซ้าย</string>
+    <string name="cc_edge_length">ความยาว</string>
+    <string name="cc_edge_thickness">ความหนาของพื้นที่แตะ</string>
+    <string name="cc_edge_offset">ระยะจากด้านบนของหน้าจอ</string>
+    <string name="cc_edge_note">แถบปัดจะเปลี่ยนบนหน้าจอทันทีขณะปรับ ที่ขอบซ้ายหรือขวา ปัดเข้าด้านในหรือปัดลงก็เปิดได้</string>
+    <string name="cc_night_shift_manual">เปิดเลย</string>
+    <string name="cc_night_shift_warmth">ความอุ่นของสี</string>
+    <string name="cc_night_shift_schedule">ตั้งเวลา</string>
+    <string name="cc_night_shift_scheduled">ตามเวลาที่ตั้ง</string>
+    <string name="cc_night_shift_from">จาก</string>
+    <string name="cc_night_shift_to">ถึง</string>
+    <string name="cc_night_shift_scheduled_summary">%1$s → %2$s</string>
+    <string name="cc_night_shift_note">Night Shift ซ้อนชั้นสีอุ่นบนหน้าจอ และต้องใช้สิทธิ์ \"แสดงทับแอปอื่น\" กับ \"การเข้าถึงการแจ้งเตือน\" เหมือนศูนย์ควบคุม ภาพหน้าจอจะไม่ถูกเปลี่ยนสี</string>
+    <!-- G2d: trang chủ Cài đặt (tiền tố settings_hub_) -->
+    <string name="settings_hub_group_general">ทั่วไป</string>
+    <string name="settings_hub_group_appearance">รูปลักษณ์</string>
+    <string name="settings_hub_group_home_screen">หน้าจอหลัก</string>
+    <string name="settings_hub_group_transitions">การเปลี่ยนฉาก</string>
+    <string name="settings_hub_group_icons">ปรับแต่งไอคอน</string>
+    <string name="settings_hub_group_contact">ติดต่อเรา</string>
+    <string name="settings_hub_theme">หน้าจอหลักเริ่มต้น</string>
+    <string name="settings_hub_general">ทั่วไป</string>
+    <string name="settings_hub_language">ภาษา</string>
+    <string name="settings_hub_weather">สภาพอากาศ</string>
+    <string name="settings_hub_location">ตำแหน่ง</string>
+    <string name="settings_hub_glass">Liquid Glass</string>
+    <string name="settings_hub_wallpaper">วอลเปเปอร์</string>
+    <string name="settings_hub_icon_set">ชุดไอคอน</string>
+    <string name="settings_hub_swipe">การเลื่อนหน้า</string>
+    <string name="settings_hub_library">คลังแอป</string>
+    <string name="settings_hub_search">การตั้งค่าการค้นหา</string>
+    <string name="settings_hub_badges">ป้ายแจ้งเตือน</string>
+    <string name="settings_hub_transitions">เอฟเฟกต์การเปลี่ยนฉาก</string>
+    <string name="settings_hub_app_effects">เอฟเฟกต์แอป</string>
+    <string name="settings_hub_change_icon">เปลี่ยนไอคอนแอป</string>
+    <string name="settings_hub_rename_apps">เปลี่ยนชื่อแอป</string>
+    <string name="settings_hub_rate">ให้คะแนนแอป</string>
+    <string name="settings_hub_more_apps">แอปอื่นๆ</string>
+    <string name="settings_hub_privacy">นโยบายความเป็นส่วนตัว</string>
+    <!-- RS Task 2: card "Launcher hiện tại" đầu trang chủ Cài đặt (Figma 302:1522). -->
+    <string name="settings_launcher_card_current">หน้าจอหลักที่ใช้อยู่</string>
+    <string name="settings_launcher_card_not_default">ยังไม่ได้ตั้งเป็นค่าเริ่มต้น</string>
+    <string name="settings_launcher_card_custom">กำหนดเอง</string>
+    <string name="settings_launcher_card_welcome">ยินดีต้อนรับ</string>
+    <string name="settings_launcher_card_welcome_desc">ศูนย์ควบคุมของคุณเอง ปรับแต่งทุกรายละเอียดให้หน้าจอหลักเป็นสไตล์ของคุณ</string>
+    <string name="settings_launcher_card_explore">สำรวจ</string>
+    <!-- HC Task 1: Hero Card, nút trạng thái "Chưa" và toast Chưa → Đã (Figma 464:2199/464:2648). -->
+    <string name="hero_try">ลองใช้</string>
+    <string name="hero_default_set_toast">ตั้งเป็นค่าเริ่มต้นแล้ว</string>
+    <!-- HC Task 3: tiêu đề màn 6.2 (Figma "Ứng dụng khác"; hàng trên trang chủ giữ settings_hub_more_apps). -->
+    <string name="settings_more_apps_title">แอปอื่นๆ</string>
+    <!-- RS Task 6: màn 1.1 Màn hình chính mặc định (Figma 302:1738). -->
+    <string name="settings_theme_subtitle">ตัวเรียกใช้งานแต่ละแบบจะเปลี่ยนหน้าจอหลัก ไอคอน และเอฟเฟกต์ของเครื่อง</string>
+    <string name="settings_theme_apply_default">ใช้และตั้งเป็นค่าเริ่มต้น</string>
+    <string name="settings_theme_apply">ใช้</string>
+    <!-- RS Task 7: card xem trước thời tiết (dữ liệu mẫu) ở màn 1.4. -->
+    <string name="settings_weather_preview_degree">%1$d°</string>
+    <string name="settings_weather_preview_high_low">สูง %1$s · ต่ำ %2$s</string>
+    <string name="settings_weather_preview_now">ตอนนี้</string>
+    <string name="settings_weather_preview_hour">%1$d:00</string>
+    <!-- RS Task 8: hỏi trước khi đặt nền màu từ ô giữ chỗ ở màn 2.2. -->
+    <string name="wallpaper_color_confirm_title">ตั้ง \"%1$s\" เป็นวอลเปเปอร์ไหม</string>
+    <string name="wallpaper_color_confirm_message">หน้าจอหลักจะใช้วอลเปเปอร์นี้</string>
+    <string name="wallpaper_color_confirm_ok">ยืนยัน</string>
+    <!-- WI: tên 5 hình nền cài sẵn (ảnh thử, xem plan WI) ở 0.3 và 2.2; nút ngắn của hộp hỏi đặt mặc định khi về Home. -->
+    <string name="default_prompt_set">ตั้งเลย</string>
+    <!-- RS Task 8: giờ minh họa trên ô ảnh nền (Figma 2.2). -->
+    <string name="settings_theme_note">เครื่องจะเปิดหน้าต่างของระบบให้เลือกแอปหน้าจอหลัก</string>
+    <string name="settings_hub_version">เวอร์ชัน %1$s</string>
+    <!-- AB: nhóm Liên hệ (tiền tố about_) -->
+    <string name="about_rate_title">คุณคิดว่าแอปนี้เป็นอย่างไร</string>
+    <string name="about_rate_message">คะแนนของคุณช่วยให้เราพัฒนาตัวเรียกใช้งานให้ดีขึ้น</string>
+    <string name="about_rate_later">ไว้ทีหลัง</string>
+    <string name="about_rate_send">ส่งคะแนน</string>
+    <string name="about_open_failed">เปิดลิงก์ในเครื่องนี้ไม่ได้</string>
+    <string name="about_privacy_open">เปิดในเบราว์เซอร์</string>
+    <string name="about_privacy_footer">นโยบายโหลดจากเว็บไซต์และเปิดในเบราว์เซอร์ของเครื่อง</string>
+    <string name="about_more_apps_featured">แนะนำ</string>
+    <string name="about_more_apps_others">แอปอื่นๆ</string>
+    <string name="about_more_apps_download">รับ</string>
+    <string name="about_more_apps_footer">โดย %1$s</string>
+
+    <!-- WU: Cài đặt → Thời tiết (tiền tố settings_weather_) -->
+    <string name="settings_weather_unit">หน่วยอุณหภูมิ</string>
+    <string name="settings_weather_unit_value_c">°C</string>
+    <string name="settings_weather_unit_value_f">°F</string>
+    <string name="settings_weather_a11y_c">องศาเซลเซียส</string>
+    <string name="settings_weather_a11y_f">องศาฟาเรนไฮต์</string>
+    <!-- HT: công tắc Màn hình chính (tiền tố ht_) -->
+    <string name="ht_search_open_header">วิธีเปิด</string>
+    <string name="ht_search_in_header">ค้นหาใน</string>
+    <string name="ht_search_swipe_down">ปัดลงเพื่อค้นหา</string>
+    <string name="ht_search_swipe_down_description">ปัดลงตรงกลางหน้าจอหลัก</string>
+    <string name="ht_search_pill">ปุ่มค้นหาบนหน้าจอ</string>
+    <string name="ht_search_pill_description">แสดงเหนือ Dock</string>
+    <string name="ht_swipe_page_dots">แสดงจุดบอกหน้า</string>
+    <string name="ht_swipe_page_dots_description">ตัวบอกตำแหน่งหน้าเหนือ Dock</string>
+    <string name="tv_swipe_today">หน้าจอวิดเจ็ต</string>
+    <string name="tv_swipe_today_description">ปัดไปทางขวาที่หน้าแรกเพื่อเปิดวิดเจ็ต</string>
+    <string name="tv_edit">แก้ไข</string>
+    <!-- RN: Thay đổi tên ứng dụng (tiền tố settings_rename_) -->
+    <string name="settings_rename_header">ตั้งชื่อแอปเองได้ คืนชื่อเดิมได้เสมอ</string>
+    <string name="settings_rename_original">ชื่อเดิม: %1$s</string>
+    <string name="settings_rename_dialog_title">เปลี่ยนชื่อแอป</string>
+    <string name="settings_rename_hint">ชื่อใหม่</string>
+    <string name="settings_rename_save">บันทึก</string>
+    <string name="settings_rename_restore">คืนค่า</string>
+    <!-- WX: thời tiết nhiều địa điểm (tiền tố wx_) -->
+    <string name="wx_places_header">สถานที่ที่ติดตาม</string>
+    <string name="wx_places_current">ตำแหน่งปัจจุบัน</string>
+    <string name="wx_places_current_unset">ไม่ทราบ</string>
+    <string name="wx_places_current_manual">%1$s (เลือกเอง)</string>
+    <string name="wx_places_add">+ เพิ่มสถานที่</string>
+    <string name="wx_places_full">ครบ %1$d สถานที่แล้ว</string>
+    <string name="wx_places_hint">วิดเจ็ตสภาพอากาศแต่ละอันแสดงหนึ่งสถานที่จากรายการนี้ (แตะที่วิดเจ็ต)</string>
+    <string name="wx_places_duplicate">สถานที่นี้มีในรายการแล้ว</string>
+    <string name="wx_places_remove_title">นำสถานที่ออกไหม</string>
+    <string name="wx_places_remove_message">นำ %1$s ออกจากรายการ วิดเจ็ตที่แสดงสถานที่นี้จะเปลี่ยนไปใช้ตำแหน่งปัจจุบัน</string>
+    <string name="wx_places_remove_confirm">นำออก</string>
+    <string name="wx_search_add_title">เพิ่มสถานที่</string>
+    <string name="wx_loc_perm_header">สิทธิ์ตำแหน่ง</string>
+    <string name="wx_loc_perm">สิทธิ์ตำแหน่ง</string>
+    <string name="wx_loc_perm_granted">อนุญาตแล้ว</string>
+    <string name="wx_loc_perm_denied">ยังไม่อนุญาต</string>
+    <string name="wx_loc_mode_header">วิธีระบุตำแหน่ง</string>
+    <string name="wx_loc_mode_auto">อัตโนมัติ</string>
+    <string name="wx_loc_mode_manual">เลือกเอง</string>
+    <!-- RS Task 3: dòng mô tả hai hàng radio (Figma 1.5 302:1971). -->
+    <string name="wx_loc_mode_auto_desc">อัปเดตเมื่อคุณเคลื่อนที่</string>
+    <string name="wx_loc_mode_manual_desc">ไม่ต้องใช้สิทธิ์ตำแหน่ง</string>
+    <string name="wx_loc_update">อัปเดตตำแหน่ง</string>
+    <string name="wx_loc_updating">กำลังหาตำแหน่ง…</string>
+    <string name="wx_loc_city">เมือง</string>
+    <string name="wx_loc_city_unset">ยังไม่ได้เลือก</string>
+    <string name="wx_loc_pick_city">เลือกเมือง</string>
+    <string name="wx_loc_unavailable">หาตำแหน่งไม่ได้ เปิดบริการตำแหน่งหรือเลือกเมืองเอง</string>
+    <string name="wx_loc_denied">ยังไม่ได้อนุญาตสิทธิ์ตำแหน่ง คุณยังเลือกเมืองเองได้</string>
+    <string name="wx_loc_denied_settings">สิทธิ์ตำแหน่งถูกบล็อก อนุญาตได้ในการตั้งค่าแอป</string>
+    <string name="wx_loc_privacy">ใช้เฉพาะตำแหน่งโดยประมาณ ดึงครั้งเดียวในแต่ละครั้ง: เมื่อคุณแตะอัปเดตตำแหน่ง หรือ (โหมดอัตโนมัติที่อนุญาตแล้ว) ไม่เกินทุก 2 ชั่วโมงขณะที่วิดเจ็ตสภาพอากาศซึ่งใช้ตำแหน่งปัจจุบันแสดงอยู่ และจะเปลี่ยนเมื่อคุณเคลื่อนที่ไกลกว่า 5 กม. เท่านั้น ไม่ทำงานเบื้องหลังและไม่ติดตามต่อเนื่อง โหมดเลือกเองไม่ต้องใช้สิทธิ์และไม่อ่านตำแหน่ง</string>
+    <string name="wx_sheet_for_widget">วิดเจ็ตนี้แสดง:</string>
+    <string name="wx_sheet_current_named">ตำแหน่งปัจจุบัน: %1$s</string>
+    <string name="wx_sheet_current_unset">ตำแหน่งปัจจุบัน (ไม่ทราบ)</string>
+    <string name="wx_sheet_no_location">ยังไม่ทราบตำแหน่งปัจจุบัน ตั้งได้ที่การตั้งค่า → ตำแหน่ง</string>
+    <string name="wx_sheet_manage">จัดการสถานที่</string>
+
+    <!-- GT: tinh chỉnh kính dùng chung -->
+    <string name="gt_title">ปรับแต่งกระจก</string>
+    <string name="gt_state_default">ค่าเริ่มต้น</string>
+    <string name="gt_state_custom">ปรับแล้ว</string>
+    <string name="gt_preview">ตัวอย่างกระจก</string>
+    <string name="gt_header">ใช้กับพื้นผิวกระจกทุกส่วน มีผลเมื่อกลับไปหน้าจอหลัก</string>
+    <string name="gt_reset_header">คืนค่า</string>
+    <string name="gt_refraction">การหักเห</string>
+    <string name="gt_refraction_desc">ขยายพื้นหลังที่มองผ่านกระจก 0 = ไม่ขยาย</string>
+    <string name="gt_gloss">ความเงา</string>
+    <string name="gt_gloss_desc">เกิน 50 กระจกสว่างขึ้น ต่ำกว่า 50 มืดลง</string>
+    <string name="gt_blur">ความเบลอ</string>
+    <string name="gt_blur_desc">ความพร่ามัวของพื้นหลังด้านหลังกระจก</string>
+    <string name="gt_corner">ความโค้งของมุม</string>
+    <string name="gt_corner_desc">50 = เท่าเดิม 0 = เหลี่ยม ไม่เปลี่ยนรูปทรงไอคอนแอป</string>
+    <string name="gt_reset">รีเซ็ตเป็นค่าเริ่มต้น</string>
+
+    <!-- WN: thông báo thời tiết (tiền tố wn_) -->
+    <string name="wn_channel_group">สภาพอากาศ</string>
+    <string name="wn_channel_daily">พยากรณ์รายวัน</string>
+    <string name="wn_channel_tomorrow">พยากรณ์พรุ่งนี้</string>
+    <string name="wn_title_today">%1$s · วันนี้</string>
+    <string name="wn_title_tomorrow">%1$s · พรุ่งนี้</string>
+    <string name="wn_text">%1$s สูงสุด %2$d%4$s ต่ำสุด %3$d%4$s</string>
+    <string name="wn_precip">มีฝนหรือหิมะตั้งแต่ %1$s ถึง %2$s</string>
+    <string name="wn_public_title">พยากรณ์อากาศ</string>
+    <string name="wn_public_today">พยากรณ์วันนี้</string>
+    <string name="wn_public_tomorrow">พยากรณ์พรุ่งนี้</string>
+    <string name="wn_settings_header">การแจ้งเตือน</string>
+    <string name="wn_switch_daily">พยากรณ์รายวัน</string>
+    <string name="wn_switch_daily_desc">เวลา 07:00 ทุกเช้า</string>
+    <string name="wn_switch_tomorrow">พยากรณ์พรุ่งนี้</string>
+    <string name="wn_switch_tomorrow_desc">เวลา 21:00 ทุกคืน</string>
+    <string name="wn_footer_hint">ใช้ตำแหน่งปัจจุบันที่บันทึกไว้ และไม่อ่านตำแหน่งเบื้องหลัง การแจ้งเตือนอาจช้าได้ราว 1 ชั่วโมงเพราะ Android ประหยัดแบตเตอรี่ ต้องมีการเชื่อมต่อ ถ้าไม่มีจะใช้ข้อมูลที่บันทึกไว้หากยังใหม่อยู่</string>
+    <string name="wn_footer_no_key">การแจ้งเตือนสภาพอากาศต้องมีคีย์ OpenWeatherMap ซึ่งรุ่นนี้ยังไม่มี</string>
+    <string name="wn_footer_no_place">ยังไม่ทราบตำแหน่งปัจจุบัน จึงยังไม่มีการแจ้งเตือน ตั้งได้ที่การตั้งค่า → ตำแหน่ง</string>
+    <string name="wn_footer_blocked">การแจ้งเตือนของแอปถูกปิดในการตั้งค่าระบบ คุณจึงไม่เห็นการแจ้งเตือน เปิดกลับได้ในการตั้งค่าการแจ้งเตือนของแอป</string>
+    <string name="wn_toast_denied">ยังไม่ได้อนุญาตสิทธิ์การแจ้งเตือน จึงเปิดไม่ได้</string>
+    <string name="wn_toast_blocked">การแจ้งเตือนของแอปถูกปิดหรือบล็อก เปิดได้ในการตั้งค่าการแจ้งเตือนของแอป</string>
+    <!-- G3b: widget Ảnh (khối ph_) -->
+    <string name="ph_name">รูปภาพ</string>
+    <string name="ph_empty_title">แตะเพื่อเลือกรูป</string>
+    <string name="ph_desc_empty">รูปภาพ ยังไม่มีรูป แตะเพื่อเลือก</string>
+    <string name="ph_desc_photos">รูปภาพ %1$d รูป</string>
+    <string name="ph_activity_title">รูปของวิดเจ็ต</string>
+    <string name="ph_add_photo">+ เพิ่มรูป</string>
+    <string name="ph_choose_photo">เลือกรูป</string>
+    <string name="ph_empty_hint">เลือกรูปเพื่อแสดงบนวิดเจ็ต</string>
+    <string name="ph_rotates">ถ้ามีหลายรูป วิดเจ็ตจะเปลี่ยนรูปทุกชั่วโมงขณะที่หน้าจอหลักแสดงอยู่</string>
+    <string name="ph_importing">กำลังนำเข้ารูป</string>
+    <string name="ph_remove_glyph">✕</string>
+    <string name="ph_remove_desc">ลบรูป %1$d</string>
+    <string name="ph_thumb_desc">รูป %1$d</string>
+    <string name="ph_remove_title">ลบรูปไหม</string>
+    <string name="ph_remove_message">รูปจะถูกนำออกจากวิดเจ็ตนี้</string>
+    <string name="ph_remove_confirm">ลบ</string>
+    <string name="ph_cancel">ยกเลิก</string>
+    <string name="ph_import_failed">นำเข้ารูปบางรูปไม่ได้</string>
+    <string name="ph_too_many">แต่ละวิดเจ็ตมีได้สูงสุด %1$d รูป จึงเพิ่มเฉพาะรูปแรกๆ</string>
+    <string name="ph_full">วิดเจ็ตนี้มี %1$d รูปแล้ว ลบบางรูปก่อนเพิ่มรูปอื่น</string>
+    <string name="ph_crop_title">ครอปรูป %1$d/%2$d</string>
+    <string name="ph_crop_edit_title">ครอปใหม่</string>
+    <string name="ph_crop_hint">ลากเพื่อย้าย ใช้สองนิ้วเพื่อซูม</string>
+    <string name="ph_crop_desc">พื้นที่ครอป ลากเพื่อย้าย ใช้สองนิ้วเพื่อซูม</string>
+    <string name="ph_crop_done">เสร็จ</string>
+    <string name="ph_crop_skip">ข้ามรูปนี้</string>
+    <string name="ph_discard_title">ทิ้งรูปที่ยังไม่ได้ครอปไหม</string>
+    <string name="ph_discard_message">ทิ้ง %1$d รูปที่ยังไม่ได้ครอปไหม รูปที่ครอปแล้วจะยังอยู่</string>
+    <string name="ph_discard_confirm">ทิ้ง</string>
+    <string name="ph_discard_keep">ครอปต่อ</string>
+    <!-- G3c: AppWidgetHost (tiền tố aw_) -->
+    <string name="aw_unavailable">วิดเจ็ตใช้ไม่ได้</string>
+    <string name="aw_error_load">โหลดวิดเจ็ตไม่ได้</string>
+    <string name="aw_section_title">วิดเจ็ตของแอป</string>
+    <string name="aw_section_loading">กำลังโหลดรายการ…</string>
+    <plurals name="aw_widget_count">
+        <item quantity="other">%1$d วิดเจ็ต</item>
+    </plurals>
+    <string name="aw_chip_description">เพิ่มขนาด %1$d×%2$d</string>
+    <string name="aw_too_large">ใหญ่เกินตาราง</string>
+    <string name="aw_busy">กำลังเพิ่มวิดเจ็ตอื่น</string>
+    <string name="aw_add_failed">เพิ่มวิดเจ็ตไม่ได้</string>
+
+    <!-- DS3: chuỗi của thành phần v3 (core/designsystem). -->
+    <string name="ds_back">ย้อนกลับ</string>
+    <string name="ds_nav_back_default">การตั้งค่า</string>
+    <string name="ds_nav_back_desc">ย้อนกลับ, %1$s</string>
+    <string name="ds_close">ปิด</string>
+    <string name="ds_onboarding_skip">ข้าม</string>
+
+    <!-- OB: Onboarding 0.1–0.5 (chữ theo Figma 302:3673) -->
+    <string name="onboarding_start">เริ่มต้น</string>
+    <string name="onboarding_continue">ต่อไป</string>
+    <string name="onboarding_set_default">ตั้งเป็นค่าเริ่มต้น</string>
+    <string name="onboarding_later">ไว้ทีหลัง</string>
+    <string name="onboarding_go_settings">ไปที่การตั้งค่า</string>
+    <string name="onboarding_welcome_title">ดีไซน์กระจกเหลวสำหรับโทรศัพท์ของคุณ</string>
+    <string name="onboarding_welcome_subtitle">ไอคอนโปร่งใส วอลเปเปอร์มีชีวิตชีวา และเอฟเฟกต์ลื่นไหล — แค่ไม่กี่ขั้นตอนก็เริ่มได้</string>
+    <string name="onboarding_theme_title">เลือกสไตล์</string>
+    <string name="onboarding_theme_subtitle">คุณเปลี่ยนได้ทุกเมื่อในการตั้งค่า</string>
+    <string name="onboarding_theme_liquid_glass_27">Liquid Glass 27</string>
+    <string name="onboarding_theme_liquid_glass_27_desc">โปร่งใส หักเหแสง</string>
+    <string name="onboarding_theme_classic_26">Classic 26</string>
+    <string name="onboarding_theme_classic_26_desc">อบอุ่น ไอคอนสีนุ่ม</string>
+    <string name="onboarding_theme_minimal">Minimal</string>
+    <string name="onboarding_theme_minimal_desc">เรียบง่าย เส้นบาง</string>
+    <string name="onboarding_theme_dark_pro">Dark Pro</string>
+    <string name="onboarding_theme_dark_pro_desc">พื้นหลังมืด ไอคอนกลม</string>
+    <string name="onboarding_badge_new">ใหม่</string>
+    <string name="onboarding_wallpaper_title">เลือกวอลเปเปอร์</string>
+    <string name="onboarding_wallpaper_subtitle">วอลเปเปอร์สวยๆ ช่วยให้เอฟเฟกต์กระจกโดดเด่นขึ้น</string>
+    <string name="onboarding_default_title">ตั้ง %1$s เป็นหน้าจอหลัก</string>
+    <string name="onboarding_default_subtitle">ขั้นตอนนี้ทำให้ดีไซน์ใหม่แสดงทุกครั้งที่คุณกดปุ่มโฮม</string>
+    <string name="onboarding_default_step1">แตะ \"ตั้งเป็นค่าเริ่มต้น\" ด้านล่าง</string>
+    <string name="onboarding_default_step2">เลือก %1$s ในหน้าต่างของระบบ</string>
+    <string name="onboarding_done_title">พร้อมแล้ว!</string>
+    <string name="onboarding_done_subtitle">สำรวจดีไซน์ใหม่และปรับแต่งเพิ่มได้ทุกเมื่อในการตั้งค่า</string>
+    <string name="onboarding_done_theme">สไตล์</string>
+    <string name="onboarding_done_wallpaper">วอลเปเปอร์</string>
+    <string name="onboarding_done_home">หน้าจอหลัก</string>
+    <string name="onboarding_done_home_set">ตั้งเป็นค่าเริ่มต้นแล้ว</string>
+    <string name="onboarding_done_home_not_set">ยังไม่ได้ตั้ง</string>
+
+    <!-- LG: màn Ngôn ngữ (1.3), chip ngôn ngữ Onboarding 0.1, lý do lỗi đặt wallpaper -->
+    <string name="lang_system">ตามระบบ</string>
+    <string name="lang_system_desc">ใช้ภาษาของเครื่อง</string>
+    <string name="lang_search_hint">ค้นหาภาษา</string>
+    <string name="lang_no_results">ไม่พบภาษา</string>
+    <string name="lang_chip_desc">ภาษา: %1$s</string>
+    <string name="lang_name_vi">ภาษาเวียดนาม</string>
+    <string name="lang_name_en">ภาษาอังกฤษ</string>
+    <string name="lang_name_es">ภาษาสเปน</string>
+    <string name="lang_name_pt">ภาษาโปรตุเกส</string>
+    <string name="lang_name_id">ภาษาอินโดนีเซีย</string>
+    <string name="lang_name_th">ภาษาไทย</string>
+    <string name="lang_name_ja">ภาษาญี่ปุ่น</string>
+    <string name="lang_name_ko">ภาษาเกาหลี</string>
+    <string name="lang_name_hi">ภาษาฮินดี</string>
+    <string name="wallpaper_reason_unsupported">เครื่องนี้ไม่รองรับการตั้งวอลเปเปอร์</string>
+    <string name="wallpaper_reason_not_allowed">ระบบไม่อนุญาตให้แอปนี้ตั้งวอลเปเปอร์</string>
+    <string name="wallpaper_reason_read_failed">อ่านรูปที่บันทึกไว้ไม่ได้</string>
+    <string name="wallpaper_reason_out_of_memory">หน่วยความจำไม่พอ</string>
+    <!-- BG: màn 3.4 Huy hiệu thông báo (tiền tố badges_) -->
+    <string name="badges_perm_title">ต้องการสิทธิ์เข้าถึงการแจ้งเตือน</string>
+    <string name="badges_perm_desc">เพื่อนับการแจ้งเตือนที่ยังไม่ได้อ่านของแต่ละแอป</string>
+    <string name="badges_perm_action">ให้สิทธิ์</string>
+    <string name="badges_perm_open_failed">เปิดการตั้งค่าการเข้าถึงการแจ้งเตือนไม่ได้</string>
+    <string name="badges_show">แสดงป้าย</string>
+    <string name="badges_style_header">รูปแบบป้าย</string>
+    <string name="badges_style_number">ตัวเลข</string>
+    <string name="badges_style_dot">จุด</string>
+    <string name="badges_per_app_header">แยกตามแอป</string>
+    <!-- TR: màn 4.1 Hiệu ứng chuyển cảnh -->
+    <string name="tr_intro">เมื่อเปิดโฟลเดอร์ การค้นหา คลังแอป และการตั้งค่าด่วน</string>
+    <string name="tr_preview_description">ตัวอย่าง: เปิดโฟลเดอร์</string>
+    <string name="tr_style_smooth">ลื่นไหล</string>
+    <string name="tr_style_smooth_description">ค่าเริ่มต้น</string>
+    <string name="tr_style_fade">จางลง</string>
+    <string name="tr_style_slide">เลื่อน</string>
+    <string name="tr_style_zoom">ซูม</string>
+    <string name="tr_style_none">ไม่มี</string>
+    <string name="tr_style_none_description">เร็วที่สุด</string>
+    <string name="tr_speed">ความเร็ว</string>
+    <string name="tr_speed_slow">ช้า</string>
+    <string name="tr_speed_medium">ปานกลาง</string>
+    <string name="tr_speed_fast">เร็ว</string>
+    <string name="tr_reduce_motion">ลดการเคลื่อนไหว</string>
+    <string name="tr_reduce_motion_description">ใช้การจางแทนการซูม / เลื่อน</string>
+    <!-- JS7: nút của hộp chọn giờ Night Shift (Compose) -->
+    <string name="cc_time_done">เสร็จ</string>
+    <!-- P2-9 / P2-9e (REF a013dd8): bảng chọn widget kiểu iOS, menu Sửa của edit mode; TV-2/TV-3 (REF 3ab9c20): Today View -->
+    <string name="wp_search_hint">ค้นหาวิดเจ็ต</string>
+    <string name="wp_add_widget">เพิ่มวิดเจ็ต</string>
+    <string name="wp_close">ปิด</string>
+    <string name="home_edit">แก้ไข</string>
+    <string name="home_wallpapers">วอลเปเปอร์</string>
+    <string name="wp_clock_small_title">นาฬิกาเข็ม</string>
+    <string name="wp_clock_small_desc">แสดงเวลาปัจจุบัน</string>
+    <string name="wp_clock_wide_title">นาฬิกาดิจิทัล</string>
+    <string name="wp_clock_wide_desc">เวลาแบบดิจิทัลขนาดใหญ่พร้อมวันที่</string>
+    <string name="wp_calendar_small_title">วันนี้</string>
+    <string name="wp_calendar_small_desc">แสดงวันที่ของวันนี้</string>
+    <string name="wp_calendar_wide_title">เดือน</string>
+    <string name="wp_calendar_wide_desc">วันที่วันนี้พร้อมปฏิทินของเดือน</string>
+    <string name="wp_weather_small_title">สภาพอากาศตอนนี้</string>
+    <string name="wp_weather_small_desc">สภาพอากาศปัจจุบันที่ตำแหน่งของคุณ</string>
+    <string name="wp_weather_wide_title">พยากรณ์รายชั่วโมง</string>
+    <string name="wp_weather_wide_desc">สภาพอากาศปัจจุบันและอีกไม่กี่ชั่วโมงข้างหน้า</string>
+    <string name="wp_photo_small_title">รูปภาพ</string>
+    <string name="wp_photo_small_desc">แสดงรูปภาพหรืออัลบั้มที่เปลี่ยนทุกชั่วโมง</string>
+    <string name="wp_photo_wide_title">รูปภาพแบบกว้าง</string>
+    <string name="wp_photo_wide_desc">รูปภาพหรืออัลบั้มแบบกว้างที่เปลี่ยนทุกชั่วโมง</string>
+    <string name="today_recents_empty">แอปที่คุณเปิดล่าสุดจะแสดงที่นี่</string>
+    <string name="today_recents_name">แอปล่าสุด</string>
+    <string name="today_recents_small_title">4 แอป</string>
+    <string name="today_recents_small_desc">แอป 4 แอปที่คุณเปิดล่าสุด</string>
+    <string name="today_recents_wide_title">8 แอป</string>
+    <string name="today_recents_wide_desc">แอป 8 แอปที่คุณเปิดล่าสุด</string>
+    <string name="today_widget_remove_message">วิดเจ็ตจะถูกลบออกจากหน้าวันนี้ คุณเพิ่มกลับได้ด้วยปุ่ม +</string>
+
+    <!-- Dong bo tu REF HEAD -->
+    <string name="wallpaper_preset_lake">ทะเลสาบ</string>
+    <string name="wallpaper_preset_blue_wave">คลื่นสีน้ำเงิน</string>
+    <string name="wallpaper_preset_red">สีแดง</string>
+    <string name="wallpaper_preset_sunset">พระอาทิตย์ตก</string>
+    <string name="wallpaper_preset_silk">ผ้าไหม</string>
+    <string name="wallpaper_preset_night_street">ถนนยามค่ำ</string>
+    <string name="ds_step_indicator_desc">ขั้นตอน %1$d จาก %2$d</string>
+    <string name="wallpaper_target_sheet_title">ตั้งภาพพื้นหลังสำหรับ</string> <!-- P3-2: Figma 2.2 popup 302:2090 -->
+    <string name="settings_search_recent_apps">แอปล่าสุด</string>
+    <string name="settings_search_recent_apps_description">แสดงแอปที่เปิดล่าสุด เมื่อปิด จะหยุดบันทึกแต่ยังเก็บประวัติที่บันทึกไว้</string>
+    <string name="ci_search_hint">ค้นหาแอป</string>
+    <string name="ci_changed">เปลี่ยนแล้ว</string>
+    <string name="ci_choose_new">เลือกไอคอนใหม่</string>
+    <string name="ci_from_photos">จากรูปภาพ</string>
+    <string name="ci_restore">คืนค่า</string>
+    <string name="ci_save">บันทึก</string>
+    <string name="ci_save_failed">บันทึกไอคอนไม่ได้</string>
+    <string name="ci_image_failed">เปิดรูปภาพนี้ไม่ได้</string>
+    <string name="ci_no_results">ไม่พบแอป</string>
+    <string name="ci_variant_description">ตัวเลือกไอคอน %1$d</string>
+    <string name="hl_intro">แอปที่ซ่อนจะไม่แสดงบนหน้าจอหลัก ในคลังแอป หรือในผลการค้นหา</string>
+    <string name="hl_all_apps">แอปทั้งหมด</string>
+    <string name="hl_lock">ล็อกด้วยลายนิ้วมือ / PIN</string>
+    <string name="hl_lock_description">ยืนยันตัวตนก่อนดู</string>
+    <string name="hl_auth_title">เปิดแอปที่ซ่อน</string>
+    <string name="hl_auth_subtitle">ยืนยันตัวตนเพื่อดูแอปที่ซ่อนไว้</string>
+    <string name="hl_auth_use_device">ใช้การล็อกหน้าจอ</string>
+    <plurals name="hl_hidden_count">
+        <item quantity="other">ซ่อนอยู่ %d</item>
+    </plurals>
+    <string name="icon_style_preview_description">ตัวอย่างสไตล์ไอคอนที่เลือก</string>
+    <string name="settings_search_suggestions_description">การค้นหายอดนิยมเมื่อช่องค้นหาว่าง</string>
+</resources>

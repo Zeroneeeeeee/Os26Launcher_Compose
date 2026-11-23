@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DS3 Task 2: tag view giữ binding của applyDsSurface (listener bo góc/độ bóng), để gọi lại applyDsSurface không đăng ký trùng. -->
+<resources>
+    <item name="ds_surface_binding" type="id" />
+</resources>

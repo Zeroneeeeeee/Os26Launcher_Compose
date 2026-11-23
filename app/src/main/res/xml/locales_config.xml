@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- LG: ngôn ngữ app hiện ở Cài đặt hệ thống (API 33+). Cùng thứ tự với AppLanguages.all; ngôn ngữ chỉ vào đây khi đã dịch đủ.
+     Tiếng Indonesia: tag "id" ở đây, thư mục res là values-in. -->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="vi" />
+    <locale android:name="en" />
+    <locale android:name="es" />
+    <locale android:name="pt" />
+    <locale android:name="id" />
+    <locale android:name="th" />
+    <locale android:name="ja" />
+    <locale android:name="ko" />
+    <locale android:name="hi" />
+</locale-config>

@@ -1,0 +1,26 @@
+# RB: baseline profile viet tay (phuong an A, khong module benchmark). AGP gop file nay voi profile kem theo
+# cac thu vien AndroidX vao assets/dexopt/baseline.prof; androidx.profileinstaller (co san, 1.4.0) ap len may sideload.
+# Co HSP: hot + startup + post-startup. Dong "L...;" nap san class.
+
+# Toan bo ma cua app: Application (Hilt), HomeActivity, controller Home, IconGridView, DockView, IconLoader,
+# LauncherAppsDataSource, Room/DataStore/Hilt module, kinh (core/glass). App nho, duong khoi dong phu gan het.
+HSPLgambi/global/os26launcher/**;->**(**)**
+Lgambi/global/os26launcher/**;
+
+# Thu vien kinh (com.example.liquidglass, com.example.blur): duoc dung ngay khi ve lop kinh dau tien.
+HSPLcom/example/liquidglass/**;->**(**)**
+Lcom/example/liquidglass/**;
+HSPLcom/example/blur/**;->**(**)**
+Lcom/example/blur/**;
+
+# JD Task 1: kinh Compose Backdrop (io.github.kyant0:backdrop) va thu vien shapes cua no. AAR khong kem baseline profile rieng
+# (Compose co profile trong AAR cua no, AGP tu gop). Dung ngay khi man Compose dau tien ve kinh.
+HSPLcom/kyant/**;->**(**)**
+Lcom/kyant/**;
+
+# Dagger/Hilt: do thi phu thuoc dung luc khoi dong (LauncherApp -> SingletonC). Ma Dagger sinh nam trong package app o tren;
+# phan runtime cua dagger/hilt khong co profile rieng.
+HSPLdagger/**;->**(**)**
+Ldagger/**;
+HSPLdagger/hilt/**;->**(**)**
+Ldagger/hilt/**;

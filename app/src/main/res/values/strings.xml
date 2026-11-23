@@ -1,0 +1,745 @@
+<resources>
+    <string name="app_name">OS26 Launcher</string>
+
+    <string name="app_launch_failed">Couldn\'t open %1$s. The app may have just been uninstalled.</string>
+    <string name="home_set_default_failed">Couldn\'t open the default launcher picker</string>
+
+    <!-- M7 Task 4: nút thoát chế độ chỉnh sửa. -->
+    <string name="home_done">Done</string>
+
+    <string name="wallpaper_dialog_title">Set as wallpaper</string>
+    <string name="wallpaper_dialog_skip">Don\'t apply</string>
+    <string name="wallpaper_target_home">Home screen</string>
+    <string name="wallpaper_target_lock">Lock screen</string>
+    <string name="wallpaper_target_both">Both</string>
+    <string name="wallpaper_applied">Wallpaper applied to: %1$s</string>
+    <string name="wallpaper_failed">Couldn\'t apply wallpaper: %1$s</string>
+    <string name="common_unknown">unknown reason</string>
+
+    <!-- M7 Task 9: Thư viện ứng dụng -->
+    <!-- M8a Task 3: màn Cài đặt -->
+    <string name="settings_loading">Loading settings</string>
+    <string name="settings_hidden_apps">Hidden apps</string>
+    <string name="settings_show_labels">Show app labels</string>
+    <string name="settings_nav_bar_hidden">Hide navigation bar</string>
+    <string name="settings_nav_bar_hidden_description">On the Home screen only. Swipe up from the bottom edge to show it briefly.</string>
+    <string name="settings_backdrop">Wallpaper</string>
+    <string name="settings_backdrop_set">Image set</string>
+    <string name="settings_backdrop_unset">Not chosen</string>
+    <string name="settings_backdrop_failed">Couldn\'t read this image. Kept the current wallpaper.</string>
+    <string name="settings_wallpaper_unavailable">Wallpaper changed in the app. Couldn\'t set the system wallpaper: %1$s</string>
+    <string name="settings_grid_preset">Grid size</string>
+    <string name="settings_grid_value">%1$d × %2$d</string>
+    <string name="settings_grid_option">%1$d × %2$d (%3$d icons per page)</string>
+    <string name="settings_grid_confirm_title">Switch to a %1$d × %2$d grid?</string>
+    <string name="settings_grid_confirm_message">Icons will be rearranged in their current order. This can\'t be undone. Apply?</string>
+    <string name="settings_grid_confirm_apply">Apply</string>
+    <string name="settings_grid_failed">Couldn\'t change the grid size</string>
+    <string name="settings_glass_level">Glass level</string>
+    <string name="settings_glass_auto">Auto</string>
+    <string name="settings_glass_low">Low</string>
+    <string name="settings_glass_high">High</string>
+    <string name="settings_glass_auto_desc">Auto (based on your device)</string>
+    <string name="settings_glass_low_desc">Force low (frosted cards, lighter)</string>
+    <string name="settings_glass_high_desc">Force high (real glass, uses more resources)</string>
+    <string name="settings_cancel">Cancel</string>
+    <string name="settings_save_failed">Couldn\'t save settings</string>
+    <string name="home_settings">Settings</string>
+
+    <string name="library_title">Hidden apps</string>
+    <string name="library_hidden_empty">No hidden apps</string>
+    <string name="library_launch_failed">Couldn\'t open the app</string>
+    <string name="library_unhide_failed">Couldn\'t unhide the app</string>
+
+    <!-- M7 Task 10: menu nhấn giữ icon -->
+    <string name="menu_app_info">App info</string>
+    <string name="menu_hide_app">Hide app</string>
+    <string name="menu_edit_home">Edit Home Screen</string>
+    <string name="menu_uninstall">Uninstall</string>
+    <string name="menu_action_failed">Couldn\'t complete the action</string>
+
+    <!-- RA: hộp thoại xác nhận khi bấm dấu "−" xóa app -->
+    <string name="remove_app_title">Remove “%1$s”?</string>
+    <string name="remove_app_message">Removing it from the Home Screen keeps the app in the App Library.</string>
+    <string name="remove_app_delete">Delete App</string>
+    <string name="remove_app_from_home">Remove from Home Screen</string>
+    <string name="remove_app_cancel">Cancel</string>
+
+    <!-- M8b: tìm kiếm -->
+    <string name="search_field_hint">Search</string>
+    <string name="search_idle_hint">Type an app name</string>
+    <string name="search_no_results">No apps found</string>
+    <string name="search_pill_label">Search</string>
+    <string name="search_pill_page_description">Page %1$d of %2$d</string>
+    <string name="search_clear">Clear search</string>
+    <string name="search_cancel">Cancel</string>
+    <!-- G2a A1a: tên hiển thị khi thư mục chưa đặt tên -->
+    <string name="folder_default_title">Folder</string>
+    <!-- G2a B2: trang App Library ở cuối pager -->
+    <string name="library_page_group_social">Social</string>
+    <string name="library_page_group_entertainment">Entertainment</string>
+    <string name="library_page_group_game">Games</string>
+    <string name="library_page_group_productivity">Productivity</string>
+    <string name="library_page_group_news">News</string>
+    <string name="library_page_group_maps">Maps</string>
+    <string name="library_page_group_utilities">Utilities</string>
+    <string name="library_page_group_other">Other</string>
+    <string name="lo_enable">Enable App Library</string>
+    <string name="lo_enable_description">Swipe past the last Home Screen page</string>
+    <string name="lo_style_header">Display style</string>
+    <string name="lo_style_folders">Category folders</string>
+    <string name="lo_style_list">A–Z list</string>
+    <string name="lo_auto_categorize">Categorize apps automatically</string>
+    <string name="lo_auto_categorize_description">Social, Utilities, Entertainment…</string>
+    <string name="lo_suggestions">Show Suggestions &amp; Recently Added</string>
+    <string name="lo_suggestions_description">The first two folders of the library</string>
+    <string name="library_page_group_suggested">Suggestions</string>
+    <string name="library_page_group_recent">Recently Added</string>
+    <string name="library_page_group_all">All Apps</string>
+    <string name="library_page_empty">No apps yet</string>
+
+    <!-- G2b: kiểu icon -->
+    <string name="settings_icon_style">Icon style</string>
+    <string name="settings_icon_style_default">Default</string>
+    <string name="settings_icon_style_transparent">Clear</string>
+    <string name="settings_icon_style_tinted">Tinted</string>
+    <string name="settings_icon_style_3d">3D</string>
+    <string name="settings_icon_style_glass">Glass</string>
+    <string name="settings_icon_tint">Tint color</string>
+    <string name="settings_icon_tint_blue">Blue</string>
+    <string name="settings_icon_tint_pink">Pink</string>
+    <string name="settings_icon_tint_green">Green</string>
+    <string name="settings_icon_tint_orange">Orange</string>
+    <string name="settings_icon_tint_graphite">Graphite</string>
+    <!-- IP -->
+    <string name="settings_icon_pack">Icon pack</string>
+    <string name="settings_icon_pack_none">None</string>
+    <string name="settings_icon_pack_empty">No icon packs found. Install an icon pack from the app store, then come back here.</string>
+    <string name="settings_icon_pack_ok">Close</string>
+
+    <!-- AN Task 5: nhãn trợ năng cho "+N" trong cụm icon mini của ô nhóm -->
+
+    <!-- G2c: widget tự vẽ -->
+    <string name="widget_clock_description">Clock, %1$s</string>
+    <string name="widget_calendar_description">Calendar, %1$s</string>
+    <string name="home_add_widget">Widgets</string>
+    <string name="widget_picker_title">Add widget</string>
+    <string name="widget_name_clock">Clock</string>
+    <string name="widget_name_calendar">Calendar</string>
+    <string name="widget_size_label">%1$d×%2$d</string>
+    <string name="widget_remove_title">Remove widget?</string>
+    <string name="widget_remove_message">The widget will be removed from the Home Screen. You can add it again from the Widgets button.</string>
+    <string name="widget_remove_confirm">Remove</string>
+    <string name="widget_remove_cancel">Cancel</string>
+    <!-- GS: mức kính Tùy chỉnh -->
+    <string name="gs_level_custom">Custom</string>
+    <string name="gs_level_custom_desc">Custom (choose real or frosted glass for each element at the bottom)</string>
+    <string name="gs_custom_header">Custom glass (on = real glass, off = frosted)</string>
+    <string name="gs_custom_dock">Dock</string>
+    <string name="gs_custom_panels">Panels (folders, Library groups)</string>
+    <string name="gs_custom_search_bar">Search bar</string>
+    <string name="gs_custom_pill">Search pill / page dots</string>
+    <string name="gs_warn_title">Real glass may be slow</string>
+    <string name="gs_warn_message">This device runs Android below 13, so real glass is rendered on the CPU and can make the interface stutter, especially when opening panels (measured on Vsmart Live 4: real glass panels stutter heavily). You can turn it off again at any time.</string>
+    <string name="gs_warn_enable">Turn on anyway</string>
+    <!-- M8d Task 3: mục Cài đặt hệ thống trong kết quả tìm kiếm. *_kw là từ khóa phân cách bằng dấu phẩy (gõ không dấu cũng khớp). -->
+    <string name="search_extras_setting_wifi">Wi-Fi</string>
+    <string name="search_extras_setting_wifi_kw" translatable="false">wifi, wi-fi, mang, internet, khong day</string>
+    <string name="search_extras_setting_bluetooth">Bluetooth</string>
+    <string name="search_extras_setting_bluetooth_kw" translatable="false">bluetooth, blutut, ket noi</string>
+    <string name="search_extras_setting_airplane">Airplane mode</string>
+    <string name="search_extras_setting_airplane_kw" translatable="false">may bay, airplane, flight</string>
+    <string name="search_extras_setting_mobile">Mobile network</string>
+    <string name="search_extras_setting_mobile_kw" translatable="false">du lieu di dong, mobile data, sim, 4g, roaming</string>
+    <string name="search_extras_setting_data_usage">Data usage</string>
+    <string name="search_extras_setting_data_usage_kw" translatable="false">data usage, luu luong, dung luong mang</string>
+    <string name="search_extras_setting_display">Display</string>
+    <string name="search_extras_setting_display_kw" translatable="false">display, do sang, brightness</string>
+    <string name="search_extras_setting_sound">Sound</string>
+    <string name="search_extras_setting_sound_kw" translatable="false">sound, volume, am luong, nhac chuong</string>
+    <string name="search_extras_setting_notification">Notifications</string>
+    <string name="search_extras_setting_notification_kw" translatable="false">notification, notifications</string>
+    <string name="search_extras_setting_dnd">Do Not Disturb</string>
+    <string name="search_extras_setting_dnd_kw" translatable="false">dnd, do not disturb, im lang</string>
+    <string name="search_extras_setting_battery">Battery and battery saver</string>
+    <string name="search_extras_setting_battery_kw" translatable="false">battery, pin, tiet kiem pin</string>
+    <string name="search_extras_setting_location">Location</string>
+    <string name="search_extras_setting_location_kw" translatable="false">location, gps, dinh vi</string>
+    <string name="search_extras_setting_datetime">Date and time</string>
+    <string name="search_extras_setting_datetime_kw" translatable="false">date, time, gio, mui gio</string>
+    <string name="search_extras_setting_language">Language</string>
+    <string name="search_extras_setting_language_kw" translatable="false">language, locale</string>
+    <string name="search_extras_setting_storage">Storage</string>
+    <string name="search_extras_setting_storage_kw" translatable="false">storage, dung luong, bo nho trong</string>
+    <string name="search_extras_setting_security">Security</string>
+    <string name="search_extras_setting_security_kw" translatable="false">security, khoa man hinh, mat khau, van tay</string>
+    <string name="search_extras_setting_privacy">Privacy</string>
+    <string name="search_extras_setting_privacy_kw" translatable="false">privacy, rieng tu</string>
+    <string name="search_extras_setting_accessibility">Accessibility</string>
+    <string name="search_extras_setting_accessibility_kw" translatable="false">accessibility</string>
+    <string name="search_extras_setting_apps">Apps</string>
+    <string name="search_extras_setting_apps_kw" translatable="false">apps, applications, quan ly ung dung</string>
+    <string name="search_extras_setting_default_apps">Default apps</string>
+    <string name="search_extras_setting_default_apps_kw" translatable="false">default apps, mac dinh</string>
+    <string name="search_extras_setting_keyboard">Keyboard</string>
+    <string name="search_extras_setting_keyboard_kw" translatable="false">keyboard, input method, phim</string>
+    <string name="search_extras_setting_cast">Screen cast</string>
+    <string name="search_extras_setting_cast_kw" translatable="false">cast, chieu man hinh, screen mirroring</string>
+    <string name="search_extras_setting_nfc">NFC</string>
+    <string name="search_extras_setting_nfc_kw" translatable="false">nfc</string>
+    <string name="search_extras_setting_vpn">VPN</string>
+    <string name="search_extras_setting_vpn_kw" translatable="false">vpn</string>
+    <string name="search_extras_setting_about">About phone</string>
+    <string name="search_extras_setting_about_kw" translatable="false">about phone, thong tin may, phien ban, imei</string>
+    <string name="search_extras_setting_home">Settings</string>
+    <string name="search_extras_setting_home_kw" translatable="false">settings, cai dat</string>
+    <string name="search_extras_kind_setting">Settings</string>
+    <string name="search_extras_setting_description">Settings: %1$s</string>
+
+    <!-- M8d Task 5: tiêu đề nhóm khi ô tìm kiếm trống -->
+    <string name="search_recent_collapse">Show less</string>
+    <string name="search_recent_expand">Show more</string>
+    <string name="search_extras_header_recent">Recent</string>
+    <string name="search_extras_header_frequent">Suggestions</string>
+    <string name="search_extras_header_trending">Trending searches</string>
+
+    <!-- M8d Task 4 -->
+    <string name="search_extras_shortcut_description">%1$s, shortcut of %2$s</string>
+
+    <!-- M8d Task 6: khối "Tìm kiếm" trong Cài đặt -->
+    <string name="settings_search_system">System settings</string>
+    <string name="settings_search_shortcuts">App shortcuts</string>
+    <string name="settings_search_shortcuts_need_default">Shortcuts require setting this as the default launcher</string>
+    <string name="settings_search_suggestions">Search suggestions</string>
+    <string name="settings_search_suggestions_off_message">Turning this off deletes the app history saved on this device.</string>
+    <string name="settings_search_suggestions_off_confirm">Turn off and delete</string>
+    <string name="settings_search_clear">Clear app history</string>
+    <string name="settings_search_clear_message">Delete the recent apps and suggestions saved on this device?</string>
+    <string name="settings_search_clear_confirm">Delete</string>
+
+    <!-- SM: công tắc kính của menu nhấn giữ icon (khối Tùy chỉnh, cùng nghĩa bốn công tắc trên) -->
+    <string name="gs_custom_menu_header">Icon long-press menu (on = real glass, off = frosted)</string>
+    <string name="gs_custom_icon_menu">Glass for the long-press menu</string>
+
+    <!-- G3a: tìm danh bạ trong ô tìm kiếm -->
+    <string name="search_contacts_kind">Contacts</string>
+    <string name="search_contacts_prompt_title">Show contacts</string>
+    <string name="search_contacts_prompt_subtitle">Allow access to contacts to find people right here. Contacts are only read on this device and never stored.</string>
+    <string name="search_contacts_prompt_settings_subtitle">Open Settings to grant the Contacts permission</string>
+    <string name="search_contacts_prompt_dismiss">Hide contacts suggestion</string>
+    <string name="search_contacts_call">Call %1$s</string>
+    <string name="search_contacts_message">Message %1$s</string>
+    <string name="search_contacts_action_failed">Couldn\'t open contacts, the dialer or messages</string>
+    <string name="settings_search_contacts">Search contacts</string>
+    <string name="settings_search_contacts_description">Turning this off only hides contacts from search. It doesn\'t revoke the Android permission.</string>
+
+    <!-- WP: nhãn dòng Ảnh nền khi dùng ảnh mặc định (ảnh iOS 27 chỉ để thử, xóa trước bản cửa hàng) -->
+    <string name="settings_backdrop_default">Default image</string>
+
+    <!-- G3e: widget thời tiết (khối weather_) -->
+    <string name="weather_name">Weather</string>
+    <string name="weather_no_key">Weather unavailable</string>
+    <string name="weather_no_location">Choose a city</string>
+    <string name="weather_no_location_hint">Tap to choose</string>
+    <string name="weather_loading">Loading…</string>
+    <string name="weather_error_network">No connection</string>
+    <string name="weather_error_key">Invalid key</string>
+    <string name="weather_error_rate">Request limit exceeded</string>
+    <string name="weather_error_not_found">Location not found</string>
+    <string name="weather_error_generic">Data error</string>
+    <string name="weather_cond_clear">Clear</string>
+    <string name="weather_cond_partly_cloudy">Partly cloudy</string>
+    <string name="weather_cond_cloudy">Cloudy</string>
+    <string name="weather_cond_rain">Rain</string>
+    <string name="weather_cond_thunderstorm">Thunderstorm</string>
+    <string name="weather_cond_snow">Snow</string>
+    <string name="weather_cond_fog">Fog</string>
+    <string name="weather_cond_unknown">Unknown</string>
+    <!-- Cao/thấp là trong 24 giờ tới, KHÔNG phải cả ngày dương lịch (gói Free không có trường đó) -->
+    <string name="weather_updated_at">Updated %1$s</string>
+    <string name="weather_description">%1$s, %2$d %6$s, %3$s. Next 24 hours high %4$d %6$s, low %5$d %6$s</string>
+    <string name="weather_description_state">Weather: %1$s</string>
+
+    <!-- G3e: bảng Thời tiết (bottom sheet mở khi bấm widget) -->
+    <string name="weather_sheet_title">Weather</string>
+    <string name="weather_sheet_hint">City name</string>
+    <string name="weather_sheet_search">Search</string>
+    <string name="weather_sheet_no_key">Weather is temporarily unavailable. Please try again later.</string>
+    <string name="weather_sheet_searching">Searching…</string>
+    <string name="weather_sheet_not_found">City not found</string>
+    <string name="weather_sheet_refreshing">Updating…</string>
+    <string name="weather_sheet_hi_lo_note">High/low covers the next 24 hours, not the whole day.</string>
+    <string name="weather_attribution" translatable="false">Weather data provided by OpenWeather</string>
+    <string name="weather_attribution_url" translatable="false">https://openweathermap.org</string>
+
+    <!-- G3d: Trung tâm điều khiển (khối cc_) -->
+    <string name="cc_service_label">OS26 Launcher Control Center</string>
+    <string name="cc_title">Control Center</string>
+    <string name="cc_state_on">On</string>
+    <string name="cc_state_off">Off</string>
+    <string name="cc_enable">Turn on Control Center</string>
+    <string name="cc_enable_desc">Swipe down from the top right corner, on any screen</string>
+    <string name="cc_enable_needs_permissions">Grant the first two permissions below to show it</string>
+    <string name="cc_header_permissions">Permissions</string>
+    <string name="cc_perm_overlay">Display over other apps</string>
+    <string name="cc_perm_listener">Notification access</string>
+    <string name="cc_perm_battery">Unrestricted battery (recommended)</string>
+    <string name="cc_perm_write_settings">Modify system settings</string>
+    <string name="cc_perm_dnd">Do Not Disturb access</string>
+    <string name="cc_perm_bluetooth">Nearby devices (Bluetooth)</string>
+    <string name="cc_perm_granted">Granted</string>
+    <string name="cc_perm_missing">Not granted</string>
+    <string name="cc_perm_open_failed">This device can\'t open the permission screen</string>
+    <string name="cc_tile_airplane">Airplane mode</string>
+    <string name="cc_tile_cellular">Mobile data</string>
+    <string name="cc_tile_wifi">Wi-Fi</string>
+    <string name="cc_tile_bluetooth">Bluetooth</string>
+    <string name="cc_tile_rotation">Rotation lock</string>
+    <string name="cc_tile_dnd">Do Not Disturb</string>
+    <string name="cc_tile_flashlight">Flashlight</string>
+    <string name="cc_tile_timer">Timer</string>
+    <string name="cc_tile_calculator">Calculator</string>
+    <string name="cc_tile_camera">Camera</string>
+    <string name="cc_brightness">Brightness</string>
+    <string name="cc_volume">Volume</string>
+    <string name="cc_media_idle">Not playing</string>
+    <string name="cc_no_app">No matching app found</string>
+    <string name="cc_unavailable">Not supported on this device</string>
+    <string name="cc_auto_brightness">Auto-brightness</string>
+    <string name="cc_screen_timeout">Screen timeout</string>
+    <string name="cc_timeout_seconds">%1$ds</string>
+    <string name="cc_timeout_minutes">%1$dm</string>
+    <string name="cc_battery_percent">%1$d%%</string>
+    <string name="cc_block_connectivity">Connectivity. Long-press to expand</string>
+    <string name="cc_block_media">Music. Long-press to open the player</string>
+    <string name="cc_open_settings">Control Center settings</string>
+    <string name="cc_page_main">Controls page</string>
+    <string name="cc_page_media">Music page</string>
+    <string name="cc_page_network">Connectivity page</string>
+    <string name="cc_media_play">Play</string>
+    <string name="cc_media_pause">Pause</string>
+    <string name="cc_media_next">Next track</string>
+    <string name="cc_media_previous">Previous track</string>
+    <string name="cc_media_unknown_artist">Unknown artist</string>
+    <string name="cc_media_output_phone">This phone</string>
+    <string name="cc_media_output">Output device</string>
+    <string name="cc_tile_sync">Sync</string>
+    <string name="cc_tile_hotspot">Personal hotspot</string>
+    <string name="cc_tile_screen_record">Screen recording</string>
+    <string name="cc_tile_battery">Low power mode</string>
+    <string name="cc_tile_voice_memo">Voice memo</string>
+    <string name="cc_tile_settings">Settings</string>
+    <string name="cc_tile_dark_mode">Dark mode</string>
+    <string name="cc_tile_notes">Notes</string>
+    <string name="cc_tile_night_shift">Night Shift</string>
+    <string name="cc_tile_app">App</string>
+    <string name="cc_customize_tiles">Customize controls</string>
+    <string name="cc_tiles_count">%1$d tiles</string>
+    <string name="cc_tiles_included">INCLUDED</string>
+    <string name="cc_tiles_more">MORE CONTROLS</string>
+    <string name="cc_tiles_apps">APPS</string>
+    <string name="cc_tiles_add">Add %1$s</string>
+    <string name="cc_tiles_remove">Remove %1$s</string>
+    <string name="cc_tiles_reorder">Drag to reorder</string>
+    <string name="cc_tiles_full">Up to %1$d tiles. Remove one first</string>
+    <string name="cc_vibrate">Vibrate on open</string>
+    <string name="cc_header_look">Appearance</string>
+    <string name="cc_header_features">Features</string>
+    <string name="cc_background">Background</string>
+    <string name="cc_background_wallpaper">Launcher wallpaper</string>
+    <string name="cc_background_custom">Custom image</string>
+    <string name="cc_background_none">No image (see the app behind)</string>
+    <string name="cc_background_failed">Couldn\'t read this image</string>
+    <string name="cc_blur">Blur background</string>
+    <string name="cc_recorder_app">Screen recorder app</string>
+    <string name="cc_recorder_none">Not chosen</string>
+    <string name="cc_edge_settings">Swipe strip</string>
+    <string name="cc_edge_position">POSITION</string>
+    <string name="cc_edge_shape">SIZE</string>
+    <string name="cc_edge_color">STRIP COLOR</string>
+    <string name="cc_edge_top_right">Top edge, right</string>
+    <string name="cc_edge_top_left">Top edge, left</string>
+    <string name="cc_edge_right_side">Right side</string>
+    <string name="cc_edge_left_side">Left side</string>
+    <string name="cc_edge_length">Length</string>
+    <string name="cc_edge_thickness">Touch area thickness</string>
+    <string name="cc_edge_offset">Distance from the top of the screen</string>
+    <string name="cc_edge_note">The swipe strip updates on screen as you adjust it. On the left or right side, swiping inward or down both open it.</string>
+    <string name="cc_night_shift_manual">Turn on now</string>
+    <string name="cc_night_shift_warmth">Color warmth</string>
+    <string name="cc_night_shift_schedule">SCHEDULE</string>
+    <string name="cc_night_shift_scheduled">Scheduled</string>
+    <string name="cc_night_shift_from">From</string>
+    <string name="cc_night_shift_to">To</string>
+    <string name="cc_night_shift_scheduled_summary">%1$s → %2$s</string>
+    <string name="cc_night_shift_note">Night Shift adds a warm color layer over the screen. Like Control Center, it needs the \"Display over other apps\" and \"Notification access\" permissions. Screenshots keep their original colors.</string>
+    <!-- G2d: trang chủ Cài đặt (tiền tố settings_hub_) -->
+    <string name="settings_hub_group_general">General</string>
+    <string name="settings_hub_group_appearance">Appearance</string>
+    <string name="settings_hub_group_home_screen">Home Screen</string>
+    <string name="settings_hub_group_transitions">Transitions</string>
+    <string name="settings_hub_group_icons">Icon customization</string>
+    <string name="settings_hub_group_contact">Contact us</string>
+    <string name="settings_hub_theme">Default Home Screen</string>
+    <string name="settings_hub_general">General</string>
+    <string name="settings_hub_language">Language</string>
+    <string name="settings_hub_weather">Weather</string>
+    <string name="settings_hub_location">Location</string>
+    <string name="settings_hub_glass">Liquid Glass</string>
+    <string name="settings_hub_wallpaper">Wallpaper</string>
+    <string name="settings_hub_icon_set">Icons</string>
+    <string name="settings_hub_swipe">Page scrolling</string>
+    <string name="settings_hub_library">App Library</string>
+    <string name="settings_hub_search">Search settings</string>
+    <string name="settings_hub_badges">Notification badges</string>
+    <string name="settings_hub_transitions">Transition effects</string>
+    <string name="settings_hub_app_effects">App effects</string>
+    <string name="settings_hub_change_icon">Change app icons</string>
+    <string name="settings_hub_rename_apps">Rename apps</string>
+    <string name="settings_hub_rate">Rate the app</string>
+    <string name="settings_hub_more_apps">More apps</string>
+    <string name="settings_hub_privacy">Privacy policy</string>
+    <!-- RS Task 2: card "Launcher hiện tại" đầu trang chủ Cài đặt (Figma 302:1522). -->
+    <string name="settings_launcher_card_current">Current Home Screen</string>
+    <string name="settings_launcher_card_not_default">Not set as default</string>
+    <string name="settings_launcher_card_custom">Custom</string>
+    <string name="settings_launcher_card_welcome">Welcome</string>
+    <string name="settings_launcher_card_welcome_desc">Your own control center. Customize every detail so your Home Screen matches your style.</string>
+    <string name="settings_launcher_card_explore">Explore</string>
+    <!-- HC Task 1: Hero Card, nút trạng thái "Chưa" và toast Chưa → Đã (Figma 464:2199/464:2648). -->
+    <string name="hero_try">Try it</string>
+    <string name="hero_default_set_toast">Set as default</string>
+    <!-- HC Task 3: tiêu đề màn 6.2 (Figma "Ứng dụng khác"; hàng trên trang chủ giữ settings_hub_more_apps). -->
+    <string name="settings_more_apps_title">More apps</string>
+    <string name="settings_launcher_card_version" translatable="false">v%1$s</string>
+    <!-- RS Task 6: màn 1.1 Màn hình chính mặc định (Figma 302:1738). -->
+    <string name="settings_theme_subtitle">Each launcher changes your Home Screen, icons and effects.</string>
+    <string name="settings_theme_apply_default">Apply &amp; set as default</string>
+    <string name="settings_theme_apply">Apply</string>
+    <!-- RS Task 7: card xem trước thời tiết (dữ liệu mẫu) ở màn 1.4. -->
+    <string name="settings_weather_preview_degree">%1$d°</string>
+    <string name="settings_weather_preview_high_low">H %1$s · L %2$s</string>
+    <string name="settings_weather_preview_now">Now</string>
+    <string name="settings_weather_preview_hour">%1$dh</string>
+    <!-- RS Task 8: hỏi trước khi đặt nền màu từ ô giữ chỗ ở màn 2.2. -->
+    <string name="wallpaper_color_confirm_title">Set \"%1$s\" as wallpaper?</string>
+    <string name="wallpaper_color_confirm_message">The Home Screen will use this wallpaper.</string>
+    <string name="wallpaper_color_confirm_ok">Confirm</string>
+    <!-- WI: tên 5 hình nền cài sẵn (ảnh thử, xem plan WI) ở 0.3 và 2.2; nút ngắn của hộp hỏi đặt mặc định khi về Home. -->
+    <string name="wallpaper_preset_lake">Lake</string>
+    <string name="wallpaper_preset_blue_wave">Blue wave</string>
+    <string name="wallpaper_preset_red">Red</string>
+    <string name="wallpaper_preset_sunset">Sunset</string>
+    <string name="wallpaper_preset_silk">Silk</string>
+    <string name="wallpaper_preset_night_street">Night street</string>
+    <string name="default_prompt_set">Set now</string>
+    <!-- RS Task 8: giờ minh họa trên ô ảnh nền (Figma 2.2). -->
+    <string name="wallpaper_tile_clock" translatable="false">9:41</string>
+    <string name="settings_theme_note">A system dialog will open so you can choose the Home Screen app.</string>
+    <string name="settings_hub_version">Version %1$s</string>
+    <!-- AB: nhóm Liên hệ (tiền tố about_) -->
+    <string name="about_rate_title">How do you like the app?</string>
+    <string name="about_rate_message">Your rating helps us make the launcher better.</string>
+    <string name="about_rate_later">Later</string>
+    <string name="about_rate_send">Submit rating</string>
+    <string name="about_open_failed">Couldn\'t open the link on this device</string>
+    <string name="about_privacy_open">Open in browser</string>
+    <string name="about_privacy_footer">The policy is loaded from the website and opens in your browser.</string>
+    <string name="about_more_apps_featured">Featured</string>
+    <string name="about_more_apps_others">More apps</string>
+    <string name="about_more_apps_download">Get</string>
+    <string name="about_more_apps_footer">By %1$s</string>
+
+    <!-- WU: Cài đặt → Thời tiết (tiền tố settings_weather_) -->
+    <string name="settings_weather_unit">Temperature unit</string>
+    <string name="settings_weather_unit_value_c">°C</string>
+    <string name="settings_weather_unit_value_f">°F</string>
+    <string name="settings_weather_a11y_c">degrees Celsius</string>
+    <string name="settings_weather_a11y_f">degrees Fahrenheit</string>
+    <!-- HT: công tắc Màn hình chính (tiền tố ht_) -->
+    <string name="ht_search_open_header">How to open</string>
+    <string name="ht_search_in_header">Search in</string>
+    <string name="ht_search_swipe_down">Swipe down to search</string>
+    <string name="ht_search_swipe_down_description">Swipe down in the middle of the Home Screen</string>
+    <string name="ht_search_pill">Search button on screen</string>
+    <string name="ht_search_pill_description">Shown above the Dock</string>
+    <string name="ht_swipe_page_dots">Show page dots</string>
+    <string name="ht_swipe_page_dots_description">Page position indicator above the Dock</string>
+    <string name="tv_swipe_today">Widget screen</string>
+    <string name="tv_swipe_today_description">Swipe right on the first page to open widgets</string>
+    <string name="tv_edit">Edit</string>
+    <!-- RN: Thay đổi tên ứng dụng (tiền tố settings_rename_) -->
+    <string name="settings_rename_header">Give apps your own names. The original name can always be restored.</string>
+    <string name="settings_rename_original">Original name: %1$s</string>
+    <string name="settings_rename_dialog_title">Rename app</string>
+    <string name="settings_rename_hint">New name</string>
+    <string name="settings_rename_save">Save</string>
+    <string name="settings_rename_restore">Restore</string>
+    <!-- WX: thời tiết nhiều địa điểm (tiền tố wx_) -->
+    <string name="wx_places_header">Tracked locations</string>
+    <string name="wx_places_current">Current location</string>
+    <string name="wx_places_current_unset">Unknown</string>
+    <string name="wx_places_current_manual">%1$s (chosen manually)</string>
+    <string name="wx_places_add">+ Add location</string>
+    <string name="wx_places_full">%1$d locations reached</string>
+    <string name="wx_places_hint">Each weather widget shows one location from this list (tap the widget).</string>
+    <string name="wx_places_duplicate">This location is already in the list</string>
+    <string name="wx_places_remove_title">Remove location?</string>
+    <string name="wx_places_remove_message">Remove %1$s from the list. Widgets showing this location will switch to Current location.</string>
+    <string name="wx_places_remove_confirm">Remove</string>
+    <string name="wx_search_add_title">Add location</string>
+    <string name="wx_loc_perm_header">Location permission</string>
+    <string name="wx_loc_perm">Location permission</string>
+    <string name="wx_loc_perm_granted">Granted</string>
+    <string name="wx_loc_perm_denied">Not granted</string>
+    <string name="wx_loc_mode_header">How to determine location</string>
+    <string name="wx_loc_mode_auto">Automatic</string>
+    <string name="wx_loc_mode_manual">Choose manually</string>
+    <!-- RS Task 3: dòng mô tả hai hàng radio (Figma 1.5 302:1971). -->
+    <string name="wx_loc_mode_auto_desc">Updates as you move</string>
+    <string name="wx_loc_mode_manual_desc">No location permission needed</string>
+    <string name="wx_loc_update">Update location</string>
+    <string name="wx_loc_updating">Getting location…</string>
+    <string name="wx_loc_city">City</string>
+    <string name="wx_loc_city_unset">Not chosen</string>
+    <string name="wx_loc_pick_city">Choose city</string>
+    <string name="wx_loc_unavailable">Couldn\'t get your location. Turn on location services or choose a city manually.</string>
+    <string name="wx_loc_denied">Location permission not granted. You can still choose a city manually.</string>
+    <string name="wx_loc_denied_settings">Location permission is blocked. Grant it in the app settings.</string>
+    <string name="wx_loc_privacy">Only approximate location is used, fetched once each time: when you tap Update location, or (Automatic mode with permission) at most once every 2 hours while a weather widget showing Current location is visible, and it only changes when you move more than 5 km. Nothing runs in the background and nothing is tracked continuously. Choose manually mode needs no permission and never reads your location.</string>
+    <string name="wx_sheet_for_widget">This widget shows:</string>
+    <string name="wx_sheet_current_named">Current location: %1$s</string>
+    <string name="wx_sheet_current_unset">Current location (unknown)</string>
+    <string name="wx_sheet_no_location">Current location is unknown. Set it in Settings → Location.</string>
+    <string name="wx_sheet_manage">Manage locations</string>
+
+    <!-- GT: tinh chỉnh kính dùng chung -->
+    <string name="gt_title">Glass tuning</string>
+    <string name="gt_state_default">Default</string>
+    <string name="gt_state_custom">Customized</string>
+    <string name="gt_preview">Glass preview</string>
+    <string name="gt_header">Applies to every glass surface, takes effect on the Home Screen</string>
+    <string name="gt_reset_header">Restore</string>
+    <string name="gt_refraction">Refraction</string>
+    <string name="gt_refraction_desc">Magnifies the background seen through the glass. 0 = no magnification.</string>
+    <string name="gt_gloss">Gloss</string>
+    <string name="gt_gloss_desc">Above 50 the glass is brighter, below 50 darker.</string>
+    <string name="gt_blur">Blur</string>
+    <string name="gt_blur_desc">How blurry the background behind the glass is.</string>
+    <string name="gt_corner">Corner radius</string>
+    <string name="gt_corner_desc">50 = unchanged, 0 = square. Doesn\'t change app icon shapes.</string>
+    <string name="gt_reset">Reset to default</string>
+
+    <!-- WN: thông báo thời tiết (tiền tố wn_) -->
+    <string name="wn_channel_group">Weather</string>
+    <string name="wn_channel_daily">Daily forecast</string>
+    <string name="wn_channel_tomorrow">Tomorrow\'s forecast</string>
+    <string name="wn_title_today">%1$s · Today</string>
+    <string name="wn_title_tomorrow">%1$s · Tomorrow</string>
+    <string name="wn_text">%1$s, high %2$d%4$s, low %3$d%4$s</string>
+    <string name="wn_precip">Rain or snow from %1$s to %2$s</string>
+    <string name="wn_public_title">Weather forecast</string>
+    <string name="wn_public_today">Today\'s forecast</string>
+    <string name="wn_public_tomorrow">Tomorrow\'s forecast</string>
+    <string name="wn_settings_header">Notifications</string>
+    <string name="wn_switch_daily">Daily forecast</string>
+    <string name="wn_switch_daily_desc">At 07:00 every morning</string>
+    <string name="wn_switch_tomorrow">Tomorrow\'s forecast</string>
+    <string name="wn_switch_tomorrow_desc">At 21:00 every evening</string>
+    <string name="wn_footer_hint">Uses the saved Current location and never reads your location in the background. Delivery can be up to about 1 hour late because of Android battery saving. Needs a connection; without one, saved data is used if it is still recent.</string>
+    <string name="wn_footer_no_key">Weather notifications need an OpenWeatherMap key, which this build doesn\'t have.</string>
+    <string name="wn_footer_no_place">Current location is unknown, so no notifications have been sent. Set it in Settings → Location.</string>
+    <string name="wn_footer_blocked">The app\'s notifications are turned off in system settings, so you won\'t see any. Turn them back on in the app\'s notification settings.</string>
+    <string name="wn_toast_denied">Notification permission not granted, so this couldn\'t be turned on.</string>
+    <string name="wn_toast_blocked">The app\'s notifications are off or blocked. Turn them on in the app\'s notification settings.</string>
+    <!-- G3b: widget Ảnh (khối ph_) -->
+    <string name="ph_name">Photos</string>
+    <string name="ph_empty_title">Tap to choose photos</string>
+    <string name="ph_desc_empty">Photos, no photos yet, tap to choose</string>
+    <string name="ph_desc_photos">Photos, %1$d photos</string>
+    <string name="ph_activity_title">Widget photos</string>
+    <string name="ph_add_photo">+ Add photos</string>
+    <string name="ph_choose_photo">Choose photos</string>
+    <string name="ph_empty_hint">Choose photos to show on the widget</string>
+    <string name="ph_rotates">With several photos, the widget shows a different one every hour while the Home Screen is visible.</string>
+    <string name="ph_importing">Importing photos</string>
+    <string name="ph_remove_glyph">✕</string>
+    <string name="ph_remove_desc">Remove photo %1$d</string>
+    <string name="ph_thumb_desc">Photo %1$d</string>
+    <string name="ph_remove_title">Remove photo?</string>
+    <string name="ph_remove_message">The photo will be removed from this widget.</string>
+    <string name="ph_remove_confirm">Remove</string>
+    <string name="ph_cancel">Cancel</string>
+    <string name="ph_import_failed">Some photos couldn\'t be imported.</string>
+    <string name="ph_too_many">Each widget holds up to %1$d photos; only the first ones were added.</string>
+    <string name="ph_full">This widget already has %1$d photos. Remove some to add others.</string>
+    <string name="ph_crop_title">Crop photo %1$d/%2$d</string>
+    <string name="ph_crop_edit_title">Crop again</string>
+    <string name="ph_crop_hint">Drag to move, pinch to zoom</string>
+    <string name="ph_crop_desc">Crop area. Drag to move, pinch to zoom.</string>
+    <string name="ph_crop_done">Done</string>
+    <string name="ph_crop_skip">Skip this photo</string>
+    <string name="ph_discard_title">Discard uncropped photos?</string>
+    <string name="ph_discard_message">Discard %1$d uncropped photos? Photos you already cropped are kept.</string>
+    <string name="ph_discard_confirm">Discard</string>
+    <string name="ph_discard_keep">Keep cropping</string>
+    <!-- G3c: AppWidgetHost (tiền tố aw_) -->
+    <string name="aw_unavailable">Widget unavailable</string>
+    <string name="aw_error_load">Couldn\'t load widget</string>
+    <string name="aw_section_title">App widgets</string>
+    <string name="aw_section_loading">Loading list…</string>
+    <plurals name="aw_widget_count">
+        <item quantity="one">%1$d widget</item>
+        <item quantity="other">%1$d widgets</item>
+    </plurals>
+    <string name="aw_chip_description">Add size %1$d×%2$d</string>
+    <string name="aw_too_large">Too large for the grid</string>
+    <string name="aw_busy">Adding another widget</string>
+    <string name="aw_add_failed">Couldn\'t add widget</string>
+
+    <!-- DS3: chuỗi của thành phần v3 (core/designsystem). -->
+    <string name="ds_back">Back</string>
+    <string name="ds_nav_back_default">Settings</string>
+    <string name="ds_nav_back_desc">Back, %1$s</string>
+    <string name="ds_close">Close</string>
+    <string name="ds_onboarding_skip">Skip</string>
+
+    <!-- OB: Onboarding 0.1–0.5 (chữ theo Figma 302:3673) -->
+    <string name="onboarding_start">Get started</string>
+    <string name="onboarding_continue">Continue</string>
+    <string name="onboarding_set_default">Set as default</string>
+    <string name="onboarding_later">Later</string>
+    <string name="onboarding_go_settings">Go to Settings</string>
+    <string name="onboarding_welcome_title">A liquid glass look for your phone</string>
+    <string name="onboarding_welcome_subtitle">Clear icons, vivid wallpapers and smooth effects — just a few steps to get started.</string>
+    <string name="onboarding_theme_title">Choose a style</string>
+    <string name="onboarding_theme_subtitle">You can change it anytime in Settings.</string>
+    <string name="onboarding_theme_liquid_glass_27">Liquid Glass 27</string>
+    <string name="onboarding_theme_liquid_glass_27_desc">Clear, refractive</string>
+    <string name="onboarding_theme_classic_26">Classic 26</string>
+    <string name="onboarding_theme_classic_26_desc">Warm, soft-colored icons</string>
+    <string name="onboarding_theme_minimal">Minimal</string>
+    <string name="onboarding_theme_minimal_desc">Simple, thin lines</string>
+    <string name="onboarding_theme_dark_pro">Dark Pro</string>
+    <string name="onboarding_theme_dark_pro_desc">Dark background, round icons</string>
+    <string name="onboarding_badge_new">NEW</string>
+    <string name="onboarding_wallpaper_title">Choose a wallpaper</string>
+    <string name="onboarding_wallpaper_subtitle">A great wallpaper makes the glass effect stand out.</string>
+    <string name="onboarding_default_title">Set %1$s as your Home Screen</string>
+    <string name="onboarding_default_subtitle">This makes the new look appear every time you press the Home button.</string>
+    <string name="onboarding_default_step1">Tap \"Set as default\" below</string>
+    <string name="onboarding_default_step2">Choose %1$s in the system dialog</string>
+    <string name="onboarding_done_title">You\'re all set!</string>
+    <string name="onboarding_done_subtitle">Explore your new look and fine-tune it anytime in Settings.</string>
+    <string name="onboarding_done_theme">Style</string>
+    <string name="onboarding_done_wallpaper">Wallpaper</string>
+    <string name="onboarding_done_home">Home Screen</string>
+    <string name="onboarding_done_home_set">Set as default</string>
+    <string name="onboarding_done_home_not_set">Not set</string>
+
+    <!-- LG: màn Ngôn ngữ (1.3), chip ngôn ngữ Onboarding 0.1, lý do lỗi đặt wallpaper -->
+    <string name="lang_system">Follow system</string>
+    <string name="lang_system_desc">Use the device language</string>
+    <string name="lang_search_hint">Search languages</string>
+    <string name="lang_no_results">No languages found</string>
+    <string name="lang_chip_desc">Language: %1$s</string>
+    <string name="lang_name_vi">Vietnamese</string>
+    <string name="lang_name_en">English</string>
+    <string name="lang_name_es">Spanish</string>
+    <string name="lang_name_pt">Portuguese</string>
+    <string name="lang_name_id">Indonesian</string>
+    <string name="lang_name_th">Thai</string>
+    <string name="lang_name_ja">Japanese</string>
+    <string name="lang_name_ko">Korean</string>
+    <string name="lang_name_hi">Hindi</string>
+    <string name="wallpaper_reason_unsupported">this device doesn\'t support setting wallpapers</string>
+    <string name="wallpaper_reason_not_allowed">the system doesn\'t allow this app to set wallpapers</string>
+    <string name="wallpaper_reason_read_failed">couldn\'t read the saved image</string>
+    <string name="wallpaper_reason_out_of_memory">not enough memory</string>
+    <!-- BG: màn 3.4 Huy hiệu thông báo (tiền tố badges_) -->
+    <string name="badges_perm_title">Notification access needed</string>
+    <string name="badges_perm_desc">To count unread notifications for each app</string>
+    <string name="badges_perm_action">Grant access</string>
+    <string name="badges_perm_open_failed">Couldn\'t open notification access settings</string>
+    <string name="badges_show">Show badges</string>
+    <string name="badges_style_header">Badge style</string>
+    <string name="badges_style_number">Number</string>
+    <string name="badges_style_dot">Dot</string>
+    <string name="badges_per_app_header">Per app</string>
+    <string name="badges_sample_count" translatable="false">12</string>
+    <!-- TR: màn 4.1 Hiệu ứng chuyển cảnh -->
+    <string name="tr_intro">When opening folders, search, the App Library and Quick Settings.</string>
+    <string name="tr_preview_description">Preview: opening a folder</string>
+    <string name="tr_style_smooth">Smooth</string>
+    <string name="tr_style_smooth_description">Default</string>
+    <string name="tr_style_fade">Fade</string>
+    <string name="tr_style_slide">Slide</string>
+    <string name="tr_style_zoom">Zoom</string>
+    <string name="tr_style_none">None</string>
+    <string name="tr_style_none_description">Fastest</string>
+    <string name="tr_speed">Speed</string>
+    <string name="tr_speed_slow">Slow</string>
+    <string name="tr_speed_medium">Medium</string>
+    <string name="tr_speed_fast">Fast</string>
+    <string name="tr_reduce_motion">Reduce motion</string>
+    <string name="tr_reduce_motion_description">Use fade instead of zoom / slide</string>
+    <!-- JS7: nút của hộp chọn giờ Night Shift (Compose) -->
+    <string name="cc_time_done">Done</string>
+    <!-- Port REF a967612..HEAD (cài đặt): P3-2 sheet đích ảnh nền, P3-3 xem trước kiểu icon, P3-4 đổi icon, P3-5 tách công tắc tìm kiếm, HL ứng dụng ẩn -->
+    <string name="ds_step_indicator_desc">Step %1$d of %2$d</string>
+    <string name="wallpaper_target_sheet_title">Set wallpaper for</string> <!-- P3-2: Figma 2.2 popup 302:2090 -->
+    <string name="icon_style_preview_description">Preview of the selected icon style</string> <!-- P3-3 -->
+    <string name="settings_search_suggestions_description">Trending searches when the search field is empty</string>
+    <string name="settings_search_recent_apps">Recent apps</string>
+    <string name="settings_search_recent_apps_description">Shows the apps you opened recently. Turning this off stops recording but keeps the saved history.</string>
+    <string name="ci_search_hint">Search apps</string>
+    <string name="ci_changed">Changed</string>
+    <string name="ci_choose_new">Choose a new icon</string>
+    <string name="ci_from_photos">From photos</string>
+    <string name="ci_restore">Restore</string>
+    <string name="ci_save">Save</string>
+    <string name="ci_save_failed">Couldn\'t save the icon</string>
+    <string name="ci_image_failed">Couldn\'t open this image</string>
+    <string name="ci_no_results">No apps found</string>
+    <string name="ci_variant_description">Icon option %1$d</string>
+    <string name="hl_intro">Hidden apps don\'t appear on the Home screen, in the library or in search results.</string>
+    <string name="hl_all_apps">All apps</string>
+    <string name="hl_lock">Lock with fingerprint / PIN</string>
+    <string name="hl_lock_description">Verify before viewing</string>
+    <string name="hl_auth_title">Open hidden apps</string>
+    <string name="hl_auth_subtitle">Verify it\'s you to see your hidden apps</string>
+    <string name="hl_auth_use_device">Use screen lock</string>
+    <plurals name="hl_hidden_count">
+        <item quantity="one">%d hidden</item>
+        <item quantity="other">%d hidden</item>
+    </plurals>
+    <!-- P2-9 / P2-9e (REF a013dd8): bảng chọn widget kiểu iOS, menu Sửa của edit mode; TV-2/TV-3 (REF 3ab9c20): Today View -->
+    <string name="wp_search_hint">Search widgets</string>
+    <string name="wp_add_widget">Add widget</string>
+    <string name="wp_close">Close</string>
+    <string name="home_edit">Edit</string>
+    <string name="home_wallpapers">Wallpapers</string>
+    <string name="wp_clock_small_title">Analog clock</string>
+    <string name="wp_clock_small_desc">Shows the current time.</string>
+    <string name="wp_clock_wide_title">Digital clock</string>
+    <string name="wp_clock_wide_desc">Large digital time with the date.</string>
+    <string name="wp_calendar_small_title">Today</string>
+    <string name="wp_calendar_small_desc">Shows today\'s date.</string>
+    <string name="wp_calendar_wide_title">Month</string>
+    <string name="wp_calendar_wide_desc">Today\'s date with this month\'s calendar.</string>
+    <string name="wp_weather_small_title">Current conditions</string>
+    <string name="wp_weather_small_desc">Current weather for your location.</string>
+    <string name="wp_weather_wide_title">Hourly forecast</string>
+    <string name="wp_weather_wide_desc">Current weather and the next few hours.</string>
+    <string name="wp_photo_small_title">Photo</string>
+    <string name="wp_photo_small_desc">Shows a photo or an album that changes every hour.</string>
+    <string name="wp_photo_wide_title">Wide photo</string>
+    <string name="wp_photo_wide_desc">A wider photo or album that changes every hour.</string>
+    <string name="today_recents_empty">Apps you opened recently will appear here</string>
+    <string name="today_recents_name">Recent apps</string>
+    <string name="today_recents_small_title">4 apps</string>
+    <string name="today_recents_small_desc">Your four most recently opened apps.</string>
+    <string name="today_recents_wide_title">8 apps</string>
+    <string name="today_recents_wide_desc">Your eight most recently opened apps.</string>
+    <string name="today_widget_remove_message">The widget will be removed from Today. You can add it again with the + button.</string>
+</resources>

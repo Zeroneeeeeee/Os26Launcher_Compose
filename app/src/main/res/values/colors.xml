@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- M7 Task 8: dấu "−" ẩn nhanh. Kiểu iOS: viên xám nhạt gần đục + dấu trừ đen, bóng mờ nhẹ để tách khỏi ảnh nền sáng. -->
+
+    <!-- M7 Task 10: menu nhấn giữ icon + lớp làm mờ nền -->
+
+    <!-- M8b: lớp tìm kiếm -->
+    <color name="search_scrim">#CC000000</color>
+    <color name="search_field_bg">#FF2C2C2E</color>
+    <color name="search_hint_text">#FFAEAEB2</color>
+    <!-- Spotlight lúc gõ: thẻ mờ chứa hàng app / các hàng gợi ý web, và vạch chia giữa các hàng web -->
+    <color name="search_card_bg">#3D767680</color>
+    <color name="search_card_divider">#33FFFFFF</color>
+    <!-- M8c: pill tìm kiếm (điểm xuất phát, chỉnh theo mắt + đo tương phản) -->
+    <color name="search_pill_bg">#8C3A3A3C</color>
+    <color name="search_pill_content">#FFFFFFFF</color>
+    <color name="search_pill_dot_inactive">#80FFFFFF</color>
+    <!-- G2a A1a: nền ô thư mục đóng (phẳng; kính thật ở mốc "Áp kính") -->
+    <color name="folder_background">#59FFFFFF</color>
+    <!-- G2a A2: panel thư mục -->
+    <!-- Cùng độ tối với nền lớp tìm kiếm; dùng cho panel thư mục (Home) và panel nhóm (App Library). -->
+    <color name="folder_panel_background">#66FFFFFF</color>
+    <color name="folder_title_hint">#99FFFFFF</color>
+    <!-- FP: tiêu đề chữ lớn trôi trên nền (ngoài khung) -->
+    <color name="folder_title_shadow">#40000000</color>
+    <!-- FP Task 3: khung thư mục = kính sáng rất trong + viền sáng mảnh (ảnh mẫu iOS 26). Điểm xuất phát, chốt bằng mắt.
+         Panel nhóm Library giữ gl_panel_tint / gl_panel_border / folder_panel_background. -->
+    <color name="folder_panel_glass_tint">#1AFFFFFF</color> <!-- 2026-11-18 "giảm sáng": #1F -> #0F; rồi "tăng sáng chút": -> #1A -->
+    <color name="folder_panel_glass_border">#66FFFFFF</color>
+    <!-- FLAT (Ép thấp / không có ảnh nền): màu bán trong suốt nhạt (trước là folder_panel_background #66FFFFFF). -->
+    <color name="folder_panel_flat_color">#33FFFFFF</color>
+
+    <!-- GL: kính tại chỗ (điểm xuất phát, chỉnh theo mắt) -->
+    <color name="gl_cell_tint">#26FFFFFF</color>
+    <color name="gl_cell_border">#40FFFFFF</color>
+    <!-- GI Task 3: kính sau icon app (điểm xuất phát = gl_cell_* và folder_background, chỉnh theo mắt) -->
+    <color name="icon_glass_tint">#1AFFFFFF</color> <!-- 2026-11-13: tint CỐ ĐỊNH (bỏ lớp tự đổi theo nền: vuốt trang làm nó nhảy nấc -> nhấp nháy) và trong hơn một chút -->
+    <color name="icon_glass_border">#00FFFFFF</color> <!-- viền sáng đã nướng trong bitmap kiểu Kính (SweepGradient) -->
+    <!-- GI review: bitmap GLASS đã có sẵn tấm nền nướng làm dự phòng, nên lớp phẳng để trong suốt (tránh chồng hai tấm). -->
+    <color name="icon_glass_flat">#00FFFFFF</color>
+    <color name="gl_panel_tint">#66000000</color>
+    <color name="gl_panel_border">#33FFFFFF</color>
+    <color name="gl_bar_tint">#80000000</color>
+    <color name="gl_bar_border">#33FFFFFF</color>
+
+    <!-- G2c: widget tự vẽ (đồng hồ, lịch). Điểm xuất phát bằng màu ô thư mục; chỉnh theo mắt. -->
+    <color name="widget_glass_tint">#26FFFFFF</color>
+    <color name="widget_glass_border">#40FFFFFF</color>
+    <color name="widget_glass_flat">#59FFFFFF</color>
+    <color name="widget_accent">#FFFF453A</color>
+    <color name="widget_text">#FFFFFFFF</color>
+    <color name="widget_text_dim">#E6FFFFFF</color> <!-- 90%: chữ phụ đọc được trên vùng ảnh nền sáng (bài kiểm Live 4); bản đầu 70% -->
+    <color name="widget_preview_bg">#FF2C2C2E</color>
+
+    <!-- SM: menu nhấn giữ icon (kính, theo sáng/tối). Điểm xuất phát, chỉnh theo mắt trên Oppo. Bản tối: values-night/colors.xml. -->
+    <color name="shortcut_menu_glass_tint">#E0F5F5F7</color>
+    <color name="shortcut_menu_glass_border">#66FFFFFF</color>
+    <color name="shortcut_menu_flat">#F2F2F2F7</color>
+    <color name="shortcut_menu_text">#FF1C1C1E</color>
+    <color name="shortcut_menu_destructive">#FFFF3B30</color>
+    <color name="shortcut_menu_divider">#1F000000</color>
+
+    <!-- G3e: biểu tượng thời tiết tự vẽ (khối weather_) -->
+    <color name="weather_cloud">#F2FFFFFF</color>
+    <color name="weather_cloud_dim">#99FFFFFF</color>
+    <color name="weather_sun">#FFFFD60A</color>
+    <color name="weather_moon">#FFF2F2F7</color>
+    <color name="weather_rain">#FF64D2FF</color>
+    <color name="weather_bolt">#FFFFD60A</color>
+    <color name="weather_alert">#FFFF9F0A</color>
+
+    <!-- G3d: Trung tâm điều khiển (khối cc_). Giống nhau ở sáng và tối như iOS: panel luôn nằm trên nền ảnh mờ phủ tối. -->
+    <color name="cc_scrim">#4D000000</color>
+    <!-- Kính iOS 26: lớp tô trắng trong mờ trên nền đã phủ tối, viền sáng chéo (CcGlassDrawable). -->
+    <color name="cc_tile_bg">#1FFFFFFF</color>
+    <color name="cc_glass_inner">#24FFFFFF</color>
+    <color name="cc_glass_rim_strong">#B3FFFFFF</color>
+    <color name="cc_glass_rim_mid">#66FFFFFF</color>
+    <color name="cc_glass_rim_weak">#12FFFFFF</color>
+    <color name="cc_toggle_blue">#FF0A4BE0</color>
+    <color name="cc_sun">#FFFFCC00</color>
+    <color name="cc_tile_bg_on">#FFFFFFFF</color>
+    <color name="cc_icon">#FFFFFFFF</color>
+    <color name="cc_icon_on_white">#FF1C1C1E</color>
+    <color name="cc_blue">#FF0A84FF</color>
+    <color name="cc_orange">#FFFF9F0A</color>
+    <color name="cc_green">#FF30D158</color>
+    <color name="cc_red">#FFFF453A</color>
+    <color name="cc_indigo">#FF5E5CE6</color>
+    <color name="cc_slider_fill">#FFFFFFFF</color>
+    <color name="cc_slider_icon_on_fill">#FF8E8E93</color>
+    <color name="cc_scrim_strong">#99000000</color>
+    <color name="cc_detail_scrim">#8C000000</color>
+    <color name="cc_yellow">#FFFFD60A</color>
+    <!-- HT: vòng tối dưới chấm trang trần -->
+    <color name="ht_dot_halo">#33000000</color>
+    <!-- CG: Trung tâm điều khiển kiểu Liquid Glass: lớp tối khi màn phía sau đã được làm mờ, ánh sáng đỉnh và bóng đáy của kính khối -->
+    <color name="cc_scrim_blur">#26000000</color>
+    <color name="cc_glass_highlight">#2EFFFFFF</color>
+    <color name="cc_glass_shade">#1F000000</color>
+    <!-- P2-9: nút "Thêm tiện ích" luôn xanh hệ thống (chủ dự án chốt). Chữ trắng trên nền này ~4:1: nút dùng chữ đậm 16sp (chữ lớn WCAG, cần 3:1) -->
+    <color name="wp_add_blue">#FF007AFF</color>
+</resources>

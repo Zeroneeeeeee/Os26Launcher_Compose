@@ -1,0 +1,713 @@
+<resources>
+    <!-- LG: bản dịch máy (Claude, 2026-11-18), chưa có người bản ngữ duyệt. Tag id, thư mục values-in (tên lịch sử). -->
+    <string name="app_name">OS26 Launcher</string>
+
+    <string name="app_launch_failed">Tidak dapat membuka %1$s. Aplikasi mungkin baru saja dihapus.</string>
+    <string name="home_set_default_failed">Tidak dapat membuka pemilih peluncur default</string>
+
+    <!-- M7 Task 4: nút thoát chế độ chỉnh sửa. -->
+    <string name="home_done">Selesai</string>
+
+    <string name="wallpaper_dialog_title">Jadikan wallpaper</string>
+    <string name="wallpaper_dialog_skip">Jangan terapkan</string>
+    <string name="wallpaper_target_home">Layar utama</string>
+    <string name="wallpaper_target_lock">Layar kunci</string>
+    <string name="wallpaper_target_both">Keduanya</string>
+    <string name="wallpaper_applied">Wallpaper diterapkan ke: %1$s</string>
+    <string name="wallpaper_failed">Tidak dapat menerapkan wallpaper: %1$s</string>
+    <string name="common_unknown">alasan tidak diketahui</string>
+
+    <!-- M7 Task 9: Thư viện ứng dụng -->
+    <!-- M8a Task 3: màn Cài đặt -->
+    <string name="settings_loading">Memuat setelan</string>
+    <string name="settings_hidden_apps">Aplikasi tersembunyi</string>
+    <string name="settings_show_labels">Tampilkan nama aplikasi</string>
+    <string name="settings_nav_bar_hidden">Sembunyikan bilah navigasi</string>
+    <string name="settings_nav_bar_hidden_description">Hanya di layar utama. Geser ke atas dari tepi bawah untuk menampilkannya sebentar.</string>
+    <string name="settings_backdrop">Wallpaper</string>
+    <string name="settings_backdrop_set">Gambar dipilih</string>
+    <string name="settings_backdrop_unset">Belum dipilih</string>
+    <string name="settings_backdrop_failed">Tidak dapat membaca gambar ini. Wallpaper saat ini dipertahankan.</string>
+    <string name="settings_wallpaper_unavailable">Wallpaper di aplikasi sudah diganti. Tidak dapat menyetel wallpaper sistem: %1$s</string>
+    <string name="settings_grid_preset">Ukuran petak</string>
+    <string name="settings_grid_value">%1$d × %2$d</string>
+    <string name="settings_grid_option">%1$d × %2$d (%3$d ikon per halaman)</string>
+    <string name="settings_grid_confirm_title">Ganti ke petak %1$d × %2$d?</string>
+    <string name="settings_grid_confirm_message">Ikon akan disusun ulang sesuai urutan saat ini. Tindakan ini tidak dapat dibatalkan. Terapkan?</string>
+    <string name="settings_grid_confirm_apply">Terapkan</string>
+    <string name="settings_grid_failed">Tidak dapat mengubah ukuran petak</string>
+    <string name="settings_glass_level">Tingkat kaca</string>
+    <string name="settings_glass_auto">Otomatis</string>
+    <string name="settings_glass_low">Rendah</string>
+    <string name="settings_glass_high">Tinggi</string>
+    <string name="settings_glass_auto_desc">Otomatis (sesuai perangkat)</string>
+    <string name="settings_glass_low_desc">Paksa rendah (kartu buram, lebih ringan)</string>
+    <string name="settings_glass_high_desc">Paksa tinggi (kaca asli, memakai lebih banyak sumber daya)</string>
+    <string name="settings_cancel">Batal</string>
+    <string name="settings_save_failed">Tidak dapat menyimpan setelan</string>
+    <string name="home_settings">Setelan</string>
+
+    <string name="library_title">Aplikasi tersembunyi</string>
+    <string name="library_hidden_empty">Tidak ada aplikasi tersembunyi</string>
+    <string name="library_launch_failed">Tidak dapat membuka aplikasi</string>
+    <string name="library_unhide_failed">Tidak dapat memunculkan aplikasi</string>
+
+    <!-- M7 Task 10: menu nhấn giữ icon -->
+    <string name="menu_app_info">Info aplikasi</string>
+    <string name="menu_hide_app">Sembunyikan aplikasi</string>
+    <string name="menu_edit_home">Edit layar utama</string>
+    <string name="menu_uninstall">Uninstal</string>
+    <string name="menu_action_failed">Tidak dapat menyelesaikan tindakan</string>
+    <string name="remove_app_title">Hapus “%1$s”?</string>
+    <string name="remove_app_message">Jika dihapus dari layar utama, aplikasi tetap ada di Pustaka Aplikasi.</string>
+    <string name="remove_app_delete">Hapus aplikasi</string>
+    <string name="remove_app_from_home">Hapus dari layar utama</string>
+    <string name="remove_app_cancel">Batal</string>
+
+    <!-- M8b: tìm kiếm -->
+    <string name="search_field_hint">Cari</string>
+    <string name="search_idle_hint">Ketik nama aplikasi</string>
+    <string name="search_no_results">Aplikasi tidak ditemukan</string>
+    <string name="search_pill_label">Cari</string>
+    <string name="search_pill_page_description">Halaman %1$d dari %2$d</string>
+    <string name="search_clear">Hapus pencarian</string>
+    <string name="search_cancel">Batal</string>
+    <!-- G2a A1a: tên hiển thị khi thư mục chưa đặt tên -->
+    <string name="folder_default_title">Folder</string>
+    <!-- G2a B2: trang App Library ở cuối pager -->
+    <string name="library_page_group_social">Sosial</string>
+    <string name="library_page_group_entertainment">Hiburan</string>
+    <string name="library_page_group_game">Game</string>
+    <string name="library_page_group_productivity">Produktivitas</string>
+    <string name="library_page_group_news">Berita</string>
+    <string name="library_page_group_maps">Peta</string>
+    <string name="library_page_group_utilities">Utilitas</string>
+    <string name="library_page_group_other">Lainnya</string>
+    <string name="lo_enable">Aktifkan Perpustakaan Aplikasi</string>
+    <string name="lo_enable_description">Geser melewati halaman terakhir layar utama</string>
+    <string name="lo_style_header">Gaya tampilan</string>
+    <string name="lo_style_folders">Folder kategori</string>
+    <string name="lo_style_list">Daftar A–Z</string>
+    <string name="lo_auto_categorize">Kategorikan aplikasi otomatis</string>
+    <string name="lo_auto_categorize_description">Sosial, Utilitas, Hiburan…</string>
+    <string name="lo_suggestions">Tampilkan Saran &amp; Baru Ditambahkan</string>
+    <string name="lo_suggestions_description">Dua folder pertama perpustakaan</string>
+    <string name="library_page_group_suggested">Saran</string>
+    <string name="library_page_group_recent">Baru Ditambahkan</string>
+    <string name="library_page_group_all">Semua Aplikasi</string>
+    <string name="library_page_empty">Belum ada aplikasi</string>
+
+    <!-- G2b: kiểu icon -->
+    <string name="settings_icon_style">Gaya ikon</string>
+    <string name="settings_icon_style_default">Default</string>
+    <string name="settings_icon_style_transparent">Transparan</string>
+    <string name="settings_icon_style_tinted">Berwarna</string>
+    <string name="settings_icon_style_3d">3D</string>
+    <string name="settings_icon_style_glass">Kaca</string>
+    <string name="settings_icon_tint">Warna</string>
+    <string name="settings_icon_tint_blue">Biru</string>
+    <string name="settings_icon_tint_pink">Merah muda</string>
+    <string name="settings_icon_tint_green">Hijau</string>
+    <string name="settings_icon_tint_orange">Oranye</string>
+    <string name="settings_icon_tint_graphite">Grafit</string>
+    <!-- IP -->
+    <string name="settings_icon_pack">Paket ikon</string>
+    <string name="settings_icon_pack_none">Tidak ada</string>
+    <string name="settings_icon_pack_empty">Paket ikon tidak ditemukan. Instal paket ikon dari toko aplikasi, lalu kembali ke sini.</string>
+    <string name="settings_icon_pack_ok">Tutup</string>
+
+    <!-- AN Task 5: nhãn trợ năng cho "+N" trong cụm icon mini của ô nhóm -->
+
+    <!-- G2c: widget tự vẽ -->
+    <string name="widget_clock_description">Jam, %1$s</string>
+    <string name="widget_calendar_description">Kalender, %1$s</string>
+    <string name="home_add_widget">Widget</string>
+    <string name="widget_picker_title">Tambahkan widget</string>
+    <string name="widget_name_clock">Jam</string>
+    <string name="widget_name_calendar">Kalender</string>
+    <string name="widget_size_label">%1$d×%2$d</string>
+    <string name="widget_remove_title">Hapus widget?</string>
+    <string name="widget_remove_message">Widget akan dihapus dari layar utama. Anda dapat menambahkannya lagi dari tombol Widget.</string>
+    <string name="widget_remove_confirm">Hapus</string>
+    <string name="widget_remove_cancel">Batal</string>
+    <!-- GS: mức kính Tùy chỉnh -->
+    <string name="gs_level_custom">Kustom</string>
+    <string name="gs_level_custom_desc">Kustom (pilih kaca asli atau buram untuk setiap elemen di bagian bawah)</string>
+    <string name="gs_custom_header">Kaca kustom (aktif = kaca asli, nonaktif = buram)</string>
+    <string name="gs_custom_dock">Dock</string>
+    <string name="gs_custom_panels">Panel (folder, grup Pustaka)</string>
+    <string name="gs_custom_search_bar">Bilah pencarian</string>
+    <string name="gs_custom_pill">Pil pencarian / titik halaman</string>
+    <string name="gs_warn_title">Kaca asli mungkin lambat</string>
+    <string name="gs_warn_message">Perangkat ini memakai Android di bawah 13, jadi kaca asli digambar oleh CPU dan dapat membuat tampilan tersendat, terutama saat membuka panel (diukur pada Vsmart Live 4: panel kaca asli tersendat parah). Anda dapat menonaktifkannya kapan saja.</string>
+    <string name="gs_warn_enable">Tetap aktifkan</string>
+    <!-- M8d Task 3: mục Cài đặt hệ thống trong kết quả tìm kiếm. *_kw là từ khóa phân cách bằng dấu phẩy (gõ không dấu cũng khớp). -->
+    <string name="search_extras_setting_wifi">Wi-Fi</string>
+    <string name="search_extras_setting_bluetooth">Bluetooth</string>
+    <string name="search_extras_setting_airplane">Mode pesawat</string>
+    <string name="search_extras_setting_mobile">Jaringan seluler</string>
+    <string name="search_extras_setting_data_usage">Penggunaan data</string>
+    <string name="search_extras_setting_display">Tampilan</string>
+    <string name="search_extras_setting_sound">Suara</string>
+    <string name="search_extras_setting_notification">Notifikasi</string>
+    <string name="search_extras_setting_dnd">Jangan Ganggu</string>
+    <string name="search_extras_setting_battery">Baterai dan penghemat baterai</string>
+    <string name="search_extras_setting_location">Lokasi</string>
+    <string name="search_extras_setting_datetime">Tanggal dan waktu</string>
+    <string name="search_extras_setting_language">Bahasa</string>
+    <string name="search_extras_setting_storage">Penyimpanan</string>
+    <string name="search_extras_setting_security">Keamanan</string>
+    <string name="search_extras_setting_privacy">Privasi</string>
+    <string name="search_extras_setting_accessibility">Aksesibilitas</string>
+    <string name="search_extras_setting_apps">Aplikasi</string>
+    <string name="search_extras_setting_default_apps">Aplikasi default</string>
+    <string name="search_extras_setting_keyboard">Keyboard</string>
+    <string name="search_extras_setting_cast">Transmisi layar</string>
+    <string name="search_extras_setting_nfc">NFC</string>
+    <string name="search_extras_setting_vpn">VPN</string>
+    <string name="search_extras_setting_about">Tentang ponsel</string>
+    <string name="search_extras_setting_home">Setelan</string>
+    <string name="search_extras_kind_setting">Setelan</string>
+    <string name="search_extras_setting_description">Setelan: %1$s</string>
+    <string name="search_recent_collapse">Tampilkan lebih sedikit</string>
+    <string name="search_recent_expand">Tampilkan lebih banyak</string>
+
+    <!-- M8d Task 5: tiêu đề nhóm khi ô tìm kiếm trống -->
+    <string name="search_extras_header_recent">Terbaru</string>
+    <string name="search_extras_header_frequent">Saran</string>
+    <string name="search_extras_header_trending">Pencarian populer</string>
+
+    <!-- M8d Task 4 -->
+    <string name="search_extras_shortcut_description">%1$s, pintasan dari %2$s</string>
+
+    <!-- M8d Task 6: khối "Tìm kiếm" trong Cài đặt -->
+    <string name="settings_search_system">Setelan sistem</string>
+    <string name="settings_search_shortcuts">Pintasan aplikasi</string>
+    <string name="settings_search_shortcuts_need_default">Pintasan memerlukan aplikasi ini sebagai peluncur default</string>
+    <string name="settings_search_suggestions">Saran dan aplikasi terbaru</string>
+    <string name="settings_search_suggestions_off_message">Menonaktifkan ini akan menghapus riwayat aplikasi yang tersimpan di perangkat ini.</string>
+    <string name="settings_search_suggestions_off_confirm">Nonaktifkan dan hapus</string>
+    <string name="settings_search_clear">Hapus riwayat aplikasi</string>
+    <string name="settings_search_clear_message">Hapus aplikasi terbaru dan saran yang tersimpan di perangkat ini?</string>
+    <string name="settings_search_clear_confirm">Hapus</string>
+
+    <!-- SM: công tắc kính của menu nhấn giữ icon (khối Tùy chỉnh, cùng nghĩa bốn công tắc trên) -->
+    <string name="gs_custom_menu_header">Menu tekan lama ikon (aktif = kaca asli, nonaktif = buram)</string>
+    <string name="gs_custom_icon_menu">Kaca untuk menu tekan lama</string>
+
+    <!-- G3a: tìm danh bạ trong ô tìm kiếm -->
+    <string name="search_contacts_kind">Kontak</string>
+    <string name="search_contacts_prompt_title">Tampilkan kontak</string>
+    <string name="search_contacts_prompt_subtitle">Izinkan akses kontak untuk mencari orang langsung di sini. Kontak hanya dibaca di perangkat ini dan tidak pernah disimpan.</string>
+    <string name="search_contacts_prompt_settings_subtitle">Buka Setelan untuk memberi izin Kontak</string>
+    <string name="search_contacts_prompt_dismiss">Sembunyikan saran kontak</string>
+    <string name="search_contacts_call">Telepon %1$s</string>
+    <string name="search_contacts_message">Kirim pesan ke %1$s</string>
+    <string name="search_contacts_action_failed">Tidak dapat membuka kontak, telepon, atau pesan</string>
+    <string name="settings_search_contacts">Cari di kontak</string>
+    <string name="settings_search_contacts_description">Menonaktifkan ini hanya menyembunyikan kontak dari pencarian. Izin Android tidak dicabut.</string>
+
+    <!-- WP: nhãn dòng Ảnh nền khi dùng ảnh mặc định (ảnh iOS 27 chỉ để thử, xóa trước bản cửa hàng) -->
+    <string name="settings_backdrop_default">Default (iOS 27, gambar uji)</string>
+
+    <!-- G3e: widget thời tiết (khối weather_) -->
+    <string name="weather_name">Cuaca</string>
+    <string name="weather_no_key">Cuaca tidak tersedia</string>
+    <string name="weather_no_location">Pilih kota</string>
+    <string name="weather_no_location_hint">Ketuk untuk memilih</string>
+    <string name="weather_loading">Memuat…</string>
+    <string name="weather_error_network">Tidak ada koneksi</string>
+    <string name="weather_error_key">Kunci tidak valid</string>
+    <string name="weather_error_rate">Batas permintaan terlampaui</string>
+    <string name="weather_error_not_found">Lokasi tidak ditemukan</string>
+    <string name="weather_error_generic">Kesalahan data</string>
+    <string name="weather_cond_clear">Cerah</string>
+    <string name="weather_cond_partly_cloudy">Berawan sebagian</string>
+    <string name="weather_cond_cloudy">Berawan</string>
+    <string name="weather_cond_rain">Hujan</string>
+    <string name="weather_cond_thunderstorm">Badai petir</string>
+    <string name="weather_cond_snow">Salju</string>
+    <string name="weather_cond_fog">Kabut</string>
+    <string name="weather_cond_unknown">Tidak diketahui</string>
+    <!-- Cao/thấp là trong 24 giờ tới, KHÔNG phải cả ngày dương lịch (gói Free không có trường đó) -->
+    <string name="weather_updated_at">Diperbarui %1$s</string>
+    <string name="weather_description">%1$s, %2$d %6$s, %3$s. 24 jam ke depan tertinggi %4$d %6$s, terendah %5$d %6$s</string>
+    <string name="weather_description_state">Cuaca: %1$s</string>
+
+    <!-- G3e: bảng Thời tiết (bottom sheet mở khi bấm widget) -->
+    <string name="weather_sheet_title">Cuaca</string>
+    <string name="weather_sheet_hint">Nama kota</string>
+    <string name="weather_sheet_search">Cari</string>
+    <string name="weather_sheet_no_key">Cuaca untuk sementara tidak tersedia. Coba lagi nanti.</string>
+    <string name="weather_sheet_searching">Mencari…</string>
+    <string name="weather_sheet_not_found">Kota tidak ditemukan</string>
+    <string name="weather_sheet_refreshing">Memperbarui…</string>
+    <string name="weather_sheet_hi_lo_note">Tertinggi/terendah untuk 24 jam ke depan, bukan sepanjang hari.</string>
+
+    <!-- G3d: Trung tâm điều khiển (khối cc_) -->
+    <string name="cc_service_label">Pusat Kontrol OS26 Launcher</string>
+    <string name="cc_title">Pusat Kontrol</string>
+    <string name="cc_state_on">Aktif</string>
+    <string name="cc_state_off">Nonaktif</string>
+    <string name="cc_enable">Aktifkan Pusat Kontrol</string>
+    <string name="cc_enable_desc">Geser ke bawah dari sudut kanan atas, di layar mana pun</string>
+    <string name="cc_enable_needs_permissions">Berikan dua izin pertama di bawah agar dapat ditampilkan</string>
+    <string name="cc_header_permissions">Izin</string>
+    <string name="cc_perm_overlay">Tampilkan di atas aplikasi lain</string>
+    <string name="cc_perm_listener">Akses notifikasi</string>
+    <string name="cc_perm_battery">Baterai tanpa batasan (disarankan)</string>
+    <string name="cc_perm_write_settings">Ubah setelan sistem</string>
+    <string name="cc_perm_dnd">Akses Jangan Ganggu</string>
+    <string name="cc_perm_bluetooth">Perangkat di sekitar (Bluetooth)</string>
+    <string name="cc_perm_granted">Diberikan</string>
+    <string name="cc_perm_missing">Belum diberikan</string>
+    <string name="cc_perm_open_failed">Perangkat ini tidak dapat membuka layar izin</string>
+    <string name="cc_tile_airplane">Mode pesawat</string>
+    <string name="cc_tile_cellular">Data seluler</string>
+    <string name="cc_tile_wifi">Wi-Fi</string>
+    <string name="cc_tile_bluetooth">Bluetooth</string>
+    <string name="cc_tile_rotation">Kunci rotasi</string>
+    <string name="cc_tile_dnd">Jangan Ganggu</string>
+    <string name="cc_tile_flashlight">Senter</string>
+    <string name="cc_tile_timer">Timer</string>
+    <string name="cc_tile_calculator">Kalkulator</string>
+    <string name="cc_tile_camera">Kamera</string>
+    <string name="cc_brightness">Kecerahan</string>
+    <string name="cc_volume">Volume</string>
+    <string name="cc_media_idle">Tidak memutar</string>
+    <string name="cc_no_app">Aplikasi yang sesuai tidak ditemukan</string>
+    <string name="cc_unavailable">Tidak didukung di perangkat ini</string>
+    <string name="cc_auto_brightness">Kecerahan otomatis</string>
+    <string name="cc_screen_timeout">Waktu tunggu layar</string>
+    <string name="cc_timeout_seconds">%1$d dtk</string>
+    <string name="cc_timeout_minutes">%1$d mnt</string>
+    <string name="cc_battery_percent">%1$d%%</string>
+    <string name="cc_block_connectivity">Konektivitas. Tekan lama untuk meluaskan</string>
+    <string name="cc_block_media">Musik. Tekan lama untuk membuka pemutar</string>
+    <string name="cc_open_settings">Setelan Pusat Kontrol</string>
+    <string name="cc_page_main">Halaman kontrol</string>
+    <string name="cc_page_media">Halaman musik</string>
+    <string name="cc_page_network">Halaman konektivitas</string>
+    <string name="cc_media_play">Putar</string>
+    <string name="cc_media_pause">Jeda</string>
+    <string name="cc_media_next">Lagu berikutnya</string>
+    <string name="cc_media_previous">Lagu sebelumnya</string>
+    <string name="cc_media_unknown_artist">Artis tidak diketahui</string>
+    <string name="cc_media_output_phone">Ponsel ini</string>
+    <string name="cc_media_output">Perangkat output</string>
+    <string name="cc_tile_sync">Sinkronisasi</string>
+    <string name="cc_tile_hotspot">Hotspot pribadi</string>
+    <string name="cc_tile_screen_record">Rekam layar</string>
+    <string name="cc_tile_battery">Mode daya rendah</string>
+    <string name="cc_tile_voice_memo">Memo suara</string>
+    <string name="cc_tile_settings">Setelan</string>
+    <string name="cc_tile_dark_mode">Mode gelap</string>
+    <string name="cc_tile_notes">Catatan</string>
+    <string name="cc_tile_night_shift">Night Shift</string>
+    <string name="cc_tile_app">Aplikasi</string>
+    <string name="cc_customize_tiles">Sesuaikan kontrol</string>
+    <string name="cc_tiles_count">%1$d kontrol</string>
+    <string name="cc_tiles_included">TERMASUK</string>
+    <string name="cc_tiles_more">KONTROL LAINNYA</string>
+    <string name="cc_tiles_apps">APLIKASI</string>
+    <string name="cc_tiles_add">Tambahkan %1$s</string>
+    <string name="cc_tiles_remove">Hapus %1$s</string>
+    <string name="cc_tiles_reorder">Seret untuk mengubah urutan</string>
+    <string name="cc_tiles_full">Maksimal %1$d kontrol. Hapus satu terlebih dahulu</string>
+    <string name="cc_vibrate">Getar saat dibuka</string>
+    <string name="cc_header_look">Tampilan</string>
+    <string name="cc_header_features">Fitur</string>
+    <string name="cc_background">Latar</string>
+    <string name="cc_background_wallpaper">Wallpaper peluncur</string>
+    <string name="cc_background_custom">Gambar kustom</string>
+    <string name="cc_background_none">Tanpa gambar (aplikasi di belakang terlihat)</string>
+    <string name="cc_background_failed">Tidak dapat membaca gambar ini</string>
+    <string name="cc_blur">Buramkan latar</string>
+    <string name="cc_recorder_app">Aplikasi perekam layar</string>
+    <string name="cc_recorder_none">Belum dipilih</string>
+    <string name="cc_edge_settings">Strip geser</string>
+    <string name="cc_edge_position">POSISI</string>
+    <string name="cc_edge_shape">UKURAN</string>
+    <string name="cc_edge_color">WARNA STRIP</string>
+    <string name="cc_edge_top_right">Tepi atas, kanan</string>
+    <string name="cc_edge_top_left">Tepi atas, kiri</string>
+    <string name="cc_edge_right_side">Sisi kanan</string>
+    <string name="cc_edge_left_side">Sisi kiri</string>
+    <string name="cc_edge_length">Panjang</string>
+    <string name="cc_edge_thickness">Ketebalan area sentuh</string>
+    <string name="cc_edge_offset">Jarak dari atas layar</string>
+    <string name="cc_edge_note">Strip geser langsung berubah di layar saat Anda menyesuaikannya. Di sisi kiri atau kanan, geser ke dalam atau ke bawah untuk membukanya.</string>
+    <string name="cc_night_shift_manual">Aktifkan sekarang</string>
+    <string name="cc_night_shift_warmth">Kehangatan warna</string>
+    <string name="cc_night_shift_schedule">JADWAL</string>
+    <string name="cc_night_shift_scheduled">Terjadwal</string>
+    <string name="cc_night_shift_from">Dari</string>
+    <string name="cc_night_shift_to">Sampai</string>
+    <string name="cc_night_shift_scheduled_summary">%1$s → %2$s</string>
+    <string name="cc_night_shift_note">Night Shift menambahkan lapisan warna hangat di atas layar. Seperti Pusat Kontrol, fitur ini memerlukan izin \"Tampilkan di atas aplikasi lain\" dan \"Akses notifikasi\". Screenshot tetap memakai warna aslinya.</string>
+    <!-- G2d: trang chủ Cài đặt (tiền tố settings_hub_) -->
+    <string name="settings_hub_group_general">Umum</string>
+    <string name="settings_hub_group_appearance">Tampilan</string>
+    <string name="settings_hub_group_home_screen">Layar utama</string>
+    <string name="settings_hub_group_transitions">Transisi</string>
+    <string name="settings_hub_group_icons">Kustomisasi ikon</string>
+    <string name="settings_hub_group_contact">Hubungi kami</string>
+    <string name="settings_hub_theme">Layar utama default</string>
+    <string name="settings_hub_general">Umum</string>
+    <string name="settings_hub_language">Bahasa</string>
+    <string name="settings_hub_weather">Cuaca</string>
+    <string name="settings_hub_location">Lokasi</string>
+    <string name="settings_hub_glass">Liquid Glass</string>
+    <string name="settings_hub_wallpaper">Wallpaper</string>
+    <string name="settings_hub_icon_set">Ikon</string>
+    <string name="settings_hub_swipe">Gulir halaman</string>
+    <string name="settings_hub_library">Pustaka Aplikasi</string>
+    <string name="settings_hub_search">Setelan pencarian</string>
+    <string name="settings_hub_badges">Badge notifikasi</string>
+    <string name="settings_hub_transitions">Efek transisi</string>
+    <string name="settings_hub_app_effects">Efek aplikasi</string>
+    <string name="settings_hub_change_icon">Ganti ikon aplikasi</string>
+    <string name="settings_hub_rename_apps">Ganti nama aplikasi</string>
+    <string name="settings_hub_rate">Beri rating aplikasi</string>
+    <string name="settings_hub_more_apps">Aplikasi lainnya</string>
+    <string name="settings_hub_privacy">Kebijakan privasi</string>
+    <!-- RS Task 2: card "Launcher hiện tại" đầu trang chủ Cài đặt (Figma 302:1522). -->
+    <string name="settings_launcher_card_current">Layar utama saat ini</string>
+    <string name="settings_launcher_card_not_default">Belum dijadikan default</string>
+    <string name="settings_launcher_card_custom">Kustom</string>
+    <string name="settings_launcher_card_welcome">Selamat datang</string>
+    <string name="settings_launcher_card_welcome_desc">Pusat kontrol milik Anda sendiri. Sesuaikan setiap detail agar layar utama sesuai gaya Anda.</string>
+    <string name="settings_launcher_card_explore">Jelajahi</string>
+    <!-- HC Task 1: Hero Card, nút trạng thái "Chưa" và toast Chưa → Đã (Figma 464:2199/464:2648). -->
+    <string name="hero_try">Coba</string>
+    <string name="hero_default_set_toast">Ditetapkan sebagai default</string>
+    <!-- HC Task 3: tiêu đề màn 6.2 (Figma "Ứng dụng khác"; hàng trên trang chủ giữ settings_hub_more_apps). -->
+    <string name="settings_more_apps_title">Aplikasi lainnya</string>
+    <!-- RS Task 6: màn 1.1 Màn hình chính mặc định (Figma 302:1738). -->
+    <string name="settings_theme_subtitle">Setiap peluncur mengubah layar utama, ikon, dan efek Anda.</string>
+    <string name="settings_theme_apply_default">Terapkan &amp; jadikan default</string>
+    <string name="settings_theme_apply">Terapkan</string>
+    <!-- RS Task 7: card xem trước thời tiết (dữ liệu mẫu) ở màn 1.4. -->
+    <string name="settings_weather_preview_degree">%1$d°</string>
+    <string name="settings_weather_preview_high_low">T %1$s · R %2$s</string>
+    <string name="settings_weather_preview_now">Sekarang</string>
+    <string name="settings_weather_preview_hour">%1$d.00</string>
+    <!-- RS Task 8: hỏi trước khi đặt nền màu từ ô giữ chỗ ở màn 2.2. -->
+    <string name="wallpaper_color_confirm_title">Jadikan \"%1$s\" wallpaper?</string>
+    <string name="wallpaper_color_confirm_message">Layar utama akan memakai wallpaper ini.</string>
+    <string name="wallpaper_color_confirm_ok">Konfirmasi</string>
+    <!-- WI: tên 5 hình nền cài sẵn (ảnh thử, xem plan WI) ở 0.3 và 2.2; nút ngắn của hộp hỏi đặt mặc định khi về Home. -->
+    <string name="default_prompt_set">Atur sekarang</string>
+    <!-- RS Task 8: giờ minh họa trên ô ảnh nền (Figma 2.2). -->
+    <string name="settings_theme_note">Dialog sistem akan terbuka agar Anda dapat memilih aplikasi layar utama.</string>
+    <string name="settings_hub_version">Versi %1$s</string>
+    <!-- AB: nhóm Liên hệ (tiền tố about_) -->
+    <string name="about_rate_title">Bagaimana pendapat Anda tentang aplikasi ini?</string>
+    <string name="about_rate_message">Rating Anda membantu kami membuat peluncur ini lebih baik.</string>
+    <string name="about_rate_later">Nanti</string>
+    <string name="about_rate_send">Kirim rating</string>
+    <string name="about_open_failed">Tidak dapat membuka tautan di perangkat ini</string>
+    <string name="about_privacy_open">Buka di browser</string>
+    <string name="about_privacy_footer">Kebijakan dimuat dari situs web dan dibuka di browser Anda.</string>
+    <string name="about_more_apps_featured">Unggulan</string>
+    <string name="about_more_apps_others">Aplikasi lainnya</string>
+    <string name="about_more_apps_download">Unduh</string>
+    <string name="about_more_apps_footer">Dari %1$s</string>
+
+    <!-- WU: Cài đặt → Thời tiết (tiền tố settings_weather_) -->
+    <string name="settings_weather_unit">Satuan suhu</string>
+    <string name="settings_weather_unit_value_c">°C</string>
+    <string name="settings_weather_unit_value_f">°F</string>
+    <string name="settings_weather_a11y_c">derajat Celsius</string>
+    <string name="settings_weather_a11y_f">derajat Fahrenheit</string>
+    <!-- HT: công tắc Màn hình chính (tiền tố ht_) -->
+    <string name="ht_search_open_header">Cara membuka</string>
+    <string name="ht_search_in_header">Cari di</string>
+    <string name="ht_search_swipe_down">Geser ke bawah untuk mencari</string>
+    <string name="ht_search_swipe_down_description">Geser ke bawah di tengah layar utama</string>
+    <string name="ht_search_pill">Tombol Cari di layar</string>
+    <string name="ht_search_pill_description">Ditampilkan di atas Dock</string>
+    <string name="ht_swipe_page_dots">Tampilkan titik halaman</string>
+    <string name="ht_swipe_page_dots_description">Indikator halaman di atas Dock</string>
+    <string name="tv_swipe_today">Layar widget</string>
+    <string name="tv_swipe_today_description">Geser ke kanan di halaman pertama untuk membuka widget</string>
+    <string name="tv_edit">Ubah</string>
+    <!-- RN: Thay đổi tên ứng dụng (tiền tố settings_rename_) -->
+    <string name="settings_rename_header">Beri nama sendiri untuk aplikasi. Nama asli selalu dapat dipulihkan.</string>
+    <string name="settings_rename_original">Nama asli: %1$s</string>
+    <string name="settings_rename_dialog_title">Ganti nama aplikasi</string>
+    <string name="settings_rename_hint">Nama baru</string>
+    <string name="settings_rename_save">Simpan</string>
+    <string name="settings_rename_restore">Pulihkan</string>
+    <!-- WX: thời tiết nhiều địa điểm (tiền tố wx_) -->
+    <string name="wx_places_header">Lokasi yang dipantau</string>
+    <string name="wx_places_current">Lokasi saat ini</string>
+    <string name="wx_places_current_unset">Tidak diketahui</string>
+    <string name="wx_places_current_manual">%1$s (dipilih manual)</string>
+    <string name="wx_places_add">+ Tambahkan lokasi</string>
+    <string name="wx_places_full">Sudah %1$d lokasi</string>
+    <string name="wx_places_hint">Setiap widget cuaca menampilkan satu lokasi dari daftar ini (ketuk widget).</string>
+    <string name="wx_places_duplicate">Lokasi ini sudah ada di daftar</string>
+    <string name="wx_places_remove_title">Hapus lokasi?</string>
+    <string name="wx_places_remove_message">Hapus %1$s dari daftar. Widget yang menampilkan lokasi ini akan beralih ke Lokasi saat ini.</string>
+    <string name="wx_places_remove_confirm">Hapus</string>
+    <string name="wx_search_add_title">Tambahkan lokasi</string>
+    <string name="wx_loc_perm_header">Izin lokasi</string>
+    <string name="wx_loc_perm">Izin lokasi</string>
+    <string name="wx_loc_perm_granted">Diberikan</string>
+    <string name="wx_loc_perm_denied">Belum diberikan</string>
+    <string name="wx_loc_mode_header">Cara menentukan lokasi</string>
+    <string name="wx_loc_mode_auto">Otomatis</string>
+    <string name="wx_loc_mode_manual">Pilih manual</string>
+    <!-- RS Task 3: dòng mô tả hai hàng radio (Figma 1.5 302:1971). -->
+    <string name="wx_loc_mode_auto_desc">Diperbarui saat Anda berpindah</string>
+    <string name="wx_loc_mode_manual_desc">Tidak perlu izin lokasi</string>
+    <string name="wx_loc_update">Perbarui lokasi</string>
+    <string name="wx_loc_updating">Mendapatkan lokasi…</string>
+    <string name="wx_loc_city">Kota</string>
+    <string name="wx_loc_city_unset">Belum dipilih</string>
+    <string name="wx_loc_pick_city">Pilih kota</string>
+    <string name="wx_loc_unavailable">Tidak dapat mendapatkan lokasi Anda. Aktifkan layanan lokasi atau pilih kota secara manual.</string>
+    <string name="wx_loc_denied">Izin lokasi belum diberikan. Anda tetap dapat memilih kota secara manual.</string>
+    <string name="wx_loc_denied_settings">Izin lokasi diblokir. Berikan izin di setelan aplikasi.</string>
+    <string name="wx_loc_privacy">Hanya lokasi perkiraan yang dipakai, diambil sekali setiap kali: saat Anda mengetuk Perbarui lokasi, atau (mode Otomatis dengan izin) paling sering setiap 2 jam saat widget cuaca dengan Lokasi saat ini terlihat, dan lokasi hanya berubah jika Anda berpindah lebih dari 5 km. Tidak ada yang berjalan di latar belakang dan tidak ada pelacakan terus-menerus. Mode Pilih manual tidak perlu izin dan tidak pernah membaca lokasi Anda.</string>
+    <string name="wx_sheet_for_widget">Widget ini menampilkan:</string>
+    <string name="wx_sheet_current_named">Lokasi saat ini: %1$s</string>
+    <string name="wx_sheet_current_unset">Lokasi saat ini (tidak diketahui)</string>
+    <string name="wx_sheet_no_location">Lokasi saat ini tidak diketahui. Setel di Setelan → Lokasi.</string>
+    <string name="wx_sheet_manage">Kelola lokasi</string>
+
+    <!-- GT: tinh chỉnh kính dùng chung -->
+    <string name="gt_title">Penyetelan kaca</string>
+    <string name="gt_state_default">Default</string>
+    <string name="gt_state_custom">Disesuaikan</string>
+    <string name="gt_preview">Pratinjau kaca</string>
+    <string name="gt_header">Berlaku untuk semua permukaan kaca, berlaku di layar utama</string>
+    <string name="gt_reset_header">Pulihkan</string>
+    <string name="gt_refraction">Refraksi</string>
+    <string name="gt_refraction_desc">Memperbesar latar yang terlihat melalui kaca. 0 = tanpa pembesaran.</string>
+    <string name="gt_gloss">Kilap</string>
+    <string name="gt_gloss_desc">Di atas 50 kaca lebih terang, di bawah 50 lebih gelap.</string>
+    <string name="gt_blur">Keburaman</string>
+    <string name="gt_blur_desc">Seberapa buram latar di belakang kaca.</string>
+    <string name="gt_corner">Sudut membulat</string>
+    <string name="gt_corner_desc">50 = tidak berubah, 0 = persegi. Tidak mengubah bentuk ikon aplikasi.</string>
+    <string name="gt_reset">Setel ulang ke default</string>
+
+    <!-- WN: thông báo thời tiết (tiền tố wn_) -->
+    <string name="wn_channel_group">Cuaca</string>
+    <string name="wn_channel_daily">Prakiraan harian</string>
+    <string name="wn_channel_tomorrow">Prakiraan besok</string>
+    <string name="wn_title_today">%1$s · Hari ini</string>
+    <string name="wn_title_tomorrow">%1$s · Besok</string>
+    <string name="wn_text">%1$s, tertinggi %2$d%4$s, terendah %3$d%4$s</string>
+    <string name="wn_precip">Hujan atau salju dari %1$s sampai %2$s</string>
+    <string name="wn_public_title">Prakiraan cuaca</string>
+    <string name="wn_public_today">Prakiraan hari ini</string>
+    <string name="wn_public_tomorrow">Prakiraan besok</string>
+    <string name="wn_settings_header">Notifikasi</string>
+    <string name="wn_switch_daily">Prakiraan harian</string>
+    <string name="wn_switch_daily_desc">Pukul 07.00 setiap pagi</string>
+    <string name="wn_switch_tomorrow">Prakiraan besok</string>
+    <string name="wn_switch_tomorrow_desc">Pukul 21.00 setiap malam</string>
+    <string name="wn_footer_hint">Memakai Lokasi saat ini yang tersimpan dan tidak pernah membaca lokasi Anda di latar belakang. Pengiriman dapat terlambat hingga sekitar 1 jam karena penghemat baterai Android. Memerlukan koneksi; tanpa koneksi, data tersimpan dipakai jika masih baru.</string>
+    <string name="wn_footer_no_key">Notifikasi cuaca memerlukan kunci OpenWeatherMap, dan build ini belum memilikinya.</string>
+    <string name="wn_footer_no_place">Lokasi saat ini tidak diketahui, jadi belum ada notifikasi yang dikirim. Setel di Setelan → Lokasi.</string>
+    <string name="wn_footer_blocked">Notifikasi aplikasi dinonaktifkan di setelan sistem, jadi Anda tidak akan melihatnya. Aktifkan lagi di setelan notifikasi aplikasi.</string>
+    <string name="wn_toast_denied">Izin notifikasi belum diberikan, jadi fitur ini tidak dapat diaktifkan.</string>
+    <string name="wn_toast_blocked">Notifikasi aplikasi dinonaktifkan atau diblokir. Aktifkan di setelan notifikasi aplikasi.</string>
+    <!-- G3b: widget Ảnh (khối ph_) -->
+    <string name="ph_name">Foto</string>
+    <string name="ph_empty_title">Ketuk untuk memilih foto</string>
+    <string name="ph_desc_empty">Foto, belum ada foto, ketuk untuk memilih</string>
+    <string name="ph_desc_photos">Foto, %1$d foto</string>
+    <string name="ph_activity_title">Foto widget</string>
+    <string name="ph_add_photo">+ Tambahkan foto</string>
+    <string name="ph_choose_photo">Pilih foto</string>
+    <string name="ph_empty_hint">Pilih foto untuk ditampilkan di widget</string>
+    <string name="ph_rotates">Jika ada beberapa foto, widget menampilkan foto berbeda setiap jam saat layar utama terlihat.</string>
+    <string name="ph_importing">Mengimpor foto</string>
+    <string name="ph_remove_glyph">✕</string>
+    <string name="ph_remove_desc">Hapus foto %1$d</string>
+    <string name="ph_thumb_desc">Foto %1$d</string>
+    <string name="ph_remove_title">Hapus foto?</string>
+    <string name="ph_remove_message">Foto akan dihapus dari widget ini.</string>
+    <string name="ph_remove_confirm">Hapus</string>
+    <string name="ph_cancel">Batal</string>
+    <string name="ph_import_failed">Beberapa foto tidak dapat diimpor.</string>
+    <string name="ph_too_many">Setiap widget menampung hingga %1$d foto; hanya foto pertama yang ditambahkan.</string>
+    <string name="ph_full">Widget ini sudah berisi %1$d foto. Hapus beberapa untuk menambahkan yang lain.</string>
+    <string name="ph_crop_title">Pangkas foto %1$d/%2$d</string>
+    <string name="ph_crop_edit_title">Pangkas ulang</string>
+    <string name="ph_crop_hint">Seret untuk memindahkan, cubit untuk memperbesar</string>
+    <string name="ph_crop_desc">Area pangkas. Seret untuk memindahkan, cubit untuk memperbesar.</string>
+    <string name="ph_crop_done">Selesai</string>
+    <string name="ph_crop_skip">Lewati foto ini</string>
+    <string name="ph_discard_title">Buang foto yang belum dipangkas?</string>
+    <string name="ph_discard_message">Buang %1$d foto yang belum dipangkas? Foto yang sudah dipangkas tetap disimpan.</string>
+    <string name="ph_discard_confirm">Buang</string>
+    <string name="ph_discard_keep">Lanjutkan memangkas</string>
+    <!-- G3c: AppWidgetHost (tiền tố aw_) -->
+    <string name="aw_unavailable">Widget tidak tersedia</string>
+    <string name="aw_error_load">Tidak dapat memuat widget</string>
+    <string name="aw_section_title">Widget aplikasi</string>
+    <string name="aw_section_loading">Memuat daftar…</string>
+    <plurals name="aw_widget_count">
+        <item quantity="other">%1$d widget</item>
+    </plurals>
+    <string name="aw_chip_description">Tambahkan ukuran %1$d×%2$d</string>
+    <string name="aw_too_large">Terlalu besar untuk petak</string>
+    <string name="aw_busy">Sedang menambahkan widget lain</string>
+    <string name="aw_add_failed">Tidak dapat menambahkan widget</string>
+
+    <!-- DS3: chuỗi của thành phần v3 (core/designsystem). -->
+    <string name="ds_back">Kembali</string>
+    <string name="ds_nav_back_default">Setelan</string>
+    <string name="ds_nav_back_desc">Kembali, %1$s</string>
+    <string name="ds_close">Tutup</string>
+    <string name="ds_onboarding_skip">Lewati</string>
+
+    <!-- OB: Onboarding 0.1–0.5 (chữ theo Figma 302:3673) -->
+    <string name="onboarding_start">Mulai</string>
+    <string name="onboarding_continue">Lanjutkan</string>
+    <string name="onboarding_set_default">Jadikan default</string>
+    <string name="onboarding_later">Nanti</string>
+    <string name="onboarding_go_settings">Ke Setelan</string>
+    <string name="onboarding_welcome_title">Tampilan kaca cair untuk ponsel Anda</string>
+    <string name="onboarding_welcome_subtitle">Ikon transparan, wallpaper hidup, dan efek halus — hanya beberapa langkah untuk memulai.</string>
+    <string name="onboarding_theme_title">Pilih gaya</string>
+    <string name="onboarding_theme_subtitle">Anda dapat mengubahnya kapan saja di Setelan.</string>
+    <string name="onboarding_theme_liquid_glass_27">Liquid Glass 27</string>
+    <string name="onboarding_theme_liquid_glass_27_desc">Transparan, membiaskan</string>
+    <string name="onboarding_theme_classic_26">Classic 26</string>
+    <string name="onboarding_theme_classic_26_desc">Hangat, ikon warna lembut</string>
+    <string name="onboarding_theme_minimal">Minimal</string>
+    <string name="onboarding_theme_minimal_desc">Sederhana, garis tipis</string>
+    <string name="onboarding_theme_dark_pro">Dark Pro</string>
+    <string name="onboarding_theme_dark_pro_desc">Latar gelap, ikon bulat</string>
+    <string name="onboarding_badge_new">BARU</string>
+    <string name="onboarding_wallpaper_title">Pilih wallpaper</string>
+    <string name="onboarding_wallpaper_subtitle">Wallpaper yang bagus membuat efek kaca lebih menonjol.</string>
+    <string name="onboarding_default_title">Jadikan %1$s layar utama</string>
+    <string name="onboarding_default_subtitle">Dengan begitu tampilan baru muncul setiap kali Anda menekan tombol Beranda.</string>
+    <string name="onboarding_default_step1">Ketuk \"Jadikan default\" di bawah</string>
+    <string name="onboarding_default_step2">Pilih %1$s di dialog sistem</string>
+    <string name="onboarding_done_title">Semua sudah siap!</string>
+    <string name="onboarding_done_subtitle">Jelajahi tampilan baru Anda dan sesuaikan kapan saja di Setelan.</string>
+    <string name="onboarding_done_theme">Gaya</string>
+    <string name="onboarding_done_wallpaper">Wallpaper</string>
+    <string name="onboarding_done_home">Layar utama</string>
+    <string name="onboarding_done_home_set">Dijadikan default</string>
+    <string name="onboarding_done_home_not_set">Belum disetel</string>
+
+    <!-- LG: màn Ngôn ngữ (1.3), chip ngôn ngữ Onboarding 0.1, lý do lỗi đặt wallpaper -->
+    <string name="lang_system">Ikuti sistem</string>
+    <string name="lang_system_desc">Gunakan bahasa perangkat</string>
+    <string name="lang_search_hint">Cari bahasa</string>
+    <string name="lang_no_results">Bahasa tidak ditemukan</string>
+    <string name="lang_chip_desc">Bahasa: %1$s</string>
+    <string name="lang_name_vi">Bahasa Vietnam</string>
+    <string name="lang_name_en">Bahasa Inggris</string>
+    <string name="lang_name_es">Bahasa Spanyol</string>
+    <string name="lang_name_pt">Bahasa Portugis</string>
+    <string name="lang_name_id">Bahasa Indonesia</string>
+    <string name="lang_name_th">Bahasa Thai</string>
+    <string name="lang_name_ja">Bahasa Jepang</string>
+    <string name="lang_name_ko">Bahasa Korea</string>
+    <string name="lang_name_hi">Bahasa Hindi</string>
+    <string name="wallpaper_reason_unsupported">perangkat ini tidak mendukung penyetelan wallpaper</string>
+    <string name="wallpaper_reason_not_allowed">sistem tidak mengizinkan aplikasi ini menyetel wallpaper</string>
+    <string name="wallpaper_reason_read_failed">tidak dapat membaca gambar yang tersimpan</string>
+    <string name="wallpaper_reason_out_of_memory">memori tidak cukup</string>
+    <!-- BG: màn 3.4 Huy hiệu thông báo (tiền tố badges_) -->
+    <string name="badges_perm_title">Perlu akses notifikasi</string>
+    <string name="badges_perm_desc">Untuk menghitung notifikasi belum dibaca tiap aplikasi</string>
+    <string name="badges_perm_action">Beri akses</string>
+    <string name="badges_perm_open_failed">Tidak dapat membuka setelan akses notifikasi</string>
+    <string name="badges_show">Tampilkan badge</string>
+    <string name="badges_style_header">Gaya badge</string>
+    <string name="badges_style_number">Angka</string>
+    <string name="badges_style_dot">Titik</string>
+    <string name="badges_per_app_header">Per aplikasi</string>
+    <!-- TR: màn 4.1 Hiệu ứng chuyển cảnh -->
+    <string name="tr_intro">Saat membuka folder, pencarian, Pustaka Aplikasi, dan Setelan Cepat.</string>
+    <string name="tr_preview_description">Pratinjau: membuka folder</string>
+    <string name="tr_style_smooth">Halus</string>
+    <string name="tr_style_smooth_description">Default</string>
+    <string name="tr_style_fade">Pudar</string>
+    <string name="tr_style_slide">Geser</string>
+    <string name="tr_style_zoom">Zoom</string>
+    <string name="tr_style_none">Tidak ada</string>
+    <string name="tr_style_none_description">Tercepat</string>
+    <string name="tr_speed">Kecepatan</string>
+    <string name="tr_speed_slow">Lambat</string>
+    <string name="tr_speed_medium">Sedang</string>
+    <string name="tr_speed_fast">Cepat</string>
+    <string name="tr_reduce_motion">Kurangi gerakan</string>
+    <string name="tr_reduce_motion_description">Gunakan pudar sebagai ganti zoom / geser</string>
+    <!-- JS7: nút của hộp chọn giờ Night Shift (Compose) -->
+    <string name="cc_time_done">Selesai</string>
+    <!-- P2-9 / P2-9e (REF a013dd8): bảng chọn widget kiểu iOS, menu Sửa của edit mode; TV-2/TV-3 (REF 3ab9c20): Today View -->
+    <string name="wp_search_hint">Cari widget</string>
+    <string name="wp_add_widget">Tambahkan widget</string>
+    <string name="wp_close">Tutup</string>
+    <string name="home_edit">Edit</string>
+    <string name="home_wallpapers">Wallpaper</string>
+    <string name="wp_clock_small_title">Jam analog</string>
+    <string name="wp_clock_small_desc">Menampilkan waktu saat ini.</string>
+    <string name="wp_clock_wide_title">Jam digital</string>
+    <string name="wp_clock_wide_desc">Waktu digital besar beserta tanggal.</string>
+    <string name="wp_calendar_small_title">Hari ini</string>
+    <string name="wp_calendar_small_desc">Menampilkan tanggal hari ini.</string>
+    <string name="wp_calendar_wide_title">Bulan</string>
+    <string name="wp_calendar_wide_desc">Tanggal hari ini beserta kalender bulan ini.</string>
+    <string name="wp_weather_small_title">Kondisi saat ini</string>
+    <string name="wp_weather_small_desc">Cuaca saat ini di lokasi Anda.</string>
+    <string name="wp_weather_wide_title">Prakiraan per jam</string>
+    <string name="wp_weather_wide_desc">Cuaca saat ini dan beberapa jam ke depan.</string>
+    <string name="wp_photo_small_title">Foto</string>
+    <string name="wp_photo_small_desc">Menampilkan foto atau album yang berganti setiap jam.</string>
+    <string name="wp_photo_wide_title">Foto lebar</string>
+    <string name="wp_photo_wide_desc">Foto atau album lebar yang berganti setiap jam.</string>
+    <string name="today_recents_empty">Aplikasi yang baru Anda buka akan muncul di sini</string>
+    <string name="today_recents_name">Aplikasi terbaru</string>
+    <string name="today_recents_small_title">4 aplikasi</string>
+    <string name="today_recents_small_desc">Empat aplikasi yang terakhir Anda buka.</string>
+    <string name="today_recents_wide_title">8 aplikasi</string>
+    <string name="today_recents_wide_desc">Delapan aplikasi yang terakhir Anda buka.</string>
+    <string name="today_widget_remove_message">Widget akan dihapus dari Hari Ini. Anda dapat menambahkannya lagi dengan tombol +.</string>
+
+    <!-- Dong bo tu REF HEAD -->
+    <string name="wallpaper_preset_lake">Danau</string>
+    <string name="wallpaper_preset_blue_wave">Gelombang biru</string>
+    <string name="wallpaper_preset_red">Merah</string>
+    <string name="wallpaper_preset_sunset">Matahari terbenam</string>
+    <string name="wallpaper_preset_silk">Sutra</string>
+    <string name="wallpaper_preset_night_street">Jalan malam</string>
+    <string name="ds_step_indicator_desc">Langkah %1$d dari %2$d</string>
+    <string name="wallpaper_target_sheet_title">Atur wallpaper untuk</string> <!-- P3-2: Figma 2.2 popup 302:2090 -->
+    <string name="settings_search_recent_apps">Aplikasi terbaru</string>
+    <string name="settings_search_recent_apps_description">Menampilkan aplikasi yang baru dibuka. Jika dimatikan, pencatatan berhenti tetapi riwayat yang tersimpan tetap ada.</string>
+    <string name="ci_search_hint">Cari aplikasi</string>
+    <string name="ci_changed">Diubah</string>
+    <string name="ci_choose_new">Pilih ikon baru</string>
+    <string name="ci_from_photos">Dari foto</string>
+    <string name="ci_restore">Pulihkan</string>
+    <string name="ci_save">Simpan</string>
+    <string name="ci_save_failed">Tidak dapat menyimpan ikon</string>
+    <string name="ci_image_failed">Tidak dapat membuka gambar ini</string>
+    <string name="ci_no_results">Aplikasi tidak ditemukan</string>
+    <string name="ci_variant_description">Pilihan ikon %1$d</string>
+    <string name="hl_intro">Aplikasi tersembunyi tidak muncul di layar utama, pustaka, atau hasil penelusuran.</string>
+    <string name="hl_all_apps">Semua aplikasi</string>
+    <string name="hl_lock">Kunci dengan sidik jari / PIN</string>
+    <string name="hl_lock_description">Verifikasi sebelum melihat</string>
+    <string name="hl_auth_title">Buka aplikasi tersembunyi</string>
+    <string name="hl_auth_subtitle">Verifikasi bahwa ini Anda untuk melihat aplikasi tersembunyi</string>
+    <string name="hl_auth_use_device">Gunakan kunci layar</string>
+    <plurals name="hl_hidden_count">
+        <item quantity="other">%d disembunyikan</item>
+    </plurals>
+    <string name="icon_style_preview_description">Pratinjau gaya ikon yang dipilih</string>
+    <string name="settings_search_suggestions_description">Penelusuran populer saat kolom penelusuran kosong</string>
+</resources>

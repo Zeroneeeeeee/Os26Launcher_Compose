@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- GF: tag đặt trên view cha có translationX/Y chỉ để trượt nội dung (home_content); kính mờ tại chỗ bỏ phép dịch này khi tính lát cắt nền. -->
+    <item name="glass_ignore_translation" type="id" />
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- BG: icon v3 "download" từ Figma 3.4 (ô mẫu Kiểu huy hiệu, 302:2504), quy về lưới 24 như các ds_ic_* khác. Nét trắng, màu đặt bằng
+     tint; bỏ bóng (filter) của Figma. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M12 3V15M17 10L12 15L7 10M4 17V19C4 19.53 4.21 20.04 4.59 20.41C4.96 20.79 5.47 21 6 21H18C18.53 21 19.04 20.79 19.41 20.41C19.79 20.04 20 19.53 20 19V17"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

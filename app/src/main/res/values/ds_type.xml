@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DS3 Task 1: kiểu chữ v3 (Figma text styles, đọc 2026-11-16). Line height = 120% cỡ chữ trừ HeadingLarge.
+     fontFamily trỏ thẳng file từng độ đậm (xem font/be_vietnam_pro.xml vì sao). lineHeight là attr của Material/AppCompat:
+     MaterialTextView đọc nó từ textAppearance trên mọi API (android:lineHeight chỉ có từ API 28). -->
+<resources>
+    <!-- 26sp / 700, Figma Heading/Large -->
+
+    <!-- 20sp / 700, Figma Heading/Title -->
+
+    <!-- 16sp / 700, Figma Heading/Card -->
+
+    <!-- 14sp / 400, Figma Body/Default -->
+    <style name="TextAppearance.Os26.Ds.Body" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:fontFamily">@font/be_vietnam_pro_regular</item>
+        <item name="fontFamily">@font/be_vietnam_pro_regular</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">14sp</item>
+        <item name="lineHeight">17sp</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textColor">@color/ds_text_primary</item>
+    </style>
+
+    <!-- 14sp / 600, Figma Body/Strong -->
+
+    <!-- 13sp / 400, Figma Body/Value -->
+
+    <!-- 12sp / 400, Figma Caption -->
+
+    <!-- 11sp / 400, Figma Caption/Small -->
+
+    <!-- 11sp / 600, Figma Label/Badge; màu đặt theo loại badge ở Task 4 -->
+
+    <!-- 40sp / 300, Figma Display/Number -->
+
+    <!-- 14sp / 600, Figma tiêu đề nhóm -->
+</resources>

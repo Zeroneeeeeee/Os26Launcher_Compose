@@ -1,0 +1,47 @@
+package gambi.global.os26launcher.data.backdrop
+
+import android.content.Context
+import android.content.res.Configuration
+import android.graphics.Bitmap
+import dagger.hilt.android.qualifiers.ApplicationContext
+import gambi.global.os26launcher.R
+import javax.inject.Inject
+import javax.inject.Singleton
+
+/**
+ * WP: ảnh nền MẶC ĐỊNH khi người dùng chưa chọn ảnh (không có `files/backdrop_image`).
+ *
+ * CẢNH BÁO BẢN QUYỀN: ảnh là hình nền iOS 27 của Apple (qua idownloadblog.com), KHÔNG có giấy phép, chỉ để THỬ.
+ * Hai file này phải bị XÓA trước khi đưa lên cửa hàng (task Gradle `checkNoStoreTestWallpaper` chặn `bundleRelease`
+ * cho tới khi xóa):
+ *  - app/src/main/res/drawable-nodpi/default_wallpaper_ios27.jpg        (Blue, chế độ sáng)
+ *  - app/src/main/res/drawable-night-nodpi/default_wallpaper_ios27.jpg  (Dark Blue, chế độ tối)
+ * Khi xóa, bỏ luôn mọi tham chiếu `R.drawable.default_wallpaper_ios27` (chỉ có trong file này) và để [isAvailable] = false.
+ *
+ * Hệ thống tự chọn ảnh sáng/tối theo qualifier `night` của tài nguyên (cùng tên, hai thư mục).
+ */
+@Singleton
+class DefaultBackdropSource @Inject constructor(
+    @ApplicationContext private val context: Context
+) : BackdropSource {
+
+    override val name = "ảnh mặc định"
+
+    /** Có ảnh mặc định để dùng không. Khi gỡ ảnh bản thử khỏi bản cửa hàng, đổi thành false. */
+    fun isAvailable(): Boolean = true
+
+    /** Đang ở chế độ tối của hệ thống (quyết định ảnh nào được chọn). */
+    fun isNight(): Boolean =
+        (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+
+    /**
+     * FX1: vùng giữa có tỉ lệ bằng màn ([BitmapScaler.cropRegion], đúng phần `centerCrop` hiển thị) rồi thu về không quá [reqW] x [reqH]
+     * (ví dụ 1320x2868 thành 1080x2100 cho vùng Home 1080x2100, ≈ 9 MB thay vì ≈ 15 MB). Bitmap cùng tỉ lệ với `ImageView` nên kính tại chỗ
+     * khớp. Cắt trong bộ nhớ vì ảnh chỉ ~1,3 MP (không cần `BitmapRegionDecoder`).
+     */
+    override fun load(reqW: Int, reqH: Int): Bitmap? {
+        if (!isAvailable() || reqW <= 0 || reqH <= 0) return null
+        // WI: phần giải mã chuyển sang [ResourceBackdropLoader] để ảnh cài sẵn dùng chung.
+        return ResourceBackdropLoader.load(context.resources, R.drawable.default_wallpaper_ios27, reqW, reqH)
+    }
+}

@@ -1,0 +1,715 @@
+<resources>
+    <!-- LG: bản dịch máy (Claude, 2026-11-18), chưa có người bản ngữ duyệt. -->
+    <string name="app_name">OS26 Launcher</string>
+
+    <string name="app_launch_failed">%1$s नहीं खुल सका। हो सकता है ऐप अभी-अभी अनइंस्टॉल हुआ हो।</string>
+    <string name="home_set_default_failed">डिफ़ॉल्ट लॉन्चर चुनने की स्क्रीन नहीं खुल सकी</string>
+
+    <!-- M7 Task 4: nút thoát chế độ chỉnh sửa. -->
+    <string name="home_done">हो गया</string>
+
+    <string name="wallpaper_dialog_title">वॉलपेपर के रूप में सेट करें</string>
+    <string name="wallpaper_dialog_skip">सेट न करें</string>
+    <string name="wallpaper_target_home">होम स्क्रीन</string>
+    <string name="wallpaper_target_lock">लॉक स्क्रीन</string>
+    <string name="wallpaper_target_both">दोनों</string>
+    <string name="wallpaper_applied">वॉलपेपर लगाया गया: %1$s</string>
+    <string name="wallpaper_failed">वॉलपेपर नहीं लगाया जा सका: %1$s</string>
+    <string name="common_unknown">अज्ञात कारण</string>
+
+    <!-- M7 Task 9: Thư viện ứng dụng -->
+    <!-- M8a Task 3: màn Cài đặt -->
+    <string name="settings_loading">सेटिंग लोड हो रही हैं</string>
+    <string name="settings_hidden_apps">छिपाए गए ऐप</string>
+    <string name="settings_show_labels">ऐप के नाम दिखाएं</string>
+    <string name="settings_nav_bar_hidden">नेविगेशन बार छिपाएं</string>
+    <string name="settings_nav_bar_hidden_description">केवल होम स्क्रीन पर। कुछ देर दिखाने के लिए नीचे के किनारे से ऊपर स्वाइप करें।</string>
+    <string name="settings_backdrop">वॉलपेपर</string>
+    <string name="settings_backdrop_set">इमेज चुनी गई</string>
+    <string name="settings_backdrop_unset">नहीं चुना गया</string>
+    <string name="settings_backdrop_failed">यह इमेज पढ़ी नहीं जा सकी। मौजूदा वॉलपेपर बना रहेगा।</string>
+    <string name="settings_wallpaper_unavailable">ऐप में वॉलपेपर बदल गया। सिस्टम वॉलपेपर सेट नहीं हो सका: %1$s</string>
+    <string name="settings_grid_preset">ग्रिड का आकार</string>
+    <string name="settings_grid_value">%1$d × %2$d</string>
+    <string name="settings_grid_option">%1$d × %2$d (हर पेज पर %3$d आइकॉन)</string>
+    <string name="settings_grid_confirm_title">%1$d × %2$d ग्रिड पर बदलें?</string>
+    <string name="settings_grid_confirm_message">आइकॉन मौजूदा क्रम में फिर से लगाए जाएंगे। इसे पहले जैसा नहीं किया जा सकता। लागू करें?</string>
+    <string name="settings_grid_confirm_apply">लागू करें</string>
+    <string name="settings_grid_failed">ग्रिड का आकार नहीं बदला जा सका</string>
+    <string name="settings_glass_level">ग्लास का स्तर</string>
+    <string name="settings_glass_auto">अपने-आप</string>
+    <string name="settings_glass_low">कम</string>
+    <string name="settings_glass_high">ज़्यादा</string>
+    <string name="settings_glass_auto_desc">अपने-आप (डिवाइस के हिसाब से)</string>
+    <string name="settings_glass_low_desc">कम पर तय (धुंधले कार्ड, हल्का)</string>
+    <string name="settings_glass_high_desc">ज़्यादा पर तय (असली ग्लास, ज़्यादा संसाधन लेता है)</string>
+    <string name="settings_cancel">रद्द करें</string>
+    <string name="settings_save_failed">सेटिंग सेव नहीं हो सकीं</string>
+    <string name="home_settings">सेटिंग</string>
+
+    <string name="library_title">छिपाए गए ऐप</string>
+    <string name="library_hidden_empty">कोई ऐप छिपाया नहीं गया</string>
+    <string name="library_launch_failed">ऐप नहीं खुल सका</string>
+    <string name="library_unhide_failed">ऐप को फिर से नहीं दिखाया जा सका</string>
+
+    <!-- M7 Task 10: menu nhấn giữ icon -->
+    <string name="menu_app_info">ऐप की जानकारी</string>
+    <string name="menu_hide_app">ऐप छिपाएं</string>
+    <string name="menu_edit_home">होम स्क्रीन बदलें</string>
+    <string name="menu_uninstall">अनइंस्टॉल करें</string>
+    <string name="menu_action_failed">कार्रवाई पूरी नहीं हो सकी</string>
+    <string name="remove_app_title">“%1$s” हटाएं?</string>
+    <string name="remove_app_message">होम स्क्रीन से हटाने पर भी ऐप, ऐप लाइब्रेरी में बना रहेगा।</string>
+    <string name="remove_app_delete">ऐप डिलीट करें</string>
+    <string name="remove_app_from_home">होम स्क्रीन से हटाएं</string>
+    <string name="remove_app_cancel">रद्द करें</string>
+
+    <!-- M8b: tìm kiếm -->
+    <string name="search_field_hint">खोजें</string>
+    <string name="search_idle_hint">ऐप का नाम लिखें</string>
+    <string name="search_no_results">कोई ऐप नहीं मिला</string>
+    <string name="search_pill_label">खोजें</string>
+    <string name="search_pill_page_description">%2$d में से पेज %1$d</string>
+    <string name="search_clear">खोज साफ़ करें</string>
+    <string name="search_cancel">रद्द करें</string>
+    <!-- G2a A1a: tên hiển thị khi thư mục chưa đặt tên -->
+    <string name="folder_default_title">फ़ोल्डर</string>
+    <!-- G2a B2: trang App Library ở cuối pager -->
+    <string name="library_page_group_social">सोशल</string>
+    <string name="library_page_group_entertainment">मनोरंजन</string>
+    <string name="library_page_group_game">गेम</string>
+    <string name="library_page_group_productivity">प्रोडक्टिविटी</string>
+    <string name="library_page_group_news">समाचार</string>
+    <string name="library_page_group_maps">मैप</string>
+    <string name="library_page_group_utilities">यूटिलिटी</string>
+    <string name="library_page_group_other">अन्य</string>
+    <string name="lo_enable">ऐप लाइब्रेरी चालू करें</string>
+    <string name="lo_enable_description">होम स्क्रीन के आखिरी पेज से आगे स्वाइप करें</string>
+    <string name="lo_style_header">दिखाने की शैली</string>
+    <string name="lo_style_folders">श्रेणी फ़ोल्डर</string>
+    <string name="lo_style_list">A–Z सूची</string>
+    <string name="lo_auto_categorize">ऐप्स को अपने-आप वर्गीकृत करें</string>
+    <string name="lo_auto_categorize_description">सोशल, यूटिलिटी, मनोरंजन…</string>
+    <string name="lo_suggestions">सुझाव और हाल में जोड़े गए दिखाएँ</string>
+    <string name="lo_suggestions_description">लाइब्रेरी के पहले दो फ़ोल्डर</string>
+    <string name="library_page_group_suggested">सुझाव</string>
+    <string name="library_page_group_recent">हाल में जोड़े गए</string>
+    <string name="library_page_group_all">सभी ऐप्स</string>
+    <string name="library_page_empty">अभी कोई ऐप नहीं</string>
+
+    <!-- G2b: kiểu icon -->
+    <string name="settings_icon_style">आइकॉन की स्टाइल</string>
+    <string name="settings_icon_style_default">डिफ़ॉल्ट</string>
+    <string name="settings_icon_style_transparent">पारदर्शी</string>
+    <string name="settings_icon_style_tinted">रंगीन</string>
+    <string name="settings_icon_style_3d">3D</string>
+    <string name="settings_icon_style_glass">ग्लास</string>
+    <string name="settings_icon_tint">रंग</string>
+    <string name="settings_icon_tint_blue">नीला</string>
+    <string name="settings_icon_tint_pink">गुलाबी</string>
+    <string name="settings_icon_tint_green">हरा</string>
+    <string name="settings_icon_tint_orange">नारंगी</string>
+    <string name="settings_icon_tint_graphite">ग्रेफ़ाइट</string>
+    <!-- IP -->
+    <string name="settings_icon_pack">आइकॉन पैक</string>
+    <string name="settings_icon_pack_none">कोई नहीं</string>
+    <string name="settings_icon_pack_empty">कोई आइकॉन पैक नहीं मिला। ऐप स्टोर से कोई आइकॉन पैक इंस्टॉल करें, फिर यहां वापस आएं।</string>
+    <string name="settings_icon_pack_ok">बंद करें</string>
+
+    <!-- AN Task 5: nhãn trợ năng cho "+N" trong cụm icon mini của ô nhóm -->
+
+    <!-- G2c: widget tự vẽ -->
+    <string name="widget_clock_description">घड़ी, %1$s</string>
+    <string name="widget_calendar_description">कैलेंडर, %1$s</string>
+    <string name="home_add_widget">विजेट</string>
+    <string name="widget_picker_title">विजेट जोड़ें</string>
+    <string name="widget_name_clock">घड़ी</string>
+    <string name="widget_name_calendar">कैलेंडर</string>
+    <string name="widget_size_label">%1$d×%2$d</string>
+    <string name="widget_remove_title">विजेट हटाएं?</string>
+    <string name="widget_remove_message">विजेट होम स्क्रीन से हटा दिया जाएगा। आप इसे विजेट बटन से फिर जोड़ सकते हैं।</string>
+    <string name="widget_remove_confirm">हटाएं</string>
+    <string name="widget_remove_cancel">रद्द करें</string>
+    <!-- GS: mức kính Tùy chỉnh -->
+    <string name="gs_level_custom">कस्टम</string>
+    <string name="gs_level_custom_desc">कस्टम (नीचे हर हिस्से के लिए असली या धुंधला ग्लास चुनें)</string>
+    <string name="gs_custom_header">कस्टम ग्लास (चालू = असली ग्लास, बंद = धुंधला ग्लास)</string>
+    <string name="gs_custom_dock">Dock</string>
+    <string name="gs_custom_panels">पैनल (फ़ोल्डर, लाइब्रेरी के ग्रुप)</string>
+    <string name="gs_custom_search_bar">खोज बार</string>
+    <string name="gs_custom_pill">खोज बटन / पेज डॉट</string>
+    <string name="gs_warn_title">असली ग्लास धीमा हो सकता है</string>
+    <string name="gs_warn_message">इस डिवाइस में Android 13 से पुराना वर्शन है, इसलिए असली ग्लास CPU से बनता है और इंटरफ़ेस अटक सकता है, खासकर पैनल खोलते समय (Vsmart Live 4 पर मापा गया: असली ग्लास वाले पैनल बहुत अटकते हैं)। आप इसे कभी भी बंद कर सकते हैं।</string>
+    <string name="gs_warn_enable">फिर भी चालू करें</string>
+    <!-- M8d Task 3: mục Cài đặt hệ thống trong kết quả tìm kiếm. *_kw là từ khóa phân cách bằng dấu phẩy (gõ không dấu cũng khớp). -->
+    <string name="search_extras_setting_wifi">वाई-फ़ाई</string>
+    <string name="search_extras_setting_bluetooth">ब्लूटूथ</string>
+    <string name="search_extras_setting_airplane">हवाई जहाज़ मोड</string>
+    <string name="search_extras_setting_mobile">मोबाइल नेटवर्क</string>
+    <string name="search_extras_setting_data_usage">डेटा खर्च</string>
+    <string name="search_extras_setting_display">डिसप्ले</string>
+    <string name="search_extras_setting_sound">आवाज़</string>
+    <string name="search_extras_setting_notification">सूचनाएं</string>
+    <string name="search_extras_setting_dnd">परेशान न करें</string>
+    <string name="search_extras_setting_battery">बैटरी और बैटरी सेवर</string>
+    <string name="search_extras_setting_location">जगह की जानकारी</string>
+    <string name="search_extras_setting_datetime">तारीख और समय</string>
+    <string name="search_extras_setting_language">भाषा</string>
+    <string name="search_extras_setting_storage">स्टोरेज</string>
+    <string name="search_extras_setting_security">सुरक्षा</string>
+    <string name="search_extras_setting_privacy">निजता</string>
+    <string name="search_extras_setting_accessibility">सुलभता</string>
+    <string name="search_extras_setting_apps">ऐप</string>
+    <string name="search_extras_setting_default_apps">डिफ़ॉल्ट ऐप</string>
+    <string name="search_extras_setting_keyboard">कीबोर्ड</string>
+    <string name="search_extras_setting_cast">स्क्रीन कास्ट करें</string>
+    <string name="search_extras_setting_nfc">NFC</string>
+    <string name="search_extras_setting_vpn">VPN</string>
+    <string name="search_extras_setting_about">फ़ोन के बारे में</string>
+    <string name="search_extras_setting_home">सेटिंग</string>
+    <string name="search_extras_kind_setting">सेटिंग</string>
+    <string name="search_extras_setting_description">सेटिंग: %1$s</string>
+    <string name="search_recent_collapse">कम दिखाएं</string>
+    <string name="search_recent_expand">और दिखाएं</string>
+
+    <!-- M8d Task 5: tiêu đề nhóm khi ô tìm kiếm trống -->
+    <string name="search_extras_header_recent">हाल ही के</string>
+    <string name="search_extras_header_frequent">सुझाव</string>
+    <string name="search_extras_header_trending">लोकप्रिय खोजें</string>
+
+    <!-- M8d Task 4 -->
+    <string name="search_extras_shortcut_description">%1$s, %2$s का शॉर्टकट</string>
+
+    <!-- M8d Task 6: khối "Tìm kiếm" trong Cài đặt -->
+    <string name="settings_search_system">सिस्टम सेटिंग</string>
+    <string name="settings_search_shortcuts">ऐप शॉर्टकट</string>
+    <string name="settings_search_shortcuts_need_default">शॉर्टकट के लिए इसे डिफ़ॉल्ट लॉन्चर बनाना ज़रूरी है</string>
+    <string name="settings_search_suggestions">सुझाव और हाल ही के ऐप</string>
+    <string name="settings_search_suggestions_off_message">बंद करने पर इस डिवाइस में सेव ऐप का इतिहास मिट जाएगा।</string>
+    <string name="settings_search_suggestions_off_confirm">बंद करें और मिटाएं</string>
+    <string name="settings_search_clear">ऐप का इतिहास मिटाएं</string>
+    <string name="settings_search_clear_message">इस डिवाइस में सेव हाल ही के ऐप और सुझाव मिटाएं?</string>
+    <string name="settings_search_clear_confirm">मिटाएं</string>
+
+    <!-- SM: công tắc kính của menu nhấn giữ icon (khối Tùy chỉnh, cùng nghĩa bốn công tắc trên) -->
+    <string name="gs_custom_menu_header">आइकॉन दबाकर रखने वाला मेन्यू (चालू = असली ग्लास, बंद = धुंधला ग्लास)</string>
+    <string name="gs_custom_icon_menu">दबाकर रखने वाले मेन्यू के लिए ग्लास</string>
+
+    <!-- G3a: tìm danh bạ trong ô tìm kiếm -->
+    <string name="search_contacts_kind">संपर्क</string>
+    <string name="search_contacts_prompt_title">संपर्क दिखाएं</string>
+    <string name="search_contacts_prompt_subtitle">यहीं लोगों को खोजने के लिए संपर्कों का ऐक्सेस दें। संपर्क सिर्फ़ इस डिवाइस पर पढ़े जाते हैं और कभी सेव नहीं होते।</string>
+    <string name="search_contacts_prompt_settings_subtitle">संपर्क की अनुमति देने के लिए सेटिंग खोलें</string>
+    <string name="search_contacts_prompt_dismiss">संपर्क का सुझाव छिपाएं</string>
+    <string name="search_contacts_call">%1$s को कॉल करें</string>
+    <string name="search_contacts_message">%1$s को मैसेज भेजें</string>
+    <string name="search_contacts_action_failed">संपर्क, डायलर या मैसेज नहीं खुल सके</string>
+    <string name="settings_search_contacts">संपर्कों में खोजें</string>
+    <string name="settings_search_contacts_description">बंद करने पर संपर्क सिर्फ़ खोज से छिपते हैं। Android की अनुमति वापस नहीं ली जाती।</string>
+
+    <!-- WP: nhãn dòng Ảnh nền khi dùng ảnh mặc định (ảnh iOS 27 chỉ để thử, xóa trước bản cửa hàng) -->
+    <string name="settings_backdrop_default">डिफ़ॉल्ट (iOS 27, टेस्ट इमेज)</string>
+
+    <!-- G3e: widget thời tiết (khối weather_) -->
+    <string name="weather_name">मौसम</string>
+    <string name="weather_no_key">मौसम उपलब्ध नहीं</string>
+    <string name="weather_no_location">शहर चुनें</string>
+    <string name="weather_no_location_hint">चुनने के लिए टैप करें</string>
+    <string name="weather_loading">लोड हो रहा है…</string>
+    <string name="weather_error_network">इंटरनेट नहीं है</string>
+    <string name="weather_error_key">अमान्य कुंजी</string>
+    <string name="weather_error_rate">अनुरोध की सीमा पार हो गई</string>
+    <string name="weather_error_not_found">जगह नहीं मिली</string>
+    <string name="weather_error_generic">डेटा में गड़बड़ी</string>
+    <string name="weather_cond_clear">साफ़ आसमान</string>
+    <string name="weather_cond_partly_cloudy">आंशिक बादल</string>
+    <string name="weather_cond_cloudy">बादल</string>
+    <string name="weather_cond_rain">बारिश</string>
+    <string name="weather_cond_thunderstorm">आंधी-तूफ़ान</string>
+    <string name="weather_cond_snow">बर्फ़</string>
+    <string name="weather_cond_fog">कोहरा</string>
+    <string name="weather_cond_unknown">अज्ञात</string>
+    <!-- Cao/thấp là trong 24 giờ tới, KHÔNG phải cả ngày dương lịch (gói Free không có trường đó) -->
+    <string name="weather_updated_at">%1$s पर अपडेट हुआ</string>
+    <string name="weather_description">%1$s, %2$d %6$s, %3$s। अगले 24 घंटे अधिकतम %4$d %6$s, न्यूनतम %5$d %6$s</string>
+    <string name="weather_description_state">मौसम: %1$s</string>
+
+    <!-- G3e: bảng Thời tiết (bottom sheet mở khi bấm widget) -->
+    <string name="weather_sheet_title">मौसम</string>
+    <string name="weather_sheet_hint">शहर का नाम</string>
+    <string name="weather_sheet_search">खोजें</string>
+    <string name="weather_sheet_no_key">मौसम अभी उपलब्ध नहीं है। कृपया बाद में फिर से कोशिश करें।</string>
+    <string name="weather_sheet_searching">खोज रहे हैं…</string>
+    <string name="weather_sheet_not_found">यह शहर नहीं मिला</string>
+    <string name="weather_sheet_refreshing">अपडेट हो रहा है…</string>
+    <string name="weather_sheet_hi_lo_note">अधिकतम/न्यूनतम अगले 24 घंटे के हैं, पूरे दिन के नहीं।</string>
+
+    <!-- G3d: Trung tâm điều khiển (khối cc_) -->
+    <string name="cc_service_label">OS26 Launcher का कंट्रोल सेंटर</string>
+    <string name="cc_title">कंट्रोल सेंटर</string>
+    <string name="cc_state_on">चालू</string>
+    <string name="cc_state_off">बंद</string>
+    <string name="cc_enable">कंट्रोल सेंटर चालू करें</string>
+    <string name="cc_enable_desc">किसी भी स्क्रीन पर ऊपर दाएं कोने से नीचे स्वाइप करें</string>
+    <string name="cc_enable_needs_permissions">दिखाने के लिए नीचे की पहली दो अनुमतियां दें</string>
+    <string name="cc_header_permissions">अनुमतियां</string>
+    <string name="cc_perm_overlay">दूसरे ऐप के ऊपर दिखाएं</string>
+    <string name="cc_perm_listener">सूचना का ऐक्सेस</string>
+    <string name="cc_perm_battery">बैटरी पर कोई पाबंदी नहीं (सुझाया गया)</string>
+    <string name="cc_perm_write_settings">सिस्टम सेटिंग में बदलाव करें</string>
+    <string name="cc_perm_dnd">परेशान न करें का ऐक्सेस</string>
+    <string name="cc_perm_bluetooth">आस-पास के डिवाइस (ब्लूटूथ)</string>
+    <string name="cc_perm_granted">दी गई</string>
+    <string name="cc_perm_missing">नहीं दी गई</string>
+    <string name="cc_perm_open_failed">इस डिवाइस पर अनुमति वाली स्क्रीन नहीं खुल सकती</string>
+    <string name="cc_tile_airplane">हवाई जहाज़ मोड</string>
+    <string name="cc_tile_cellular">मोबाइल डेटा</string>
+    <string name="cc_tile_wifi">वाई-फ़ाई</string>
+    <string name="cc_tile_bluetooth">ब्लूटूथ</string>
+    <string name="cc_tile_rotation">रोटेशन लॉक</string>
+    <string name="cc_tile_dnd">परेशान न करें</string>
+    <string name="cc_tile_flashlight">टॉर्च</string>
+    <string name="cc_tile_timer">टाइमर</string>
+    <string name="cc_tile_calculator">कैलकुलेटर</string>
+    <string name="cc_tile_camera">कैमरा</string>
+    <string name="cc_brightness">चमक</string>
+    <string name="cc_volume">आवाज़</string>
+    <string name="cc_media_idle">कुछ नहीं चल रहा</string>
+    <string name="cc_no_app">सही ऐप नहीं मिला</string>
+    <string name="cc_unavailable">यह डिवाइस इसे सपोर्ट नहीं करता</string>
+    <string name="cc_auto_brightness">अपने-आप चमक</string>
+    <string name="cc_screen_timeout">स्क्रीन बंद होने का समय</string>
+    <string name="cc_timeout_seconds">%1$d से.</string>
+    <string name="cc_timeout_minutes">%1$d मि.</string>
+    <string name="cc_battery_percent">%1$d%%</string>
+    <string name="cc_block_connectivity">कनेक्टिविटी। बड़ा करने के लिए दबाकर रखें</string>
+    <string name="cc_block_media">संगीत। प्लेयर खोलने के लिए दबाकर रखें</string>
+    <string name="cc_open_settings">कंट्रोल सेंटर की सेटिंग</string>
+    <string name="cc_page_main">कंट्रोल पेज</string>
+    <string name="cc_page_media">संगीत पेज</string>
+    <string name="cc_page_network">कनेक्टिविटी पेज</string>
+    <string name="cc_media_play">चलाएं</string>
+    <string name="cc_media_pause">रोकें</string>
+    <string name="cc_media_next">अगला गाना</string>
+    <string name="cc_media_previous">पिछला गाना</string>
+    <string name="cc_media_unknown_artist">अज्ञात कलाकार</string>
+    <string name="cc_media_output_phone">यह फ़ोन</string>
+    <string name="cc_media_output">आउटपुट डिवाइस</string>
+    <string name="cc_tile_sync">सिंक</string>
+    <string name="cc_tile_hotspot">पर्सनल हॉटस्पॉट</string>
+    <string name="cc_tile_screen_record">स्क्रीन रिकॉर्ड करें</string>
+    <string name="cc_tile_battery">लो पावर मोड</string>
+    <string name="cc_tile_voice_memo">वॉइस मेमो</string>
+    <string name="cc_tile_settings">सेटिंग</string>
+    <string name="cc_tile_dark_mode">डार्क मोड</string>
+    <string name="cc_tile_notes">नोट</string>
+    <string name="cc_tile_night_shift">Night Shift</string>
+    <string name="cc_tile_app">ऐप</string>
+    <string name="cc_customize_tiles">कंट्रोल बदलें</string>
+    <string name="cc_tiles_count">%1$d कंट्रोल</string>
+    <string name="cc_tiles_included">शामिल</string>
+    <string name="cc_tiles_more">और कंट्रोल</string>
+    <string name="cc_tiles_apps">ऐप</string>
+    <string name="cc_tiles_add">%1$s जोड़ें</string>
+    <string name="cc_tiles_remove">%1$s हटाएं</string>
+    <string name="cc_tiles_reorder">क्रम बदलने के लिए खींचें</string>
+    <string name="cc_tiles_full">ज़्यादा से ज़्यादा %1$d कंट्रोल। पहले एक हटाएं</string>
+    <string name="cc_vibrate">खोलने पर वाइब्रेट करें</string>
+    <string name="cc_header_look">रूप</string>
+    <string name="cc_header_features">सुविधाएं</string>
+    <string name="cc_background">बैकग्राउंड</string>
+    <string name="cc_background_wallpaper">लॉन्चर का वॉलपेपर</string>
+    <string name="cc_background_custom">अपनी चुनी इमेज</string>
+    <string name="cc_background_none">कोई इमेज नहीं (पीछे का ऐप दिखेगा)</string>
+    <string name="cc_background_failed">यह इमेज पढ़ी नहीं जा सकी</string>
+    <string name="cc_blur">बैकग्राउंड धुंधला करें</string>
+    <string name="cc_recorder_app">स्क्रीन रिकॉर्डिंग ऐप</string>
+    <string name="cc_recorder_none">नहीं चुना गया</string>
+    <string name="cc_edge_settings">स्वाइप पट्टी</string>
+    <string name="cc_edge_position">स्थिति</string>
+    <string name="cc_edge_shape">आकार</string>
+    <string name="cc_edge_color">पट्टी का रंग</string>
+    <string name="cc_edge_top_right">ऊपरी किनारा, दाईं ओर</string>
+    <string name="cc_edge_top_left">ऊपरी किनारा, बाईं ओर</string>
+    <string name="cc_edge_right_side">दायां किनारा</string>
+    <string name="cc_edge_left_side">बायां किनारा</string>
+    <string name="cc_edge_length">लंबाई</string>
+    <string name="cc_edge_thickness">छूने वाले हिस्से की मोटाई</string>
+    <string name="cc_edge_offset">स्क्रीन के ऊपर से दूरी</string>
+    <string name="cc_edge_note">बदलते ही स्क्रीन पर स्वाइप पट्टी तुरंत बदल जाती है। बाएं या दाएं किनारे पर अंदर की ओर या नीचे स्वाइप करने से यह खुल जाती है।</string>
+    <string name="cc_night_shift_manual">अभी चालू करें</string>
+    <string name="cc_night_shift_warmth">रंग की गर्माहट</string>
+    <string name="cc_night_shift_schedule">शेड्यूल</string>
+    <string name="cc_night_shift_scheduled">शेड्यूल के हिसाब से</string>
+    <string name="cc_night_shift_from">से</string>
+    <string name="cc_night_shift_to">तक</string>
+    <string name="cc_night_shift_scheduled_summary">%1$s → %2$s</string>
+    <string name="cc_night_shift_note">Night Shift स्क्रीन पर गर्म रंग की एक परत डालता है। कंट्रोल सेंटर की तरह इसे भी \"दूसरे ऐप के ऊपर दिखाएं\" और \"सूचना का ऐक्सेस\" अनुमतियां चाहिए। स्क्रीनशॉट के रंग नहीं बदलते।</string>
+    <!-- G2d: trang chủ Cài đặt (tiền tố settings_hub_) -->
+    <string name="settings_hub_group_general">सामान्य</string>
+    <string name="settings_hub_group_appearance">रूप</string>
+    <string name="settings_hub_group_home_screen">होम स्क्रीन</string>
+    <string name="settings_hub_group_transitions">ट्रांज़िशन</string>
+    <string name="settings_hub_group_icons">आइकॉन में बदलाव</string>
+    <string name="settings_hub_group_contact">हमसे संपर्क करें</string>
+    <string name="settings_hub_theme">डिफ़ॉल्ट होम स्क्रीन</string>
+    <string name="settings_hub_general">सामान्य</string>
+    <string name="settings_hub_language">भाषा</string>
+    <string name="settings_hub_weather">मौसम</string>
+    <string name="settings_hub_location">जगह</string>
+    <string name="settings_hub_glass">Liquid Glass</string>
+    <string name="settings_hub_wallpaper">वॉलपेपर</string>
+    <string name="settings_hub_icon_set">आइकॉन</string>
+    <string name="settings_hub_swipe">पेज स्क्रोल करना</string>
+    <string name="settings_hub_library">ऐप लाइब्रेरी</string>
+    <string name="settings_hub_search">खोज की सेटिंग</string>
+    <string name="settings_hub_badges">सूचना बैज</string>
+    <string name="settings_hub_transitions">ट्रांज़िशन इफ़ेक्ट</string>
+    <string name="settings_hub_app_effects">ऐप इफ़ेक्ट</string>
+    <string name="settings_hub_change_icon">ऐप आइकॉन बदलें</string>
+    <string name="settings_hub_rename_apps">ऐप के नाम बदलें</string>
+    <string name="settings_hub_rate">ऐप को रेटिंग दें</string>
+    <string name="settings_hub_more_apps">और ऐप</string>
+    <string name="settings_hub_privacy">निजता नीति</string>
+    <!-- RS Task 2: card "Launcher hiện tại" đầu trang chủ Cài đặt (Figma 302:1522). -->
+    <string name="settings_launcher_card_current">मौजूदा होम स्क्रीन</string>
+    <string name="settings_launcher_card_not_default">डिफ़ॉल्ट नहीं बनाया गया</string>
+    <string name="settings_launcher_card_custom">कस्टम</string>
+    <string name="settings_launcher_card_welcome">आपका स्वागत है</string>
+    <string name="settings_launcher_card_welcome_desc">आपका अपना कंट्रोल सेंटर। हर डिटेल को अपने अंदाज़ में ढालें ताकि होम स्क्रीन बिल्कुल आपके स्टाइल की हो।</string>
+    <string name="settings_launcher_card_explore">एक्सप्लोर करें</string>
+    <!-- HC Task 1: Hero Card, nút trạng thái "Chưa" và toast Chưa → Đã (Figma 464:2199/464:2648). -->
+    <string name="hero_try">आज़माएं</string>
+    <string name="hero_default_set_toast">डिफ़ॉल्ट के रूप में सेट किया गया</string>
+    <!-- HC Task 3: tiêu đề màn 6.2 (Figma "Ứng dụng khác"; hàng trên trang chủ giữ settings_hub_more_apps). -->
+    <string name="settings_more_apps_title">और ऐप</string>
+    <!-- RS Task 6: màn 1.1 Màn hình chính mặc định (Figma 302:1738). -->
+    <string name="settings_theme_subtitle">हर लॉन्चर आपकी होम स्क्रीन, आइकॉन और इफ़ेक्ट बदल देता है।</string>
+    <string name="settings_theme_apply_default">लागू करें और डिफ़ॉल्ट बनाएं</string>
+    <string name="settings_theme_apply">लागू करें</string>
+    <!-- RS Task 7: card xem trước thời tiết (dữ liệu mẫu) ở màn 1.4. -->
+    <string name="settings_weather_preview_degree">%1$d°</string>
+    <string name="settings_weather_preview_high_low">अधि. %1$s · न्यू. %2$s</string>
+    <string name="settings_weather_preview_now">अभी</string>
+    <string name="settings_weather_preview_hour">%1$d बजे</string>
+    <!-- RS Task 8: hỏi trước khi đặt nền màu từ ô giữ chỗ ở màn 2.2. -->
+    <string name="wallpaper_color_confirm_title">\"%1$s\" को वॉलपेपर बनाएं?</string>
+    <string name="wallpaper_color_confirm_message">होम स्क्रीन पर यह वॉलपेपर इस्तेमाल होगा।</string>
+    <string name="wallpaper_color_confirm_ok">पुष्टि करें</string>
+    <!-- WI: tên 5 hình nền cài sẵn (ảnh thử, xem plan WI) ở 0.3 và 2.2; nút ngắn của hộp hỏi đặt mặc định khi về Home. -->
+    <string name="default_prompt_set">अभी सेट करें</string>
+    <!-- RS Task 8: giờ minh họa trên ô ảnh nền (Figma 2.2). -->
+    <string name="settings_theme_note">होम स्क्रीन ऐप चुनने के लिए सिस्टम का डायलॉग खुलेगा।</string>
+    <string name="settings_hub_version">वर्शन %1$s</string>
+    <!-- AB: nhóm Liên hệ (tiền tố about_) -->
+    <string name="about_rate_title">आपको ऐप कैसा लगा?</string>
+    <string name="about_rate_message">आपकी रेटिंग से हमें लॉन्चर बेहतर बनाने में मदद मिलती है।</string>
+    <string name="about_rate_later">बाद में</string>
+    <string name="about_rate_send">रेटिंग भेजें</string>
+    <string name="about_open_failed">इस डिवाइस पर लिंक नहीं खुल सका</string>
+    <string name="about_privacy_open">ब्राउज़र में खोलें</string>
+    <string name="about_privacy_footer">नीति वेबसाइट से लोड होकर आपके ब्राउज़र में खुलती है।</string>
+    <string name="about_more_apps_featured">खास</string>
+    <string name="about_more_apps_others">और ऐप</string>
+    <string name="about_more_apps_download">पाएं</string>
+    <string name="about_more_apps_footer">%1$s की ओर से</string>
+
+    <!-- WU: Cài đặt → Thời tiết (tiền tố settings_weather_) -->
+    <string name="settings_weather_unit">तापमान की इकाई</string>
+    <string name="settings_weather_unit_value_c">°C</string>
+    <string name="settings_weather_unit_value_f">°F</string>
+    <string name="settings_weather_a11y_c">डिग्री सेल्सियस</string>
+    <string name="settings_weather_a11y_f">डिग्री फ़ारेनहाइट</string>
+    <!-- HT: công tắc Màn hình chính (tiền tố ht_) -->
+    <string name="ht_search_open_header">कैसे खोलें</string>
+    <string name="ht_search_in_header">इसमें खोजें</string>
+    <string name="ht_search_swipe_down">खोजने के लिए नीचे स्वाइप करें</string>
+    <string name="ht_search_swipe_down_description">होम स्क्रीन के बीच में नीचे स्वाइप करें</string>
+    <string name="ht_search_pill">स्क्रीन पर खोज बटन</string>
+    <string name="ht_search_pill_description">Dock के ऊपर दिखता है</string>
+    <string name="ht_swipe_page_dots">पेज डॉट दिखाएं</string>
+    <string name="ht_swipe_page_dots_description">Dock के ऊपर पेज की स्थिति</string>
+    <string name="tv_swipe_today">विजेट स्क्रीन</string>
+    <string name="tv_swipe_today_description">विजेट खोलने के लिए पहले पेज पर दाईं ओर स्वाइप करें</string>
+    <string name="tv_edit">संपादित करें</string>
+    <!-- RN: Thay đổi tên ứng dụng (tiền tố settings_rename_) -->
+    <string name="settings_rename_header">ऐप को अपने पसंद के नाम दें। मूल नाम हमेशा वापस लाया जा सकता है।</string>
+    <string name="settings_rename_original">मूल नाम: %1$s</string>
+    <string name="settings_rename_dialog_title">ऐप का नाम बदलें</string>
+    <string name="settings_rename_hint">नया नाम</string>
+    <string name="settings_rename_save">सेव करें</string>
+    <string name="settings_rename_restore">वापस लाएं</string>
+    <!-- WX: thời tiết nhiều địa điểm (tiền tố wx_) -->
+    <string name="wx_places_header">जिन जगहों पर नज़र रखी जा रही है</string>
+    <string name="wx_places_current">मौजूदा जगह</string>
+    <string name="wx_places_current_unset">अज्ञात</string>
+    <string name="wx_places_current_manual">%1$s (खुद चुनी गई)</string>
+    <string name="wx_places_add">+ जगह जोड़ें</string>
+    <string name="wx_places_full">%1$d जगहें पूरी हो गईं</string>
+    <string name="wx_places_hint">हर मौसम विजेट इस सूची की एक जगह दिखाता है (विजेट पर टैप करें)।</string>
+    <string name="wx_places_duplicate">यह जगह पहले से सूची में है</string>
+    <string name="wx_places_remove_title">जगह हटाएं?</string>
+    <string name="wx_places_remove_message">%1$s को सूची से हटाएं। इस जगह को दिखाने वाले विजेट मौजूदा जगह पर चले जाएंगे।</string>
+    <string name="wx_places_remove_confirm">हटाएं</string>
+    <string name="wx_search_add_title">जगह जोड़ें</string>
+    <string name="wx_loc_perm_header">जगह की अनुमति</string>
+    <string name="wx_loc_perm">जगह की अनुमति</string>
+    <string name="wx_loc_perm_granted">दी गई</string>
+    <string name="wx_loc_perm_denied">नहीं दी गई</string>
+    <string name="wx_loc_mode_header">जगह तय करने का तरीका</string>
+    <string name="wx_loc_mode_auto">अपने-आप</string>
+    <string name="wx_loc_mode_manual">खुद चुनें</string>
+    <!-- RS Task 3: dòng mô tả hai hàng radio (Figma 1.5 302:1971). -->
+    <string name="wx_loc_mode_auto_desc">आपके जगह बदलने पर अपडेट होता है</string>
+    <string name="wx_loc_mode_manual_desc">जगह की अनुमति की ज़रूरत नहीं</string>
+    <string name="wx_loc_update">जगह अपडेट करें</string>
+    <string name="wx_loc_updating">जगह पता की जा रही है…</string>
+    <string name="wx_loc_city">शहर</string>
+    <string name="wx_loc_city_unset">नहीं चुना गया</string>
+    <string name="wx_loc_pick_city">शहर चुनें</string>
+    <string name="wx_loc_unavailable">आपकी जगह पता नहीं चल सकी। जगह की सेवा चालू करें या शहर खुद चुनें।</string>
+    <string name="wx_loc_denied">जगह की अनुमति नहीं दी गई है। आप अब भी शहर खुद चुन सकते हैं।</string>
+    <string name="wx_loc_denied_settings">जगह की अनुमति ब्लॉक है। ऐप की सेटिंग में अनुमति दें।</string>
+    <string name="wx_loc_privacy">सिर्फ़ अनुमानित जगह इस्तेमाल होती है, हर बार एक ही बार ली जाती है: जब आप जगह अपडेट करें पर टैप करते हैं, या (अनुमति वाले अपने-आप मोड में) जब मौजूदा जगह वाला मौसम विजेट दिख रहा हो तब ज़्यादा से ज़्यादा हर 2 घंटे में एक बार, और यह तभी बदलती है जब आप 5 किमी से ज़्यादा दूर जाते हैं। कुछ भी बैकग्राउंड में नहीं चलता और लगातार ट्रैक नहीं किया जाता। खुद चुनें मोड को अनुमति की ज़रूरत नहीं होती और यह आपकी जगह कभी नहीं पढ़ता।</string>
+    <string name="wx_sheet_for_widget">यह विजेट दिखाता है:</string>
+    <string name="wx_sheet_current_named">मौजूदा जगह: %1$s</string>
+    <string name="wx_sheet_current_unset">मौजूदा जगह (अज्ञात)</string>
+    <string name="wx_sheet_no_location">मौजूदा जगह पता नहीं है। सेटिंग → जगह में सेट करें।</string>
+    <string name="wx_sheet_manage">जगहें मैनेज करें</string>
+
+    <!-- GT: tinh chỉnh kính dùng chung -->
+    <string name="gt_title">ग्लास को बारीकी से बदलें</string>
+    <string name="gt_state_default">डिफ़ॉल्ट</string>
+    <string name="gt_state_custom">बदला गया</string>
+    <string name="gt_preview">ग्लास की झलक</string>
+    <string name="gt_header">हर ग्लास सतह पर लागू होता है, होम स्क्रीन पर लौटने पर असर दिखता है</string>
+    <string name="gt_reset_header">वापस लाएं</string>
+    <string name="gt_refraction">अपवर्तन</string>
+    <string name="gt_refraction_desc">ग्लास के पार दिखने वाले बैकग्राउंड को बड़ा करता है। 0 = बड़ा नहीं।</string>
+    <string name="gt_gloss">चमक</string>
+    <string name="gt_gloss_desc">50 से ऊपर ग्लास ज़्यादा चमकीला, 50 से नीचे ज़्यादा गहरा।</string>
+    <string name="gt_blur">धुंधलापन</string>
+    <string name="gt_blur_desc">ग्लास के पीछे का बैकग्राउंड कितना धुंधला हो।</string>
+    <string name="gt_corner">कोनों की गोलाई</string>
+    <string name="gt_corner_desc">50 = जैसा है, 0 = चौकोर। ऐप आइकॉन का आकार नहीं बदलता।</string>
+    <string name="gt_reset">डिफ़ॉल्ट पर रीसेट करें</string>
+
+    <!-- WN: thông báo thời tiết (tiền tố wn_) -->
+    <string name="wn_channel_group">मौसम</string>
+    <string name="wn_channel_daily">रोज़ का पूर्वानुमान</string>
+    <string name="wn_channel_tomorrow">कल का पूर्वानुमान</string>
+    <string name="wn_title_today">%1$s · आज</string>
+    <string name="wn_title_tomorrow">%1$s · कल</string>
+    <string name="wn_text">%1$s, अधिकतम %2$d%4$s, न्यूनतम %3$d%4$s</string>
+    <string name="wn_precip">%1$s से %2$s तक बारिश या बर्फ़</string>
+    <string name="wn_public_title">मौसम का पूर्वानुमान</string>
+    <string name="wn_public_today">आज का पूर्वानुमान</string>
+    <string name="wn_public_tomorrow">कल का पूर्वानुमान</string>
+    <string name="wn_settings_header">सूचनाएं</string>
+    <string name="wn_switch_daily">रोज़ का पूर्वानुमान</string>
+    <string name="wn_switch_daily_desc">हर सुबह 07:00 बजे</string>
+    <string name="wn_switch_tomorrow">कल का पूर्वानुमान</string>
+    <string name="wn_switch_tomorrow_desc">हर रात 21:00 बजे</string>
+    <string name="wn_footer_hint">सेव की गई मौजूदा जगह इस्तेमाल होती है और बैकग्राउंड में आपकी जगह कभी नहीं पढ़ी जाती। Android की बैटरी बचत की वजह से सूचना करीब 1 घंटे तक देर से आ सकती है। इंटरनेट ज़रूरी है; न होने पर सेव डेटा इस्तेमाल होता है अगर वह अब भी नया हो।</string>
+    <string name="wn_footer_no_key">मौसम की सूचनाओं के लिए OpenWeatherMap कुंजी चाहिए, जो इस बिल्ड में नहीं है।</string>
+    <string name="wn_footer_no_place">मौजूदा जगह पता नहीं है, इसलिए अभी कोई सूचना नहीं भेजी गई। सेटिंग → जगह में सेट करें।</string>
+    <string name="wn_footer_blocked">सिस्टम सेटिंग में ऐप की सूचनाएं बंद हैं, इसलिए आपको कोई सूचना नहीं दिखेगी। ऐप की सूचना सेटिंग में इन्हें फिर चालू करें।</string>
+    <string name="wn_toast_denied">सूचना की अनुमति नहीं दी गई, इसलिए इसे चालू नहीं किया जा सका।</string>
+    <string name="wn_toast_blocked">ऐप की सूचनाएं बंद या ब्लॉक हैं। ऐप की सूचना सेटिंग में इन्हें चालू करें।</string>
+    <!-- G3b: widget Ảnh (khối ph_) -->
+    <string name="ph_name">फ़ोटो</string>
+    <string name="ph_empty_title">फ़ोटो चुनने के लिए टैप करें</string>
+    <string name="ph_desc_empty">फ़ोटो, अभी कोई फ़ोटो नहीं, चुनने के लिए टैप करें</string>
+    <string name="ph_desc_photos">फ़ोटो, %1$d फ़ोटो</string>
+    <string name="ph_activity_title">विजेट की फ़ोटो</string>
+    <string name="ph_add_photo">+ फ़ोटो जोड़ें</string>
+    <string name="ph_choose_photo">फ़ोटो चुनें</string>
+    <string name="ph_empty_hint">विजेट पर दिखाने के लिए फ़ोटो चुनें</string>
+    <string name="ph_rotates">कई फ़ोटो होने पर, होम स्क्रीन दिखते समय विजेट हर घंटे दूसरी फ़ोटो दिखाता है।</string>
+    <string name="ph_importing">फ़ोटो इंपोर्ट हो रही हैं</string>
+    <string name="ph_remove_glyph">✕</string>
+    <string name="ph_remove_desc">फ़ोटो %1$d हटाएं</string>
+    <string name="ph_thumb_desc">फ़ोटो %1$d</string>
+    <string name="ph_remove_title">फ़ोटो हटाएं?</string>
+    <string name="ph_remove_message">फ़ोटो इस विजेट से हटा दी जाएगी।</string>
+    <string name="ph_remove_confirm">हटाएं</string>
+    <string name="ph_cancel">रद्द करें</string>
+    <string name="ph_import_failed">कुछ फ़ोटो इंपोर्ट नहीं हो सकीं।</string>
+    <string name="ph_too_many">हर विजेट में ज़्यादा से ज़्यादा %1$d फ़ोटो; सिर्फ़ पहली फ़ोटो जोड़ी गईं।</string>
+    <string name="ph_full">इस विजेट में पहले से %1$d फ़ोटो हैं। दूसरी जोड़ने के लिए कुछ हटाएं।</string>
+    <string name="ph_crop_title">फ़ोटो %1$d/%2$d क्रॉप करें</string>
+    <string name="ph_crop_edit_title">फिर से क्रॉप करें</string>
+    <string name="ph_crop_hint">खिसकाने के लिए खींचें, ज़ूम के लिए दो उंगलियों से फैलाएं</string>
+    <string name="ph_crop_desc">क्रॉप वाला हिस्सा। खिसकाने के लिए खींचें, ज़ूम के लिए दो उंगलियों से फैलाएं।</string>
+    <string name="ph_crop_done">हो गया</string>
+    <string name="ph_crop_skip">यह फ़ोटो छोड़ें</string>
+    <string name="ph_discard_title">बिना क्रॉप वाली फ़ोटो हटाएं?</string>
+    <string name="ph_discard_message">बिना क्रॉप वाली %1$d फ़ोटो हटाएं? जो फ़ोटो क्रॉप हो चुकी हैं वे बनी रहेंगी।</string>
+    <string name="ph_discard_confirm">हटाएं</string>
+    <string name="ph_discard_keep">क्रॉप करना जारी रखें</string>
+    <!-- G3c: AppWidgetHost (tiền tố aw_) -->
+    <string name="aw_unavailable">विजेट उपलब्ध नहीं है</string>
+    <string name="aw_error_load">विजेट लोड नहीं हो सका</string>
+    <string name="aw_section_title">ऐप के विजेट</string>
+    <string name="aw_section_loading">सूची लोड हो रही है…</string>
+    <plurals name="aw_widget_count">
+        <item quantity="one">%1$d विजेट</item>
+        <item quantity="other">%1$d विजेट</item>
+    </plurals>
+    <string name="aw_chip_description">%1$d×%2$d आकार जोड़ें</string>
+    <string name="aw_too_large">ग्रिड के लिए बहुत बड़ा</string>
+    <string name="aw_busy">दूसरा विजेट जोड़ा जा रहा है</string>
+    <string name="aw_add_failed">विजेट नहीं जोड़ा जा सका</string>
+
+    <!-- DS3: chuỗi của thành phần v3 (core/designsystem). -->
+    <string name="ds_back">वापस</string>
+    <string name="ds_nav_back_default">सेटिंग</string>
+    <string name="ds_nav_back_desc">वापस, %1$s</string>
+    <string name="ds_close">बंद करें</string>
+    <string name="ds_onboarding_skip">छोड़ें</string>
+
+    <!-- OB: Onboarding 0.1–0.5 (chữ theo Figma 302:3673) -->
+    <string name="onboarding_start">शुरू करें</string>
+    <string name="onboarding_continue">जारी रखें</string>
+    <string name="onboarding_set_default">डिफ़ॉल्ट बनाएं</string>
+    <string name="onboarding_later">बाद में</string>
+    <string name="onboarding_go_settings">सेटिंग में जाएं</string>
+    <string name="onboarding_welcome_title">आपके फ़ोन के लिए लिक्विड ग्लास का रूप</string>
+    <string name="onboarding_welcome_subtitle">पारदर्शी आइकॉन, जीवंत वॉलपेपर और स्मूद इफ़ेक्ट — शुरू करने के लिए बस कुछ कदम।</string>
+    <string name="onboarding_theme_title">स्टाइल चुनें</string>
+    <string name="onboarding_theme_subtitle">आप इसे सेटिंग में कभी भी बदल सकते हैं।</string>
+    <string name="onboarding_theme_liquid_glass_27">Liquid Glass 27</string>
+    <string name="onboarding_theme_liquid_glass_27_desc">पारदर्शी, अपवर्तक</string>
+    <string name="onboarding_theme_classic_26">Classic 26</string>
+    <string name="onboarding_theme_classic_26_desc">गर्म, हल्के रंग के आइकॉन</string>
+    <string name="onboarding_theme_minimal">Minimal</string>
+    <string name="onboarding_theme_minimal_desc">सादा, पतली लाइनें</string>
+    <string name="onboarding_theme_dark_pro">Dark Pro</string>
+    <string name="onboarding_theme_dark_pro_desc">गहरा बैकग्राउंड, गोल आइकॉन</string>
+    <string name="onboarding_badge_new">नया</string>
+    <string name="onboarding_wallpaper_title">वॉलपेपर चुनें</string>
+    <string name="onboarding_wallpaper_subtitle">अच्छा वॉलपेपर ग्लास इफ़ेक्ट को और उभारता है।</string>
+    <string name="onboarding_default_title">%1$s को होम स्क्रीन बनाएं</string>
+    <string name="onboarding_default_subtitle">इससे हर बार होम बटन दबाने पर नया रूप दिखेगा।</string>
+    <string name="onboarding_default_step1">नीचे \"डिफ़ॉल्ट बनाएं\" पर टैप करें</string>
+    <string name="onboarding_default_step2">सिस्टम डायलॉग में %1$s चुनें</string>
+    <string name="onboarding_done_title">सब तैयार है!</string>
+    <string name="onboarding_done_subtitle">अपना नया रूप देखें और सेटिंग में कभी भी और बदलाव करें।</string>
+    <string name="onboarding_done_theme">स्टाइल</string>
+    <string name="onboarding_done_wallpaper">वॉलपेपर</string>
+    <string name="onboarding_done_home">होम स्क्रीन</string>
+    <string name="onboarding_done_home_set">डिफ़ॉल्ट बनाया गया</string>
+    <string name="onboarding_done_home_not_set">डिफ़ॉल्ट नहीं बनाया गया</string>
+
+    <!-- LG: màn Ngôn ngữ (1.3), chip ngôn ngữ Onboarding 0.1, lý do lỗi đặt wallpaper -->
+    <string name="lang_system">सिस्टम के हिसाब से</string>
+    <string name="lang_system_desc">डिवाइस की भाषा इस्तेमाल करें</string>
+    <string name="lang_search_hint">भाषा खोजें</string>
+    <string name="lang_no_results">कोई भाषा नहीं मिली</string>
+    <string name="lang_chip_desc">भाषा: %1$s</string>
+    <string name="lang_name_vi">वियतनामी</string>
+    <string name="lang_name_en">अंग्रेज़ी</string>
+    <string name="lang_name_es">स्पैनिश</string>
+    <string name="lang_name_pt">पुर्तगाली</string>
+    <string name="lang_name_id">इंडोनेशियाई</string>
+    <string name="lang_name_th">थाई</string>
+    <string name="lang_name_ja">जापानी</string>
+    <string name="lang_name_ko">कोरियाई</string>
+    <string name="lang_name_hi">हिन्दी</string>
+    <string name="wallpaper_reason_unsupported">यह डिवाइस वॉलपेपर सेट करने की सुविधा नहीं देता</string>
+    <string name="wallpaper_reason_not_allowed">सिस्टम इस ऐप को वॉलपेपर सेट करने नहीं देता</string>
+    <string name="wallpaper_reason_read_failed">सेव की गई इमेज पढ़ी नहीं जा सकी</string>
+    <string name="wallpaper_reason_out_of_memory">मेमोरी कम है</string>
+    <!-- BG: màn 3.4 Huy hiệu thông báo (tiền tố badges_) -->
+    <string name="badges_perm_title">सूचना एक्सेस ज़रूरी है</string>
+    <string name="badges_perm_desc">हर ऐप की अपठित सूचनाएं गिनने के लिए</string>
+    <string name="badges_perm_action">एक्सेस दें</string>
+    <string name="badges_perm_open_failed">सूचना ऐक्सेस सेटिंग नहीं खुल सकी</string>
+    <string name="badges_show">बैज दिखाएं</string>
+    <string name="badges_style_header">बैज स्टाइल</string>
+    <string name="badges_style_number">संख्या</string>
+    <string name="badges_style_dot">बिंदु</string>
+    <string name="badges_per_app_header">हर ऐप के लिए</string>
+    <!-- TR: màn 4.1 Hiệu ứng chuyển cảnh -->
+    <string name="tr_intro">फ़ोल्डर, खोज, ऐप लाइब्रेरी और क्विक सेटिंग्स खोलते समय।</string>
+    <string name="tr_preview_description">पूर्वावलोकन: फ़ोल्डर खोलना</string>
+    <string name="tr_style_smooth">स्मूथ</string>
+    <string name="tr_style_smooth_description">डिफ़ॉल्ट</string>
+    <string name="tr_style_fade">फ़ेड</string>
+    <string name="tr_style_slide">स्लाइड</string>
+    <string name="tr_style_zoom">ज़ूम</string>
+    <string name="tr_style_none">कोई नहीं</string>
+    <string name="tr_style_none_description">सबसे तेज़</string>
+    <string name="tr_speed">गति</string>
+    <string name="tr_speed_slow">धीमी</string>
+    <string name="tr_speed_medium">मध्यम</string>
+    <string name="tr_speed_fast">तेज़</string>
+    <string name="tr_reduce_motion">मोशन कम करें</string>
+    <string name="tr_reduce_motion_description">ज़ूम / स्लाइड की जगह फ़ेड इस्तेमाल करें</string>
+    <!-- JS7: nút của hộp chọn giờ Night Shift (Compose) -->
+    <string name="cc_time_done">हो गया</string>
+    <!-- P2-9 / P2-9e (REF a013dd8): bảng chọn widget kiểu iOS, menu Sửa của edit mode; TV-2/TV-3 (REF 3ab9c20): Today View -->
+    <string name="wp_search_hint">विजेट खोजें</string>
+    <string name="wp_add_widget">विजेट जोड़ें</string>
+    <string name="wp_close">बंद करें</string>
+    <string name="home_edit">संपादित करें</string>
+    <string name="home_wallpapers">वॉलपेपर</string>
+    <string name="wp_clock_small_title">एनालॉग घड़ी</string>
+    <string name="wp_clock_small_desc">वर्तमान समय दिखाती है।</string>
+    <string name="wp_clock_wide_title">डिजिटल घड़ी</string>
+    <string name="wp_clock_wide_desc">तारीख़ के साथ बड़ा डिजिटल समय।</string>
+    <string name="wp_calendar_small_title">आज</string>
+    <string name="wp_calendar_small_desc">आज की तारीख़ दिखाता है।</string>
+    <string name="wp_calendar_wide_title">महीना</string>
+    <string name="wp_calendar_wide_desc">इस महीने के कैलेंडर के साथ आज की तारीख़।</string>
+    <string name="wp_weather_small_title">मौजूदा स्थिति</string>
+    <string name="wp_weather_small_desc">आपकी जगह का मौजूदा मौसम।</string>
+    <string name="wp_weather_wide_title">घंटेवार पूर्वानुमान</string>
+    <string name="wp_weather_wide_desc">मौजूदा मौसम और अगले कुछ घंटे।</string>
+    <string name="wp_photo_small_title">फ़ोटो</string>
+    <string name="wp_photo_small_desc">एक फ़ोटो या एल्बम दिखाता है जो हर घंटे बदलता है।</string>
+    <string name="wp_photo_wide_title">चौड़ी फ़ोटो</string>
+    <string name="wp_photo_wide_desc">चौड़ी फ़ोटो या एल्बम जो हर घंटे बदलता है।</string>
+    <string name="today_recents_empty">हाल में खोले गए ऐप्स यहाँ दिखेंगे</string>
+    <string name="today_recents_name">हाल के ऐप्स</string>
+    <string name="today_recents_small_title">4 ऐप्स</string>
+    <string name="today_recents_small_desc">हाल में खोले गए आपके चार ऐप्स।</string>
+    <string name="today_recents_wide_title">8 ऐप्स</string>
+    <string name="today_recents_wide_desc">हाल में खोले गए आपके आठ ऐप्स।</string>
+    <string name="today_widget_remove_message">विजेट आज के दृश्य से हटा दिया जाएगा। आप इसे + बटन से फिर से जोड़ सकते हैं।</string>
+
+    <!-- Dong bo tu REF HEAD -->
+    <string name="wallpaper_preset_lake">झील</string>
+    <string name="wallpaper_preset_blue_wave">नीली लहर</string>
+    <string name="wallpaper_preset_red">लाल</string>
+    <string name="wallpaper_preset_sunset">सूर्यास्त</string>
+    <string name="wallpaper_preset_silk">रेशम</string>
+    <string name="wallpaper_preset_night_street">रात की गली</string>
+    <string name="ds_step_indicator_desc">%2$d में से चरण %1$d</string>
+    <string name="wallpaper_target_sheet_title">वॉलपेपर यहाँ सेट करें</string> <!-- P3-2: Figma 2.2 popup 302:2090 -->
+    <string name="settings_search_recent_apps">हाल के ऐप्स</string>
+    <string name="settings_search_recent_apps_description">हाल में खोले गए ऐप्स दिखाता है। बंद करने पर नए ऐप्स दर्ज नहीं होते, पर सहेजा गया इतिहास बना रहता है।</string>
+    <string name="ci_search_hint">ऐप्स खोजें</string>
+    <string name="ci_changed">बदला गया</string>
+    <string name="ci_choose_new">नया आइकन चुनें</string>
+    <string name="ci_from_photos">फ़ोटो से</string>
+    <string name="ci_restore">पहले जैसा करें</string>
+    <string name="ci_save">सेव करें</string>
+    <string name="ci_save_failed">आइकन सेव नहीं हो सका</string>
+    <string name="ci_image_failed">यह इमेज नहीं खुल सकी</string>
+    <string name="ci_no_results">कोई ऐप नहीं मिला</string>
+    <string name="ci_variant_description">आइकन विकल्प %1$d</string>
+    <string name="hl_intro">छिपे हुए ऐप्स होम स्क्रीन, लाइब्रेरी और खोज नतीजों में नहीं दिखते।</string>
+    <string name="hl_all_apps">सभी ऐप्स</string>
+    <string name="hl_lock">फ़िंगरप्रिंट / PIN से लॉक करें</string>
+    <string name="hl_lock_description">देखने से पहले पुष्टि करें</string>
+    <string name="hl_auth_title">छिपे हुए ऐप्स खोलें</string>
+    <string name="hl_auth_subtitle">छिपे हुए ऐप्स देखने के लिए अपनी पहचान की पुष्टि करें</string>
+    <string name="hl_auth_use_device">स्क्रीन लॉक इस्तेमाल करें</string>
+    <plurals name="hl_hidden_count">
+        <item quantity="one">%d छिपा हुआ</item>
+        <item quantity="other">%d छिपे हुए</item>
+    </plurals>
+    <string name="icon_style_preview_description">चुनी गई आइकन शैली का पूर्वावलोकन</string>
+    <string name="settings_search_suggestions_description">खोज फ़ील्ड खाली होने पर ट्रेंडिंग खोजें</string>
+</resources>
