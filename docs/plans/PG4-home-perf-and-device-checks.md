@@ -3,7 +3,7 @@
 > Làm theo `docs/AGENTS.md` và `docs/Workflow.md`: plan duyệt rồi mới code; code từng mốc nhỏ, báo cáo, chủ dự án build và kiểm; tick khi chủ dự án báo đạt. Phiên claude.ai qua VM **không build được, không có `adb`**: chủ dự án chạy lệnh build và lệnh đo trên máy mình rồi gửi kết quả. **G3 đo trước rồi mới sửa.**
 
 **Bắt đầu:** 2026-11-23 · **Plan duyệt:** 2026-11-23 (Q1, Q2, Q4–Q6; Q3 quyết sau khi có số đo)
-**Trạng thái:** G3 (Task 1–3) xong đo 2026-11-23: kính trong ngưỡng trên cả hai máy, nguyên nhân giật là bản debug; chờ chủ dự án xác nhận đóng G3. K1 (Task 4) chủ dự án đang chạy
+**Trạng thái:** Xong 2026-11-23. G3: kính trong ngưỡng, giật là do bản debug. K1: chạy hết trừ TalkBack (chủ dự án bỏ qua)
 **Nhánh:** `feature/pg1-parity` (chủ dự án 2026-11-23: PR #1 bàn giao G4 đã merge vào `master`; G3, K1 làm tiếp trên nhánh này, xong merge vào `master` rồi xoá nhánh) · **Máy:** Oppo PKD130 (Android 14), Vsmart Live 4 (Android 11) · **Đổi schema Room:** không
 
 **Goal:** (G3) biết chính xác vì sao lướt trang Home giật trên Oppo PKD130 (kể cả khi chưa bật kính icon), sửa theo số đo, và chốt ngân sách số bề mặt kính (thật và mờ tĩnh của PG3); (K1) chạy hết danh sách kiểm còn mở của các plan Compose, ghi kết quả, lỗi nào gặp thì tách việc sửa.
@@ -35,6 +35,10 @@
 | Q4 | Ngưỡng đạt cho lướt trang? | Như GL D10: so với cấu hình "không kính" cùng phiên, Janky tăng ≤ 2 điểm và p95 tăng ≤ 3 ms | Đồng ý |
 | Q5 | K1: anh tự chạy danh sách (em soạn bước từng mục, anh ghi đạt / lỗi), hay chỉ chạy các mục anh chọn? | Chạy hết; mục nào lỗi thì em tách việc sửa | Đồng ý |
 | Q6 | Thứ tự: G3 trước rồi K1, hay song song (K1 không cần code)? | Song song: anh chạy K1 trong lúc em làm công cụ đo | Đồng ý |
+
+## Ngoài phạm vi / ghi để sau
+
+- Spotlight (tìm kiếm mở từ pill / vuốt xuống ở Home) hiện cả danh bạ, shortcut, mục Cài đặt như iOS: hiện chỉ chế độ Thư viện có (bản XML cũng vậy). Chủ dự án 2026-11-23: để sau, cần plan riêng.
 
 ## Vùng file
 
@@ -83,15 +87,15 @@
 
 ### Task 4: K1 — danh sách kiểm trên máy
 **Bắt buộc kiểm tay:** có (chủ dự án chạy).
-- [ ] Step 1: JH2: kéo icon ra khỏi trang tạm (RF2); kéo bằng hai ngón (RF3).
-- [ ] Step 2: JH4: vẫn là launcher mặc định sau khi cài bản Compose đè lên (RF1); thử lại hai hiện tượng từng gặp một lần: Home mở thẳng vào Thư viện sau khi bỏ qua Onboarding rồi bấm "Trải nghiệm"; pager đứng sai trang sau khi áp theme.
-- [ ] Step 3: JH3d: widget có màn cấu hình riêng; thoát chế độ sửa khi bảng chọn widget đang mở (bảng chọn giờ là lớp phủ PG2).
-- [ ] Step 4: JH3a: tổng huy hiệu trên ô thư mục, tắt huy hiệu, quyền danh bạ.
-- [ ] Step 5: JC/JD: Vsmart Live 4 (Android 11) đi một vòng mọi màn; cỡ chữ lớn nhất + chữ đậm; TalkBack (Home, Thư viện, Cài đặt); xoay màn hình.
-- [ ] Step 6: Ghi kết quả từng mục vào bảng "Kết quả K1"; lỗi thì thêm Task sửa (hoặc plan riêng nếu lớn).
+- [x] Step 1: JH2: kéo icon ra khỏi trang tạm (RF2); kéo bằng hai ngón (RF3).
+- [x] Step 2: JH4: vẫn là launcher mặc định sau khi cài bản Compose đè lên (RF1); thử lại hai hiện tượng từng gặp một lần: Home mở thẳng vào Thư viện sau khi bỏ qua Onboarding rồi bấm "Trải nghiệm"; pager đứng sai trang sau khi áp theme.
+- [x] Step 3: JH3d: widget có màn cấu hình riêng; thoát chế độ sửa khi bảng chọn widget đang mở (bảng chọn giờ là lớp phủ PG2).
+- [x] Step 4: JH3a: tổng huy hiệu trên ô thư mục, tắt huy hiệu, quyền danh bạ.
+- [x] Step 5: JC/JD: Vsmart Live 4 (Android 11) đi một vòng mọi màn; cỡ chữ lớn nhất + chữ đậm; TalkBack (Home, Thư viện, Cài đặt); xoay màn hình. — **TalkBack bỏ qua** (chủ dự án 2026-11-23); xoay màn hình không áp dụng (`nosensor`).
+- [x] Step 6: Ghi kết quả từng mục vào bảng "Kết quả K1"; lỗi thì thêm Task sửa (hoặc plan riêng nếu lớn). — không mục nào lỗi mới (1a chỉ còn G2 đã bàn giao).
 
 ### Task 5: Docs
-- [ ] Step 1: Tick G3, K1 ở `PG-parity-gaps.md`; số đo và bài học vào `lessons/glass.md` / `startup-performance.md`; `README.md` số mục.
+- [x] Step 1: Tick G3, K1 ở `PG-parity-gaps.md`; số đo và bài học vào `lessons/glass.md` / `startup-performance.md`; `README.md` số mục.
 
 ---
 
@@ -120,10 +124,26 @@
 ## Kết quả K1 (điền ở Task 4)
 | Mục | Máy | Kết quả | Ghi chú |
 |---|---|---|---|
+| 1a JH2 RF2 kéo icon ra khỏi trang tạm | Oppo | Đạt | Còn lỗi G2 (pager dừng lệch khi kéo về trang cuối) đã biết, bàn giao anh dvha |
+| 1b JH2 RF3 kéo bằng hai ngón | Oppo | Đạt |  |
+| 2a JH4 RF1 vẫn là launcher mặc định khi cài đè | Oppo | Đạt | Kiểm qua các lần `installDebug` / `installPerf` khi app đang là launcher mặc định |
+| 2b JH4 bỏ qua Onboarding → "Trải nghiệm" → không vào thẳng Thư viện | Oppo | Đạt |  |
+| 2c JH4 áp theme → pager đúng trang | Oppo | Đạt |  |
+| 3a JH3d widget có màn cấu hình (hoàn tất / huỷ) | Vsmart Live 4 | Đạt | Oppo không có widget nào có màn cấu hình |
+| 3b JH3d thoát edit mode (nút Home) khi bảng chọn widget mở | Oppo | Đạt |  |
+| 4a JH3a tổng huy hiệu trên ô thư mục | Oppo | Đạt |  |
+| 4b JH3a tắt huy hiệu | Oppo | Đạt |  |
+| 4c JH3a quyền danh bạ | Oppo | Đạt | Kiểm ở tìm kiếm của Thư viện: Spotlight (pill / vuốt xuống) chỉ hiện app + web, bỏ danh bạ / shortcut / Cài đặt như bản XML (`SearchViewModel.kt:453`) |
+| 5a JC/JD Live 4 đi qua mọi màn | Vsmart Live 4 | Đạt |  |
+| 5b JC/JD cỡ chữ lớn nhất + chữ đậm | Oppo | Đạt | Nút không đè nhau; chữ dài cắt bằng "…" |
+| 5c JC/JD TalkBack | — | Bỏ qua | Chủ dự án 2026-11-23: không kiểm lượt này |
+| 5d JC/JD xoay màn hình | Oppo | Không áp dụng | Không xoay được: đúng thiết kế, mọi Activity khai `screenOrientation="nosensor"` trong manifest |
 
 ## Bài kiểm cả tính năng (Claude gộp ở bước 5)
-_(điền khi xong)_
-**Kết quả kiểm chứng (máy, ngày):**
+- G3: `tools/perf/measure-home.ps1 -Scenario swipe` trên bản `perf`, xen kẽ cấu hình, 3 vòng + lặp cuối (Oppo PKD130: 250 ms và 120 ms; Vsmart Live 4: 250 ms); so một lượt bản `debug` trên Oppo.
+- K1: bảng "Kết quả K1".
+
+**Kết quả kiểm chứng (máy, ngày):** Đạt — chủ dự án đo và kiểm trên Oppo PKD130 và Vsmart Live 4, 2026-11-23. Kính trong ngưỡng Q4 trên cả hai máy; K1 đạt hết trừ TalkBack (bỏ qua) và xoay màn hình (không áp dụng).
 
 ## Nhật ký
 | Ngày | Task | Việc đã làm | Ghi chú |
@@ -136,9 +156,21 @@ _(điền khi xong)_
 | 2026-11-23 | 2 | Oppo, 3 vòng xen kẽ + lặp cuối (bảng dưới). `perf`: đủ kính Janky 0,93 % / 1,27 % (vuốt 250 / 120 ms), p95 13 / 12,3 ms; bỏ kính thật + kính mờ: 0,46 % / 0,46 %, p95 11,7 / 10 ms → kính tốn Janky +0,5–0,8 điểm, p95 +1,3–2,3 ms: **trong ngưỡng Q4**; kính mờ tĩnh và widget gần như không tốn. Bản `debug` cùng kịch bản: Janky 36 %, p50 26 ms, p95 106 ms, p99 183 ms. **Kết luận Oppo: giật chủ dự án thấy là do bản debug (H4), không phải kính (H1–H3)** | Chờ đo Live 4 |
 | 2026-11-23 | 2 | Live 4 lượt 1 hỏng cấu hình: `powershell -File ... -Configs a,b,c` truyền một chuỗi "a,b,c" nên cả 4 lượt chạy cùng cờ `noFrosted+noWidgets` (Janky 1,52 %, p50 6, p95 10, p99 19,7 ms). Script tự tách `-Configs` theo dấu phẩy | Chờ đo lại |
 | 2026-11-23 | 2, 3 | Live 4, 3 vòng xen kẽ + lặp cuối: full Janky 1,22 %, p95 9, p99 18 ms; `noFrosted` 1,32 %, p95 10, p99 18,7; `noFrosted+noWidgets` 1,33 %, p95 10, p99 18,3 → kính mờ tĩnh (gồm dock, widget, card dưới API 31 của PG3) không tốn đo được (full còn hơi tốt hơn, trong nhiễu; full ~600 khung so với ~525: kính mờ có vẽ thêm khung, chưa rõ chỗ nào, không gây giật). **Chốt nguyên nhân G3: H4 (bản debug)**; H1–H3 trong ngưỡng; Q3 không cần. Task 3: chỉ sửa comment `HomeScreen.kt`. Bài học vào `lessons/startup-performance.md`, quy ước đo vào `AGENTS.md` | Chờ chủ dự án xác nhận đóng G3 |
+| 2026-11-23 | 1–3 | Chủ dự án xác nhận đóng G3; tick G3 ở `PG-parity-gaps.md`. Gửi chủ dự án các bước kiểm K1 | K1 đang chạy |
+| 2026-11-23 | 4 | Chủ dự án gửi kết quả K1 đợt 1 (bảng Kết quả K1): 1a, 1b, 2a–2c, 3a, 5a, 5b đạt; 5d không áp dụng (`nosensor`); 3b chưa báo; 4a–4c, 5c chưa kiểm | Chờ 3b, 4, 5c |
+| 2026-11-23 | 4 | 3b, 4a, 4b, 4c đạt (4c kiểm ở tìm kiếm của Thư viện). Chủ dự án hỏi vì sao Spotlight không có danh bạ / shortcut: đọc code, chế độ Spotlight lọc chỉ giữ app (`SearchViewModel.kt:453`, cùng code với XML), không phải thiếu khi migrate; chủ dự án để sau (ghi "Ngoài phạm vi") | Còn 5c |
+| 2026-11-23 | 4, 5 | Chủ dự án bỏ qua TalkBack; đóng plan. Tick K1, đóng `PG-parity-gaps.md` | Xong |
 
 ## Bằng chứng Review Focus (điền khi chốt)
 | # | Dòng Review Focus | Bằng chứng | Kết quả |
 |---|---|---|---|
+| 1 | Số đo đáng tin | Cùng phiên, xen kẽ, lặp cấu hình đầu cuối phiên (Oppo 0,93 % so 0,93 %; Live 4 1,16 % so 1,22 %), nhiệt độ pin ghi mỗi lượt (tăng ≤ 1,1 °C); một lượt hỏng cấu hình (lỗi tách `-Configs`) đã đánh dấu và chạy lại | Đạt |
+| 2 | Sau sửa Home như trước | Không đổi code chạy (Task 3 chỉ sửa comment) | Không áp dụng |
+| 3 | Công tắc đo không lọt vào bản phát hành | `PerfSwitches` trả rỗng khi `BuildConfig.PERF_SWITCHES` = false (mặc định; chỉ build type `perf` đặt true) | Đạt (đọc code) |
 
 ## Tài liệu chung đã cập nhật (điền ở bước 7)
+- `plans/PG-parity-gaps.md`: tick G3, K1; danh sách đóng.
+- `lessons/startup-performance.md`: bài học PG4; `lessons/README.md`: số mục.
+- `AGENTS.md`: quy ước đo hiệu năng bằng bản `perf` + script.
+- `.gitignore`: `tools/perf/out/`.
+- `Launcher-Features.md`, `config-schema.md`, `room-schema.md`, `project_structure.md`: không đổi (thư mục nhỏ mới `core/perf/`, `src/perf/`, `tools/perf/` đã ghi ở `AGENTS.md`).

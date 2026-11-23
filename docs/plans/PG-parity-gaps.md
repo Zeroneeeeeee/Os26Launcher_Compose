@@ -3,7 +3,7 @@
 > Lập 2026-11-23 khi chuyển hẳn sang repo Compose (`AGENTS.md` mục "Dự án hiện hành"). Nguồn: đối chiếu plan hai repo, mục "Open" của chuỗi plan Compose (JC→JX, TF), `report/Audit-Report-2026-11-10.md` của repo XML, so code `domain`/`data`/`core` từng file và đọc thẳng các điểm nghi ngờ. **Mọi mục là đọc code, chưa kiểm trên máy** (trừ G2: chủ dự án gặp trên máy).
 > Đây là danh sách để chọn việc, không phải plan: mỗi mục khi làm thì viết plan riêng (hoặc thêm Task vào plan đang mở) theo `Workflow.md`. Làm xong mục nào thì tick và ghi plan/commit.
 
-**Trạng thái:** Mở · **Cập nhật:** 2026-11-23 (gộp mã lần 1)
+**Trạng thái:** Đóng 2026-11-23 (mọi mục xong hoặc bỏ / bàn giao) · **Cập nhật:** 2026-11-23
 
 ## 1. Tính năng
 
@@ -25,7 +25,7 @@
   - Thiếu "trượt nốt" khi Thư viện/Today tiếp quản giữa lúc pager trượt (XML `finishSettleOnLastPage`/`finishSettleOnFirstPage`, `HomeTouchRouter.kt:82,95`): thiếu thì Home có thể kẹt ở trang áp chót khi đóng Thư viện.
   - Cú vuốt mất chưa giải thích ở JH2 có thể chính là lỗi này: kiểm lại sau khi sửa.
 - [x] ~~**G2 — Kéo app (edit mode) sang trang tạm rồi kéo về trang cuối: pager dừng lệch**~~ — **bỏ khỏi danh sách** (chủ dự án 2026-11-23: người khác xử lý). Ghi chẩn đoán để người làm tham khảo (chủ dự án gặp 2026-11-23). Điểm gãy nghi (đọc code, chưa đo): `HomeScreen.kt` thu `pagerState.currentPage` và gọi `onGhostPageLeft()` ngay khi trang hiện tại đổi về trang thật. Trong lúc `HomeDragState.flipTo` đang `animateScrollToPage` từ trang tạm về, `currentPage` đổi ở giữa đường → VM bỏ trang tạm → `pages.size` giảm khi hoạt ảnh còn chạy → pager bị kẹp vị trí cuộn và dừng không đúng mép trang. (XML cũng bỏ ở `onPageSelected` nhưng `ViewPager2` chịu được danh sách đổi giữa lúc cuộn.) Hướng: chỉ bỏ trang tạm khi pager đã đứng yên (`!isScrollInProgress`) và đang ở trang thật; hoặc sau khi `flipTo` xong.
-- [ ] **G3 — Hiệu năng: số kính mỗi trang và lướt trang** (gộp G4, G7 cũ). Kính thật trên mọi thẻ/widget khi API ≥ 31, không hạ theo máy, `GlassBudget` không màn Compose nào gọi (JD D9: ~15 bề mặt kính thật = 38 % khung giật trên Oppo). Lướt trang trên Samsung p90 +5 ms so với bản View (JH1/JH2/JH4 "follow-up plan"). Đo trước rồi mới quyết. **Thêm (chủ dự án 2026-11-23):** Oppo PKD130 đã giật khi lướt trang dù chưa bật kính icon; chưa rõ nguyên nhân (icon app hay thứ khác), cần đo. Đo cả kính mờ tĩnh của PG3 (ô thư mục, pill; dock, widget, card dưới API 31) và quyết ngân sách (`GlassBudget`) nếu cần.
+- [x] **G3 — Hiệu năng: số kính mỗi trang và lướt trang** — **xong 2026-11-23** (`PG4-home-perf-and-device-checks.md`: đo bản `perf` trên Oppo PKD130 + Vsmart Live 4, kính trong ngưỡng, giật là do bản debug; không sửa kính, không áp ngân sách) (gộp G4, G7 cũ). Kính thật trên mọi thẻ/widget khi API ≥ 31, không hạ theo máy, `GlassBudget` không màn Compose nào gọi (JD D9: ~15 bề mặt kính thật = 38 % khung giật trên Oppo). Lướt trang trên Samsung p90 +5 ms so với bản View (JH1/JH2/JH4 "follow-up plan"). Đo trước rồi mới quyết. **Thêm (chủ dự án 2026-11-23):** Oppo PKD130 đã giật khi lướt trang dù chưa bật kính icon; chưa rõ nguyên nhân (icon app hay thứ khác), cần đo. Đo cả kính mờ tĩnh của PG3 (ô thư mục, pill; dock, widget, card dưới API 31) và quyết ngân sách (`GlassBudget`) nếu cần.
 - [x] **G4 — Kính mờ tĩnh cho ô thư mục, pill tìm kiếm, icon kiểu "Kính", và mọi bề mặt kính trên Android 8–11** (gộp G5, G6 cũ; chủ dự án 2026-11-23 gộp thêm kính mờ tĩnh cho máy dưới API 31). Hiện phẳng: `HomeFolderPlate` `.background(folder_background)`, pill `.background(search_pill_bg)`, icon "Kính" mất tấm kính phía sau (GI Task 4). Không dùng kính thật (giới hạn hiệu năng ở G3); dùng kính mờ tĩnh như XML, rẻ, không vướng D9. — **xong 2026-11-23** (`PG3-static-frosted-glass.md`; icon "Kính" bỏ theo chủ dự án; chưa đo hiệu năng, gộp vào G3)
 
 - [x] **A1 — Hoạt ảnh khi bố cục lưới / dock / thư mục đổi** — **xong 2026-11-23** (`PG1-parity-batch-1.md`) (AN Task 8, 9d của repo XML; chủ dự án thấy 2026-11-23: thả nhanh icon lên ô của icon khác, chưa tạo thư mục, các icon nhảy cóc). Đọc code 2026-11-23:
@@ -35,7 +35,7 @@
 
 ## 3. Kiểm trên máy (việc còn mở của các plan Compose)
 
-- [ ] **K1 — Danh sách kiểm chưa chạy:**
+- [x] **K1 — Danh sách kiểm chưa chạy:** — **xong 2026-11-23** (`PG4-home-perf-and-device-checks.md` Task 4: đạt hết; TalkBack bỏ qua; xoay màn hình không áp dụng vì `nosensor`)
   - JH2: kéo icon ra khỏi trang tạm (RF2), kéo bằng hai ngón (RF3).
   - JH4: vẫn là launcher mặc định sau khi cài bản Compose đè lên (RF1); hai hiện tượng mới gặp một lần — Home mở thẳng vào Thư viện sau khi bỏ qua Onboarding rồi bấm "Trải nghiệm", pager đứng sai trang sau khi áp theme.
   - JH3d: widget có màn cấu hình riêng; thoát chế độ sửa khi bảng chọn widget đang mở.
@@ -80,3 +80,5 @@ Không có tính năng nào. Giới hạn có thật đều của nền tảng /
 | 2026-11-23 | G4 | Viết plan `PG3-static-frosted-glass.md`, chờ duyệt |
 | 2026-11-23 | G4 | Xong (PG3, chủ dự án kiểm Live 4 + Oppo); phần đo chuyển sang G3 |
 | 2026-11-23 | G3, K1 | Viết plan `PG4-home-perf-and-device-checks.md` (chủ dự án: làm G3, K1 phía mình, chỉ bàn giao G4), chờ duyệt |
+| 2026-11-23 | G3 | Xong (PG4 Task 1–3, chủ dự án xác nhận); K1 đang chạy |
+| 2026-11-23 | K1 | Xong (PG4 Task 4); danh sách đóng |
