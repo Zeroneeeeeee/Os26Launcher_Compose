@@ -68,6 +68,9 @@ interface HomeDragActions {
      * [tempItemId] là id tạm của phiên kéo. Nối tới `HomeViewModel.onNewWidgetDropped`.
      */
     fun onNewWidgetDropped(kindId: String, spanX: Int, spanY: Int, tempItemId: Long, targetPageId: Long, cell: GridPosition)
+
+    /** LD Task 4: thả app kéo từ App Library (chưa có hàng DB) xuống lưới ([ContainerId.HOME], trang [targetPageId]) hoặc dock (slot `cell.x`). */
+    fun onLibraryAppDropped(app: AppItem, targetContainer: Long, targetPageId: Long?, cell: GridPosition)
 }
 
 /** Thứ đang được kéo. App và thư mục có thể đến từ lưới hoặc dock; widget chỉ từ lưới. */
@@ -106,10 +109,18 @@ class HomeDragSession(
      */
     val grabOffset: Offset = Offset.Zero,
     /** PG2: phiên kéo widget tự vẽ mới từ bảng chọn (item là `PlacedWidget` tạm, id âm, chưa có hàng DB); null = item có sẵn. */
-    val newWidget: WidgetKind? = null
+    val newWidget: WidgetKind? = null,
+    /**
+     * LD Task 4: app kéo từ App Library ([item] là [DragItem.App] với id [LIBRARY_DRAG_ID], chưa có hàng DB). Không gộp thư mục (chỉ đẩy-dồn), thả =
+     * [HomeDragActions.onLibraryAppDropped], thả hỏng = mờ dần tại chỗ (không có ô nguồn để bay về).
+     */
+    val fromLibrary: Boolean = false
 ) {
     val isWidget: Boolean get() = item is DragItem.Widget
 }
+
+/** LD Task 4: id giả của app đang kéo từ App Library (id hàng thật luôn > 0; khác `PageId.NEW` / id tạm của planner). */
+const val LIBRARY_DRAG_ID = -7_000_001L
 
 /**
  * JH2 — trạng thái kéo-thả của Home Compose. Giữ phiên kéo, ảnh nổi (vị trí, tỉ lệ, độ trong), xem trước đẩy-dồn trên lưới và trong dock, mục
@@ -315,6 +326,43 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
         return true
     }
 
+    /**
+     * LD Task 4 — bắt đầu kéo [app] từ App Library: ngón tay ở [pos] (toạ độ gốc = cửa sổ), ảnh nổi bắt đầu từ khung icon [iconRect] trong Library rồi
+     * về dưới ngón tay, cỡ icon của lưới Home. Không có ô nguồn. `onDragStarted` bật `draggingItemId` + edit mode: Library tự đóng (render).
+     */
+    fun startExternal(app: AppItem, pos: Offset, iconRect: Rect) {
+        val icon = cells?.iconSize?.toFloat() ?: iconRect.width
+        val source = Rect(pos.x - icon / 2f, pos.y - icon / 2f, pos.x + icon / 2f, pos.y + icon / 2f)
+        settlingId = null
+        settlingItem = null
+        session = HomeDragSession(
+            DragItem.App(LIBRARY_DRAG_ID, app), 0L /* không thuộc lưới, dock hay thư mục nào */, null, GridPosition(0, 0), source, 1, 1, PointerId(-1L), fromLibrary = true
+        )
+        floatSize = source.size
+        finger = pos
+        scope.launch {
+            floatCenter.snapTo(iconRect.center)
+            floatAlpha.snapTo(1f)
+            floatScale.snapTo(iconRect.width / icon)
+            launch { floatCenter.animateTo(pos, SETTLE_O) }
+            floatScale.animateTo(LIFT_SCALE, SETTLE_F)
+        }
+        actions.onDragStarted(LIBRARY_DRAG_ID)
+    }
+
+    /** LD Task 4: chỉ báo thả thật (lưới / dock); app từ Library đi đường riêng vì chưa có hàng DB. PG2: widget mới từ bảng chọn cũng vậy. */
+    private fun commitDrop(s: HomeDragSession, container: Long, pageId: Long?, cell: GridPosition) {
+        val app = (s.item as? DragItem.App)?.app
+        val newKind = s.newWidget
+        when {
+            // PG2: widget mới từ bảng chọn chưa có hàng DB: VM thêm lạc quan với id tạm rồi ghi bằng AddWidgetUseCase (không qua onItemDropped).
+            // Chỉ tới được nhánh lưới (widget không vào dock) nên luôn có trang; phòng hờ thì huỷ để không ghi id tạm.
+            newKind != null -> actions.onNewWidgetDropped(newKind.id, s.spanX, s.spanY, s.item.itemId, pageId ?: return actions.onDragCancelled(), cell)
+            s.fromLibrary && app != null -> actions.onLibraryAppDropped(app, container, pageId, cell)
+            else -> actions.onItemDropped(s.item.itemId, container, pageId, cell)
+        }
+    }
+
     fun move(pos: Offset) {
         val s = session ?: return
         finger = pos
@@ -361,7 +409,7 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
                 val slot = slotFor(pt.x, s.item.itemId) ?: return cancelDrop(s) // dock đầy, item từ ngoài dock: từ chối (D2)
                 if (s.sourceContainer == ContainerId.DOCK && slot == dock.indexOfFirst { it.itemId == s.item.itemId }) return cancelDrop(s)
                 val remaining = dock.count { it.itemId != s.item.itemId }
-                actions.onItemDropped(s.item.itemId, ContainerId.DOCK, null, GridPosition(slot, 0))
+                commitDrop(s, ContainerId.DOCK, null, GridPosition(slot, 0))
                 settle(s, dockIconRect(slot, remaining + 1), 1f, 1f)
             }
 
@@ -382,13 +430,7 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
                 if (s.sourceContainer == ContainerId.HOME && s.sourcePageId == page.pageId && cell == GridPosition(s.sourceCell.x, s.sourceCell.y)) {
                     return cancelDrop(s)
                 }
-                val newKind = s.newWidget
-                if (newKind != null) {
-                    // PG2: widget mới chưa có hàng DB: VM thêm lạc quan với id tạm rồi ghi bằng AddWidgetUseCase (không qua onItemDropped).
-                    actions.onNewWidgetDropped(newKind.id, s.spanX, s.spanY, s.item.itemId, page.pageId, cell)
-                } else {
-                    actions.onItemDropped(s.item.itemId, ContainerId.HOME, page.pageId, cell)
-                }
+                commitDrop(s, ContainerId.HOME, page.pageId, cell)
                 settle(s, visualRect(GridPosition(cell.x, cell.y, s.spanX, s.spanY), s.isWidget), 1f, 1f)
             }
 
@@ -462,6 +504,11 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
             // PG2 (Q3, như XML returnRect = null): widget mới chưa có chỗ cũ để bay về: ảnh co + mờ tại chỗ rồi mất, không thêm gì.
             val pt = point(s)
             settle(s, Rect(pt.x - floatSize.width / 2f, pt.y - floatSize.height / 2f, pt.x + floatSize.width / 2f, pt.y + floatSize.height / 2f), MERGE_END_SCALE, 0f)
+            return
+        }
+        if (s.fromLibrary) { // LD Task 4: không có ô nguồn: mờ dần và co nhẹ tại chỗ
+            val c = floatCenter.value
+            settle(s, Rect(c, c), MERGE_END_SCALE, 0f)
             return
         }
         // Bay về ô nguồn nếu nó còn ở trang đang xem (View: returnRect null khi trang nguồn lệch > 1/4 màn); dock bay về ô dock.
@@ -642,7 +689,7 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
         }
         // Gộp: icon gộp được mà điểm kéo ở VÙNG GIỮA của nó, theo vị trí NHÌN THẤY (icon bị đẩy vẫn là đích tại chỗ mới). Đích: app 1x1 hoặc thư
         // mục (kể cả CHÍNH thư mục nguồn: thả lại = hủy kéo ra). Thư mục đang kéo không gộp.
-        if (s.item !is DragItem.Folder) {
+        if (s.item !is DragItem.Folder && !s.fromLibrary) { // LD Task 4: app từ Library không gộp thư mục (ngoài phạm vi)
             var best: PlacedItem? = null
             var bestDist = Float.MAX_VALUE
             page.items.forEach { placed ->
@@ -724,7 +771,7 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
         val c = cells ?: return NO_HOVER
         val slot = slotFor(pt.x, s.item.itemId)
         if (shown.mode == HoverMode.PUSH && shown.area == HoverArea.DOCK && slot == shown.slot) return shown
-        if (s.item is DragItem.App) {
+        if (s.item is DragItem.App && !s.fromLibrary) { // LD Task 4: không gộp
             var best: Long? = null
             var bestDist = Float.MAX_VALUE
             dock.forEach { d ->

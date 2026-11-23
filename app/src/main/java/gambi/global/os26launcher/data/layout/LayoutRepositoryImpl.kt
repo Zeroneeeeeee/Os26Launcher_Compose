@@ -233,6 +233,13 @@ class LayoutRepositoryImpl @Inject constructor(
     override suspend fun setHidden(key: ComponentKey, userSerial: Long, hidden: Boolean) =
         reconciler.setHidden(key, userSerial, hidden)
 
+    // TF
+    override suspend fun removeFromHome(key: ComponentKey, userSerial: Long) = reconciler.removeFromHome(key, userSerial)
+
+    // LD
+    override suspend fun addAppAt(key: ComponentKey, targetContainer: Long, targetPageId: Long?, cell: GridPosition): Boolean =
+        reconciler.addAppAt(key, targetContainer, targetPageId, cell)
+
     override suspend fun addToFolder(itemId: Long, folderId: Long): Boolean =
         reconciler.addToFolder(itemId, folderId)
 

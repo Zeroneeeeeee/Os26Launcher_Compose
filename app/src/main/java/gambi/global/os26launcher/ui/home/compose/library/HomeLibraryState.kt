@@ -85,6 +85,55 @@ internal class HomeLibraryState(
 
     fun onAppClick(app: AppItem, rect: ScreenRect) = viewModel.onAppClicked(app, rect)
 
+    /**
+     * LD Task 2 — chế độ sửa của Library (nhấn giữ yên một app): icon rung, dấu "−" hỏi gỡ cài đặt, bấm icon không mở app. Thoát: chạm chỗ trống, Back,
+     * Library đóng ([render], [onTouch]).
+     */
+    var editing by mutableStateOf(false)
+        private set
+
+    /** LD Task 3: [LibraryDragGesture] đã nhận "giữ yên" trên một app (rung do cử chỉ lo). */
+    fun enterEditing() {
+        editing = true
+    }
+
+    /**
+     * LD Task 3 — vùng chạm của các app đang hiện (toạ độ cửa sổ, đã cắt theo khung cuộn), do ô app ghi khi đặt chỗ và gỡ khi rời composition.
+     * [LibraryDragGesture] tra ở đây lúc chạm xuống. [inGroup] = ô của màn nhóm (khi màn nhóm mở chỉ xét ô của nó).
+     */
+    class AppHit(val app: AppItem, val hit: android.graphics.RectF, val icon: () -> android.graphics.RectF, val inGroup: Boolean)
+
+    private val appHits = LinkedHashMap<Any, AppHit>()
+
+    fun registerAppHit(token: Any, hit: AppHit) {
+        appHits[token] = hit
+    }
+
+    fun unregisterAppHit(token: Any) {
+        appHits.remove(token)
+    }
+
+    /** App dưới điểm (x, y) của cửa sổ, chỉ khi Library mở hẳn và màn nhóm đứng yên (mở hẳn hoặc đóng hẳn); null = không có. */
+    fun appAt(x: Float, y: Float): AppHit? {
+        if (!enabled || !homeState().libraryOpen || swipeProgress.floatValue < 1f) return null
+        val group = when {
+            panelProgress <= 0f -> false
+            panelProgress >= 1f -> true
+            else -> return null
+        }
+        return appHits.values.lastOrNull { it.inGroup == group && it.hit.contains(x, y) }
+    }
+
+    fun exitEditing() {
+        editing = false
+    }
+
+    /** LD Task 2: dấu "−" trên app ở chế độ sửa → hỏi gỡ cài đặt → trình gỡ của hệ thống. */
+    fun onRemoveApp(app: AppItem) {
+        val host = activity as? androidx.activity.ComponentActivity ?: return
+        gambi.global.os26launcher.ui.home.compose.showUninstallAppDialog(host, app.label) { viewModel.uninstallApp(app.key) }
+    }
+
     fun onCloseGroup() = viewModel.closeCategoryGroup()
 
     /** Gọi đầu `dispatchTouchEvent`. Trạng thái pager chỉ xét ở DOWN (AppLibraryController D2/H1). */
@@ -102,6 +151,7 @@ internal class HomeLibraryState(
     /** Đồng bộ theo `libraryOpen`; edit mode / kéo / menu / thư mục / hỏi ảnh nền bật khi đang mở thì đóng (JH3c D3). */
     fun render(state: HomeUiState) {
         syncGroup(state)
+        if (!state.libraryOpen) editing = false // LD Task 2: Library đóng thì thoát chế độ sửa
         if (state.libraryOpen && (state.editMode || state.draggingItemId != null || state.iconMenu != null ||
                 state.openFolderId != null)
         ) {

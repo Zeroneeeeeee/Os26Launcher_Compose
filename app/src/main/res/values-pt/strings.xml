@@ -63,6 +63,7 @@
     <string name="remove_app_delete">Apagar app</string>
     <string name="remove_app_from_home">Remover da tela inicial</string>
     <string name="remove_app_cancel">Cancelar</string>
+    <string name="library_uninstall_message">Apagar este app também apagará os dados dele.</string>
 
     <!-- M8b: tìm kiếm -->
     <string name="search_field_hint">Pesquisar</string>
@@ -303,6 +304,7 @@
     <string name="cc_tile_settings">Configurações</string>
     <string name="cc_tile_dark_mode">Modo escuro</string>
     <string name="cc_tile_notes">Notas</string>
+    <string name="cc_tile_screen_mirror">Espelhar Tela</string>
     <string name="cc_tile_night_shift">Night Shift</string>
     <string name="cc_tile_app">App</string>
     <string name="cc_customize_tiles">Personalizar controles</string>

@@ -99,4 +99,13 @@ interface LayoutRepository {
 
     /** M7 — ẩn/bỏ ẩn app theo [key]. Ẩn thì gỡ khỏi bố cục; bỏ ẩn thì đặt lại vào ô trống đầu tiên. */
     suspend fun setHidden(key: ComponentKey, userSerial: Long, hidden: Boolean)
+
+    /** TF — gỡ app khỏi Home (lưới, thư mục, dock) mà KHÔNG ẩn: app vẫn ở Library/tìm kiếm, không tự quay lại Home (kéo từ Library ra lại: [addAppAt]). */
+    suspend fun removeFromHome(key: ComponentKey, userSerial: Long)
+
+    /**
+     * LD — tạo hàng app MỚI cho [key] đúng chỗ thả khi kéo từ App Library: lưới ([targetContainer] = HOME, neo [cell] của [targetPageId], `PageId.NEW` =
+     * trang tạm, icon bị phủ được đẩy) hoặc dock (slot `cell.x`). Cho phép bản trùng; bỏ cờ `offHome`. false (không ghi gì) nếu bị từ chối.
+     */
+    suspend fun addAppAt(key: ComponentKey, targetContainer: Long, targetPageId: Long?, cell: GridPosition): Boolean
 }

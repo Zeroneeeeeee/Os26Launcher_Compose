@@ -27,7 +27,10 @@ data class ControlCenterConfig(
             CustomTile.Builtin(CustomTileType.DARK_MODE),
             CustomTile.Builtin(CustomTileType.BATTERY),
             CustomTile.Builtin(CustomTileType.VOICE_MEMO),
-            CustomTile.Builtin(CustomTileType.SETTINGS)
+            CustomTile.Builtin(CustomTileType.SETTINGS),
+            // TF (chủ dự án 2026-11-23, "giống iPhone"): thêm Ghi chú và Phản chiếu màn hình. Chỉ áp cho người chưa tự sắp ô (khóa vắng).
+            CustomTile.Builtin(CustomTileType.NOTES),
+            CustomTile.Builtin(CustomTileType.SCREEN_MIRROR)
         )
     }
 }
@@ -111,7 +114,10 @@ enum class CustomTileType {
     SETTINGS,
     DARK_MODE,
     NOTES,
-    NIGHT_SHIFT
+    NIGHT_SHIFT,
+
+    /** TF: phản chiếu màn hình (Smart View / Cast); app thường không tự bật được nên mở màn truyền của hệ thống. */
+    SCREEN_MIRROR
 }
 
 /** G3d: một ô tùy chỉnh: loại dựng sẵn, hoặc lối tắt mở một app. */

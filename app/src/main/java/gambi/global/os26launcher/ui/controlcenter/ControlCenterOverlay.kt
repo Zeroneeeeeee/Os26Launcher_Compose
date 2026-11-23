@@ -321,7 +321,10 @@ internal class ControlCenterOverlay(
             }
             // D2: dải trên nằm ngay dưới thanh trạng thái (chạm trong thanh trạng thái vẫn là của hệ thống). Dải cạnh lệch xuống
             // theo offsetFraction, không nhỏ hơn đáy thanh trạng thái.
-            y = if (vertical) maxOf(statusBarHeight(), (sh * edgeConfig.offsetFraction).toInt()) else statusBarHeight()
+            // TF (đo 2026-11-23, SM-A176B): vùng kéo bảng thông báo của hệ thống lấn ~30 px dưới đáy thanh trạng thái; chạm bắt đầu trong
+            // vùng đó bị hệ thống lấy mất (dải nhận ACTION_CANCEL ngay sau slop). Chừa khe [STATUS_BAR_GESTURE_GAP_DP] dưới thanh.
+            val topLimit = statusBarHeight() + (STATUS_BAR_GESTURE_GAP_DP * density).toInt()
+            y = if (vertical) maxOf(topLimit, (sh * edgeConfig.offsetFraction).toInt()) else topLimit
             title = "OS26 Control Center edge"
             applyCutoutMode()
         }
@@ -367,7 +370,9 @@ internal class ControlCenterOverlay(
 
     private fun statusBarHeight(): Int {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return wm.currentWindowMetrics.windowInsets.getInsets(WindowInsets.Type.statusBars()).top
+            // TF: bỏ qua trạng thái hiện/ẩn (getInsets trả 0 khi thanh đang ẩn: edit mode, app toàn màn) và tính cả tai thỏ.
+            return wm.currentWindowMetrics.windowInsets
+                .getInsetsIgnoringVisibility(WindowInsets.Type.statusBars() or WindowInsets.Type.displayCutout()).top
         }
         return systemDimen("status_bar_height", 24)
     }
@@ -398,5 +403,8 @@ internal class ControlCenterOverlay(
         /** CG: vuốt xuống trên trang chính nhanh hơn ngưỡng fling × hệ số này thì đóng dù quãng ngắn. */
         const val DISMISS_FLING_FACTOR = 4f
         const val BLUR_STEP_PX = 3
+
+        /** TF: khe giữa đáy thanh trạng thái và dải mép, tránh vùng kéo bảng thông báo của hệ thống (đo ~11 dp trên Samsung One UI). */
+        const val STATUS_BAR_GESTURE_GAP_DP = 16f
     }
 }

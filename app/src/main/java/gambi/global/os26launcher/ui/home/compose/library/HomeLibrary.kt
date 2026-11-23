@@ -7,8 +7,13 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.composed
+import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -100,6 +105,9 @@ import gambi.global.os26launcher.domain.model.CategoryGroupApps
 import gambi.global.os26launcher.domain.model.LibraryContent
 import gambi.global.os26launcher.domain.model.ScreenRect
 import gambi.global.os26launcher.ui.home.compose.HomeIcons
+import gambi.global.os26launcher.ui.home.compose.HomeRemoveBadge
+import gambi.global.os26launcher.ui.home.compose.badgeCenterForIcon
+import gambi.global.os26launcher.ui.home.compose.homeJiggle
 import gambi.global.os26launcher.ui.home.compose.rememberHomeIcon
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -189,6 +197,8 @@ internal fun HomeLibrary(state: HomeLibraryState, icons: HomeIcons, backdrop: Bi
                         scaleY = s
                     }
                     .blockTouches(enabled = swipe > 0f && panelP <= OPEN_EPS)
+                    // LD Task 2: chế độ sửa: chạm chỗ trống (không ô nào nhận cú chạm) thì thoát. Ô app / ô nhóm tiêu thụ cú chạm của chúng trước.
+                    .then(if (state.editing) Modifier.pointerInput(Unit) { detectTapGestures { state.exitEditing() } } else Modifier)
             )
         }
         // 3. Màn nhóm.
@@ -412,18 +422,56 @@ private fun GroupTile(entry: CategoryGroupApps, sz: LibrarySizes, icons: HomeIco
 private fun BigIcon(app: AppItem, sizePx: Int, icons: HomeIcons, state: HomeLibraryState) {
     val bitmap = rememberHomeIcon(icons, app, sizePx)
     var rect by remember { mutableStateOf<ScreenRect?>(null) }
-    Box(
-        Modifier
-            .fillMaxSize()
-            .onGloballyPositioned { c ->
-                val b = c.boundsInRoot()
-                rect = ScreenRect(b.left.roundToInt(), b.top.roundToInt(), b.right.roundToInt(), b.bottom.roundToInt())
-            }
-            .semantics { contentDescription = app.a11yLabel.ifEmpty { app.label } } // C10
-            .clickable(role = Role.Button) { rect?.let { state.onAppClick(app, it) } }
-    ) {
-        if (bitmap != null) Image(bitmap, contentDescription = null, modifier = Modifier.fillMaxSize())
+    Box(Modifier.fillMaxSize().homeJiggle(state.editing)) { // LD Task 2: rung ở chế độ sửa
+        val iconBounds = remember { android.graphics.RectF() }
+        Box(
+            Modifier
+                .fillMaxSize()
+                .onGloballyPositioned { c ->
+                    val b = c.boundsInRoot()
+                    rect = ScreenRect(b.left.roundToInt(), b.top.roundToInt(), b.right.roundToInt(), b.bottom.roundToInt())
+                    iconBounds.set(b.left, b.top, b.right, b.bottom)
+                }
+                .libraryHit(app, state, inGroup = false) { iconBounds }
+                .semantics { contentDescription = app.a11yLabel.ifEmpty { app.label } } // C10
+                .libraryAppClick(app, state) { rect }
+        ) {
+            if (bitmap != null) Image(bitmap, contentDescription = null, modifier = Modifier.fillMaxSize())
+        }
+        LibraryRemoveBadge(app, sizePx, state, Modifier.align(Alignment.TopStart))
     }
+}
+
+/**
+ * LD Task 2 — bấm một app của Library: ngoài chế độ sửa = mở app; ở chế độ sửa không làm gì. Nhấn giữ KHÔNG ở đây: [LibraryDragGesture] nhận ở
+ * Activity (Task 3) và gửi ACTION_CANCEL xuống nên cú bấm không thành.
+ */
+private fun Modifier.libraryAppClick(app: AppItem, state: HomeLibraryState, rect: () -> ScreenRect?): Modifier =
+    clickable(role = Role.Button) {
+        if (!state.editing) rect()?.let { state.onAppClick(app, it) }
+    }
+
+/**
+ * LD Task 3 — ghi vùng chạm của ô app (toạ độ cửa sổ, `boundsInWindow` đã cắt theo khung cuộn nên ô bị cuộn khuất dưới thanh trên không nhận) vào
+ * [HomeLibraryState] để [LibraryDragGesture] tra; gỡ khi ô rời composition (danh sách lười). [icon]: khung icon (ảnh nổi khi kéo ra bắt đầu từ đó).
+ */
+private fun Modifier.libraryHit(app: AppItem, state: HomeLibraryState, inGroup: Boolean, icon: () -> android.graphics.RectF): Modifier = composed {
+    val token = remember { Any() }
+    val latestApp by rememberUpdatedState(app)
+    DisposableEffect(token) { onDispose { state.unregisterAppHit(token) } }
+    onGloballyPositioned { c ->
+        val b = c.boundsInWindow()
+        if (b.isEmpty) state.unregisterAppHit(token)
+        else state.registerAppHit(token, HomeLibraryState.AppHit(latestApp, android.graphics.RectF(b.left, b.top, b.right, b.bottom), icon, inGroup))
+    }
+}
+
+/** LD Task 2 — dấu "−" ở góc trên-trái icon cạnh [iconPx] (icon nằm ở góc trên-trái của cha), chỉ ở chế độ sửa; bấm = hỏi gỡ cài đặt. */
+@Composable
+private fun LibraryRemoveBadge(app: AppItem, iconPx: Int, state: HomeLibraryState, modifier: Modifier = Modifier) {
+    if (!state.editing) return
+    val c = badgeCenterForIcon(0f, 0f, iconPx)
+    HomeRemoveBadge(iconPx, c.x, c.y, stringResource(R.string.remove_app_title, app.label), modifier) { state.onRemoveApp(app) }
 }
 
 /** Góc thứ tư: tối đa 4 icon mini 2 × 2; bấm = mở màn nhóm. TalkBack đọc tên nhóm. */
@@ -494,12 +542,16 @@ private fun ListAppRow(app: AppItem, iconPx: Int, icons: HomeIcons, state: HomeL
     val bitmap = rememberHomeIcon(icons, app, iconPx)
     var rect by remember { mutableStateOf<ScreenRect?>(null) }
     val interaction = remember { MutableInteractionSource() }
+    val iconBounds = remember { android.graphics.RectF() }
     Row(
         Modifier
             .fillMaxWidth()
             .heightIn(min = 56.dp)
             .clip(RoundedCornerShape(12.dp))
-            .clickable(interaction, indication = null, role = Role.Button) { rect?.let { state.onAppClick(app, it) } }
+            .libraryHit(app, state, inGroup = false) { iconBounds } // LD Task 3: cả hàng là vùng nhấn giữ
+            .clickable(interaction, indication = null, role = Role.Button) {
+                if (!state.editing) rect?.let { state.onAppClick(app, it) } // LD Task 2: ở chế độ sửa bấm không mở app
+            }
             .dsPressHighlight(interaction)
             .padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -507,12 +559,15 @@ private fun ListAppRow(app: AppItem, iconPx: Int, icons: HomeIcons, state: HomeL
         Box(
             Modifier
                 .size(dimensionResource(R.dimen.library_list_icon_size))
+                .homeJiggle(state.editing)
                 .onGloballyPositioned { c ->
                     val b = c.boundsInRoot()
                     rect = ScreenRect(b.left.roundToInt(), b.top.roundToInt(), b.right.roundToInt(), b.bottom.roundToInt())
+                    iconBounds.set(b.left, b.top, b.right, b.bottom)
                 }
         ) {
             if (bitmap != null) Image(bitmap, contentDescription = null, modifier = Modifier.fillMaxSize())
+            LibraryRemoveBadge(app, iconPx, state, Modifier.align(Alignment.TopStart))
         }
         BasicText(
             app.label,
@@ -684,10 +739,12 @@ private fun GroupPanel(
 private fun GroupApp(app: AppItem, iconPx: Int, icons: HomeIcons, state: HomeLibraryState) {
     val bitmap = rememberHomeIcon(icons, app, iconPx)
     var rect by remember { mutableStateOf<ScreenRect?>(null) }
+    val iconBounds = remember { android.graphics.RectF() }
     Column(
         Modifier
+            .libraryHit(app, state, inGroup = true) { iconBounds } // LD Task 3
             .clickable(role = Role.Button) {
-                rect?.let {
+                if (!state.editing) rect?.let { // LD Task 2: ở chế độ sửa bấm không mở app
                     state.onAppClick(app, it)
                     state.onCloseGroup()
                 }
@@ -698,12 +755,15 @@ private fun GroupApp(app: AppItem, iconPx: Int, icons: HomeIcons, state: HomeLib
         Box(
             Modifier
                 .size(dimensionResource(R.dimen.category_group_icon_size))
+                .homeJiggle(state.editing)
                 .onGloballyPositioned { c ->
                     val b = c.boundsInRoot()
                     rect = ScreenRect(b.left.roundToInt(), b.top.roundToInt(), b.right.roundToInt(), b.bottom.roundToInt())
+                    iconBounds.set(b.left, b.top, b.right, b.bottom)
                 }
         ) {
             if (bitmap != null) Image(bitmap, contentDescription = null, modifier = Modifier.fillMaxSize())
+            LibraryRemoveBadge(app, iconPx, state, Modifier.align(Alignment.TopStart))
         }
         BasicText(
             app.label,

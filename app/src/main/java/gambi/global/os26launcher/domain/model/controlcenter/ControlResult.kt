@@ -33,5 +33,6 @@ enum class SystemPanel {
     VOICE_MEMO,
     NOTES,
     SOUND_OUTPUT,
-    DND_SETTINGS
+    DND_SETTINGS,
+    SCREEN_MIRROR // TF
 }

@@ -216,11 +216,14 @@ data class AppOverrideEntity(
     val userSerial: Long,
     val hidden: Boolean = false,          // 5.1 Ứng dụng ẩn
     val customLabel: String? = null,      // 5.3 Thay đổi tên (trước CF: DataStore `app_labels`)
-    val customIconPath: String? = null    // 5.2 Thay đổi biểu tượng (chưa làm), file trong `files/custom_icons/`
+    val customIconPath: String? = null,   // 5.2 Thay đổi biểu tượng (chưa làm), file trong `files/custom_icons/`
+    val offHome: Boolean = false          // v3 (TF): "Xóa khỏi Màn hình chính" — không ở Home nhưng KHÔNG ẩn
 )
 ```
 
-**Một hàng = một app có ít nhất một tùy chỉnh.** Ghi xong mà mọi cột về mặc định (`hidden = 0`, hai cột kia null) thì xóa hàng (`pruneEmpty`). Ví dụ: bỏ ẩn một app đã đổi tên thì hàng còn (giữ tên); khôi phục tên của app không ẩn thì hàng mất.
+**v2 → v3 (TF, 2026-11-23):** thêm cột `offHome INTEGER NOT NULL DEFAULT 0` bằng `LauncherDatabase.MIGRATION_2_3` (viết tay, `ALTER TABLE`). Trước v3, "Xóa khỏi Màn hình chính" ghi `hidden = 1` nên app biến khỏi Library và tìm kiếm. Từ v3: `hidden` = ẩn khỏi mọi nơi; `offHome` = chỉ không có trên Home (vẫn ở Library, tìm kiếm, app gần đây). Bộ đặt app mới (`selectFresh`, `placeNewInTransaction`, dựng lưới mặc định) bỏ qua cả hai cờ. `LayoutReconciler.removeFromHome` ghi cờ và gỡ hàng placement; kéo app từ Library ra Home (`addAppAt`, LD) tạo hàng mới và bỏ cờ. App đã "xóa khỏi MH chính" bằng bản cũ vẫn mang `hidden = 1` (không phân biệt được với app ẩn): bỏ ẩn ở Cài đặt > App ẩn.
+
+**Một hàng = một app có ít nhất một tùy chỉnh.** Ghi xong mà mọi cột về mặc định (`hidden = 0`, `offHome = 0`, hai cột kia null) thì xóa hàng (`pruneEmpty`). Ví dụ: bỏ ẩn một app đã đổi tên thì hàng còn (giữ tên); khôi phục tên của app không ẩn thì hàng mất.
 
 **Ai đọc/ghi:** `HiddenAppDao` (cột `hidden`; giữ tên và chữ ký hàm của bản v1 nên `LayoutReconciler` không đổi), `AppOverrideDao` (cột `customLabel`, dùng bởi `AppLabelRepositoryImpl`). SQLite của API 26 (3.18) không có UPSERT: ghi một cột = `INSERT OR IGNORE` hàng mặc định + `UPDATE`, trong `@Transaction`.
 

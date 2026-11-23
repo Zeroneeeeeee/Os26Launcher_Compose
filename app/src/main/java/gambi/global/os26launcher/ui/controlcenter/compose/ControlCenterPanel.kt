@@ -136,9 +136,19 @@ class ControlCenterPanel(context: Context) {
         recomposeScope.launch { recomposer.runRecomposeAndApplyChanges() }
     }
 
+    /**
+     * TF (đo 2026-11-23, SM-A176B): composition sống qua các lần gỡ/thêm cửa sổ, nhưng sau lần thêm lại các khối `graphicsLayer { alpha = bgAlpha }`
+     * không được theo dõi nữa (lambda không chạy lại dù [bgAlpha] = 1): ảnh nền, lớp tối và nền kính của khối không vẽ, panel trong suốt từ lần mở
+     * thứ hai. Mỗi lần thêm cửa sổ tăng số này; [PanelComposeView] bọc màn trong `key(attachGeneration)` để dựng lại cây (trạng thái nằm ở panel nên
+     * không mất gì; [resetForOpen] vốn đã đưa về trang chính).
+     */
+    internal var attachGeneration by mutableIntStateOf(0)
+        private set
+
     private fun onAttached(v: View) {
         frameClock.resume()
         owner.moveTo(Lifecycle.State.RESUMED)
+        attachGeneration++
         attached = true
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             v.findOnBackInvokedDispatcher()?.registerOnBackInvokedCallback(
@@ -764,7 +774,7 @@ private class PanelComposeView(context: Context, private val panel: ControlCente
 
     @Composable
     override fun Content() {
-        ControlCenterScreen(panel)
+        androidx.compose.runtime.key(panel.attachGeneration) { ControlCenterScreen(panel) } // TF: dựng lại mỗi lần thêm cửa sổ
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {

@@ -63,6 +63,7 @@
     <string name="remove_app_delete">アプリを削除</string>
     <string name="remove_app_from_home">ホーム画面から取り除く</string>
     <string name="remove_app_cancel">キャンセル</string>
+    <string name="library_uninstall_message">このアプリを削除すると、そのデータも削除されます。</string>
 
     <!-- M8b: tìm kiếm -->
     <string name="search_field_hint">検索</string>
@@ -303,6 +304,7 @@
     <string name="cc_tile_settings">設定</string>
     <string name="cc_tile_dark_mode">ダークモード</string>
     <string name="cc_tile_notes">メモ</string>
+    <string name="cc_tile_screen_mirror">画面ミラーリング</string>
     <string name="cc_tile_night_shift">Night Shift</string>
     <string name="cc_tile_app">アプリ</string>
     <string name="cc_customize_tiles">コントロールをカスタマイズ</string>

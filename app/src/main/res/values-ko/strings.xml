@@ -63,6 +63,7 @@
     <string name="remove_app_delete">앱 삭제</string>
     <string name="remove_app_from_home">홈 화면에서 제거</string>
     <string name="remove_app_cancel">취소</string>
+    <string name="library_uninstall_message">이 앱을 삭제하면 앱 데이터도 삭제됩니다.</string>
 
     <!-- M8b: tìm kiếm -->
     <string name="search_field_hint">검색</string>
@@ -303,6 +304,7 @@
     <string name="cc_tile_settings">설정</string>
     <string name="cc_tile_dark_mode">다크 모드</string>
     <string name="cc_tile_notes">메모</string>
+    <string name="cc_tile_screen_mirror">화면 미러링</string>
     <string name="cc_tile_night_shift">Night Shift</string>
     <string name="cc_tile_app">앱</string>
     <string name="cc_customize_tiles">제어 항목 사용자화</string>

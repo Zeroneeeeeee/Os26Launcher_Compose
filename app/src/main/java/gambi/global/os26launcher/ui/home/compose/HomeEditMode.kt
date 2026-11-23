@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
@@ -95,6 +96,9 @@ fun HomeRemoveBadge(iconSizePx: Int, centerX: Float, centerY: Float, label: Stri
     val interaction = remember { MutableInteractionSource() }
     Box(
         modifier
+            // Cha có thể ép cỡ tối thiểu (ô widget: Box propagateMinConstraints): requiredSize khi đó bị căn GIỮA ô, làm dấu "−" lệch vào
+            // giữa widget. Bỏ ràng buộc tối thiểu và neo góc trên-trái để offset luôn tính từ góc ô.
+            .wrapContentSize(Alignment.TopStart, unbounded = true)
             .offset { IntOffset((centerX - hitPx / 2).roundToInt(), (centerY - hitPx / 2).roundToInt()) }
             .requiredSize(hit)
             .semantics { contentDescription = label }

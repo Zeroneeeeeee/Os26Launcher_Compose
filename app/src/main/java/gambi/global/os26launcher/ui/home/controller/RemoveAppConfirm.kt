@@ -17,7 +17,7 @@ internal fun HomeViewModel.confirmQuickRemove(context: Context, itemId: Long) {
     showRemoveAppDialog(
         context.activity() ?: return,
         app.label,
-        onRemoveFromHome = { onQuickHideTapped(itemId) },
+        onRemoveFromHome = { onQuickHideTapped(itemId, hide = false) }, // TF: không ẩn, app vẫn ở Library/tìm kiếm
         onDeleteApp = { uninstallApp(app.key) }
     )
 }
@@ -36,7 +36,7 @@ internal fun HomeViewModel.confirmMenuUninstall(context: Context) {
     showRemoveAppDialog(
         context.activity() ?: return,
         app.label,
-        onRemoveFromHome = { if (inFolder) hideAppInFolder(menu.key) else onQuickHideTapped(menu.itemId) },
+        onRemoveFromHome = { if (inFolder) hideAppInFolder(menu.key, hide = false) else onQuickHideTapped(menu.itemId, hide = false) }, // TF
         onDeleteApp = { uninstallApp(menu.key) }
     )
 }
@@ -47,7 +47,7 @@ internal fun HomeViewModel.confirmFolderRemove(context: Context, key: ComponentK
     showRemoveAppDialog(
         context.activity() ?: return,
         app.label,
-        onRemoveFromHome = { hideAppInFolder(key) },
+        onRemoveFromHome = { hideAppInFolder(key, hide = false) }, // TF
         onDeleteApp = { uninstallApp(key) }
     )
 }

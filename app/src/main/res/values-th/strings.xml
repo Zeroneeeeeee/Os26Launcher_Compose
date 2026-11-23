@@ -63,6 +63,7 @@
     <string name="remove_app_delete">ลบแอป</string>
     <string name="remove_app_from_home">เอาออกจากหน้าจอหลัก</string>
     <string name="remove_app_cancel">ยกเลิก</string>
+    <string name="library_uninstall_message">การลบแอปนี้จะลบข้อมูลของแอปด้วย</string>
 
     <!-- M8b: tìm kiếm -->
     <string name="search_field_hint">ค้นหา</string>
@@ -303,6 +304,7 @@
     <string name="cc_tile_settings">การตั้งค่า</string>
     <string name="cc_tile_dark_mode">โหมดมืด</string>
     <string name="cc_tile_notes">โน้ต</string>
+    <string name="cc_tile_screen_mirror">การสะท้อนหน้าจอ</string>
     <string name="cc_tile_night_shift">Night Shift</string>
     <string name="cc_tile_app">แอป</string>
     <string name="cc_customize_tiles">ปรับแต่งปุ่มควบคุม</string>

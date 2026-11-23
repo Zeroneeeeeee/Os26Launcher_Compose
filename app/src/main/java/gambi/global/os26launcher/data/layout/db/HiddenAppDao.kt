@@ -57,6 +57,21 @@ abstract class HiddenAppDao {
     @Query("UPDATE app_overrides SET hidden = :hidden WHERE packageName = :packageName AND className = :className AND userSerial = :userSerial")
     protected abstract suspend fun setHidden(packageName: String, className: String, userSerial: Long, hidden: Boolean)
 
-    @Query("DELETE FROM app_overrides WHERE hidden = 0 AND customLabel IS NULL AND customIconPath IS NULL")
+    @Query("DELETE FROM app_overrides WHERE hidden = 0 AND offHome = 0 AND customLabel IS NULL AND customIconPath IS NULL")
     protected abstract suspend fun pruneEmpty()
+
+    // ---- TF (v3): "Xóa khỏi Màn hình chính" (không ẩn) ----
+
+    @Query("SELECT packageName, className, userSerial FROM app_overrides WHERE offHome = 1")
+    abstract suspend fun getOffHome(): List<HiddenAppEntity>
+
+    @Transaction
+    open suspend fun setOffHome(packageName: String, className: String, userSerial: Long, offHome: Boolean) {
+        insertDefault(packageName, className, userSerial)
+        updateOffHome(packageName, className, userSerial, offHome)
+        pruneEmpty()
+    }
+
+    @Query("UPDATE app_overrides SET offHome = :offHome WHERE packageName = :packageName AND className = :className AND userSerial = :userSerial")
+    protected abstract suspend fun updateOffHome(packageName: String, className: String, userSerial: Long, offHome: Boolean)
 }

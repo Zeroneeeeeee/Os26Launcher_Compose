@@ -64,6 +64,6 @@ abstract class AppOverrideDao {
     @Query("UPDATE app_overrides SET customLabel = NULL WHERE userSerial = :userSerial")
     protected abstract suspend fun clearLabelsOfUserRaw(userSerial: Long)
 
-    @Query("DELETE FROM app_overrides WHERE hidden = 0 AND customLabel IS NULL AND customIconPath IS NULL")
+    @Query("DELETE FROM app_overrides WHERE hidden = 0 AND offHome = 0 AND customLabel IS NULL AND customIconPath IS NULL")
     protected abstract suspend fun pruneEmpty()
 }

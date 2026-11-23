@@ -8,10 +8,19 @@ import androidx.room.RoomDatabase
 // được dùng fallbackToDestructiveMigration nữa.
 @Database(
     entities = [LauncherItemEntity::class, HomePageEntity::class, AppOverrideEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
 abstract class LauncherDatabase : RoomDatabase() {
+    companion object {
+        /** TF: cột `offHome` ("Xóa khỏi Màn hình chính" mà không ẩn). Dữ liệu cũ giữ nguyên, cờ mặc định 0. */
+        val MIGRATION_2_3 = object : androidx.room.migration.Migration(2, 3) {
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE app_overrides ADD COLUMN offHome INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+    }
+
     abstract fun launcherItemDao(): LauncherItemDao
     abstract fun homePageDao(): HomePageDao
 

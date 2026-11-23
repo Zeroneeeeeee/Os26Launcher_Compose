@@ -149,7 +149,7 @@ Trạng thái: `weather_notify_shown_daily`, `weather_notify_shown_tomorrow` (St
 | `background` | `background` | `BackgroundMode` | NONE (CG 2026-11-20; trước là WALLPAPER) |
 | `blurBackground` | `blur` | Boolean | true |
 | `vibrateOnOpen` | `vibrate` | Boolean | true |
-| `tiles` | `tiles` | chuỗi `b:<TYPE>;a:<pkg>/<cls>/<user>;…` | `DEFAULT_TILES` |
+| `tiles` | `tiles` | chuỗi `b:<TYPE>;a:<pkg>/<cls>/<user>;…` | `DEFAULT_TILES` (TF 2026-11-23: thêm `NOTES`, `SCREEN_MIRROR` ở cuối, 10 ô) |
 | `recorderPackage` | `recorder_package` | String (rỗng = chưa chọn) | rỗng |
 | `nightShift.enabled` | `night_shift` | Boolean | false |
 | `nightShift.warmth` | `night_shift_warmth` | Float 0..1 | 0.5 |
