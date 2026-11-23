@@ -1,7 +1,7 @@
 # Kiến trúc và cấu trúc dự án Os26Launcher
 
 Trạng thái: **bản thiết kế, chờ bạn duyệt** — tạo 2026-10-16. Chưa viết dòng code nào theo tài liệu này.
-Gốc dự án: `E:\SourceTree\IosLauncher`. Package gốc: `gambi.global.os26launcher`.
+Gốc dự án: `E:\SourceTree\Os26Launcher_Compose` (từ 2026-11-23; repo XML cũ `E:\SourceTree\IosLauncher` đã ngừng, xem `AGENTS.md` mục "Dự án hiện hành"). Package gốc: `gambi.global.os26launcher`.
 
 > **Đổi tên 2026-10-16** để tránh rủi ro thương hiệu. Package `gambi.global.ioslauncher` → `gambi.global.os26launcher` (thư mục source, `package`/`import`, `namespace`, `applicationId`, tên custom view trong `activity_main.xml`). Cùng ngày: `app_name` → **"OS26 Launcher"**, style `Theme.IosLauncher` → `Theme.Os26Launcher` (5 chỗ), `rootProject.name` → `Os26Launcher`. **Giữ nguyên** tên thư mục trên ổ đĩa `E:\SourceTree\IosLauncher`.
 

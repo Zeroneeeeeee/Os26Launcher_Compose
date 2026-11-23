@@ -16,7 +16,7 @@ Trạng thái: **đang dùng**. Bản v3 thay bản nháp v2 (2026-11-12). Bản
   4. `get_document` trả cả trang đang mở (v3: ~2,8 MB JSON, công cụ tự lưu ra file). Lọc bằng Python: duyệt `children`, lấy `id`, `name`, `type`, `bounds`, `characters` của node `TEXT`. Trên Windows gọi `sys.stdout.reconfigure(encoding='utf-8')`.
   5. `get_screenshot` cần **id frame**; truyền id trang báo "No nodes to export". Ảnh trả về dạng base64 trong JSON (frame Home 360×1731 ở scale 1: ~800 KB), công cụ lưu ra file; giải mã bằng Python (`base64.b64decode` trường `exports[0].base64`) ra PNG.
   6. `save_screenshots` chỉ ghi được **bên trong thư mục làm việc của tiến trình bridge**. Phiên Claude Code chạy từ repo thì đó là repo, dùng `build/figma-draft/` (đã gitignore). Phiên claude.ai qua VM (2026-11-16, đo được) bridge chạy ở `C:\Windows\System32` nên mọi đường dẫn bị từ chối ("outputPath must be inside the MCP server working directory"): dùng `get_screenshot` nhiều node một lần (16 node scale 3 ≈ 5,9 MB JSON, công cụ tự lưu ra file), giải mã base64 từng `exports[i]` rồi `device_commit_files` vào `build/figma-v3/`.
-- Ảnh v2 đã lưu ở `E:\SourceTree\IosLauncher\build\figma-draft\` (không nằm trong git). Ảnh v3 (15 thành phần + màn 1.3), 24 icon SVG và JSON section Components đã lưu ở `build\figma-v3\` từ 2026-11-16 (DS3), cũng không nằm trong git.
+- Ảnh v2 đã lưu ở `E:\SourceTree\IosLauncher\build\figma-draft\` (không nằm trong git). Ảnh v3 (15 thành phần + màn 1.3), 24 icon SVG và JSON section Components đã lưu ở `build\figma-v3\` từ 2026-11-16 (DS3), cũng không nằm trong git. Cả hai nằm ở repo XML cũ; repo Compose không có, cần thì chép sang hoặc xuất lại.
 
 ## 2. Cấu trúc file v3
 

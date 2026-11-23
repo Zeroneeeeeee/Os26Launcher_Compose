@@ -136,7 +136,7 @@ Phiên Claude có hai kiểu, đầu mỗi phiên kiểm bằng `java -version` 
 | Kiểu phiên | Build | Cài APK, đọc logcat | Commit |
 |---|---|---|---|
 | Claude Code CLI chạy thẳng trên Windows (`AGENTS.md` mục "Môi trường", đo 2026-11-02) | Claude chạy `gradlew.bat assembleDebug` | Chỉ khi chủ dự án bảo và `adb devices` thấy máy | Chủ dự án (Claude chỉ khi được bảo rõ) |
-| Claude trên claude.ai nối vào máy qua Linux VM (`$HOME/mnt/IosLauncher`, đo 2026-11-16) | **Không**: JDK 11, không `adb`, `dl.google.com` trả 403. Chủ dự án build và gửi lỗi | Chủ dự án | Chủ dự án. Git trong VM không xóa được file nên `git commit`/`pull` để lại `.git/*.lock` |
+| Claude trên claude.ai nối vào máy qua Linux VM (`$HOME/mnt/Os26Launcher_Compose`; trước 2026-11-23 là `$HOME/mnt/IosLauncher`, đo 2026-11-16) | **Không**: JDK 11, không `adb`, `dl.google.com` trả 403. Chủ dự án build và gửi lỗi | Chủ dự án | Chủ dự án. Git trong VM không xóa được file nên `git commit`/`pull` để lại `.git/*.lock` |
 
 Kiểm tay luôn là việc của chủ dự án. Ghi rõ máy cho từng bước kiểm (Live 4 mặc định, Oppo chỉ khi cần kính).
 
