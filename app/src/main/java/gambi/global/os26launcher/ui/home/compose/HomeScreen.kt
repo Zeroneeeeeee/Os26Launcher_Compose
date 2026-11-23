@@ -63,7 +63,15 @@ import androidx.compose.ui.unit.IntSize
 import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import gambi.global.os26launcher.R
+import gambi.global.os26launcher.core.glass.BlurredBackdropCache
+import gambi.global.os26launcher.core.glass.GlassTuning
+import gambi.global.os26launcher.core.glass.compose.FrostedBackdrop
+import gambi.global.os26launcher.core.glass.compose.FrostedWallpaperLayer
+import gambi.global.os26launcher.core.glass.compose.rememberGlassLook
+import gambi.global.os26launcher.core.glass.compose.rememberLayerSnapshot
 import gambi.global.os26launcher.core.glass.compose.LocalDsBackdrop
+import gambi.global.os26launcher.core.glass.compose.LocalDsFrostedBackdrop
+import gambi.global.os26launcher.core.glass.compose.rememberFrostedBackdrop
 import gambi.global.os26launcher.core.ui.GridMetrics
 import gambi.global.os26launcher.domain.model.AppItem
 import gambi.global.os26launcher.domain.model.HomePage
@@ -103,6 +111,8 @@ import kotlin.math.abs
 @OptIn(ExperimentalLayoutApi::class) // systemBarsIgnoringVisibility: inset giữ nguyên khi thanh ẩn/hiện (như SystemBarsController)
 internal fun HomeScreen(
     state: HomeUiState,
+    /** PG3: lớp nền mờ tĩnh của ảnh nền ([rememberFrostedBackdrop] ở `HomeActivity`, dùng chung với ảnh kéo ở tầng Activity). */
+    frosted: FrostedBackdrop,
     icons: HomeIcons,
     showSearch: Boolean,
     showDots: Boolean,
@@ -205,6 +215,15 @@ internal fun HomeScreen(
     val overlayP = maxOf(menuProgress.value, folderProgress.value)
     val homeBackdrop = rememberLayerBackdrop()
     val folderLayerOn = state.openFolderId != null || folderProgress.value > 0f
+    // PG3 Task 2 Step 3 (Q3): dưới API 31 kính thật không chạy, nên bảng thư mục lấy mẫu ẢNH CHỤP lớp Home (chụp một lần lúc mở, làm mờ ngoài
+    // main thread bằng bộ đệm riêng) để vẫn thấy icon phía sau; ảnh chụp chưa xong thì dùng lớp nền mờ của ảnh nền. Máy ≥ 31 không chụp.
+    val legacyGlass = Build.VERSION.SDK_INT < Build.VERSION_CODES.S
+    val folderSnapshot = rememberLayerSnapshot(homeBackdrop, capture = legacyGlass && state.openFolderId != null, keep = legacyGlass && folderLayerOn)
+    val folderFrosted = rememberFrostedBackdrop(folderSnapshot)
+    val folderBlurCache = remember { BlurredBackdropCache() }
+    val folderLook by rememberGlassLook()
+    SideEffect { folderBlurCache.blurRadiusPx = maxOf(GlassTuning.blurRadiusPx(folderLook), FOLDER_SNAPSHOT_MIN_BLUR_PX) }
+    LaunchedEffect(folderSnapshot) { if (folderSnapshot == null) folderBlurCache.trim() } // đóng thư mục: nhả bản mờ của ảnh chụp
     // App của menu: tìm theo key trong trang, dock, thư mục (menu của app con trong thư mục có itemId = -1).
     val menuApp = state.iconMenu?.let { m -> findApp(state, m.key) }
     val openFolder = state.openFolderId?.let { id ->
@@ -300,11 +319,13 @@ internal fun HomeScreen(
                 }
                 .then(if (folderLayerOn) Modifier.layerBackdrop(homeBackdrop) else Modifier)
         ) {
+            FrostedWallpaperLayer(frosted, state.backdrop, Modifier.fillMaxSize()) // PG3: không vẽ gì ra màn, chỉ ghi lớp nền mờ
+            if (legacyGlass) FrostedWallpaperLayer(folderFrosted, folderSnapshot, Modifier.fillMaxSize(), cache = folderBlurCache)
             Wallpaper(state.backdrop, Modifier.fillMaxSize().layerBackdrop(backdrop))
             // Đo trên máy thật (dumpsys gfxinfo): mọi mặt kính CARD/SHEET bên trong (dock, ô widget...) vẽ lại vibrancy+blur+lens MỖI khung dù
             // đứng yên hay đang cuộn/kéo → 87% khung giật khi vuốt trang. Tắt kính thật toàn vùng Home trong lúc pager cuộn hoặc đang kéo
             // icon/widget (mặt kính về lại tĩnh, không mất khung nào ngoài giật), bật lại ngay khi đứng yên.
-            CompositionLocalProvider(LocalDsBackdrop provides backdrop) {
+            CompositionLocalProvider(LocalDsBackdrop provides backdrop, LocalDsFrostedBackdrop provides frosted.backdropOrNull) {
                 // TL1 Task 5 (như SystemBarsController.applySystemBarInsets): đỉnh lưới chừa sẵn chỗ cho hộp chạm của các pill edit mode, để lưới
                 // không dịch khi vào edit mode: đỉnh = max(thanh trạng thái, editToolbarClearance). Cạnh dưới = inset dưới.
                 val bars = WindowInsets.systemBarsIgnoringVisibility
@@ -395,7 +416,7 @@ internal fun HomeScreen(
                 }
             }
         }
-        CompositionLocalProvider(LocalDsBackdrop provides backdrop) {
+        CompositionLocalProvider(LocalDsBackdrop provides backdrop, LocalDsFrostedBackdrop provides frosted.backdropOrNull) {
             if (state.editMode && drag.session == null) {
                 HomeEditToolbar(
                     onEdit = { editMenuOpen = !editMenuOpen },
@@ -434,7 +455,8 @@ internal fun HomeScreen(
                     onAppClick = onAppClick,
                     onRemoveApp = overlays.onRemoveFolderApp,
                     onRename = overlays.onRenameFolder,
-                    onClose = overlays.closeFolder
+                    onClose = overlays.closeFolder,
+                    frostedBackdrop = folderFrosted.backdropOrNull ?: frosted.backdropOrNull
                 )
             }
             HomeIconMenu(
@@ -473,6 +495,7 @@ private fun Wallpaper(bitmap: Bitmap?, modifier: Modifier) {
 
 // Trọng số như activity_home.xml (pager 6 = GridMetrics.DEFAULT_ROWS, dock 1).
 private const val PAGER_WEIGHT = 6f
+private const val FOLDER_SNAPSHOT_MIN_BLUR_PX = 4 // PG3: sàn bán kính mờ (px của bản nhỏ 25 %) cho ảnh chụp sau bảng thư mục, như sàn 24 dp của kính thật
 private const val SETTLED_FRACTION = 0.01f // PG1 G1: lệch dưới 1 % bề rộng trang coi như đã đứng ở trang
 private const val DOCK_WEIGHT = 1f
 private const val PILL_IDLE_MS = 600L

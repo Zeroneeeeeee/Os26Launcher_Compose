@@ -14,6 +14,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.ViewTreeObserver
 import gambi.global.os26launcher.core.glass.GlassEnvironment
+import gambi.global.os26launcher.core.glass.compose.LocalDsFrostedBackdrop
+import gambi.global.os26launcher.core.glass.compose.rememberFrostedBackdrop
 import gambi.global.os26launcher.domain.config.GeneralConfigRepository
 import gambi.global.os26launcher.domain.model.IconStyleKey
 import gambi.global.os26launcher.ui.home.controller.RecreateGuard
@@ -293,6 +295,8 @@ class HomeActivity : AppCompatActivity() {
                 if (!toggles.libraryEnabled) library.closeIfOpen() // LO D2
             }
 
+            // PG3: lớp nền mờ tĩnh của ảnh nền (HomeScreen ghi lớp, ảnh kéo ở tầng Activity cũng đọc).
+            val frosted = rememberFrostedBackdrop(state.backdrop)
             Box(Modifier.fillMaxSize()) {
             // JS2: lớp tìm kiếm mở thì Home + Library phía sau nhoè (API 31+), như ảnh chụp mờ của SearchOverlayView.
             Box(
@@ -309,6 +313,7 @@ class HomeActivity : AppCompatActivity() {
                 CompositionLocalProvider(LocalHostedWidgets provides hostedWidgets) {
                 HomeScreen(
                     state = state,
+                    frosted = frosted,
                     icons = icons,
                     showSearch = toggles.searchPill,
                     showDots = toggles.pageDots,
@@ -358,7 +363,12 @@ class HomeActivity : AppCompatActivity() {
                 // JS4: App Library Compose phía trên Home (trước đây là View thêm bằng addContentView, JH3c).
                 HomeLibrary(library, icons, state.backdrop)
                 // LD Task 4: ảnh nổi kéo-thả trên cả Library (kéo app từ Library ra Home), toạ độ gốc = cửa sổ như HomeScreen.
-                homeDrag?.let { gambi.global.os26launcher.ui.home.compose.HomeDragLayer(it, it.cells, icons) }
+                homeDrag?.let {
+                    // PG3: ô thư mục đang kéo vẫn có kính mờ tĩnh.
+                    CompositionLocalProvider(LocalDsFrostedBackdrop provides frosted.backdropOrNull) {
+                        gambi.global.os26launcher.ui.home.compose.HomeDragLayer(it, it.cells, icons)
+                    }
+                }
             }
                 SearchOverlay(search, searchActions, state.backdrop, onProgress = { searchProgress.floatValue = it })
                 // PG2: bảng chọn widget là lớp phủ trong cửa sổ Home (không còn Dialog), trên Home / Today / Thư viện, để thẻ kéo được ra lưới.

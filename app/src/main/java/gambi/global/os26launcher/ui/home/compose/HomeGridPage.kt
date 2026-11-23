@@ -9,7 +9,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import gambi.global.os26launcher.domain.model.PlacedWidgetBase
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -39,7 +38,6 @@ import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -53,6 +51,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
 import gambi.global.os26launcher.R
 import gambi.global.os26launcher.core.designsystem.compose.dsPressable
+import gambi.global.os26launcher.core.glass.GlassRole
+import gambi.global.os26launcher.core.glass.compose.dsFrosted
 import gambi.global.os26launcher.core.ui.GridMetrics
 import gambi.global.os26launcher.domain.layout.FolderPlanner
 import gambi.global.os26launcher.domain.model.AppItem
@@ -301,8 +301,8 @@ internal fun HomeAppCell(
                                 scaleY = s
                                 alpha = plate.coerceIn(0f, 1f)
                             }
-                            .clip(RoundedCornerShape(cells.iconSize * HOVER_GLASS_SCALE * FOLDER_CORNER_RATIO))
-                            .background(colorResource(R.color.folder_background))
+                            // PG3 (G4): tấm kính khi hover gộp thư mục là kính mờ tĩnh như ô thư mục.
+                            .dsFrosted(GlassRole.FOLDER_CELL, RoundedCornerShape(cells.iconSize * HOVER_GLASS_SCALE * FOLDER_CORNER_RATIO))
                     )
                 }
                 if (bitmap != null) Image(bitmap, contentDescription = null, modifier = Modifier.fillMaxSize())
@@ -393,8 +393,8 @@ internal fun HomeFolderPlate(folder: PlacedFolder, sizePx: Int, icons: HomeIcons
     Box(
         modifier
             .requiredSize(with(density) { size.toDp() })
-            .clip(RoundedCornerShape(size * FOLDER_CORNER_RATIO))
-            .background(colorResource(R.color.folder_background))
+            // PG3 (G4): kính mờ tĩnh như ô thư mục bản XML (GlassRole.FOLDER_CELL); chưa có bản mờ / ảnh nền màu thì phẳng `folder_background` như cũ.
+            .dsFrosted(GlassRole.FOLDER_CELL, RoundedCornerShape(size * FOLDER_CORNER_RATIO))
     ) {
         shown.take(FolderPlanner.PAGE_SIZE).forEachIndexed { i, app ->
             val bitmap = rememberHomeIcon(icons, app, miniPx)

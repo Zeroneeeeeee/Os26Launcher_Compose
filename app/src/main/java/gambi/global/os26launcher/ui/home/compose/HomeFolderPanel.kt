@@ -110,7 +110,9 @@ internal fun HomeFolderPanel(
     onAppClick: (AppItem, ScreenRect?) -> Unit,
     onRemoveApp: (ComponentKey) -> Unit,
     onRename: (Long, String) -> Unit,
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    /** PG3 Task 2 Step 3: nền mờ tĩnh của bảng dưới API 31 (ảnh chụp lớp Home đã mờ, hoặc ảnh nền mờ khi ảnh chụp chưa xong). */
+    frostedBackdrop: Backdrop? = null
 ) {
     val drag = edit.drag
     var shown by remember { mutableStateOf(folder) }
@@ -216,7 +218,7 @@ internal fun HomeFolderPanel(
                 // Kính sáng như FolderPanelView (GlassRole.FOLDER_PANEL, tint folder_panel_glass_tint); nền SHEET của DS quá tối cho thư mục.
                 // Lớp Home (lưới + dock), không chỉ ảnh nền. Như iOS, panel luôn mờ đục: sàn 24 dp kể cả khi "Độ mờ" kính đặt rất thấp (không
                 // thì icon/nhãn Home sắc nét lọt qua sau app của thư mục).
-                .dsGlass(DsSurface.CARD, DsCorner.Fixed(PANEL_RADIUS_DP), backdrop, minBlurDp = FOLDER_MIN_BLUR_DP)
+                .dsGlass(DsSurface.CARD, DsCorner.Fixed(PANEL_RADIUS_DP), backdrop, minBlurDp = FOLDER_MIN_BLUR_DP, frosted = frostedBackdrop)
                 .background(colorResource(R.color.folder_panel_glass_tint))
                 .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { focus.clearFocus() } // chạm trong bảng không đóng
                 .then(

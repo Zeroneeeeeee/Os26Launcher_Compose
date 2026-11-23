@@ -1,5 +1,6 @@
 package gambi.global.os26launcher.ui.home.compose.library
 
+import android.os.Build
 import android.graphics.Bitmap
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
@@ -95,7 +96,9 @@ import gambi.global.os26launcher.core.designsystem.DsSurface
 import gambi.global.os26launcher.core.designsystem.compose.DsSpinner
 import gambi.global.os26launcher.core.designsystem.compose.dsPressHighlight
 import gambi.global.os26launcher.core.designsystem.compose.dsPressable
+import gambi.global.os26launcher.core.glass.compose.FrostedWallpaperImage
 import gambi.global.os26launcher.core.glass.compose.LocalDsBackdrop
+import gambi.global.os26launcher.core.glass.compose.LocalDsFrostedBackdrop
 import gambi.global.os26launcher.core.glass.compose.dsGlass
 import gambi.global.os26launcher.core.ui.LibraryLayoutMetrics
 import gambi.global.os26launcher.core.designsystem.compose.wallpaperSoftBlur
@@ -158,7 +161,8 @@ internal fun HomeLibrary(state: HomeLibraryState, icons: HomeIcons, backdrop: Bi
     if (swipe <= 0f && panelP <= 0f) return
 
     val night = state.night
-    val blurred = remember(backdrop) { backdrop?.let(::shrinkForBlur) }
+    val legacyGlass = Build.VERSION.SDK_INT < Build.VERSION_CODES.S // PG3: máy dưới API 31
+    val blurred = remember(backdrop, legacyGlass) { if (legacyGlass) null else backdrop?.let(::shrinkForBlur) }
     val libBackdrop = rememberLayerBackdrop()
     Box(modifier.fillMaxSize()) {
         // 1. Nền mờ (ghi làm lớp backdrop của kính ô nhóm).
@@ -169,7 +173,10 @@ internal fun HomeLibrary(state: HomeLibraryState, icons: HomeIcons, backdrop: Bi
                 .layerBackdrop(libBackdrop)
                 .background(Color(if (night) SCRIM_FLAT_DARK else SCRIM_FLAT_LIGHT))
         ) {
-            if (blurred != null) {
+            if (legacyGlass) {
+                // PG3 Task 5 (Q4): dưới API 31 không có RenderEffect nên bản thu nhỏ lộ khối khi phóng; dùng bản mờ thật của ảnh nền.
+                FrostedWallpaperImage(backdrop, Modifier.fillMaxSize())
+            } else if (blurred != null) {
                 Image(
                     blurred.asImageBitmap(),
                     contentDescription = null,
@@ -181,7 +188,8 @@ internal fun HomeLibrary(state: HomeLibraryState, icons: HomeIcons, backdrop: Bi
             Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = if (night) SCRIM_TINT_DARK else SCRIM_TINT_LIGHT)))
         }
         // 2. Trang Library: trượt vào từ phải; co + mờ khi màn nhóm mở ở trên.
-        CompositionLocalProvider(LocalDsBackdrop provides libBackdrop) {
+        // PG3 Task 5: dưới API 31 lớp nền của Thư viện đã là ảnh nền mờ, nên ô nhóm lấy mẫu chính lớp này làm kính mờ tĩnh.
+        CompositionLocalProvider(LocalDsBackdrop provides libBackdrop, LocalDsFrostedBackdrop provides if (legacyGlass) libBackdrop else null) {
             LibraryPage(
                 state = state,
                 icons = icons,
@@ -203,7 +211,7 @@ internal fun HomeLibrary(state: HomeLibraryState, icons: HomeIcons, backdrop: Bi
         }
         // 3. Màn nhóm.
         val g = shownGroup
-        if (g != null && panelP > 0f) GroupPanel(g, panelP, panelStyle, origin, night, blurred, icons, state)
+        if (g != null && panelP > 0f) GroupPanel(g, panelP, panelStyle, origin, night, blurred, backdrop, icons, state)
     }
 }
 
@@ -658,6 +666,8 @@ private fun GroupPanel(
     origin: ScreenRect?,
     night: Boolean,
     blurred: Bitmap?,
+    /** PG3 Task 5: ảnh nền gốc, cho nền mờ thật dưới API 31 ([blurred] null ở đó). */
+    backdrop: Bitmap?,
     icons: HomeIcons,
     state: HomeLibraryState
 ) {
@@ -673,7 +683,9 @@ private fun GroupPanel(
             .graphicsLayer { alpha = p.coerceIn(0f, 1f) }
             .background(Color(if (night) SCRIM_FLAT_DARK else SCRIM_FLAT_LIGHT))
     ) {
-        if (blurred != null) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            FrostedWallpaperImage(backdrop, Modifier.fillMaxSize()) // PG3 Task 5 (Q4)
+        } else if (blurred != null) {
             Image(blurred.asImageBitmap(), null, contentScale = ContentScale.Crop, filterQuality = FilterQuality.High, modifier = Modifier.fillMaxSize().wallpaperSoftBlur())
         }
         Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = if (night) SCRIM_TINT_DARK else SCRIM_TINT_LIGHT)))

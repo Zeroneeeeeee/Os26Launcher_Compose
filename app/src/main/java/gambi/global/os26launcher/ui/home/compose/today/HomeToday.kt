@@ -1,5 +1,6 @@
 package gambi.global.os26launcher.ui.home.compose.today
 
+import android.os.Build
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.view.animation.AccelerateInterpolator
@@ -81,7 +82,9 @@ import gambi.global.os26launcher.core.designsystem.DsSurface
 import gambi.global.os26launcher.core.designsystem.compose.dsPressHighlight
 import gambi.global.os26launcher.core.designsystem.compose.dsPressable
 import gambi.global.os26launcher.core.designsystem.compose.wallpaperSoftBlur
+import gambi.global.os26launcher.core.glass.compose.FrostedWallpaperImage
 import gambi.global.os26launcher.core.glass.compose.LocalDsBackdrop
+import gambi.global.os26launcher.core.glass.compose.LocalDsFrostedBackdrop
 import gambi.global.os26launcher.core.glass.compose.dsGlass
 import gambi.global.os26launcher.core.ui.GridMetrics
 import gambi.global.os26launcher.domain.model.AppItem
@@ -138,7 +141,8 @@ internal fun HomeToday(
     val t = state.swipeProgress.floatValue
     if (t <= 0f) return
     val night = (LocalConfiguration.current.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-    val blurred = remember(backdrop) { backdrop?.let(::shrinkForBlur) }
+    val legacyGlass = Build.VERSION.SDK_INT < Build.VERSION_CODES.S // PG3: máy dưới API 31
+    val blurred = remember(backdrop, legacyGlass) { if (legacyGlass) null else backdrop?.let(::shrinkForBlur) }
     val todayBackdrop = rememberLayerBackdrop()
     // PG1 G1 (2026-11-23, chủ dự án thấy trên máy cũ): lớp chặn chạm KHÔNG đặt ở khung phủ toàn màn — khung này còn phủ cả lúc Today đang trượt
     // đóng (t > 0), nên cú vuốt kế tiếp (LB đã nhường cho pager) bị nuốt. Đặt trên trang Today (phần đang trượt) như Thư viện: Compose tính vùng
@@ -151,7 +155,10 @@ internal fun HomeToday(
                 .layerBackdrop(todayBackdrop)
                 .background(Color(if (night) SCRIM_FLAT_DARK else SCRIM_FLAT_LIGHT))
         ) {
-            if (blurred != null) {
+            if (legacyGlass) {
+                // PG3 Task 5 (Q4): dưới API 31 không có RenderEffect nên bản thu nhỏ lộ khối khi phóng; dùng bản mờ thật của ảnh nền.
+                FrostedWallpaperImage(backdrop, Modifier.fillMaxSize())
+            } else if (blurred != null) {
                 Image(
                     blurred.asImageBitmap(),
                     contentDescription = null,
@@ -162,7 +169,8 @@ internal fun HomeToday(
             }
             Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = if (night) SCRIM_TINT_DARK else SCRIM_TINT_LIGHT)))
         }
-        CompositionLocalProvider(LocalDsBackdrop provides todayBackdrop) {
+        // PG3 Task 5: dưới API 31 lớp nền của Today đã là ảnh nền mờ, nên card lấy mẫu chính lớp này làm kính mờ tĩnh.
+        CompositionLocalProvider(LocalDsBackdrop provides todayBackdrop, LocalDsFrostedBackdrop provides if (legacyGlass) todayBackdrop else null) {
             if (cells != null) {
                 TodayPage(
                     state = state,
