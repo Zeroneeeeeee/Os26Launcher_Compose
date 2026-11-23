@@ -376,7 +376,7 @@ private fun GroupTile(entry: CategoryGroupApps, sz: LibrarySizes, icons: HomeIco
                     val b = c.boundsInRoot()
                     state.tileRects[entry.group] = ScreenRect(b.left.roundToInt(), b.top.roundToInt(), b.right.roundToInt(), b.bottom.roundToInt())
                 }
-                .dsGlass(DsSurface.CARD, DsCorner.Fixed(sz.radius.value))
+                .dsGlass(DsSurface.CARD, DsCorner.Fixed(sz.radius.value, glass = true))
                 .padding(sz.tilePad)
         ) {
             for (row in 0 until 2) {

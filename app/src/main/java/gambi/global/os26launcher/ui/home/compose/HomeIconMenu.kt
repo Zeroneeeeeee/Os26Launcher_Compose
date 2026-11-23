@@ -170,7 +170,7 @@ private fun MenuCard(m: IconMenuState, above: Boolean, onAction: (IconMenuAction
         Modifier
             .widthIn(dimensionResource(R.dimen.shortcut_menu_min_width), dimensionResource(R.dimen.shortcut_menu_max_width))
             .width(IntrinsicSize.Max)
-            .dsGlass(DsSurface.CARD, DsCorner.Fixed(MENU_RADIUS_DP))
+            .dsGlass(DsSurface.CARD, DsCorner.Fixed(MENU_RADIUS_DP, glass = true))
             .background(colorResource(R.color.shortcut_menu_glass_tint)) // menu sáng như IconActionMenu (chữ tối)
             .padding(
                 horizontal = dimensionResource(R.dimen.shortcut_menu_padding_horizontal),

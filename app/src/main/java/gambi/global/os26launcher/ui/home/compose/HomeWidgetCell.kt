@@ -70,7 +70,7 @@ internal fun HomeWidgetCell(widget: PlacedWidget, onClick: (() -> Unit)? = null)
         Spacer(
             Modifier
                 .fillMaxSize()
-                .dsGlass(DsSurface.CARD, DsCorner.Fixed(widgetRadius(maxWidth, maxHeight).value))
+                .dsGlass(DsSurface.CARD, DsCorner.Fixed(widgetRadius(maxWidth, maxHeight).value, glass = true))
                 .semantics { contentDescription = description }
                 .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier) // JH3d D4
                 .drawBehind {

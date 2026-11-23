@@ -55,7 +55,7 @@ internal fun HomeDock(
                 .fillMaxWidth()
                 .then(if (glassHeight != null) Modifier.height(glassHeight) else Modifier.fillMaxSize())
                 .align(Alignment.Center)
-                .dsGlass(DsSurface.CARD, DsCorner.Fixed(CORNER_DP))
+                .dsGlass(DsSurface.CARD, DsCorner.Fixed(CORNER_DP, glass = true))
         )
         if (cells != null && widthPx > 0) {
             val dockCells = cells.copy(showLabels = false)

@@ -263,8 +263,8 @@ class HomeActivity : AppCompatActivity() {
                 }
             }.collectAsStateWithLifecycle(initialValue = NotificationBadges.State())
 
-            // JH3a D4 — Back theo thứ tự HomeBackController (LIFO): đăng ký sau thì được hỏi trước. Gốc: chưa là launcher mặc định thì đóng.
-            BackHandler(enabled = !defaultLauncherRepository.isDefaultLauncher()) { finish() }
+            // JH3a D4 — Back theo thứ tự HomeBackController (LIFO): đăng ký sau thì được hỏi trước. Gốc: ở màn Home thì Back không làm gì (nuốt sự kiện).
+            BackHandler(enabled = true) { /* no-op: tắt Back ở màn Home */ }
             BackHandler(enabled = state.libraryOpen) { library.closeIfOpen() }
             BackHandler(enabled = state.libraryOpen && library.editing) { library.exitEditing() } // LD Task 2: Back thoát chế độ sửa trước khi đóng Library
             BackHandler(enabled = state.todayOpen) { today.closeIfOpen() } // TV: cùng lớp "nền" với Library (không mở chồng nhau)

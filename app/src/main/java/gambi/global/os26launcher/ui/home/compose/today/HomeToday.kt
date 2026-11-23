@@ -581,7 +581,7 @@ internal fun TodayRecentsCard(
         val card = if (flatColor != null) {
             Modifier.clip(RoundedCornerShape(radius)).background(flatColor)
         } else {
-            Modifier.dsGlass(DsSurface.CARD, DsCorner.Fixed(radius.value))
+            Modifier.dsGlass(DsSurface.CARD, DsCorner.Fixed(radius.value, glass = true))
         }
         val inner = remember(columns, showLabels, wPx, hPx) { GridMetrics(columns, RECENTS_ROWS, showLabels).measure(wPx, hPx, density.density) }
         Box(Modifier.fillMaxSize().then(card)) {

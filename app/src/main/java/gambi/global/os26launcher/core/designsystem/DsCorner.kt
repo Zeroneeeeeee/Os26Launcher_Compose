@@ -22,6 +22,11 @@ sealed interface DsCorner {
     /** Theo vai: xem [DsCornerRole]. */
     data class Role(val role: DsCornerRole) : DsCorner
 
-    /** Số cố định, chỉ cho bo nội bộ nhỏ của thành phần (công tắc 16, tay nắm 3). */
-    data class Fixed(val dp: Float) : DsCorner
+    /**
+     * Số cố định, chỉ cho bo nội bộ nhỏ của thành phần (công tắc 16, tay nắm 3).
+     *
+     * [glass] = bề mặt kính có bán kính gốc riêng (dock, widget, panel thư mục... của Home): bán kính thật = [dp] nhân theo thanh
+     * "Bo góc" của kính (`GlassTuning.cornerRadius`), như vai kính của [Role].
+     */
+    data class Fixed(val dp: Float, val glass: Boolean = false) : DsCorner
 }

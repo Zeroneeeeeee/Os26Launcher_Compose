@@ -44,7 +44,7 @@ internal fun HomeAppWidgetCell(widget: PlacedAppWidget) {
     val inset = dimensionResource(R.dimen.aw_card_inset)
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val radius = widgetRadius(maxWidth, maxHeight)
-        Box(Modifier.fillMaxSize().dsGlass(DsSurface.CARD, DsCorner.Fixed(radius.value)))
+        Box(Modifier.fillMaxSize().dsGlass(DsSurface.CARD, DsCorner.Fixed(radius.value, glass = true)))
         val view = remember(hosted, widget.appWidgetId, widget.provider) { hosted?.obtain(widget) }
         if (view == null) {
             BasicText(

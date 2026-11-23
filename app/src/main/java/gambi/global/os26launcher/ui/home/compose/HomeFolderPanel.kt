@@ -209,7 +209,7 @@ internal fun HomeFolderPanel(
                 // Kính sáng như FolderPanelView (GlassRole.FOLDER_PANEL, tint folder_panel_glass_tint); nền SHEET của DS quá tối cho thư mục.
                 // Lớp Home (lưới + dock), không chỉ ảnh nền. Như iOS, panel luôn mờ đục: sàn 24 dp kể cả khi "Độ mờ" kính đặt rất thấp (không
                 // thì icon/nhãn Home sắc nét lọt qua sau app của thư mục).
-                .dsGlass(DsSurface.CARD, DsCorner.Fixed(PANEL_RADIUS_DP), backdrop, minBlurDp = FOLDER_MIN_BLUR_DP)
+                .dsGlass(DsSurface.CARD, DsCorner.Fixed(PANEL_RADIUS_DP, glass = true), backdrop, minBlurDp = FOLDER_MIN_BLUR_DP)
                 .background(colorResource(R.color.folder_panel_glass_tint))
                 .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { focus.clearFocus() } // chạm trong bảng không đóng
                 .then(

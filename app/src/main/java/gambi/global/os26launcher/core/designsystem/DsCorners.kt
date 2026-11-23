@@ -39,7 +39,10 @@ object DsCorners {
         look: GlassLook = GlassEnvironment.from(context).look
     ): Float = when (corner) {
         DsCorner.Pill -> if (widthPx > 0 && heightPx > 0) min(widthPx, heightPx) / 2f else 0f
-        is DsCorner.Fixed -> corner.dp * context.resources.displayMetrics.density
+        is DsCorner.Fixed -> {
+            val base = corner.dp * context.resources.displayMetrics.density
+            if (corner.glass) GlassTuning.cornerRadius(look, base, widthPx.toFloat(), heightPx.toFloat()) else base
+        }
         is DsCorner.Role -> {
             val base = basePx(context, corner.role)
             if (corner.role.isGlass) {

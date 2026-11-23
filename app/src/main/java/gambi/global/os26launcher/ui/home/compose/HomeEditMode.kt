@@ -192,7 +192,7 @@ fun HomeEditMenu(anchor: androidx.compose.ui.geometry.Rect, items: List<HomeEdit
                 }
                 .widthIn(dimensionResource(R.dimen.shortcut_menu_min_width), dimensionResource(R.dimen.shortcut_menu_max_width))
                 .width(androidx.compose.foundation.layout.IntrinsicSize.Max)
-                .dsGlass(DsSurface.CARD, DsCorner.Fixed(EDIT_MENU_RADIUS_DP))
+                .dsGlass(DsSurface.CARD, DsCorner.Fixed(EDIT_MENU_RADIUS_DP, glass = true))
                 .background(colorResource(R.color.shortcut_menu_glass_tint))
                 .pointerInput(Unit) { awaitEachGesture { awaitFirstDown(requireUnconsumed = false) } } // chạm trong thẻ (ngoài hàng) không đóng
                 .padding(
