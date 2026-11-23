@@ -1,0 +1,196 @@
+﻿<#
+.SYNOPSIS
+  PG4 - đo khung hình Home (dumpsys gfxinfo) theo từng cấu hình công tắc đo, xen kẽ trong cùng phiên.
+
+.DESCRIPTION
+  Cần bản build `perf` (.\gradlew.bat assemblePerf installPerf) và một máy cắm adb. Mỗi lượt: đặt công tắc
+  (adb shell setprop debug.os26.perf ...), tắt hẳn app, mở Home, chờ kính dựng xong, reset gfxinfo, chạy kịch bản, đọc gfxinfo.
+  Thứ tự: mỗi vòng chạy lần lượt mọi cấu hình (xen kẽ), cuối phiên lặp lại cấu hình đầu (bài học GL: máy trôi theo nhiệt).
+  Kết quả in ra bảng và ghi CSV vào tools/perf/out/ (không commit).
+
+  Kịch bản:
+    swipe  - lướt qua lại giữa trang 1 và trang -Pages (không chạm Today / Thư viện). Home phải mở ở trang 1.
+    jiggle - nhấn giữ chỗ trống (-GapX, -GapY) vào edit mode, đứng yên -IdleSec giây (icon rung).
+    folder - chạm ô thư mục (-FolderX, -FolderY) rồi Back, -Cycles lần.
+    idle   - đứng yên -IdleSec giây.
+
+.EXAMPLE
+  powershell -ExecutionPolicy Bypass -File .\tools\perf\measure-home.ps1 -Scenario swipe -Pages 3
+.EXAMPLE
+  .\tools\perf\measure-home.ps1 -Scenario jiggle -GapX 540 -GapY 1500 -Configs full,noRealGlass
+#>
+param(
+    [ValidateSet('swipe', 'jiggle', 'folder', 'idle')] [string]$Scenario = 'swipe',
+    [string[]]$Configs = @('full', 'noRealGlass', 'noRealGlass+noFrosted', 'noRealGlass+noFrosted+noWidgets'),
+    [int]$Rounds = 3,
+    [int]$Pages = 2,
+    [int]$Cycles = 5,
+    [int]$SwipeMs = 250,
+    [int]$SettleMs = 700,
+    [int]$GapX = -1,
+    [int]$GapY = -1,
+    [int]$FolderX = -1,
+    [int]$FolderY = -1,
+    [int]$IdleSec = 10,
+    [int]$WarmupSec = 4,
+    [string]$Serial = '',
+    # Đặt app làm launcher mặc định trước khi đo: không thì mỗi lần mở Home hiện hộp hỏi "đặt làm mặc định" (PB) che màn và làm sai số đo.
+    [bool]$SetHome = $true
+)
+
+$ErrorActionPreference = 'Stop'
+$pkg = 'gambi.global.os26launcher'
+$activity = "$pkg/.ui.home.HomeActivity"
+
+function Invoke-Adb {
+    $all = @()
+    if ($Serial) { $all += @('-s', $Serial) }
+    $all += $args
+    # Không gộp stderr (2>&1): ở PowerShell 5.1 với ErrorActionPreference=Stop, dòng stderr của adb (vd. khởi động daemon) thành lỗi dừng script.
+    $out = & adb @all
+    if ($LASTEXITCODE -ne 0) { throw "adb $($args -join ' ') failed (exit $LASTEXITCODE): $out" }
+    return $out
+}
+
+function Get-ScreenSize {
+    $text = (Invoke-Adb shell wm size) -join "`n"
+    $m = [regex]::Matches($text, '(\d+)x(\d+)')
+    if ($m.Count -eq 0) { throw "Không đọc được cỡ màn: $text" }
+    $last = $m[$m.Count - 1]
+    return @([int]$last.Groups[1].Value, [int]$last.Groups[2].Value)
+}
+
+function Get-Number([string]$text, [string]$pattern) {
+    $m = [regex]::Match($text, $pattern, 'Multiline')
+    if ($m.Success) { return [double]$m.Groups[1].Value }
+    return $null
+}
+
+function Read-GfxInfo {
+    $text = (Invoke-Adb shell dumpsys gfxinfo $pkg) -join "`n"
+    return [pscustomobject]@{
+        Frames = Get-Number $text '^\s*Total frames rendered:\s*(\d+)'
+        Janky  = Get-Number $text '^\s*Janky frames:\s*\d+\s*\(([\d.]+)%\)'
+        P50    = Get-Number $text '^\s*50th percentile:\s*(\d+)ms'
+        P90    = Get-Number $text '^\s*90th percentile:\s*(\d+)ms'
+        P95    = Get-Number $text '^\s*95th percentile:\s*(\d+)ms'
+        P99    = Get-Number $text '^\s*99th percentile:\s*(\d+)ms'
+    }
+}
+
+function Get-BatteryTemp {
+    $text = (Invoke-Adb shell dumpsys battery) -join "`n"
+    $t = Get-Number $text '^\s*temperature:\s*(\d+)'
+    if ($null -eq $t) { return $null }
+    return $t / 10
+}
+
+function Start-Home([string]$config) {
+    $value = if ($config -eq 'full') { 'none' } else { $config }
+    Invoke-Adb shell setprop debug.os26.perf $value | Out-Null
+    Invoke-Adb shell am force-stop $pkg | Out-Null
+    Invoke-Adb shell am start -W -n $activity | Out-Null
+    Start-Sleep -Seconds $WarmupSec
+}
+
+function Invoke-Scenario([int]$w, [int]$h) {
+    $y = [int]($h * 0.45)
+    switch ($Scenario) {
+        'swipe' {
+            $left = [int]($w * 0.2); $right = [int]($w * 0.8)
+            for ($c = 0; $c -lt $Cycles; $c++) {
+                for ($i = 1; $i -lt $Pages; $i++) {
+                    Invoke-Adb shell input swipe $right $y $left $y $SwipeMs | Out-Null
+                    Start-Sleep -Milliseconds $SettleMs
+                }
+                for ($i = 1; $i -lt $Pages; $i++) {
+                    Invoke-Adb shell input swipe $left $y $right $y $SwipeMs | Out-Null
+                    Start-Sleep -Milliseconds $SettleMs
+                }
+            }
+        }
+        'jiggle' {
+            Start-Sleep -Seconds $IdleSec
+            Invoke-Adb shell input keyevent KEYCODE_HOME | Out-Null
+        }
+        'folder' {
+            for ($c = 0; $c -lt $Cycles; $c++) {
+                Invoke-Adb shell input tap $FolderX $FolderY | Out-Null
+                Start-Sleep -Milliseconds 1200
+                Invoke-Adb shell input keyevent KEYCODE_BACK | Out-Null
+                Start-Sleep -Milliseconds 1200
+            }
+        }
+        'idle' { Start-Sleep -Seconds $IdleSec }
+    }
+}
+
+function Enter-EditMode {
+    # input swipe tại chỗ không phải nhấn giữ với launcher này (bài học GL): dùng motionevent.
+    Invoke-Adb shell input motionevent DOWN $GapX $GapY | Out-Null
+    Start-Sleep -Milliseconds 1100
+    Invoke-Adb shell input motionevent MOVE ($GapX + 2) $GapY | Out-Null
+    Invoke-Adb shell input motionevent MOVE $GapX $GapY | Out-Null
+    Invoke-Adb shell input motionevent UP $GapX $GapY | Out-Null
+    Start-Sleep -Milliseconds 800
+}
+
+# `powershell -File` truyền `-Configs a,b,c` thành MỘT chuỗi "a,b,c" (không tách mảng như khi gọi trong PowerShell): tự tách theo dấu phẩy.
+$Configs = @($Configs | ForEach-Object { $_ -split '[,;]' } | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+
+# Kiểm tham số
+if ($Scenario -eq 'swipe' -and $Pages -lt 2) { throw '-Pages phải >= 2 (số trang lưới thật để lướt qua lại).' }
+if ($Scenario -eq 'jiggle' -and ($GapX -lt 0 -or $GapY -lt 0)) { throw 'jiggle cần -GapX -GapY (toạ độ một chỗ trống trên trang 1).' }
+if ($Scenario -eq 'folder' -and ($FolderX -lt 0 -or $FolderY -lt 0)) { throw 'folder cần -FolderX -FolderY (tâm ô thư mục trên trang 1).' }
+
+$model = ((Invoke-Adb shell getprop ro.product.model) -join '').Trim()
+$sdk = ((Invoke-Adb shell getprop ro.build.version.sdk) -join '').Trim()
+$flags = (Invoke-Adb shell dumpsys package $pkg) -join "`n"
+if ($flags -match 'pkgFlags=\[[^\]]*DEBUGGABLE') {
+    Write-Warning 'App đang cài là bản DEBUG: số đo không đại diện (trình thông dịch). Cài bản perf: .\gradlew.bat installPerf'
+}
+$size = Get-ScreenSize
+if ($SetHome) {
+    Invoke-Adb shell cmd package set-home-activity $activity | Out-Null
+    Write-Host "Đã đặt $activity làm launcher mặc định (tắt bằng -SetHome `$false)."
+}
+Write-Host "Máy: $model (API $sdk), màn $($size[0])x$($size[1]), kịch bản $Scenario, $Rounds vòng x $($Configs.Count) cấu hình"
+
+$plan = @()
+for ($r = 1; $r -le $Rounds; $r++) { foreach ($c in $Configs) { $plan += [pscustomobject]@{ Round = $r; Config = $c } } }
+$plan += [pscustomobject]@{ Round = 'cuối'; Config = $Configs[0] }
+
+$results = @()
+foreach ($step in $plan) {
+    Write-Host "-> vòng $($step.Round): $($step.Config)"
+    Start-Home $step.Config
+    if ($Scenario -eq 'jiggle') { Enter-EditMode }
+    Invoke-Adb shell dumpsys gfxinfo $pkg reset | Out-Null
+    Invoke-Scenario $size[0] $size[1]
+    $g = Read-GfxInfo
+    $results += [pscustomobject]@{
+        Model = $model; Api = $sdk; Scenario = $Scenario; Round = $step.Round; Config = $step.Config
+        Frames = $g.Frames; JankyPct = $g.Janky; P50 = $g.P50; P90 = $g.P90; P95 = $g.P95; P99 = $g.P99
+        TempC = Get-BatteryTemp
+    }
+}
+Invoke-Adb shell setprop debug.os26.perf none | Out-Null
+
+$results | Format-Table Round, Config, Frames, JankyPct, P50, P90, P95, P99, TempC -AutoSize
+
+Write-Host 'Trung bình theo cấu hình (bỏ lượt lặp cuối):'
+$results | Where-Object { $_.Round -ne 'cuối' } | Group-Object Config | ForEach-Object {
+    [pscustomobject]@{
+        Config   = $_.Name
+        JankyPct = [math]::Round(($_.Group | Measure-Object JankyPct -Average).Average, 2)
+        P50      = [math]::Round(($_.Group | Measure-Object P50 -Average).Average, 1)
+        P95      = [math]::Round(($_.Group | Measure-Object P95 -Average).Average, 1)
+        P99      = [math]::Round(($_.Group | Measure-Object P99 -Average).Average, 1)
+    }
+} | Format-Table -AutoSize
+
+$outDir = Join-Path $PSScriptRoot 'out'
+New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+$file = Join-Path $outDir ("{0}-{1}-{2}.csv" -f (Get-Date -Format 'yyyyMMdd-HHmmss'), ($model -replace '\W', ''), $Scenario)
+$results | Export-Csv -Path $file -NoTypeInformation -Encoding UTF8
+Write-Host "CSV: $file"

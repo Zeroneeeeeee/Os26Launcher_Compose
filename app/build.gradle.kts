@@ -32,6 +32,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "OWM_API_KEY", "\"" + owmApiKey.replace("\\", "\\\\").replace("\"", "\\\"") + "\"")
+        // PG4: cong tac do hieu nang (core/perf/PerfSwitches.kt), chi bat o build type `perf`.
+        buildConfigField("boolean", "PERF_SWITCHES", "false")
     }
 
     buildTypes {
@@ -41,6 +43,18 @@ android {
             optimization {
                 enable = true
             }
+        }
+        // PG4 (chu du an 2026-11-23, Q1): ban do hieu nang = release (R8 + baseline profile), ky bang khoa debug de cai duoc, khong debuggable;
+        // chi ban nay doc cong tac do `adb shell setprop debug.os26.perf ...`. Build: .\gradlew.bat assemblePerf installPerf
+        create("perf") {
+            initWith(getByName("release"))
+            optimization {
+                enable = true
+            }
+            signingConfig = signingConfigs.getByName("debug")
+            isDebuggable = false
+            matchingFallbacks += listOf("release")
+            buildConfigField("boolean", "PERF_SWITCHES", "true")
         }
     }
     compileOptions {

@@ -12,6 +12,7 @@ import gambi.global.os26launcher.domain.model.AppShortcutItem
 import gambi.global.os26launcher.domain.model.ComponentKey
 import gambi.global.os26launcher.domain.model.PlacedApp
 import gambi.global.os26launcher.domain.model.PlacedFolder
+import gambi.global.os26launcher.domain.model.PlacedWidgetBase
 import gambi.global.os26launcher.ui.home.IconMenuAction
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
@@ -65,6 +66,7 @@ import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import gambi.global.os26launcher.R
 import gambi.global.os26launcher.core.glass.BlurredBackdropCache
+import gambi.global.os26launcher.core.perf.PerfSwitches
 import gambi.global.os26launcher.core.glass.GlassTuning
 import gambi.global.os26launcher.core.glass.compose.FrostedBackdrop
 import gambi.global.os26launcher.core.glass.compose.FrostedWallpaperLayer
@@ -157,7 +159,9 @@ internal fun HomeScreen(
     }
     // Trang tạm ở cuối khi đang kéo (M7 Task 7): HomePagerController.renderPages nối HomePage(size, PageId.NEW, rỗng).
     val pages = remember(state.pages, state.ghostPage) {
-        if (state.ghostPage) state.pages + HomePage(state.pages.size, PageId.NEW, emptyList()) else state.pages
+        // PG4: công tắc đo `noWidgets` (chỉ bản `perf`) bỏ widget khỏi phần vẽ.
+        val shown = if (PerfSwitches.noWidgets) state.pages.map { p -> p.copy(items = p.items.filterNot { it is PlacedWidgetBase }) } else state.pages
+        if (state.ghostPage) shown + HomePage(shown.size, PageId.NEW, emptyList()) else shown
     }
     val pagerState = rememberPagerState { pages.size }
     val drag = remember { HomeDragState(scope, density.density) }
@@ -217,6 +221,9 @@ internal fun HomeScreen(
     val homeBackdrop = rememberLayerBackdrop()
     // 2026-11-23: menu nhấn giữ cũng lấy mẫu lớp Home (thấy icon phía sau nhoè qua menu, như iOS 26), không chỉ ảnh nền.
     val folderLayerOn = state.openFolderId != null || folderProgress.value > 0f || state.iconMenu != null || menuProgress.value > 0f
+    // PG4: công tắc đo (chỉ bản `perf`, `PerfSwitches`): bỏ nền của kính thật / lớp nền mờ tĩnh để so số đo.
+    val glassBackdrop = if (PerfSwitches.noRealGlass) null else backdrop
+    val frostedBackdrop = if (PerfSwitches.noFrosted) null else frosted.backdropOrNull
     // PG3 Task 2 Step 3 (Q3): dưới API 31 kính thật không chạy, nên bảng thư mục lấy mẫu ẢNH CHỤP lớp Home (chụp một lần lúc mở, làm mờ ngoài
     // main thread bằng bộ đệm riêng) để vẫn thấy icon phía sau; ảnh chụp chưa xong thì dùng lớp nền mờ của ảnh nền. Máy ≥ 31 không chụp.
     val legacyGlass = Build.VERSION.SDK_INT < Build.VERSION_CODES.S
@@ -328,10 +335,10 @@ internal fun HomeScreen(
             FrostedWallpaperLayer(frosted, state.backdrop, Modifier.fillMaxSize()) // PG3: không vẽ gì ra màn, chỉ ghi lớp nền mờ
             if (legacyGlass) FrostedWallpaperLayer(folderFrosted, folderSnapshot, Modifier.fillMaxSize(), cache = folderBlurCache)
             Wallpaper(state.backdrop, Modifier.fillMaxSize().layerBackdrop(backdrop))
-            // Đo trên máy thật (dumpsys gfxinfo): mọi mặt kính CARD/SHEET bên trong (dock, ô widget...) vẽ lại vibrancy+blur+lens MỖI khung dù
-            // đứng yên hay đang cuộn/kéo → 87% khung giật khi vuốt trang. Tắt kính thật toàn vùng Home trong lúc pager cuộn hoặc đang kéo
-            // icon/widget (mặt kính về lại tĩnh, không mất khung nào ngoài giật), bật lại ngay khi đứng yên.
-            CompositionLocalProvider(LocalDsBackdrop provides backdrop, LocalDsFrostedBackdrop provides frosted.backdropOrNull) {
+            // PG4 G3 (đo 2026-11-23, `tools/perf/measure-home.ps1`, bản `perf`): kính thật của dock / widget KHÔNG tắt khi lướt trang (comment cũ ở
+            // đây ghi đã tắt nhưng code chưa từng tắt). Oppo PKD130: đủ kính Janky 0,9–1,3 %, p95 12–13 ms, so với bỏ kính 0,5 %, p95 10–12 ms
+            // (trong ngưỡng). Số "87 % khung giật" cũ là bản debug: bản debug cùng kịch bản đo 36 %, p95 106 ms. Đánh giá hiệu năng trên bản `perf`.
+            CompositionLocalProvider(LocalDsBackdrop provides glassBackdrop, LocalDsFrostedBackdrop provides frostedBackdrop) {
                 // TL1 Task 5 (như SystemBarsController.applySystemBarInsets): đỉnh lưới chừa sẵn chỗ cho hộp chạm của các pill edit mode, để lưới
                 // không dịch khi vào edit mode: đỉnh = max(thanh trạng thái, editToolbarClearance). Cạnh dưới = inset dưới.
                 val bars = WindowInsets.systemBarsIgnoringVisibility
@@ -430,7 +437,7 @@ internal fun HomeScreen(
                 }
             }
         }
-        CompositionLocalProvider(LocalDsBackdrop provides backdrop, LocalDsFrostedBackdrop provides frosted.backdropOrNull) {
+        CompositionLocalProvider(LocalDsBackdrop provides glassBackdrop, LocalDsFrostedBackdrop provides frostedBackdrop) {
             if (state.editMode && drag.session == null) {
                 HomeEditToolbar(
                     onEdit = { editMenuOpen = !editMenuOpen },
@@ -470,7 +477,7 @@ internal fun HomeScreen(
                     onRemoveApp = overlays.onRemoveFolderApp,
                     onRename = overlays.onRenameFolder,
                     onClose = overlays.closeFolder,
-                    frostedBackdrop = folderFrosted.backdropOrNull ?: frosted.backdropOrNull
+                    frostedBackdrop = if (PerfSwitches.noFrosted) null else folderFrosted.backdropOrNull ?: frosted.backdropOrNull
                 )
             }
             HomeIconMenu(
