@@ -794,14 +794,21 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
         return Hover(HoverMode.PUSH, HoverArea.DOCK, slot = slot)
     }
 
-    /** DockView.slotFor: slot (0..còn lại) dưới [x]; ranh giới giữa hai slot = giữa khoảng trống. null = dock đầy và item từ ngoài dock. */
+    /**
+     * DockView.slotFor: slot (0..còn lại) dưới [x]; ranh giới giữa hai slot = giữa khoảng trống. null = dock đầy và item từ ngoài dock.
+     * 2026-11-23 (chuẩn iOS, đồng bộ với lưới): pitch cố định icon+X (X = cells.iconSpacingX của LƯỚI, không tự chia theo [dockRect].width
+     * nữa), khối [m] icon được CĂN GIỮA — y hệt [HomeDock].
+     */
     private fun slotFor(x: Float, draggingId: Long): Int? {
         val c = cells ?: return null
         val remaining = dock.count { it.itemId != draggingId }
         if (remaining >= GridMetrics.DOCK_SLOTS) return null
         val m = remaining + 1
-        val gap = (dockRect.width - m * c.iconSize) / (m + 1) // 2026-11-23: chia đều theo icon, như HomeDock
-        val index = floor((x - dockRect.left - gap / 2f) / (c.iconSize + gap)).toInt()
+        val pitch = c.iconSize + c.iconSpacingX
+        if (pitch <= 0) return null
+        val groupWidth = m * c.iconSize + (m - 1).coerceAtLeast(0) * c.iconSpacingX
+        val startX = (dockRect.width - groupWidth) / 2f
+        val index = floor((x - dockRect.left - startX) / pitch).toInt()
         return index.coerceIn(0, m - 1)
     }
 
@@ -812,15 +819,17 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
     }
 
     /**
-     * Ô thứ [index] trong dock có [count] ô, cao hết dock. 2026-11-23: chia đều theo ICON (khe mép = khe giữa hai icon, như [HomeDock]);
-     * ô rộng cellWidth căn giữa quanh icon.
+     * Ô thứ [index] trong dock có [count] ô, cao hết dock. 2026-11-23 (chuẩn iOS, đồng bộ với lưới): pitch cố định icon+X (X =
+     * cells.iconSpacingX của LƯỚI), khối [count] icon CĂN GIỮA trong dock — y hệt [HomeDock].
      */
     fun dockSlotRects(count: Int): List<Rect> {
         val c = cells ?: return emptyList()
         if (count <= 0) return emptyList()
-        val gap = (dockRect.width - count * c.iconSize) / (count + 1)
+        val pitch = c.iconSize + c.iconSpacingX
+        val groupWidth = count * c.iconSize + (count - 1) * c.iconSpacingX
+        val startX = dockRect.left + (dockRect.width - groupWidth) / 2f
         return List(count) { i ->
-            val left = dockRect.left + gap + i * (c.iconSize + gap) - (c.cellWidth - c.iconSize) / 2f
+            val left = startX + i * pitch - (c.cellWidth - c.iconSize) / 2f
             Rect(left, dockRect.top, left + c.cellWidth, dockRect.bottom)
         }
     }

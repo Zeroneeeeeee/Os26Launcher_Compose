@@ -48,13 +48,23 @@ internal fun HomeDock(
 ) {
     val density = LocalDensity.current
     var widthPx by remember { mutableIntStateOf(0) }
-    Box(modifier.onSizeChanged { widthPx = it.width }, contentAlignment = Alignment.CenterStart) {
-        val glassHeight = if (cells != null) with(density) { cells.iconSize.toDp() } + GLASS_PADDING_VERTICAL * 2 else null
+    // 2026-11-23 (iOS-style): neo kính + icon ở ĐÁY vùng dock (không còn giữa), để lề dưới card = home_dock_margin_bottom, bằng lề ngang
+    // (home_dock_margin_horizontal) — trước đó căn giữa vùng dock chia khoảng trống thừa lên trên VÀ dưới, lề dưới thực tế lớn hơn lề ngang.
+    Box(modifier.onSizeChanged { widthPx = it.width }, contentAlignment = Alignment.BottomCenter) {
+        // 2026-11-23 (iOS-style): lề trên/dưới của hàng icon trong card cũng = X/2 (như lề dock với màn — câu hỏi trước), không còn hằng
+        // GLASS_PADDING_VERTICAL cố định.
+        val glassHeight = if (cells != null) with(density) { cells.iconSize.toDp() + (cells.iconSpacingX / 2f).toDp() * 2 } else null
+        // Khối kính + icon đo đúng [glassHeight] rồi neo ĐÁY vùng dock (outer Box), giữ nguyên căn giữa icon trong khối này (contentAlignment
+        // CenterStart như trước) — nhờ vậy icon vẫn ở giữa card theo chiều cao, chỉ khối chung tịnh tiến xuống đáy.
         Box(
             Modifier
                 .fillMaxWidth()
-                .then(if (glassHeight != null) Modifier.height(glassHeight) else Modifier.fillMaxSize())
-                .align(Alignment.Center)
+                .then(if (glassHeight != null) Modifier.height(glassHeight) else Modifier.fillMaxSize()),
+            contentAlignment = Alignment.CenterStart
+        ) {
+        Box(
+            Modifier
+                .fillMaxSize()
                 .dsGlass(DsSurface.CARD, DsCorner.Fixed(CORNER_DP, glass = true))
         )
         // PG1 A1: icon rời dock không do kéo (dấu "−", ẩn) thu về 0 tại chỗ cũ; app mới vào dock không do kéo thì phình (AN Task 9d, DockView).
@@ -69,9 +79,14 @@ internal fun HomeDock(
                 key(item.itemId) {
                     val index = order.indexOf(item.itemId)
                     val count = order.size
-                    // 2026-11-23: chia đều theo ICON (khe mép dock = khe giữa hai icon), ô rộng cellWidth căn giữa quanh icon. Khớp HomeDragState.dockSlotRects.
-                    val gap = (widthPx - count * cells.iconSize) / (count + 1f)
-                    val x = if (index < 0) 0 else (gap + index * (cells.iconSize + gap) - (cells.cellWidth - cells.iconSize) / 2f).toInt()
+                    // 2026-11-23 (chuẩn iOS, đồng bộ với lưới): dùng CHUNG pitch (icon + X) của lưới Home phía trên (cells.iconSpacingX) —
+                    // icon dock LUÔN cùng cỡ & cùng khe với lưới, không tự chia lại gap theo chiều rộng/số app của dock (khác trước, hay lệch
+                    // cỡ dock với lưới). Cả khối [count] icon được CĂN GIỮA bằng cách dịch cả khối, không đổi khe giữa icon. Khớp
+                    // HomeDragState.dockSlotRects/slotFor (cùng công thức).
+                    val pitch = cells.iconSize + cells.iconSpacingX
+                    val groupWidth = count * cells.iconSize + (count - 1).coerceAtLeast(0) * cells.iconSpacingX
+                    val startX = (widthPx - groupWidth) / 2f
+                    val x = if (index < 0) 0 else (startX + index * pitch - (cells.cellWidth - cells.iconSize) / 2f).toInt()
                     val animatedX by animateIntOffsetAsState(
                         IntOffset(x, 0),
                         ReorderSpring, // FM-3: cùng tốc độ với lưới Home và bảng thư mục
@@ -138,6 +153,7 @@ internal fun HomeDock(
                 }
             }
         }
+        }
     }
 }
 
@@ -146,4 +162,3 @@ private data class DockSlot(val item: DockApp, val index: Int)
 
 // Bo góc cùng số với DockView (CORNER_RADIUS_DP); "Bo góc" của kính nhân lên qua DsCorner.Fixed(glass = true).
 private const val CORNER_DP = 28f
-private val GLASS_PADDING_VERTICAL = 12.dp // 2026-11-23 (chủ dự án): 20 -> 12 dp, kính dock ôm icon sát hơn

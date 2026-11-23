@@ -3,13 +3,11 @@ package gambi.global.os26launcher.ui.home
 import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.app.ActivityManager
-import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.drawable.ColorDrawable
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.ViewTreeObserver
@@ -30,6 +28,7 @@ import android.provider.Settings
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -41,6 +40,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.derivedStateOf
 import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
@@ -51,7 +51,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.core.app.ActivityCompat
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.Lifecycle
@@ -69,9 +68,6 @@ import gambi.global.os26launcher.domain.model.GridPosition
 import gambi.global.os26launcher.domain.repository.DefaultLauncherRepository
 import gambi.global.os26launcher.domain.repository.NotificationBadgeRepository
 import gambi.global.os26launcher.domain.search.SearchMode
-import gambi.global.os26launcher.ui.home.HomeEvent
-import gambi.global.os26launcher.ui.home.HomeViewModel
-import gambi.global.os26launcher.ui.home.LibraryOverlayController
 import gambi.global.os26launcher.ui.home.compose.HomePagerInfo
 import gambi.global.os26launcher.ui.home.compose.LocalHostedWidgets
 import gambi.global.os26launcher.ui.widget.host.HostedWidgetViews
@@ -95,7 +91,6 @@ import gambi.global.os26launcher.ui.home.controller.DefaultLauncherPromptControl
 import gambi.global.os26launcher.ui.home.controller.confirmQuickRemove
 import gambi.global.os26launcher.ui.home.controller.confirmMenuUninstall
 import gambi.global.os26launcher.ui.home.controller.confirmFolderRemove
-import gambi.global.os26launcher.ui.home.IconMenuAction
 import gambi.global.os26launcher.ui.home.compose.HomeOverlayActions
 import gambi.global.os26launcher.domain.model.ComponentKey
 import gambi.global.os26launcher.domain.model.ScreenRect
@@ -114,11 +109,16 @@ import gambi.global.os26launcher.ui.search.compose.SearchActions
 import gambi.global.os26launcher.ui.search.compose.SearchOverlay
 import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.graphicsLayer
+import gambi.global.os26launcher.domain.usecase.GetHiddenOnlyPackagesUseCase
+import gambi.global.os26launcher.ui.home.compose.HomeDragState
+import gambi.global.os26launcher.ui.home.compose.today.TodayGridModel
 import gambi.global.os26launcher.ui.search.SearchViewModel
 import gambi.global.os26launcher.ui.settings.SettingsActivity
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
+import androidx.core.graphics.drawable.toDrawable
 
 /**
  * JH1 — CHỈ BẢN DEBUG. Home Compose chạy song song Home View (JH1 D1): cùng `HomeViewModel` thật, cùng ảnh nền, trang, dock. Không phải
@@ -151,7 +151,7 @@ class HomeActivity : AppCompatActivity() {
     lateinit var generalConfig: GeneralConfigRepository // PB Task 4: ẩn thanh điều hướng
 
     private lateinit var recreateGuard: RecreateGuard // JH4 D4: dựng lại khi kiểu icon / giao diện đổi ở Cài đặt
-    private var navBarHidden = false
+    private var navBarHidden by mutableStateOf(false) // PB Task 4: Compose State để HomeScreen tự dịch dock khi đổi (không chỉ đọc lúc chạm xuống)
 
     @Inject
     lateinit var appWidgetFlowState: AppWidgetFlowState
@@ -163,7 +163,7 @@ class HomeActivity : AppCompatActivity() {
     lateinit var appWidgetAssets: AppWidgetAssets
 
     @Inject
-    lateinit var getHiddenOnlyPackages: gambi.global.os26launcher.domain.usecase.GetHiddenOnlyPackagesUseCase // P3-7
+    lateinit var getHiddenOnlyPackages: GetHiddenOnlyPackagesUseCase // P3-7
 
     private lateinit var hostedWidgets: HostedWidgetViews
     private lateinit var appWidgetFlow: AppWidgetFlowController
@@ -176,8 +176,8 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var libraryDrag: LibraryDragGesture // LD Task 3: nhấn giữ / kéo app trong Library
 
     /** LD Task 4: trạng thái kéo-thả của HomeScreen (HomeScreen báo lên khi dựng). */
-    private var homeDrag by androidx.compose.runtime.mutableStateOf<gambi.global.os26launcher.ui.home.compose.HomeDragState?>(null)
-    private val todayModel = gambi.global.os26launcher.ui.home.compose.today.TodayGridModel() // TV-3: thứ tự, kéo đổi chỗ, thêm/xóa của lưới Today
+    private var homeDrag by mutableStateOf<HomeDragState?>(null)
+    private val todayModel = TodayGridModel() // TV-3: thứ tự, kéo đổi chỗ, thêm/xóa của lưới Today
     private val icons by lazy { HomeIcons(viewModel::loadIcon) } // JH1 D7: dùng chung cho Home, Today và bảng chọn widget
     private val pagerInfo = HomePagerInfo()
 
@@ -212,8 +212,8 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         // Kiểu "dark" = icon thanh hệ thống TRẮNG bất kể sáng/tối (Home luôn trên ảnh nền, như iOS); mặc định `auto` cho icon tối ở chế độ sáng.
         enableEdgeToEdge(
-            statusBarStyle = androidx.activity.SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
-            navigationBarStyle = androidx.activity.SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
+            statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT)
         )
         defaultPrompt = DefaultLauncherPromptController(
             this, defaultLauncherRepository,
@@ -562,7 +562,7 @@ class HomeActivity : AppCompatActivity() {
         try {
             if (packageManager.hasSystemFeature(PackageManager.FEATURE_APP_WIDGETS)) appWidgetHost.startListening()
         } catch (e: RuntimeException) {
-            android.util.Log.w("HomeActivity", "startListening failed ${e.javaClass.name}")
+            Log.w("HomeActivity", "startListening failed ${e.javaClass.name}")
         }
     }
 
@@ -571,7 +571,7 @@ class HomeActivity : AppCompatActivity() {
         try {
             if (packageManager.hasSystemFeature(PackageManager.FEATURE_APP_WIDGETS)) appWidgetHost.stopListening()
         } catch (e: RuntimeException) {
-            android.util.Log.w("HomeActivity", "stopListening failed ${e.javaClass.name}")
+            Log.w("HomeActivity", "stopListening failed ${e.javaClass.name}")
         }
         super.onStop()
         if (!isChangingConfigurations && !appWidgetFlow.isActive) viewModel.exitEditMode() // JH3d D5
@@ -657,7 +657,9 @@ class HomeActivity : AppCompatActivity() {
             // Library); từ đây mọi MOVE/UP của cử chỉ đi thẳng vào HomeDragState (toạ độ cửa sổ = toạ độ gốc HomeScreen, cả hai tràn viền).
             override fun onDragOut(app: gambi.global.os26launcher.domain.model.AppItem, icon: android.graphics.RectF, x: Float, y: Float) {
                 val drag = homeDrag ?: return
-                drag.startExternal(app, Offset(x, y), androidx.compose.ui.geometry.Rect(icon.left, icon.top, icon.right, icon.bottom))
+                drag.startExternal(app, Offset(x, y),
+                    Rect(icon.left, icon.top, icon.right, icon.bottom)
+                )
             }
 
             override fun onDragMove(x: Float, y: Float) {
@@ -702,6 +704,9 @@ class HomeActivity : AppCompatActivity() {
         } else {
             controller.show(WindowInsetsCompat.Type.navigationBars())
         }
+        controller.apply {
+            isAppearanceLightNavigationBars = false
+        }
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -731,7 +736,7 @@ class HomeActivity : AppCompatActivity() {
         contentRoot.postDelayed({ uncoverAfterOnboarding() }, ONBOARDING_HOLD_MAX_MS)
         lifecycleScope.launch {
             val done = try {
-                withTimeoutOrNull(ONBOARDING_HOLD_MAX_MS) { viewModel.isOnboardingDone() } ?: true
+                withTimeoutOrNull(ONBOARDING_HOLD_MAX_MS.milliseconds) { viewModel.isOnboardingDone() } ?: true
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -777,7 +782,7 @@ class HomeActivity : AppCompatActivity() {
 
     private fun coverForOnboarding() {
         onboardingCovered = true
-        window.setBackgroundDrawable(ColorDrawable(getColor(R.color.ds_bg_base)))
+        window.setBackgroundDrawable(getColor(R.color.ds_bg_base).toDrawable())
         contentRoot.visibility = View.INVISIBLE
     }
 
@@ -804,7 +809,7 @@ class HomeActivity : AppCompatActivity() {
                 if (id != taskId && stale) {
                     task.finishAndRemoveTask()
                 }
-            } catch (e: IllegalArgumentException) {
+            } catch (_: IllegalArgumentException) {
                 // Task đã mất giữa lúc liệt kê: bỏ qua
             }
         }
@@ -814,7 +819,7 @@ class HomeActivity : AppCompatActivity() {
     private fun applyBarStyling() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             window.isNavigationBarContrastEnforced = false
-            window.isStatusBarContrastEnforced = false
+//            window.isStatusBarContrastEnforced = false
         }
         // Như iOS: Home luôn nằm trên ảnh nền (nhãn icon trắng) nên icon thanh trạng thái/điều hướng luôn TRẮNG, không theo sáng/tối.
         WindowInsetsControllerCompat(window, window.decorView).apply {

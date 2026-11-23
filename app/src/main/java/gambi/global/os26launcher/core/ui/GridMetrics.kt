@@ -31,8 +31,7 @@ data class GridMetrics(
     data class IconSizing(val iconScale: Float, val labelTextSp: Float) {
         companion object {
             /** CHỈNH MẮT Ở ĐÂY (mặc định toàn app cho tới khi có cài đặt). */
-            // 2026-11-21 (chủ dự án "tăng cỡ chữ"): nhãn 9 -> 11.5 sp, ~12 pt của iOS so với bề ngang màn.
-            val DEFAULT = IconSizing(iconScale = 0.96f, labelTextSp = 11.5f)
+            val DEFAULT = IconSizing(iconScale = 1f, labelTextSp = 12.5f)
 
             /** Cỡ chữ nhãn mà các hằng chiều cao nhãn ([LABEL_HEIGHT_DP]) được đo theo. */
             const val BASE_LABEL_SP = 10f
@@ -60,7 +59,11 @@ data class GridMetrics(
         // GL Task 11: khoảng cách icon -> nhãn đã nhân [labelScale] (0 khi không nhãn); cùng công thức cũ khi labelScale = 1.
         val innerGapPx: Int = 0,
         // Polish 2026-11-19: cỡ chữ nhãn đầy đủ (sp) theo [IconSizing.labelTextSp]; IconCellView nhân thêm [labelScale].
-        val labelTextSp: Float = IconSizing.BASE_LABEL_SP
+        val labelTextSp: Float = IconSizing.BASE_LABEL_SP,
+        // 2026-11-23: khe cách đều [space] của lưới Home ([capToDock], xem công thức ở measure()) — khe trái màn → icon đầu = khe giữa hai
+        // icon = khe icon cuối → phải màn. 0 ở lưới không [capToDock] (thư mục, Today…), nơi không áp cách đều này. HomeDock dùng lại giá trị
+        // này (không tự tính gap riêng) để icon dock thẳng cột với icon lưới phía trên.
+        val iconSpacingX: Int = 0
     ) {
         /**
          * M7 Task 2 — hit-test ngược: toạ độ pixel ([px], [py]) trong hệ toạ độ của chính view đã
@@ -91,14 +94,21 @@ data class GridMetrics(
      * [widthPx]/[heightPx] là kích thước view thật, [density] là `resources.displayMetrics.density`.
      * Trả null khi view chưa layout (<=0), cấu hình lưới vô nghĩa (`columns`/`rows` <= 0), hoặc ô tính
      * ra nhỏ hơn 48dp — không bao giờ chia cho 0, không crash khi view quá nhỏ (Review Focus 4 của M3).
+     *
+     * [topPaddingOverridePx] (2026-11-23, chỉ lưới Home — [capToDock]): CHỐT lề trên (so với gốc [heightPx] này, không phải mép màn — gọi
+     * nơi khác tự trừ phần container đã bị đẩy xuống) thay cho công thức mặc định; phần còn lại xuống tới hàng cuối được CHIA ĐỀU làm khe
+     * dọc giữa các hàng ([gutterY]), luôn kẹp để không vượt [heightPx]. `null` (lưới khác: thư mục, Today…) giữ nguyên cách tính cũ.
      */
-    fun measure(widthPx: Int, heightPx: Int, density: Float): Cells? {
+    fun measure(widthPx: Int, heightPx: Int, density: Float, topPaddingOverridePx: Int? = null): Cells? {
         if (widthPx <= 0 || heightPx <= 0 || columns <= 0 || rows <= 0) return null
 
         val roundUnitPx = dpToPx(ROUND_UNIT_DP, density)
         val paddingLeft = dpToPx(PADDING_DP, density)
         val paddingTop = paddingLeft
         val gutterX = dpToPx(GUTTER_DP, density)
+        // 2026-11-23: khe DỌC dùng để TÍNH NGÂN SÁCH chiều cao ô (cellHeightRaw -> iconSize) giữ nguyên = gutterX, KHÔNG nhân ROW_GUTTER_SCALE
+        // ở đây — nhân vào đây rồi cộng ngược phần "tiết kiệm" vào cellHeightRaw làm pitch hàng-tới-hàng chỉ đổi Δgutter/rows (gần như vô hình,
+        // xem ghi chú ở renderGutterY bên dưới, cỡ icon theo đó cũng không còn phụ thuộc ROW_GUTTER_SCALE (giữ nguyên hành vi cũ).
         val gutterY = gutterX
 
         val cellWidthRaw = (widthPx - 2 * paddingLeft - (columns - 1) * gutterX) / columns
@@ -130,16 +140,23 @@ data class GridMetrics(
         // đều không có weight) theo pager : dock = PAGER_WEIGHT : 1, nên dock = heightPx / PAGER_WEIGHT. Đổi weight trong layout thì đổi hằng theo.
         val dockHeightPx = heightPx / PAGER_WEIGHT
         val dockCapPx = if (capToDock && dockHeightPx > 0) (dockHeightPx * DOCK_ICON_MAX_FRACTION).toInt() else Int.MAX_VALUE
-        // Như iOS (icon 60 pt trên màn rộng 393 pt ≈ 15 %): lưới Home không cho icon vượt [IOS_ICON_WIDTH_FRACTION] bề ngang lưới.
-        // Chỉ lưới pager Home ([capToDock]); panel thư mục/Today có bề ngang riêng.
-        val iosCapPx = if (capToDock) (widthPx * IOS_ICON_WIDTH_FRACTION).toInt() else Int.MAX_VALUE
 
         fun iconFor(labelHeightPx: Int, innerGapPx: Int): Int {
             val availableForIcon = cellHeightRaw - labelHeightPx - innerGapPx
-            val iconSizeRaw = (maxIconPx.coerceAtMost(cellWidthRaw)
+            // 2026-11-23 (chuẩn iOS, công thức ĐẠI SỐ thay cho các trần rời rạc hay chặn chồng nhau): lưới Home (capToDock) đặt
+            // screenWidth = padding×(n+1) + icon×n với padding = ICON_PADDING_RATIO × icon (CHỈNH TAY — so trực tiếp màn hình thật, không
+            // chốt cứng 0.5 nữa) ⇒ icon = widthPx / (n + ICON_PADDING_RATIO×(n+1)). Khác cellWidthRaw (chia đều KHÔNG kể padding riêng) và
+            // IOS_ICON_WIDTH_FRACTION cũ (chặn cứng theo % màn, hay kẹp cùng cellWidthRaw làm đổi iconScale không thấy hiệu quả) — công thức
+            // này tự vừa khít theo chiều rộng, không cần chặn thêm; `space` (padding thật, Cells.iconSpacingX) vẫn được tính lại CHÍNH XÁC từ
+            // iconSize cuối cùng ở dưới (sau khi đã kẹp theo chiều cao/scale), nên luôn đúng đẳng thức trên dù icon có bị kẹp nhỏ hơn.
+            val widthTargetPx = if (capToDock)
+                (widthPx / (columns + ICON_PADDING_RATIO * (columns + 1))).toInt()
+            else
+                maxIconPx.coerceAtMost(cellWidthRaw)
+            val iconSizeRaw = (widthTargetPx
                 .coerceAtMost(availableForIcon) * sizing.iconScale).toInt()
+                .coerceAtMost(maxIconPx)
                 .coerceAtMost(dockCapPx)
-                .coerceAtMost(iosCapPx)
                 .coerceAtLeast(safetyMinIconPx)
             return roundDownToMultiple(iconSizeRaw, roundUnitPx)
         }
@@ -151,6 +168,7 @@ data class GridMetrics(
         var effectiveShowLabels = showLabels
         var labelScale = 1f
         var innerGapPx = 0
+        var finalLabelHeightPx = 0
         val iconSize: Int
         if (!showLabels) {
             iconSize = iconFor(0, 0)
@@ -160,6 +178,7 @@ data class GridMetrics(
             if (full >= fullIconPx) {
                 iconSize = full
                 innerGapPx = fullInnerGapPx
+                finalLabelHeightPx = fullLabelHeightPx
             } else {
                 val scale = full.toFloat() / fullIconPx
                 if (scale < LABEL_MIN_SCALE) {
@@ -168,7 +187,8 @@ data class GridMetrics(
                 } else {
                     labelScale = scale
                     innerGapPx = (fullInnerGapPx * scale).toInt()
-                    iconSize = iconFor((fullLabelHeightPx * scale).toInt(), innerGapPx)
+                    finalLabelHeightPx = (fullLabelHeightPx * scale).toInt()
+                    iconSize = iconFor(finalLabelHeightPx, innerGapPx)
                 }
             }
         }
@@ -179,29 +199,63 @@ data class GridMetrics(
         var cellWidth = roundDownToMultiple(cellWidthRaw, roundUnitPx)
         var cellGutterX = gutterX
         var cellPaddingLeft = paddingLeft
+        var iconSpacingX = 0
         if (capToDock) {
             val space = (widthPx - columns * iconSize) / (columns + 1)
             if (space > 0) {
                 cellGutterX = minOf(gutterX, space)
                 cellWidth = iconSize + space - cellGutterX
                 cellPaddingLeft = (space + cellGutterX) / 2
+                iconSpacingX = space
             }
+        }
+
+        // 2026-11-24 (chủ dự án): cellHeightRaw (ngân sách CŨ, dựa lề/khe thô 8dp) thường DƯ ra nhiều hơn icon+nhãn thật — nhất là từ khi icon bị
+        // CHIỀU RỘNG (công thức iOS) kẹp nhỏ hơn chiều cao cho phép. Ô (Constraints.fixed trong HomeGridPage) vẫn đặt icon+nhãn ở ĐỈNH ô nên
+        // phần dư đó lộ ra như khoảng trắng THÊM giữa nhãn hàng trên và icon hàng dưới — khe dọc [renderGutterY] dù tính đúng vẫn bị "nuốt"
+        // bởi phần dư này. Ô lưới Home (capToDock) giờ KHÍT SÁT icon+khe trong+nhãn thật (không còn khoảng trống thừa); lưới khác giữ cellHeightRaw cũ.
+        val cellHeightFinal = if (capToDock) iconSize + innerGapPx + finalLabelHeightPx else roundDownToMultiple(cellHeightRaw, roundUnitPx)
+        val renderPaddingTop: Int
+        val renderGutterY: Int
+        if (capToDock && topPaddingOverridePx != null) {
+            // 2026-11-23 (chủ dự án, so trực tiếp với iOS): lề trên CHỐT theo [topPaddingOverridePx] (HomeScreen truyền = 1.7×statusBar đã trừ
+            // phần container); phần còn lại chia đều cho (rows-1) khoảng, từ cuối lề trên tới ĐÁY hàng cuối, là mức TRẦN (gridMaxGutterY) —
+            // cách tính giữ nguyên như cũ, chỉ đổi vai trò từ "khe thật" thành "khe tối đa lưới còn cho phép". Kẹp ≥ 0 để chắc không vượt
+            // [heightPx] dù lề trên + tổng hàng có sát/vượt heightPx (icon/nhãn quá cao).
+            val safeTop = topPaddingOverridePx.coerceIn(0, heightPx)
+            val totalRowsHeight = rows * cellHeightFinal
+            val availableForGutters = heightPx - safeTop - totalRowsHeight
+            val gridMaxGutterY = if (rows > 1) (availableForGutters / (rows - 1)).coerceAtLeast(0) else 0
+            // 2026-11-24 (chủ dự án): khe DỌC thật = 0.7 × khe NGANG (iconSpacingX, khe giữa 2 icon theo hàng ngang) — không vượt trần
+            // [gridMaxGutterY] ở trên.
+            val desiredGutterY = (0.7f * iconSpacingX).toInt()
+            renderGutterY = minOf(desiredGutterY, gridMaxGutterY).coerceAtLeast(0)
+            renderPaddingTop = minOf(safeTop, maxOf(0, heightPx - totalRowsHeight))
+        } else {
+            // 2026-11-23: lề TRÊN cố định bằng lề 2 BÊN đã tính cuối (cellPaddingLeft — ở lưới capToDock là (space+gutter)/2 theo X, không còn
+            // là PADDING_DP thô như trước), không liên quan gì tới cellHeightRaw/iconSize (đã tính xong ở trên, dùng paddingTop thô).
+            renderPaddingTop = cellPaddingLeft
+            // 2026-11-23 (chủ dự án "giảm khoảng cách giữa các hàng icon", tính lại không pha loãng): khe DỌC THỰC VẼ RA nhỏ hơn khe dùng tính
+            // ngân sách ở trên — không cộng ngược phần "tiết kiệm" vào đâu cả (không dồn lên/dưới, không co giãn cellHeight) — nên pitch (khoảng
+            // hàng-tới-hàng) co lại ĐÚNG (gutterY − renderGutterY), không bị chia lại cho [rows] nữa.
+            renderGutterY = (gutterY * ROW_GUTTER_SCALE).toInt()
         }
 
         return Cells(
             cellWidth = cellWidth,
-            cellHeight = roundDownToMultiple(cellHeightRaw, roundUnitPx),
+            cellHeight = cellHeightFinal,
             iconSize = iconSize,
             gutterX = cellGutterX,
-            gutterY = gutterY,
+            gutterY = renderGutterY,
             paddingLeft = cellPaddingLeft,
-            paddingTop = paddingTop,
+            paddingTop = renderPaddingTop,
             columns = columns,
             rows = rows,
             showLabels = effectiveShowLabels,
             labelScale = labelScale,
             innerGapPx = innerGapPx,
-            labelTextSp = sizing.labelTextSp
+            labelTextSp = sizing.labelTextSp,
+            iconSpacingX = iconSpacingX
         )
     }
 
@@ -224,13 +278,20 @@ data class GridMetrics(
         internal const val GUTTER_DP = 8
         internal const val ICON_MIN_DP = 48
 
+        /**
+         * CHỈNH TAY (2026-11-23, chủ dự án so trực tiếp với iOS thật: "<0.5"): padding / icon của lưới Home ([capToDock]) — padding ở đây
+         * vừa là khe giữa 2 icon vừa là lề 2 bên màn (model đồng nhất). 0.5 (suy từ icon 60pt/màn 393pt) ra to hơn ngoài thực tế; 0.4 là điểm
+         * khởi đầu, chỉnh lại theo mắt cho khớp ảnh chụp iOS thật.
+         */
+        internal const val ICON_PADDING_RATIO = 0.43f
+
+        /** CHỈNH TAY (2026-11-23, chủ dự án "giảm khoảng cách giữa các hàng icon"): khe dọc (gutterY) / GUTTER_DP. */
+        internal const val ROW_GUTTER_SCALE = 0.5f
+
         // Polish 2026-11-19: hằng ICON_SCALE (0.9, TL2) chuyển thành IconSizing.iconScale.
 
         /** CHỈNH TAY (polish 2026-11-19): trần cạnh icon / chiều cao dock. */
         internal const val DOCK_ICON_MAX_FRACTION = 0.8f // 2026-11-19: 0.9 -> 0.8 (chủ dự án)
-
-        /** CHỈNH TAY (2026-11-21, chủ dự án "icon to quá"): trần cạnh icon / bề ngang lưới Home, theo tỉ lệ iOS (60/393). */
-        internal const val IOS_ICON_WIDTH_FRACTION = 0.153f
 
         /** = layout_weight của `home_pager` trong activity_home.xml (dock weight 1). */
         internal const val PAGER_WEIGHT = 6

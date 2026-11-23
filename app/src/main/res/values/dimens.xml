@@ -5,11 +5,6 @@
     <dimen name="icon_label_shadow_radius">4dp</dimen>
     <dimen name="icon_label_text_size">10sp</dimen>
 
-    <!-- M5 Task 4: màn hình chính. Giá trị khởi điểm, chỉnh sau khi xem trên máy.
-         home_dock_margin_horizontal PHẢI <= GridMetrics.PADDING_DP (8dp) để dock đủ 4 icon thẳng cột với lưới. -->
-    <dimen name="home_dock_margin_horizontal">8dp</dimen>
-    <dimen name="home_dock_margin_bottom">8dp</dimen>
-
     <!-- M7 Task 4: thanh công cụ edit mode canh giữa trên cùng. -->
 
     <!-- M7 Task 8: dấu "−" ẩn nhanh trên icon ở chế độ chỉnh sửa. Hình 24dp, vùng chạm tối thiểu 48dp (chuẩn). -->

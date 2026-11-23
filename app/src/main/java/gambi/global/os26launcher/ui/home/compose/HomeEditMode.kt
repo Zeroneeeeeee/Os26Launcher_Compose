@@ -58,6 +58,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import gambi.global.os26launcher.core.designsystem.DsCorner
@@ -136,12 +137,12 @@ fun HomeEditToolbar(
     onDone: () -> Unit,
     modifier: Modifier = Modifier,
     /** P2-5: vùng (toạ độ gốc) của từng nút, khóa = thứ tự nút (0 = "Sửa", 2 = "Xong"); null = nút gỡ. Cử chỉ gốc không coi vùng nút là vùng trống. */
-    onPillBounds: (Int, androidx.compose.ui.geometry.Rect?) -> Unit = { _, _ -> }
+    onPillBounds: (Int, Rect?) -> Unit = { _, _ -> }
 ) {
     Row(
         modifier
             .fillMaxWidth()
-            .padding(horizontal = dimensionResource(R.dimen.home_edit_toolbar_margin_horizontal)),
+            .padding(horizontal = 25.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         EditPill(stringResource(R.string.home_edit), bold = false, onClick = onEdit, onBounds = { onPillBounds(0, it) })
@@ -159,7 +160,7 @@ class HomeEditMenuItem(@androidx.annotation.StringRes val label: Int, @androidx.
  * thẳng mép trái nút; một lớp phủ trong suốt toàn màn bắt chạm ra ngoài để đóng (nuốt chạm). Mở: phóng từ góc trên-trái 0,85 -> 1 + hiện dần 180 ms.
  */
 @Composable
-fun HomeEditMenu(anchor: androidx.compose.ui.geometry.Rect, items: List<HomeEditMenuItem>, onDismiss: () -> Unit) {
+fun HomeEditMenu(anchor: Rect, items: List<HomeEditMenuItem>, onDismiss: () -> Unit) {
     val density = LocalDensity.current
     val gap = with(density) { EDIT_MENU_GAP.roundToPx() }
     val open = remember { androidx.compose.animation.core.Animatable(0f) }
@@ -253,7 +254,7 @@ private const val EDIT_PILL_LENS_SCALE = 0.5f // viên thuốc cao 28 dp: khúc 
 
 
 @Composable
-private fun EditPill(text: String, bold: Boolean, onClick: () -> Unit, onBounds: (androidx.compose.ui.geometry.Rect?) -> Unit = {}) {
+private fun EditPill(text: String, bold: Boolean, onClick: () -> Unit, onBounds: (Rect?) -> Unit = {}) {
     val latestBounds by androidx.compose.runtime.rememberUpdatedState(onBounds)
     androidx.compose.runtime.DisposableEffect(Unit) { onDispose { latestBounds(null) } }
     val interaction = remember { MutableInteractionSource() }

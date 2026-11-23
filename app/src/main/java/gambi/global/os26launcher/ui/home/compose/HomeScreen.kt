@@ -97,6 +97,7 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import kotlin.math.abs
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * JH1 Task 2 — Home Compose: ảnh nền, các trang lưới, pill, dock. Bố cục như `activity_home.xml`: cột dọc trong vùng trừ thanh hệ thống
@@ -154,8 +155,21 @@ internal fun HomeScreen(
     val scope = rememberCoroutineScope()
     val haptic = LocalHapticFeedback.current
     var pagerSize by remember { mutableStateOf(IntSize.Zero) }
-    val cells = remember(pagerSize, state.grid, state.showLabels, density.density) {
-        GridMetrics.from(state.grid, state.showLabels).measure(pagerSize.width, pagerSize.height, density.density)
+    // 2026-11-23 (chủ dự án, so trực tiếp với iOS): lề TRÊN của lưới icon tính từ MÉP TRÊN MÀN HÌNH (không phải từ đỉnh pager, đã bị thanh
+    // trạng thái/editToolbarClearancePx đẩy xuống [gridTopPx] dòng 344-345) = 1.7 × chiều cao thanh trạng thái. Pager đã bắt đầu ở [gridTopPx]
+    // từ mép màn, nên phần padding CỘNG THÊM bên trong GridMetrics chỉ còn: max(0, 1.7×statusBar − gridTopPx).
+    val gridStatusBarPx = WindowInsets.systemBarsIgnoringVisibility.getTop(density)
+    val gridTopPx = maxOf(gridStatusBarPx, editToolbarClearancePx(density))
+    val gridTopPaddingOverridePx = (1.7f * gridStatusBarPx - gridTopPx).coerceAtLeast(0f).toInt()
+    val cells = remember(pagerSize, state.grid, state.showLabels, density.density, gridTopPaddingOverridePx) {
+        GridMetrics.from(state.grid, state.showLabels).measure(pagerSize.width, pagerSize.height, density.density, gridTopPaddingOverridePx)
+    }
+    // 2026-11-24 (chủ dự án): thanh "Sửa"/"Xong" của edit mode căn GIỮA theo chiều dọc trong khoảng mép trên màn hình → mép trên hàng icon đầu
+    // tiên (= [gridTopPx] + cells.paddingTop, tuyệt đối từ mép màn), không còn sát mép trên như trước.
+    val editToolbarPillHeightPx = dimensionResource(R.dimen.home_edit_pill_touch).let { with(density) { it.toPx() } }
+    val editToolbarTopPaddingPx = run {
+        val firstRowTopPx = gridTopPx + (cells?.paddingTop ?: 0)
+        maxOf(0f, firstRowTopPx / 2f - editToolbarPillHeightPx / 2f)
     }
     // Trang tạm ở cuối khi đang kéo (M7 Task 7): HomePagerController.renderPages nối HomePage(size, PageId.NEW, rỗng).
     val pages = remember(state.pages, state.ghostPage) {
@@ -166,7 +180,7 @@ internal fun HomeScreen(
     val pagerState = rememberPagerState { pages.size }
     val drag = remember { HomeDragState(scope, density.density) }
     LaunchedEffect(drag) { onDragState(drag) }
-    var editMenuOpen by remember { androidx.compose.runtime.mutableStateOf(false) } // P2-9e: menu "Sửa" của thanh edit mode
+    var editMenuOpen by remember { mutableStateOf(false) } // P2-9e: menu "Sửa" của thanh edit mode
     val barInsets = WindowInsets.systemBarsIgnoringVisibility
     // PG1 G1: cổng mở Thư viện / Today đọc thẳng PagerState lúc chạm xuống (targetPage và "tay đang kéo" đổi liên tục khi cuộn, chép trong
     // SideEffect thì có thể cũ đúng lúc lướt nhanh). Trượt nốt sau khi lớp phủ tiếp quản chạy trong scope của màn này.
@@ -285,7 +299,7 @@ internal fun HomeScreen(
     // JH3d D3: widget vừa thêm (HomeEvent.WidgetAdded) → chờ danh sách trang có trang đó rồi lật tới (HomePagerController.scrollToPage).
     LaunchedEffect(pageScrollRequests) {
         pageScrollRequests.collect { pageId ->
-            val index = withTimeoutOrNull(PAGE_WAIT_MS) {
+            val index = withTimeoutOrNull(PAGE_WAIT_MS.milliseconds) {
                 snapshotFlow { currentState.pages.indexOfFirst { it.pageId == pageId } }.first { it >= 0 }
             } ?: return@collect
             pagerState.animateScrollToPage(index, animationSpec = tween(PageMotion.FULL_MS, easing = EaseOutQuint))
@@ -300,7 +314,7 @@ internal fun HomeScreen(
         if (busy) {
             pillActive = true
         } else {
-            delay(PILL_IDLE_MS)
+            delay(PILL_IDLE_MS.milliseconds)
             pillActive = false
         }
     }
@@ -343,6 +357,10 @@ internal fun HomeScreen(
                 // không dịch khi vào edit mode: đỉnh = max(thanh trạng thái, editToolbarClearance). Cạnh dưới = inset dưới.
                 val bars = WindowInsets.systemBarsIgnoringVisibility
                 val topPx = maxOf(bars.getTop(density), editToolbarClearancePx(density))
+                // PB Task 4: người dùng bật "ẩn thanh điều hướng" → bỏ lề dưới dành cho nav bar (systemBarsIgnoringVisibility luôn trả kích thước
+                // như đang hiện, kể cả khi đã ẩn), để dock trôi xuống hết cạnh màn. Tắt thì giữ lề như trước (đề phòng nav bar hiện lại).
+                val navHidden = isNavBarHidden()
+                val barsSides = if (navHidden) WindowInsetsSides.Horizontal else WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
                 // Khung pager/pill/dock (toạ độ gốc) KHÔNG tính dịch của lớp trượt Library/Today: boundsInRoot() có tính graphicsLayer, mà đổi
                 // translationX không layout lại nên callback có thể đã ghi khung lệch ở một khung hình giữa hoạt ảnh và giữ nguyên (icon nổi của
                 // menu, kéo thả lệch sau khi mở/đóng Library). Đo trong lớp ([inner]) rồi cộng gốc chưa dịch ([outer]).
@@ -368,7 +386,7 @@ internal fun HomeScreen(
                             alpha = if (p >= 1f || t >= 1f) 0f else 1f
                         }
                         .onGloballyPositioned { coords.inner = it; syncRects() }
-                        .windowInsetsPadding(bars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
+                        .windowInsetsPadding(bars.only(barsSides))
                         .padding(top = with(density) { topPx.toDp() })
                 ) {
                     HorizontalPager(
@@ -420,6 +438,11 @@ internal fun HomeScreen(
                             pagerInfo.pillDotsInteractive = it
                         }
                     )
+                    // 2026-11-23 (iOS-style): lề dock (2 cạnh bên + đáy) = X/2, X = khe cách đều của lưới Home phía trên (cells.iconSpacingX —
+                    // khe trái màn/icon đầu = khe giữa 2 icon = khe icon cuối/phải màn). Dock KHÔNG tự tính gap riêng (xem HomeDock): dùng thẳng
+                    // X nên icon dock thẳng cột với icon lưới bên trên; lề dock = X/2 để bộ ba lề (lưới-icon, dock-icon, dock-màn) liền mạch theo
+                    // đúng tỉ lệ nửa khe.
+                    val dockMargin = with(density) { ((cells?.iconSpacingX ?: 0) / 2f).toDp() }
                     HomeDock(
                         dock = state.dock,
                         cells = cells,
@@ -429,11 +452,11 @@ internal fun HomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(DOCK_WEIGHT)
-                            .padding(horizontal = dimensionResource(R.dimen.home_dock_margin_horizontal))
+                            .padding(horizontal = dockMargin)
                             .onGloballyPositioned { coords.dock = it; syncRects() }
                     )
                     // Lề đáy NGOÀI phần trọng số: LinearLayout của activity_home.xml chia trọng số sau khi trừ margin, nên pager và dock cao đúng như View.
-                    Spacer(Modifier.height(dimensionResource(R.dimen.home_dock_margin_bottom)))
+                    Spacer(Modifier.height(dockMargin))
                 }
             }
         }
@@ -442,8 +465,12 @@ internal fun HomeScreen(
                 HomeEditToolbar(
                     onEdit = { editMenuOpen = !editMenuOpen },
                     onDone = actions::exitEditMode,
-                    modifier = Modifier.align(Alignment.TopCenter),
-                    onPillBounds = { i, r -> if (r == null) drag.toolbarRects.remove(i) else drag.toolbarRects.put(i, r) }
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = with(density) { editToolbarTopPaddingPx.toDp() }),
+                    onPillBounds = { i, r ->
+                        if (r == null) drag.toolbarRects.remove(i) else drag.toolbarRects[i] = r
+                    }
                 )
             }
             // P2-9e: menu "Sửa" chỉ sống trong edit mode (thoát edit mode hay bắt đầu kéo thì đóng).
