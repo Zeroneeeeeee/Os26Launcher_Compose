@@ -97,3 +97,8 @@ Plan: [../plans/RS-settings-reskin.md](../plans/RS-settings-reskin.md). Hai bài
 - **`scrollToItem` làm `isScrollInProgress` = true** (đo, JS4): ẩn bàn phím chỉ khi có `DragInteraction.Start`, không theo `isScrollInProgress`.
 - **Cửa sổ dialog có thanh trạng thái riêng** (quan sát, JS3): ẩn thanh trạng thái trên chính cửa sổ dialog nếu nó che nội dung.
 - **ComposeView trong overlay của Service** (đo, JS7b): tự cấp `Lifecycle`/`SavedState`/`ViewModelStore` owner và `Recomposer` riêng; tạm dừng frame clock khi panel đóng.
+
+## PG1 F3, F4 — kiểu chuyển cảnh cho panel, cài đặt kính theo API (2026-11-23, Oppo PKD130 + máy Android 11). Nguồn: [plans/PG1-parity-batch-1.md](../plans/PG1-parity-batch-1.md)
+
+- **(2026-11-23, đọc code) Thiết lập ở Cài đặt mà bản Compose không đọc thì ẩn hàng, giữ khóa.** "Mức kính" và công tắc kính từng phần tử chỉ điều khiển kính View cũ; kiểm bằng grep mọi chỗ ngoài `ui/settings/` gọi `GlassEnvironment.modeFor` (không có) trước khi ẩn, để chắc ẩn không đổi hành vi máy cao. Thanh nào còn tác dụng theo API phải đối chiếu `DsGlass.kt` (blur API 31, lens API 33) và `DsSurfaceDrawable` (Độ bóng vẫn có tác dụng dưới API 31).
+- **(2026-11-23, đọc code) Trong `object` có hàm tên `spring`, gọi `spring(...)` của Compose phải ghi đủ tên gói hoặc đổi tên hàm** — gọi trần sẽ gọi đệ quy chính hàm đó (đã đổi thành `PanelStyleMotion.scaledSpring`).

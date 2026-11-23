@@ -7,14 +7,14 @@
 | File | Nội dung | Số mục |
 |---|---|---|
 | [glass.md](glass.md) | **Kính (liquid glass).** Thư viện LiquidGlass, mức kính, áp kính theo phần tử, làm mới kính khi đổi nền, số đo hiệu năng kính. | 14 |
-| [drag-and-layout.md](drag-and-layout.md) | **Kéo-thả và bố cục lưới.** Custom ViewGroup của lưới, trạng thái kéo-thả, dock/lưới/trang, menu nhấn giữ, bố cục và cỡ lưới. | 13 |
+| [drag-and-layout.md](drag-and-layout.md) | **Kéo-thả và bố cục lưới.** Custom ViewGroup của lưới, trạng thái kéo-thả, dock/lưới/trang, menu nhấn giữ (cả từ Thư viện/Tìm kiếm), bố cục và cỡ lưới, thư mục nhiều trang, Today View. | 16 |
 | [startup-performance.md](startup-performance.md) | **Khởi động và đo hiệu năng.** Số đo nạp danh sách app, cold start, cache nhãn, bản debug so với release, R8. | 8 |
 | [search.md](search.md) | **Tìm kiếm.** Lõi tìm kiếm, lớp tìm kiếm, pill, trợ năng, mở rộng tìm kiếm, danh bạ. | 9 |
 | [widgets.md](widgets.md) | **Widget.** Widget Đồng hồ/Lịch và widget trên lưới. | 2 |
 | [icons-and-app-list.md](icons-and-app-list.md) | **Icon và danh sách app.** Nạp danh sách app, cache icon, kiểu và bo góc icon. | 5 |
 | [permissions-and-device-testing.md](permissions-and-device-testing.md) | **Quyền, hiển thị app và kiểm trên máy thật.** Quyền runtime, `<queries>`, app mặc định ở dock, bẫy khi đo/cài trên Oppo và Live 4. | 12 |
 | [home-pager-animation.md](home-pager-animation.md) | **Home, pager và hoạt ảnh.** Launcher mặc định, inset, trang, thư viện ứng dụng, hoạt ảnh, tách controller, Onboarding và splash. | 14 |
-| [settings-and-data.md](settings-and-data.md) | **Cài đặt và dữ liệu.** Màn Cài đặt, ảnh nền, đồng bộ bố cục với Room khi cài/gỡ app, catch-up lúc khởi động. | 7 |
+| [settings-and-data.md](settings-and-data.md) | **Cài đặt và dữ liệu.** Màn Cài đặt, ảnh nền, đồng bộ bố cục với Room khi cài/gỡ app, catch-up lúc khởi động, bỏ khỏi Home khác ẩn và Migration Room. | 8 |
 | [design-system.md](design-system.md) | **Hệ thống thiết kế v3 (DS3, RS).** Token `ds_*`, thành phần `Ds*` trong `core/designsystem`, bề mặt kính xấp xỉ, lỗi lint API 26–27; áp v3 vào Cài đặt (card nhóm bằng ItemDecoration, dấu chọn hai lớp, nội dung DsDialog). | 2 |
 
 ## Bài học mới đi vào đâu

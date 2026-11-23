@@ -188,3 +188,10 @@ Mỗi mục giữ nguyên ngày, nhãn nguồn (đo được / đọc code / đ�
 - **QWEA0 đã gỡ** (JX): mức API của kính dò bằng `Build.VERSION.SDK_INT`; cài đặt "Mức kính" và công tắc kính từng phần tử chưa tác động lên kính Compose (JX Q3, plan riêng).
 - **Nền mờ từ ảnh thu nhỏ bị vỡ điểm** (quan sát, JS): ảnh nền 96 px phải vẽ với `FilterQuality.High`, thêm `Modifier.blur(24.dp)` trên API ≥ 31 (`wallpaperSoftBlur()`).
 - **Nền CC quá trong** (chủ dự án, JS7b): blur sau panel 48 dp, `cc_blur_behind_radius` 56 dp; chủ dự án chốt "Vừa rồi".
+
+## Bổ sung chép từ repo XML (ở bản XML nằm cuối mục «HT — công tắc Home (2026-11-13, Vsmart Live 4). Nguồn: [knowledgements/HT-home-toggles.md](../knowledgements/HT-home-toggles.md)»)
+
+> Chép từ repo XML (`E:\SourceTree\IosLauncher`) ngày 2026-11-23 (PG1 Task 1). Bài học viết cho bản View: tên class View (`IconGridView`, `DockView`, `FolderPanelView`, `DragHelper`...) chỉ để tham khảo cơ chế, bản Compose có thể đã làm khác.
+
+- **(2026-11-19, P2-9e) Muốn kính thì menu phải nằm trong cửa sổ Home.** `PopupWindow`/`Dialog` là cửa sổ riêng, không có `backdrop_image` để `BackgroundGlass` lấy mẫu → chỉ được nền phẳng. Menu "Sửa" làm view thêm vào `home_root` + lớp phủ trong suốt bắt chạm ngoài để đóng (cùng cách `IconActionMenu`).
+- **(2026-11-19, polish) `View.setBackground` thay padding của view bằng padding của drawable.** Nền `InsetDrawable` (chỉ lề trên/dưới) xóa `paddingHorizontal` trong XML của nút "Sửa"/"Xong" — chỉnh lề mấy lần không đổi gì. Gán nền bằng code thì lưu padding trước, đặt lại sau (`GlassPillBackground`).

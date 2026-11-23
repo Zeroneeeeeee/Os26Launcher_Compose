@@ -59,6 +59,8 @@ Khóa **đậm** là khóa mới từ CF. Màn theo số màn Figma v3 (`Figma-D
 | `glassTint` | **`appearance_glass_tint`** | Int ARGB, 0 = không tô | 0 | 2.1 | ghi | — |
 | `surfaceTone` | **`appearance_surface_tone`** | `SurfaceTone` (LIGHT, DARK) | LIGHT | (theme) | ghi | — |
 
+**PG1 F4 (2026-11-23): `glassLevel` và `glassCustom` không còn UI trong bản Compose** (màn 2.1 ẩn hàng "Mức kính" và khối công tắc; kính Compose không đọc hai trường này, JX Q3). Khóa, giá trị mặc định, preset theme và code đọc/ghi giữ nguyên để nối lại sau nếu cần, không cần migration.
+
 `glassCustomSaved` (đọc kèm): true khi có ít nhất một khóa `glass_custom_*` trong file. Chuyển sang mức CUSTOM lần đầu (chưa lưu) thì gieo công tắc theo mức cũ (GS D8).
 
 ### 3.2 `GeneralConfig` — `GeneralConfigRepository`

@@ -154,3 +154,12 @@ Mỗi mục giữ nguyên ngày, nhãn nguồn (đo được / đọc code / đ�
 - **Git Bash đổi đường dẫn `/data/...` trong tham số `adb`** (quan sát): đặt `MSYS_NO_PATHCONV=1` trước lệnh `adb` có đường dẫn trên máy.
 - **`adb shell input swipe` từ mép trên không mở được CC panel trên Samsung** (quan sát): hệ thống bắt cú vuốt; nhờ người mở tay.
 - **Không bấm HOME/BACK ở gốc Home khi app chưa là launcher mặc định** (quan sát): rơi về launcher của chủ máy.
+
+## Khóa sinh trắc / khóa màn hình (HL, 2026-11-20) (chép từ repo XML)
+
+> Chép từ repo XML (`E:\SourceTree\IosLauncher`) ngày 2026-11-23 (PG1 Task 1). Bài học viết cho bản View: tên class View (`IconGridView`, `DockView`, `FolderPanelView`, `DragHelper`...) chỉ để tham khảo cơ chế, bản Compose có thể đã làm khác.
+
+- `BIOMETRIC_STRONG or DEVICE_CREDENTIAL` (và `DEVICE_CREDENTIAL` riêng) chỉ dùng được từ API 30. API 26–29: hộp `BIOMETRIC_STRONG` kèm nút phủ định, bấm nút thì mở `KeyguardManager.createConfirmDeviceCredentialIntent` (`HiddenAppsAuthenticator`).
+- Màn xác thực của hệ thống ở API 26–29 là Activity khác: màn gọi bị `onStop`. Khóa lại ở `onStop` phải bỏ qua lúc đang xác thực (`inProgress`), nếu không xác thực xong lại bị khóa ngay.
+- Có hộp với `DEVICE_CREDENTIAL` thì không được đặt nút phủ định (thư viện ném lỗi).
+- Máy không có khóa màn hình (`KeyguardManager.isDeviceSecure() == false`): không khóa được; app này cho vào thẳng và ẩn công tắc, giữ lựa chọn để đặt lại khóa máy là có hiệu lực.

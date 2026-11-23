@@ -63,3 +63,16 @@ Mỗi mục giữ nguyên ngày, nhãn nguồn (đo được / đọc code / đ�
 
 - Dữ liệu người dùng tự đặt cho một app (tên riêng) áp bằng **lớp phủ sau `loadApps`** ở `AppRepositoryImpl`, không ghi vào cache nhãn LC (cache bị xóa theo locale/fingerprint/stamp) và không vào cache icon (khóa không chứa nhãn). Một chỗ áp là đủ vì mọi nơi hiển thị đều đọc `AppRepository.apps` (đọc code, 2026-11-13). Khóa theo `ComponentKey` gồm `userSerial` để hồ sơ công việc tách riêng (đọc code).
 - Với tên riêng, `a11yLabel` của app hồ sơ phải tính lại từ **tên mới** bằng `getUserBadgedLabel`; hạn chế A3 (đổi activity khi cập nhật thì mất tên riêng) được chấp nhận và ghi rõ (đọc code, 2026-11-13; chưa kiểm trên máy).
+
+## FS — icon thư mục co còn ~36dp vì trần dock (2026-11-20) (chép từ repo XML)
+
+> Chép từ repo XML (`E:\SourceTree\IosLauncher`) ngày 2026-11-23 (PG1 Task 1). Bài học viết cho bản View: tên class View (`IconGridView`, `DockView`, `FolderPanelView`, `DragHelper`...) chỉ để tham khảo cơ chế, bản Compose có thể đã làm khác.
+
+- **Triệu chứng:** trên Tecno Spark 40 (màn 360dp, density 3) icon trong panel thư mục chỉ ~36dp, ô ~83dp, khe trống lớn.
+- **Gốc:** trần "icon ≤ 0,8 × chiều cao dock" (polish 2026-11-19) trong `GridMetrics.measure` suy chiều cao dock từ `heightPx / PAGER_WEIGHT`,
+  tức giả định `heightPx` là chiều cao pager Home. `FolderPanelView`, `RecentsWidgetView` cũng gọi `measure` với kích thước của riêng
+  chúng nên trần tính ra 840 / 6 × 0,8 = 112px → 108px. Số tính khớp ảnh chụp từng pixel.
+- **Sửa:** trường `GridMetrics.capToDock` (mặc định `false`), chỉ `GridMetrics.from(preset, …)` (đường pager/dock/Today/widget picker,
+  đều đo bằng kích thước pager) đặt `true`.
+- **Bài học:** hằng/công thức trong lớp dùng chung mà dựa vào ngữ cảnh của một nơi gọi (ở đây: "heightPx là pager") phải bật theo
+  cờ của nơi gọi đó, không áp mặc định cho mọi nơi gọi. Khi thêm luật vào `GridMetrics`, grep mọi chỗ `GridMetrics(` / `.measure(` trước.
