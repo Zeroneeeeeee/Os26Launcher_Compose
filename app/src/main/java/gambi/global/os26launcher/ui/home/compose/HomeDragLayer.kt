@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import gambi.global.os26launcher.core.glass.compose.glassCornerScale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
@@ -27,7 +28,10 @@ fun HomeDragLayer(drag: HomeDragState, cells: GridMetrics.Cells?, icons: HomeIco
     val c = cells ?: return
     val density = LocalDensity.current
     val size = drag.floatSize
-    val corner = if (item is DragItem.Widget) widgetRadius(with(density) { size.width.toDp() }, with(density) { size.height.toDp() }) else (c.iconSize * 0.225f / density.density).dp
+    // 2026-11-23: bóng theo thanh "Bo góc" của kính như icon / thư mục / widget (kẹp nửa cạnh ngắn).
+    val cornerScale = glassCornerScale()
+    val baseCorner = if (item is DragItem.Widget) widgetRadius(with(density) { size.width.toDp() }, with(density) { size.height.toDp() }) else (c.iconSize * 0.225f / density.density).dp
+    val corner = minOf(baseCorner * cornerScale, with(density) { (minOf(size.width, size.height) / 2f).toDp() })
     Box(
         Modifier
             .offset {

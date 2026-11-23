@@ -49,7 +49,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.onSizeChanged
@@ -75,7 +78,9 @@ import gambi.global.os26launcher.core.designsystem.DsCornerRole
 import gambi.global.os26launcher.core.designsystem.DsCorners
 import gambi.global.os26launcher.core.designsystem.DsSurface
 import gambi.global.os26launcher.core.designsystem.DsSurfaceDrawable
+import gambi.global.os26launcher.core.glass.compose.DialogWindowGlass
 import gambi.global.os26launcher.core.glass.compose.LocalDsBackdrop
+import gambi.global.os26launcher.core.glass.compose.glassTintOf
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -126,10 +131,18 @@ fun DsAlertDialog(
     ) {
         // Lớp mờ 60% hiện/tắt theo hoạt ảnh. Phải THEO DÕI progress (snapshotFlow): SideEffect chỉ chạy lúc dựng lại nên đặt một lần
         // ở 0 rồi thôi (đo được trên Oppo: hộp thoại không có lớp mờ).
-        (LocalView.current.parent as? DialogWindowProvider)?.window?.let { window ->
+        val dialogWindow = (LocalView.current.parent as? DialogWindowProvider)?.window
+        dialogWindow?.let { window ->
             LaunchedEffect(window) {
                 snapshotFlow { progress.value.coerceIn(0f, 1f) }.collect { window.setDimAmount(DIM * it) }
             }
+        }
+        // 2026-11-23 (chủ dự án): nền kính (blur nền cửa sổ của hệ thống, xem DialogWindowGlass) thay bề mặt SHEET đặc; máy không blur xuyên
+        // cửa sổ thì vẽ bề mặt SHEET như cũ. Bo theo vai SHEET (đã nhân "Bo góc").
+        val sheetRadiusPx = DsCorners.radiusPx(LocalContext.current, DsCorner.Role(DsCornerRole.SHEET), 0, 0)
+        val sheetColor = colorResource(R.color.ds_surface_sheet).toArgb()
+        val glass = DialogWindowGlass(dialogWindow, sheetRadiusPx, glassTintOf(sheetColor, SHEET_GLASS_ALPHA), android.graphics.Color.TRANSPARENT) {
+            progress.value
         }
         val screenWidth = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.width.toDp() }
         val margin = dimensionResource(R.dimen.ds_space_24)
@@ -146,7 +159,7 @@ fun DsAlertDialog(
                         scaleY = s
                         alpha = p.coerceIn(0f, 1f)
                     }
-                    .dsSheetSurface(topCornersOnly = false)
+                    .dsSheetSurface(topCornersOnly = false, glass = glass)
                     .padding(start = 20.dp, top = 24.dp, end = 20.dp, bottom = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
@@ -318,7 +331,7 @@ fun DsBottomSheetLayer(
 // ---------------------------------------------------------------------------------------------------------------------------------
 
 /** Bề mặt `SHEET` tĩnh bo theo vai `SHEET` (đọc thanh "Bo góc"); [topCornersOnly] = chỉ bo hai góc trên (sheet). Cắt nội dung theo hình bo. */
-private fun Modifier.dsSheetSurface(topCornersOnly: Boolean): Modifier = composed {
+private fun Modifier.dsSheetSurface(topCornersOnly: Boolean, glass: Boolean = false): Modifier = composed {
     val context = LocalContext.current
     val drawable = remember(context, topCornersOnly) {
         DsSurfaceDrawable(context, DsSurface.SHEET, DsCorner.Role(DsCornerRole.SHEET), topCornersOnly = topCornersOnly)
@@ -330,11 +343,20 @@ private fun Modifier.dsSheetSurface(topCornersOnly: Boolean): Modifier = compose
     val shape = if (topCornersOnly) RoundedCornerShape(topStart = r, topEnd = r) else RoundedCornerShape(r)
     onSizeChanged { widthPx = it.width.toFloat(); heightPx = it.height.toFloat() }
         .drawBehind {
-            drawable.setBounds(0, 0, size.width.toInt(), size.height.toInt())
-            drawIntoCanvas { drawable.draw(it.nativeCanvas) }
+            // [glass]: nền cửa sổ đã là kính (DialogWindowGlass), chỉ vẽ viền sáng mảnh.
+            if (glass) {
+                drawOutline(shape.createOutline(size, layoutDirection, this), SHEET_GLASS_BORDER, style = Stroke(1.dp.toPx()))
+            } else {
+                drawable.setBounds(0, 0, size.width.toInt(), size.height.toInt())
+                drawIntoCanvas { drawable.draw(it.nativeCanvas) }
+            }
         }
         .clip(shape)
 }
+
+/** 2026-11-23: độ đục tint kính của hộp thoại (màu `ds_surface_sheet` cũ ~94 %). */
+private const val SHEET_GLASS_ALPHA = 0.6f
+private val SHEET_GLASS_BORDER = Color(0x40FFFFFF)
 
 private const val DIM = 0.6f
 private const val ENTER_SCALE = 1.1f

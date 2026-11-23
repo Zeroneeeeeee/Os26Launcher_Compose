@@ -493,7 +493,7 @@
     <string name="gt_blur">धुंधलापन</string>
     <string name="gt_blur_desc">ग्लास के पीछे का बैकग्राउंड कितना धुंधला हो।</string>
     <string name="gt_corner">कोनों की गोलाई</string>
-    <string name="gt_corner_desc">50 = जैसा है, 0 = चौकोर। ऐप आइकॉन का आकार नहीं बदलता।</string>
+    <string name="gt_corner_desc">50 = जैसा है, 0 = चौकोर। ऐप आइकॉन का आकार भी बदलता है।</string>
     <string name="gt_reset">डिफ़ॉल्ट पर रीसेट करें</string>
 
     <!-- WN: thông báo thời tiết (tiền tố wn_) -->

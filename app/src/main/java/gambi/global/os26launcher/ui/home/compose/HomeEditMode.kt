@@ -249,6 +249,7 @@ private val EDIT_MENU_GAP = 6.dp
 private const val EDIT_MENU_OPEN_SCALE = 0.85f
 private const val EDIT_MENU_OPEN_MS = 180
 private const val EDIT_MENU_RADIUS_DP = 24f // như MENU_RADIUS_DP của HomeIconMenu
+private const val EDIT_PILL_LENS_SCALE = 0.5f // viên thuốc cao 28 dp: khúc xạ của card quá mạnh (như ô tìm Thư viện)
 
 
 @Composable
@@ -266,8 +267,9 @@ private fun EditPill(text: String, bold: Boolean, onClick: () -> Unit, onBounds:
         Box(
             Modifier
                 .height(dimensionResource(R.dimen.home_edit_pill_height))
-                .clip(RoundedCornerShape(dimensionResource(R.dimen.home_edit_pill_corner)))
-                .background(colorResource(R.color.search_scrim))
+                // 2026-11-23 (chủ dự án): nền nút là liquid glass thật (khúc xạ mép, viền sáng, theo thông số kính) thay nền đen 80 % `search_scrim`.
+                // Viên thuốc nhỏ: khúc xạ thu nửa như ô tìm (lensScale). Dưới API 31: kính mờ tĩnh / bề mặt CONTROL.
+                .dsGlass(DsSurface.CONTROL, DsCorner.Pill, realGlass = true, lensScale = EDIT_PILL_LENS_SCALE)
                 .padding(horizontal = dimensionResource(R.dimen.home_edit_pill_padding_horizontal)),
             contentAlignment = Alignment.Center
         ) {

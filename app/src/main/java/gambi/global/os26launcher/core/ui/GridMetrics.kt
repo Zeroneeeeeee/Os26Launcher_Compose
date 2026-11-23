@@ -173,13 +173,28 @@ data class GridMetrics(
             }
         }
 
+        // 2026-11-23 (chủ dự án): lưới Home cách đều theo ICON: khe trái màn → icon đầu = khe giữa hai icon = khe icon cuối → phải màn = [space].
+        // Tâm icon cột i = space + icon/2 + i × (icon + space). Giữ khe giữa hai ô là gutter (widget cạnh nhau vẫn có khe), nên
+        // ô rộng icon + space − gutter và lề trái (space + gutter) / 2. Lưới khác (thư mục, Today riêng) giữ cách cũ.
+        var cellWidth = roundDownToMultiple(cellWidthRaw, roundUnitPx)
+        var cellGutterX = gutterX
+        var cellPaddingLeft = paddingLeft
+        if (capToDock) {
+            val space = (widthPx - columns * iconSize) / (columns + 1)
+            if (space > 0) {
+                cellGutterX = minOf(gutterX, space)
+                cellWidth = iconSize + space - cellGutterX
+                cellPaddingLeft = (space + cellGutterX) / 2
+            }
+        }
+
         return Cells(
-            cellWidth = roundDownToMultiple(cellWidthRaw, roundUnitPx),
+            cellWidth = cellWidth,
             cellHeight = roundDownToMultiple(cellHeightRaw, roundUnitPx),
             iconSize = iconSize,
-            gutterX = gutterX,
+            gutterX = cellGutterX,
             gutterY = gutterY,
-            paddingLeft = paddingLeft,
+            paddingLeft = cellPaddingLeft,
             paddingTop = paddingTop,
             columns = columns,
             rows = rows,

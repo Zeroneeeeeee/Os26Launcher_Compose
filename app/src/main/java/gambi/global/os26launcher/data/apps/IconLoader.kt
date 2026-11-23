@@ -2,7 +2,9 @@ package gambi.global.os26launcher.data.apps
 
 import android.graphics.Bitmap
 import android.util.Log
+import gambi.global.os26launcher.core.bitmap.IconShape
 import gambi.global.os26launcher.domain.model.ComponentKey
+import gambi.global.os26launcher.domain.model.GlassLook
 import gambi.global.os26launcher.domain.model.IconStyleKey
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -31,7 +33,7 @@ class IconLoader @Inject constructor(
         customIcons.fileFor(key)?.let { file ->
             val customStamp = CUSTOM_STAMP_PREFIX + file.name
             cache.get(key, customStamp, sizePx, style)?.let { return it }
-            loadCustom(file, key, sizePx)?.let { bmp ->
+            loadCustom(file, key, sizePx, style)?.let { bmp ->
                 cache.put(key, customStamp, sizePx, style, bmp)
                 return bmp
             }
@@ -82,7 +84,7 @@ class IconLoader @Inject constructor(
     }
 
     /** P3-4: giải mã file icon riêng (thu nhỏ gần [sizePx]), cắt hình, huy hiệu hồ sơ. null nếu file hỏng (rơi về icon hệ thống). */
-    private fun loadCustom(file: java.io.File, key: ComponentKey, sizePx: Int): Bitmap? = try {
+    private fun loadCustom(file: java.io.File, key: ComponentKey, sizePx: Int, style: IconStyleKey): Bitmap? = try {
         val bounds = android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }
         android.graphics.BitmapFactory.decodeFile(file.path, bounds)
         var sample = 1
@@ -90,7 +92,7 @@ class IconLoader @Inject constructor(
         val src = android.graphics.BitmapFactory.decodeFile(file.path, android.graphics.BitmapFactory.Options().apply { inSampleSize = sample })
         src?.let {
             try {
-                dataSource.badgeForUser(renderer.renderCustom(it, sizePx), key.userSerial)
+                dataSource.badgeForUser(renderer.renderCustom(it, sizePx, IconShape.forCorner(style.corner)), key.userSerial)
             } finally {
                 it.recycle()
             }
@@ -151,10 +153,10 @@ class IconLoader @Inject constructor(
         return try {
             val pack = iconPacks.packFor(style.pack) ?: return null
             pack.mapped(key.packageName, key.className)
-                ?.let { return renderer.renderPackIcon(it, sizePx) }
+                ?.let { return renderer.renderPackIcon(it, sizePx, IconShape.forCorner(style.corner)) }
             if (!pack.hasFallback) return null
             val original = dataSource.loadIconDrawable(key) ?: return null
-            renderer.renderPackFallback(original, sizePx, pack, key.packageName.hashCode())
+            renderer.renderPackFallback(original, sizePx, pack, key.packageName.hashCode(), IconShape.forCorner(style.corner))
         } catch (e: OutOfMemoryError) {
             Log.w(PACK_TAG, "pack icon OOM", e)
             null
@@ -177,8 +179,10 @@ class IconLoader @Inject constructor(
         val badgePart = if (dataSource.isWorkUser(key.userSerial)) "|badge1" else ""
         // CF Step 7: chỉ nối khi bật, nên file cache đĩa cũ (không nổi) vẫn dùng được
         val bevelPart = if (style.bevel) "|bevel" else ""
+        // 2026-11-23: bo góc icon chỉ nối khi khác mặc định, nên file cache đĩa cũ vẫn dùng được
+        val cornerPart = if (style.corner == GlassLook.DEFAULT.corner) "" else "|corner=${style.corner}"
         val raw =
-            "${key.className}|${key.userSerial}|$sizePx|${style.style.name}|${style.tint.name}|$sourceDir$packPart$badgePart$bevelPart"
+            "${key.className}|${key.userSerial}|$sizePx|${style.style.name}|${style.tint.name}|$sourceDir$packPart$badgePart$bevelPart$cornerPart"
         return "${key.packageName}__${IconDiskCache.shortHash(raw)}.png"
     }
 

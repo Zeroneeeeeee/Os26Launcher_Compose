@@ -40,6 +40,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.derivedStateOf
+import com.kyant.backdrop.backdrops.layerBackdrop
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
@@ -297,6 +300,9 @@ class HomeActivity : AppCompatActivity() {
 
             // PG3: lớp nền mờ tĩnh của ảnh nền (HomeScreen ghi lớp, ảnh kéo ở tầng Activity cũng đọc).
             val frosted = rememberFrostedBackdrop(state.backdrop)
+            // 2026-11-23: lớp Home + Today + Thư viện CHƯA nhoè, ghi khi lớp tìm kiếm đang hiện; ô nhập tìm kiếm là kính thật lấy mẫu lớp này.
+            val searchBackdrop = rememberLayerBackdrop()
+            val searchLayerOn by remember { derivedStateOf { searchProgress.floatValue > 0f } }
             Box(Modifier.fillMaxSize()) {
             // JS2: lớp tìm kiếm mở thì Home + Library phía sau nhoè (API 31+), như ảnh chụp mờ của SearchOverlayView.
             Box(
@@ -308,7 +314,8 @@ class HomeActivity : AppCompatActivity() {
                     } else {
                         null
                     }
-                }
+                    // Đứng TRONG renderEffect: lớp ghi bản chưa nhoè, kính ô nhập tự làm mờ theo thông số kính.
+                }.then(if (searchLayerOn || search.isOpen) Modifier.layerBackdrop(searchBackdrop) else Modifier)
             ) {
                 CompositionLocalProvider(LocalHostedWidgets provides hostedWidgets) {
                 HomeScreen(
@@ -370,7 +377,7 @@ class HomeActivity : AppCompatActivity() {
                     }
                 }
             }
-                SearchOverlay(search, searchActions, state.backdrop, onProgress = { searchProgress.floatValue = it })
+                SearchOverlay(search, searchActions, state.backdrop, onProgress = { searchProgress.floatValue = it }, backdrop = searchBackdrop)
                 // PG2: bảng chọn widget là lớp phủ trong cửa sổ Home (không còn Dialog), trên Home / Today / Thư viện, để thẻ kéo được ra lưới.
                 widgetPicker.Render()
             }

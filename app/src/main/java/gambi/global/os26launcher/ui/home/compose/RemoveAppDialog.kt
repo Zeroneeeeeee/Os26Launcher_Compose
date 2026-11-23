@@ -4,6 +4,7 @@ import android.os.Build
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -39,6 +41,9 @@ import gambi.global.os26launcher.R
 import gambi.global.os26launcher.core.designsystem.compose.DsDialogHandle
 import gambi.global.os26launcher.core.designsystem.compose.dsDialogs
 import gambi.global.os26launcher.core.designsystem.compose.dsPressHighlight
+import gambi.global.os26launcher.core.glass.compose.DialogWindowGlass
+import gambi.global.os26launcher.core.glass.compose.glassCornerScale
+import gambi.global.os26launcher.core.glass.compose.glassTintOf
 
 private var current: DsDialogHandle? = null
 
@@ -118,11 +123,19 @@ private fun RemoveCard(title: String, message: String, buttons: List<CardButton>
         val text = colorResource(R.color.shortcut_menu_text)
         val destructive = colorResource(R.color.shortcut_menu_destructive)
         val screen = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.width.toDp() }
+        // 2026-11-23: thẻ là kính (blur nền cửa sổ của hệ thống, DialogWindowGlass), bo 30 dp nhân thanh "Bo góc" của kính.
+        val corner = (CARD_RADIUS * glassCornerScale()).coerceAtMost(CARD_RADIUS * 2)
+        val cornerPx = with(LocalDensity.current) { corner.toPx() }
+        val card = colorResource(R.color.remove_app_card).toArgb()
+        val glass = DialogWindowGlass((view.parent as? DialogWindowProvider)?.window, cornerPx, glassTintOf(card, CARD_GLASS_ALPHA), card)
         Column(
             Modifier
                 .width(minOf(screen - 64.dp, 320.dp))
-                .clip(RoundedCornerShape(30.dp))
-                .background(colorResource(R.color.remove_app_card))
+                .clip(RoundedCornerShape(corner))
+                .then(
+                    if (glass) Modifier.border(1.dp, colorResource(R.color.shortcut_menu_glass_border), RoundedCornerShape(corner))
+                    else Modifier.background(Color(card))
+                )
                 .padding(start = 16.dp, end = 16.dp, top = 22.dp, bottom = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -167,3 +180,7 @@ private fun PillButton(label: String, color: Color, bold: Boolean, onClick: () -
         )
     }
 }
+
+private val CARD_RADIUS = 30.dp
+/** 2026-11-23: độ đục của tint kính thẻ (màu `remove_app_card` cũ ~94 %): đủ đọc chữ, vẫn thấy nền mờ phía sau. */
+private const val CARD_GLASS_ALPHA = 0.55f

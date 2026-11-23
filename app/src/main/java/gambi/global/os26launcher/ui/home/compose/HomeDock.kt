@@ -69,8 +69,9 @@ internal fun HomeDock(
                 key(item.itemId) {
                     val index = order.indexOf(item.itemId)
                     val count = order.size
-                    val gap = (widthPx - count * cells.cellWidth) / (count + 1f)
-                    val x = if (index < 0) 0 else (gap + index * (cells.cellWidth + gap)).toInt()
+                    // 2026-11-23: chia đều theo ICON (khe mép dock = khe giữa hai icon), ô rộng cellWidth căn giữa quanh icon. Khớp HomeDragState.dockSlotRects.
+                    val gap = (widthPx - count * cells.iconSize) / (count + 1f)
+                    val x = if (index < 0) 0 else (gap + index * (cells.iconSize + gap) - (cells.cellWidth - cells.iconSize) / 2f).toInt()
                     val animatedX by animateIntOffsetAsState(
                         IntOffset(x, 0),
                         ReorderSpring, // FM-3: cùng tốc độ với lưới Home và bảng thư mục
@@ -143,6 +144,6 @@ internal fun HomeDock(
 /** PG1 A1: một ô dock kèm chỉ số (so "thay tại chỗ" theo ô). */
 private data class DockSlot(val item: DockApp, val index: Int)
 
-// Cùng số với DockView (CORNER_RADIUS_DP, GLASS_PADDING_VERTICAL_DP).
+// Bo góc cùng số với DockView (CORNER_RADIUS_DP); "Bo góc" của kính nhân lên qua DsCorner.Fixed(glass = true).
 private const val CORNER_DP = 28f
-private val GLASS_PADDING_VERTICAL = 20.dp
+private val GLASS_PADDING_VERTICAL = 12.dp // 2026-11-23 (chủ dự án): 20 -> 12 dp, kính dock ôm icon sát hơn

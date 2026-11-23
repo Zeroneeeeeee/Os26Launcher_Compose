@@ -37,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -214,7 +215,8 @@ internal fun HomeScreen(
     val folderProgress = remember { Animatable(0f) }
     val overlayP = maxOf(menuProgress.value, folderProgress.value)
     val homeBackdrop = rememberLayerBackdrop()
-    val folderLayerOn = state.openFolderId != null || folderProgress.value > 0f
+    // 2026-11-23: menu nhấn giữ cũng lấy mẫu lớp Home (thấy icon phía sau nhoè qua menu, như iOS 26), không chỉ ảnh nền.
+    val folderLayerOn = state.openFolderId != null || folderProgress.value > 0f || state.iconMenu != null || menuProgress.value > 0f
     // PG3 Task 2 Step 3 (Q3): dưới API 31 kính thật không chạy, nên bảng thư mục lấy mẫu ẢNH CHỤP lớp Home (chụp một lần lúc mở, làm mờ ngoài
     // main thread bằng bộ đệm riêng) để vẫn thấy icon phía sau; ảnh chụp chưa xong thì dùng lớp nền mờ của ảnh nền. Máy ≥ 31 không chụp.
     val legacyGlass = Build.VERSION.SDK_INT < Build.VERSION_CODES.S
@@ -316,7 +318,7 @@ internal fun HomeScreen(
                 // blur cần API 31+, dưới đó chỉ tối. Hai modifier này đứng NGOÀI layerBackdrop nên lớp ghi cho kính bảng thư mục là Home CHƯA mờ:
                 // qua bảng vẫn thấy rõ icon phía sau, kính của bảng tự làm mờ theo thông số kính.
                 // P2-2 (2026-11-19): menu nhấn giữ chỉ LÀM TỐI (icon_scrim, đen 60%), không nhoè; thư mục mở vẫn nhoè + tối.
-                .then(if (folderProgress.value > 0f && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) Modifier.blur((OVERLAY_BLUR_DP * folderProgress.value).dp) else Modifier)
+                .then(if (folderProgress.value > 0f && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) Modifier.blur((FOLDER_BLUR_DP * folderProgress.value).dp) else Modifier)
                 .drawWithContent {
                     drawContent()
                     if (overlayP > 0f) drawRect(Color.Black.copy(alpha = maxOf(OVERLAY_DIM * menuProgress.value, FOLDER_DIM * folderProgress.value)))
@@ -379,7 +381,15 @@ internal fun HomeScreen(
                             .onGloballyPositioned { coords.pager = it; syncRects() }
                     ) { index ->
                         val page = pages.getOrNull(index)
-                        if (page != null && cells != null) HomeGridPage(page, cells, icons, edit, onAppClick, Modifier.fillMaxSize())
+                        // 2026-11-23 (chủ dự án: nhiều trang thì giật): pager chỉ dựng trang hiện tại + 1 trang mỗi bên (beyondViewportPageCount = 1).
+                        // Trang đệm nằm ngoài màn vẫn vẽ ô thư mục/widget kính thật (RenderEffect mỗi khung), nên chỉ trang ĐANG HIỆN (một phần) được
+                        // lấy mẫu nền; trang đệm vẽ bề mặt tĩnh tới khi trượt vào.
+                        val onScreen by remember(index) {
+                            derivedStateOf { abs(index - (pagerState.currentPage + pagerState.currentPageOffsetFraction)) < 1f }
+                        }
+                        CompositionLocalProvider(LocalDsBackdrop provides if (onScreen) backdrop else null) {
+                            if (page != null && cells != null) HomeGridPage(page, cells, icons, edit, onAppClick, Modifier.fillMaxSize())
+                        }
                     }
                     HomeSearchPill(
                         pageCount = pages.size,
@@ -469,6 +479,7 @@ internal fun HomeScreen(
                 icons = icons,
                 iconSizePx = cells?.iconSize ?: 0,
                 progress = menuProgress,
+                backdrop = homeBackdrop,
                 onAction = overlays.onIconMenuAction,
                 onShortcut = overlays.onIconMenuShortcut,
                 onDismiss = overlays.closeIconMenu
@@ -537,8 +548,11 @@ private fun findApp(state: HomeUiState, key: ComponentKey): AppItem? {
 }
 
 private const val OVERLAY_BLUR_DP = 16f
-private const val OVERLAY_DIM = 0.6f // P2-2: màu `icon_scrim` (#99000000) của IconMenuBackdrop, tối dần theo tiến độ menu
-private const val FOLDER_DIM = 0.5f // thư mục mở: nền Home tối hơn menu (chủ dự án, 2026-11-20)
+private const val OVERLAY_DIM = 0.25f // P2-2: tối dần theo tiến độ menu; 0,6 (`icon_scrim`) quá tối so với iOS 26, chủ dự án hạ 2026-11-23
+// Thư mục mở, theo ảnh iOS 26 chủ dự án gửi 2026-11-23: nền Home mờ mạnh nhưng gần như không tối. Bằng FOLDER_MIN_BLUR_DP của
+// HomeFolderPanel để trong bảng mờ ngang ngoài, chỉ sáng hơn (bảng lấy mẫu lớp Home chưa tối).
+private const val FOLDER_BLUR_DP = 6f // chủ dự án chốt sau khi thử 24/12/8/4 dp (2026-11-23)
+private const val FOLDER_DIM = 0.15f
 
 /**
  * Toạ độ các khối của lớp Home trượt (Library/Today). [outer] đứng TRƯỚC graphicsLayer (chưa dịch), [inner] đứng SAU (cùng gốc, trong lớp):

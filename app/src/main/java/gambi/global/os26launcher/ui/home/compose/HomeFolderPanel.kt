@@ -216,9 +216,10 @@ internal fun HomeFolderPanel(
                     transformOrigin = TransformOrigin.Center
                 }
                 // Kính sáng như FolderPanelView (GlassRole.FOLDER_PANEL, tint folder_panel_glass_tint); nền SHEET của DS quá tối cho thư mục.
-                // Lớp Home (lưới + dock), không chỉ ảnh nền. Như iOS, panel luôn mờ đục: sàn 24 dp kể cả khi "Độ mờ" kính đặt rất thấp (không
-                // thì icon/nhãn Home sắc nét lọt qua sau app của thư mục).
-                .dsGlass(DsSurface.CARD, DsCorner.Fixed(PANEL_RADIUS_DP, glass = true), backdrop, minBlurDp = FOLDER_MIN_BLUR_DP, frosted = frostedBackdrop)
+                // Lớp Home (lưới + dock), không chỉ ảnh nền. Như iOS, panel luôn mờ đục: cố định 6 dp (fixedBlurDp, bỏ qua "Độ mờ" kính để luôn khớp nền) kể cả khi "Độ mờ" kính đặt rất thấp (không
+                // thì icon/nhãn Home sắc nét lọt qua sau app của thư mục). surfaceFill = false: bỏ nền tối ds_surface_fill của CARD (panel xám
+                // đục), chỉ còn kính + tint trắng như ảnh iOS 26 chủ dự án gửi 2026-11-23.
+                .dsGlass(DsSurface.CARD, DsCorner.Fixed(PANEL_RADIUS_DP, glass = true), backdrop, fixedBlurDp = FOLDER_MIN_BLUR_DP, frosted = frostedBackdrop, surfaceFill = false)
                 .background(colorResource(R.color.folder_panel_glass_tint))
                 .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { focus.clearFocus() } // chạm trong bảng không đóng
                 .then(
@@ -456,7 +457,7 @@ private fun FolderTitle(f: PlacedFolder, iconLeft: Float, panelTop: Float, panel
 }
 
 private const val PANEL_RADIUS_DP = 36f
-private const val FOLDER_MIN_BLUR_DP = 24f // sàn độ mờ kính panel thư mục (iOS luôn mờ đục)
+private const val FOLDER_MIN_BLUR_DP = 6f // độ mờ CỐ ĐỊNH kính panel thư mục, bằng FOLDER_BLUR_DP của HomeScreen (mờ liền với nền, như iOS 26)
 private const val TITLE_MAX = 30 // FolderPlanner.normalizeTitle: trim + take(30)
 private const val OPEN_EPS = 0.001f
 

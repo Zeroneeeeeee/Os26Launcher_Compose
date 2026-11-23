@@ -35,6 +35,7 @@ import javax.inject.Singleton
 class IconRenderer @Inject constructor() {
 
     fun render(drawable: Drawable, sizePx: Int, style: IconStyleKey): Bitmap {
+        val shape = IconShape.forCorner(style.corner) // 2026-11-23: thanh "Bo góc" của kính
         val content = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
         try {
             // G2b Tô màu: adaptive có hình tách được (lớp foreground không phủ kín) vẽ thẳng "ô tối + hình một màu";
@@ -45,7 +46,7 @@ class IconRenderer @Inject constructor() {
             // CF Trong suốt: adaptive có hình tách được thì chỉ vẽ foreground (không ô nền); còn lại như Mặc định.
             val bareGlyph = !glyphTile && style.style == IconStyle.TRANSPARENT && drawable is AdaptiveIconDrawable &&
                 bareGlyph(drawable, Canvas(content), sizePx)
-            if (style.style == IconStyle.GLASS) glassContent(drawable, content, sizePx)
+            if (style.style == IconStyle.GLASS) glassContent(drawable, content, sizePx, shape)
             else if (!glyphTile && !bareGlyph) flatten(drawable, Canvas(content), sizePx)
             // 3D vẽ lớp phủ SAU khi cắt (bevel)
             val styled = if (style.style == IconStyle.TINTED && !glyphTile) tint(
@@ -54,8 +55,8 @@ class IconRenderer @Inject constructor() {
                 style.tint
             ) else content
             try {
-                val out = mask(styled, sizePx)
-                if (style.style == IconStyle.THREE_D || style.bevel) bevel(out, sizePx) // CF Step 7: nổi chồng lên kiểu khác
+                val out = mask(styled, sizePx, shape)
+                if (style.style == IconStyle.THREE_D || style.bevel) bevel(out, sizePx, shape) // CF Step 7: nổi chồng lên kiểu khác
                 return out
             } finally {
                 if (styled !== content) styled.recycle()
@@ -69,7 +70,7 @@ class IconRenderer @Inject constructor() {
      * P3-4 (CI): icon riêng của người dùng (ảnh hoặc icon mẫu đã vẽ sẵn). KHÔNG áp kiểu icon (Q6), chỉ phủ kín ô vuông kiểu centerCrop rồi cắt
      * theo hình TL2 như mọi icon khác.
      */
-    fun renderCustom(src: Bitmap, sizePx: Int): Bitmap {
+    fun renderCustom(src: Bitmap, sizePx: Int, shape: IconShape = IconShape.DEFAULT): Bitmap {
         val content = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
         try {
             val scale = maxOf(sizePx.toFloat() / src.width, sizePx.toFloat() / src.height)
@@ -78,7 +79,7 @@ class IconRenderer @Inject constructor() {
             val left = (sizePx - w) / 2f
             val top = (sizePx - h) / 2f
             Canvas(content).drawBitmap(src, null, android.graphics.RectF(left, top, left + w, top + h), Paint(Paint.FILTER_BITMAP_FLAG))
-            return mask(content, sizePx)
+            return mask(content, sizePx, shape)
         } finally {
             content.recycle()
         }
@@ -124,12 +125,12 @@ class IconRenderer @Inject constructor() {
      * IP: icon lấy thẳng từ mục của gói. Gói đã định nghĩa diện mạo nên KHÔNG áp Tô màu/3D; vẫn cắt bằng hình TL2 để lưới đồng
      * nhất và góc đục sót của gói không lộ ra.
      */
-    fun renderPackIcon(drawable: Drawable, sizePx: Int): Bitmap {
+    fun renderPackIcon(drawable: Drawable, sizePx: Int, shape: IconShape = IconShape.DEFAULT): Bitmap {
         val content = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
         try {
             drawable.setBounds(0, 0, sizePx, sizePx)
             drawable.draw(Canvas(content))
-            return mask(content, sizePx)
+            return mask(content, sizePx, shape)
         } finally {
             content.recycle()
         }
@@ -144,7 +145,8 @@ class IconRenderer @Inject constructor() {
         original: Drawable,
         sizePx: Int,
         pack: IconPackManager.PackData,
-        seed: Int
+        seed: Int,
+        shape: IconShape = IconShape.DEFAULT
     ): Bitmap {
         val content = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
         try {
@@ -189,7 +191,7 @@ class IconRenderer @Inject constructor() {
                 it.setBounds(0, 0, sizePx, sizePx)
                 it.draw(canvas)
             }
-            return mask(content, sizePx)
+            return mask(content, sizePx, shape)
         } finally {
             content.recycle()
         }
@@ -403,7 +405,7 @@ class IconRenderer @Inject constructor() {
      * Adaptive có hình tách được: dùng foreground. Còn lại (legacy, phủ kín): [flatten], đơn sắc, cắt thành ô bo góc nhỏ ở giữa.
      * [mask] cắt sau cùng nên nửa ngoài của nét viền bị cắt: vẽ nét dày gấp đôi.
      */
-    private fun glassContent(drawable: Drawable, content: Bitmap, sizePx: Int) {
+    private fun glassContent(drawable: Drawable, content: Bitmap, sizePx: Int, shape: IconShape) {
         val canvas = Canvas(content)
         val size = sizePx.toFloat()
         canvas.drawColor(GLASS_FILL_COLOR)
@@ -437,7 +439,7 @@ class IconRenderer @Inject constructor() {
         } finally {
             glyph.recycle()
         }
-        drawGlassRim(canvas, sizePx)
+        drawGlassRim(canvas, sizePx, shape)
     }
 
     /** Hình của icon vào [out] (trong suốt quanh hình), đơn sắc trắng-xám: độ sáng gốc ánh xạ vào [GLASS_GLYPH_LO]..[GLASS_GLYPH_HI]. */
@@ -481,7 +483,7 @@ class IconRenderer @Inject constructor() {
      * Viền sáng kiểu iOS 26: nét theo hình icon, màu SweepGradient quanh tâm (Android bắt đầu ở hướng 3 giờ, chạy theo chiều kim
      * đồng hồ): đỉnh sáng ở 45° (dưới-phải) và 225° (trên-trái), nền mờ ở 135° và 315°.
      */
-    private fun drawGlassRim(canvas: Canvas, sizePx: Int) {
+    private fun drawGlassRim(canvas: Canvas, sizePx: Int, shape: IconShape) {
         val s = sizePx.toFloat()
         val base = argbWhite(GLASS_RIM_BASE_ALPHA)
         val peak = argbWhite(GLASS_RIM_PEAK_ALPHA)
@@ -495,7 +497,7 @@ class IconRenderer @Inject constructor() {
                 floatArrayOf(0f, 0.125f, 0.25f, 0.5f, 0.625f, 0.75f, 1f)
             )
         }
-        canvas.drawPath(IconShape.DEFAULT.path(sizePx), rim)
+        canvas.drawPath(shape.path(sizePx), rim)
     }
 
     /** ColorMatrix đưa độ sáng (luma) của mỗi điểm vào khoảng màu [lo]..[hi], giữ alpha. */
@@ -619,10 +621,10 @@ class IconRenderer @Inject constructor() {
      *  3. viền trong: nét mảnh thụt vào trong hình, sáng ở trên, tối ở dưới (vát cạnh mềm).
      * Biến đổi [out] tại chỗ (bitmap mới tinh của [mask], chưa vào cache).
      */
-    private fun bevel(out: Bitmap, sizePx: Int) {
+    private fun bevel(out: Bitmap, sizePx: Int, iconShape: IconShape = IconShape.DEFAULT) {
         val canvas = Canvas(out)
         val size = sizePx.toFloat()
-        val shape = IconShape.DEFAULT.path(sizePx)
+        val shape = iconShape.path(sizePx)
 
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
         paint.shader = LinearGradient(
@@ -652,7 +654,7 @@ class IconRenderer @Inject constructor() {
 
         // Viền: đường hình thu vào một nửa bề rộng nét để nét nằm gọn bên trong hình.
         val stroke = size / BEVEL_RIM_DIVISOR
-        val rim = IconShape.DEFAULT.path(sizePx)
+        val rim = iconShape.path(sizePx)
         val scale = (size - stroke) / size
         rim.transform(Matrix().apply { setScale(scale, scale, size / 2f, size / 2f) })
         val rimPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -702,11 +704,11 @@ class IconRenderer @Inject constructor() {
      * `drawPath` + `DST_IN` KHÔNG dùng được: chỉ chạm điểm ảnh nằm trong path, góc ngoài vẫn đục. Ở đây bitmap kết
      * quả mới tinh (alpha 0) và chỉ vùng trong hình được tô bằng shader của [content], nên góc giữ alpha 0.
      */
-    private fun mask(content: Bitmap, sizePx: Int): Bitmap {
+    private fun mask(content: Bitmap, sizePx: Int, shape: IconShape = IconShape.DEFAULT): Bitmap {
         val out = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
         paint.shader = BitmapShader(content, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
-        Canvas(out).drawPath(IconShape.DEFAULT.path(sizePx), paint)
+        Canvas(out).drawPath(shape.path(sizePx), paint)
         return out
     }
 

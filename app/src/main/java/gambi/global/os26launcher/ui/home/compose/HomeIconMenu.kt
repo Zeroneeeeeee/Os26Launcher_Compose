@@ -51,6 +51,7 @@ import gambi.global.os26launcher.domain.model.AppItem
 import gambi.global.os26launcher.domain.model.AppShortcutItem
 import gambi.global.os26launcher.ui.home.IconMenuAction
 import gambi.global.os26launcher.ui.home.IconMenuState
+import com.kyant.backdrop.Backdrop
 import gambi.global.os26launcher.ui.home.controller.IconMenuPlacement
 import gambi.global.os26launcher.ui.home.controller.IconMenuWidth
 
@@ -69,6 +70,8 @@ internal fun HomeIconMenu(
     icons: HomeIcons,
     iconSizePx: Int,
     progress: Animatable<Float, *>,
+    /** Lớp Home chưa tối (ảnh nền + lưới + dock): kính menu lấy mẫu lớp này. null = ảnh nền (`LocalDsBackdrop`). */
+    backdrop: Backdrop?,
     onAction: (IconMenuAction) -> Unit,
     onShortcut: (AppShortcutItem) -> Unit,
     onDismiss: () -> Unit
@@ -113,7 +116,7 @@ internal fun HomeIconMenu(
         }
         if (m.shortcuts != null) {
             MenuPlacer(m, p) { above ->
-                MenuCard(m, above, onAction, onShortcut)
+                MenuCard(m, above, backdrop, onAction, onShortcut)
             }
         }
     }
@@ -150,7 +153,7 @@ private fun MenuPlacer(m: IconMenuState, p: Float, content: @Composable (Boolean
 }
 
 @Composable
-private fun MenuCard(m: IconMenuState, above: Boolean, onAction: (IconMenuAction) -> Unit, onShortcut: (AppShortcutItem) -> Unit) {
+private fun MenuCard(m: IconMenuState, above: Boolean, backdrop: Backdrop?, onAction: (IconMenuAction) -> Unit, onShortcut: (AppShortcutItem) -> Unit) {
     val rows = buildList<@Composable () -> Unit> {
         m.shortcuts.orEmpty().forEach { s -> add { MenuRow(s.shortLabel, icon = s.icon, destructive = false) { onShortcut(s) } } }
         if (m.shortcuts.orEmpty().isNotEmpty()) add { MenuDivider() }
@@ -170,7 +173,7 @@ private fun MenuCard(m: IconMenuState, above: Boolean, onAction: (IconMenuAction
         Modifier
             .widthIn(dimensionResource(R.dimen.shortcut_menu_min_width), dimensionResource(R.dimen.shortcut_menu_max_width))
             .width(IntrinsicSize.Max)
-            .dsGlass(DsSurface.CARD, DsCorner.Fixed(MENU_RADIUS_DP, glass = true))
+            .dsGlass(DsSurface.CARD, DsCorner.Fixed(MENU_RADIUS_DP, glass = true), backdrop, fixedBlurDp = MENU_BLUR_DP, surfaceFill = false)
             .background(colorResource(R.color.shortcut_menu_glass_tint)) // menu sáng như IconActionMenu (chữ tối)
             .padding(
                 horizontal = dimensionResource(R.dimen.shortcut_menu_padding_horizontal),
@@ -246,4 +249,5 @@ private fun MenuDivider() {
 }
 
 private const val MENU_RADIUS_DP = 24f
+private const val MENU_BLUR_DP = 6f // độ mờ CỐ ĐỊNH (không theo thanh "Độ mờ"): thấy app bị menu đè phía sau, như iOS 26 (chủ dự án 2026-11-23)
 

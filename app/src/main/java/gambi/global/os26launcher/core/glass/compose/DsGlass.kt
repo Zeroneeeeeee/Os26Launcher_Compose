@@ -60,13 +60,21 @@ val LocalDsBackdrop: ProvidableCompositionLocal<Backdrop?> = staticCompositionLo
  *
  * PG3 Task 2 (chủ dự án 2026-11-23): API < 31, CARD/SHEET có lớp nền mờ tĩnh ([frosted], `null` = [LocalDsFrostedBackdrop]) thì vẽ lát cắt nền
  * đã mờ sẵn phía sau lớp bề mặt (`drawPlainBackdrop` không hiệu ứng, như kính tại chỗ của XML) thay cho bề mặt phẳng. API ≥ 31 không đổi.
+ *
+ * [realGlass] (2026-11-23, chủ dự án theo ảnh iOS 26): bề mặt CONTROL vẫn được kính thật (khúc xạ mép + viền sáng) dù không thuộc CARD/SHEET.
+ * Chỉ dùng cho từng bề mặt đơn lẻ, nổi bật (ô tìm Spotlight, thanh tìm Thư viện), không cho chip/nút hàng loạt (JD D9).
+ * [lensScale] nhân độ cao + lượng khúc xạ (bề mặt thấp dùng < 1).
  */
 fun Modifier.dsGlass(
     surface: DsSurface,
     corner: DsCorner,
     backdrop: Backdrop? = null,
     minBlurDp: Float = 0f,
-    frosted: Backdrop? = null
+    frosted: Backdrop? = null,
+    realGlass: Boolean = false,
+    lensScale: Float = 1f,
+    surfaceFill: Boolean = true,
+    fixedBlurDp: Float? = null
 ): Modifier = composed {
     val context = LocalContext.current
     val source = backdrop ?: LocalDsBackdrop.current
@@ -86,15 +94,19 @@ fun Modifier.dsGlass(
     if (size != IntSize.Zero) radius.floatValue = DsCorners.radiusPx(context, corner, size.width, size.height, look)
     // Backdrop đòi CornerBasedShape (lens đọc bán kính góc), nên dùng RoundedCornerShape với bán kính px đã tính.
     val shape = RoundedCornerShape(radius.floatValue)
+    // [surfaceFill] = false: bỏ lớp bề mặt DS (nền tối ds_surface_fill + viền) trên kính thật, như panel thư mục iOS 26 trong veo (2026-11-23).
+    val skipSurface = !surfaceFill && source != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     val drawSurface: DrawScope.() -> Unit = {
-        drawable.setBounds(0, 0, this.size.width.toInt(), this.size.height.toInt())
-        drawIntoCanvas { drawable.draw(it.nativeCanvas) }
+        if (!skipSurface) {
+            drawable.setBounds(0, 0, this.size.width.toInt(), this.size.height.toInt())
+            drawIntoCanvas { drawable.draw(it.nativeCanvas) }
+        }
     }
 
     // Chỉ CARD và SHEET lấy mẫu nền (kính thật). Bề mặt đặc (PRIMARY, badge, CONTROL_SELECTED) che kín nền; CONTROL (nút phụ, chip,
     // segmented, ô tìm, nút back) nhỏ nên kính khó thấy mà tốn: chủ dự án chốt 2026-11-19 (JD D9) sau khi đo trên Oppo: catalog ~15 bề
     // mặt kính thật giật 38% khung hình khi cuộn, chỉ kính trên card còn 10%.
-    val glass = if (source != null && surface in REAL_GLASS && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    val glass = if (source != null && (surface in REAL_GLASS || realGlass) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         Modifier.drawBackdrop(
             backdrop = source,
             shape = { RoundedCornerShape(radius.floatValue) },
@@ -102,10 +114,12 @@ fun Modifier.dsGlass(
                 val l = lookState.value
                 vibrancy()
                 // [minBlurDp]: sàn độ mờ cho bề mặt nằm trên nội dung bận (panel thư mục lấy mẫu cả lưới icon), như iOS luôn mờ ở đó.
-                blur(maxOf(GlassTuning.backdropBlurDp(l), minBlurDp).dp.toPx())
+                // [fixedBlurDp]: độ mờ cố định, bỏ qua thanh "Độ mờ" (panel thư mục phải mờ đúng bằng nền Home phía sau).
+                blur((fixedBlurDp ?: maxOf(GlassTuning.backdropBlurDp(l), minBlurDp)).dp.toPx())
                 val (height, amount) = GlassTuning.backdropLensDp(l)
                 // Thư viện yêu cầu độ cao khúc xạ ≤ bán kính góc.
-                lens(minOf(height.dp.toPx(), radius.floatValue), amount.dp.toPx())
+                // [lensScale]: bề mặt thấp (ô tìm cao 48 dp) bị khúc xạ cả chiều cao nếu dùng số của card; đo trên A17 2026-11-23.
+                lens(minOf(height.dp.toPx() * lensScale, radius.floatValue), amount.dp.toPx() * lensScale)
             },
             // F1 (JD): viền sáng kiểu iOS 26 của Backdrop, mạnh/yếu theo thanh "Độ bóng". Bóng đổ vẫn lấy từ DsSurfaceDrawable.
             highlight = {
@@ -118,7 +132,7 @@ fun Modifier.dsGlass(
             shadow = null,
             onDrawSurface = drawSurface
         )
-    } else if (frostedSource != null && surface in REAL_GLASS && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+    } else if (frostedSource != null && (surface in REAL_GLASS || realGlass) && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
         // PG3: kính mờ tĩnh cho máy dưới API 31 (Android 8–11); lớp bề mặt DS3 vẽ đè lên như nhánh kính thật.
         Modifier.drawPlainBackdrop(
             backdrop = frostedSource,

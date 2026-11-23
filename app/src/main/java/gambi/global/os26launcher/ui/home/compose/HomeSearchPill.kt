@@ -19,9 +19,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
-import gambi.global.os26launcher.core.glass.GlassRole
-import gambi.global.os26launcher.core.glass.compose.dsFrosted
+import gambi.global.os26launcher.core.designsystem.DsCorner
+import gambi.global.os26launcher.core.designsystem.DsSurface
+import gambi.global.os26launcher.core.glass.compose.dsGlass
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -131,8 +131,9 @@ fun HomeSearchPill(
             Box(
                 Modifier
                     .size(pillWidth, dimensionResource(R.dimen.search_pill_height))
-                    // PG3 (G4): kính mờ tĩnh như SearchPillView (GlassRole.SEARCH_PILL); chưa có bản mờ / ảnh nền màu thì phẳng `search_pill_bg` như cũ.
-                    .dsFrosted(GlassRole.SEARCH_PILL, PillShape)
+                    // 2026-11-23 (chủ dự án): liquid glass thật (khúc xạ mép + viền sáng + mờ theo thông số kính), thay kính mờ tĩnh của PG3.
+                    // Dưới API 31 dsGlass tự về kính mờ tĩnh (LocalDsFrostedBackdrop) như trước.
+                    .dsGlass(DsSurface.CONTROL, DsCorner.Pill, realGlass = true, lensScale = PILL_LENS_SCALE)
                     .dsPressHighlight(interaction, enabled = clickable)
             )
             if (progress < 1f) SearchContent(pillWidth, Modifier.alpha(1f - progress))
@@ -373,7 +374,7 @@ private const val ICON_DP = 14f
 private const val ICON_GAP_DP = 5f
 private const val PADDING_DP = 12f // lề trái/phải của kính lúp + chữ trong pill
 private const val LABEL_SP = 10f // polish 2026-11-19: 13 -> 10sp, cỡ cố định; pill ôm theo chữ
-private val PillShape = RoundedCornerShape(50) // PG3: hằng để kính mờ của pill không dựng lại hình mỗi lần dựng
+private const val PILL_LENS_SCALE = 0.4f // pill cao 26 dp: khúc xạ của card quá mạnh, thu nhỏ như ô tìm (0.5)
 
 // P2-11: nhịp lặp giữ rìa và nhịp trượt cửa sổ khi kéo tới chấm mép (như SearchPillView).
 private const val EDGE_ARM_MS = 300L // giữ yên ngoài cụm chấm thêm chừng này (sau long-press) mới bắt đầu lặp

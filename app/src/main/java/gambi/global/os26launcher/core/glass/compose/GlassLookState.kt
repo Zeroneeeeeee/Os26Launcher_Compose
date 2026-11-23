@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import gambi.global.os26launcher.core.glass.GlassEnvironment
+import gambi.global.os26launcher.core.glass.GlassTuning
 import gambi.global.os26launcher.domain.model.GlassLook
 
 /**
@@ -25,3 +26,10 @@ fun rememberGlassLook(): State<GlassLook> {
     }
     return state
 }
+
+/**
+ * 2026-11-23: hệ số nhân bán kính của thanh "Bo góc" (`GlassTuning.cornerScale`, 1 ở mặc định) cho hình Compose vẽ tay quanh icon (nền thư mục
+ * kính mờ, tấm hover, ảnh kéo), để chúng bo cùng icon và kính. Đọc thông số xem trước nếu có ([LocalGlassLookOverride]).
+ */
+@Composable
+fun glassCornerScale(): Float = GlassTuning.cornerScale((LocalGlassLookOverride.current ?: rememberGlassLook()).value)

@@ -324,7 +324,7 @@ private fun librarySizes(width: Dp, height: Dp): LibrarySizes {
     }
 }
 
-/** Thanh tìm kiếm trên cùng (bấm mở tìm kiếm chế độ Library); bề mặt `CONTROL` tĩnh (JD D9), co nhẹ khi giữ (AN Task 6). */
+/** Thanh tìm kiếm trên cùng (bấm mở tìm kiếm chế độ Library); bề mặt `CONTROL` kính thật như iOS 26 (2026-11-23), co nhẹ khi giữ (AN Task 6). */
 @Composable
 private fun LibrarySearchBar(sz: LibrarySizes, onClick: () -> Unit) {
     val hint = colorResource(R.color.search_hint_text)
@@ -335,7 +335,7 @@ private fun LibrarySearchBar(sz: LibrarySizes, onClick: () -> Unit) {
             .fillMaxWidth()
             .height(sz.barHeight)
             .dsPressable(interaction)
-            .dsGlass(DsSurface.CONTROL, DsCorner.Pill)
+            .dsGlass(DsSurface.CONTROL, DsCorner.Pill, realGlass = true, lensScale = 0.5f)
             .clickable(interaction, indication = null, role = Role.Button, onClick = onClick)
             .dsPressHighlight(interaction)
             .padding(horizontal = 16.dp),

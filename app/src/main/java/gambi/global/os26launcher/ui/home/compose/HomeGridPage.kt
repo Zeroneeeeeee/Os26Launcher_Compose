@@ -50,7 +50,12 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
 import gambi.global.os26launcher.R
+import android.os.Build
+import gambi.global.os26launcher.core.designsystem.DsCorner
+import gambi.global.os26launcher.core.designsystem.DsSurface
 import gambi.global.os26launcher.core.designsystem.compose.dsPressable
+import gambi.global.os26launcher.core.glass.compose.dsGlass
+import gambi.global.os26launcher.core.glass.compose.glassCornerScale
 import gambi.global.os26launcher.core.glass.GlassRole
 import gambi.global.os26launcher.core.glass.compose.dsFrosted
 import gambi.global.os26launcher.core.ui.GridMetrics
@@ -302,7 +307,7 @@ internal fun HomeAppCell(
                                 alpha = plate.coerceIn(0f, 1f)
                             }
                             // PG3 (G4): tấm kính khi hover gộp thư mục là kính mờ tĩnh như ô thư mục.
-                            .dsFrosted(GlassRole.FOLDER_CELL, RoundedCornerShape(cells.iconSize * HOVER_GLASS_SCALE * FOLDER_CORNER_RATIO))
+                            .dsFrosted(GlassRole.FOLDER_CELL, RoundedCornerShape(cells.iconSize * HOVER_GLASS_SCALE * folderCornerRatio(glassCornerScale())))
                     )
                 }
                 if (bitmap != null) Image(bitmap, contentDescription = null, modifier = Modifier.fillMaxSize())
@@ -345,8 +350,8 @@ private fun HomeLabel(text: String, cells: GridMetrics.Cells, modifier: Modifier
 }
 
 /**
- * Thư mục đóng: nền bo `iconSize × 0.225`, lưới 3 × 3 icon thu nhỏ (đệm 12 %, khe 5 % của icon), như `IconCellView.drawFolder*`. Nền phẳng
- * `folder_background` (JH1 D4: không kính thật cho thư mục). Bấm mở thư mục thuộc JH3.
+ * Thư mục đóng: nền bo `iconSize × 0.225`, lưới 3 × 3 icon thu nhỏ (đệm 12 %, khe 5 % của icon), như `IconCellView.drawFolder*`. API 31+: kính
+ * liquid glass thật (2026-11-23, thay JH1 D4); dưới đó kính mờ tĩnh / `folder_background`. Bấm mở thư mục thuộc JH3.
  */
 @Composable
 internal fun HomeFolderCell(
@@ -393,8 +398,22 @@ internal fun HomeFolderPlate(folder: PlacedFolder, sizePx: Int, icons: HomeIcons
     Box(
         modifier
             .requiredSize(with(density) { size.toDp() })
-            // PG3 (G4): kính mờ tĩnh như ô thư mục bản XML (GlassRole.FOLDER_CELL); chưa có bản mờ / ảnh nền màu thì phẳng `folder_background` như cũ.
-            .dsFrosted(GlassRole.FOLDER_CELL, RoundedCornerShape(size * FOLDER_CORNER_RATIO))
+            .then(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    // 2026-11-23 (chủ dự án, theo ảnh iOS 26): ô thư mục là liquid glass thật như widget/dock: không mờ, khúc xạ mép, không
+                    // lớp xám DS. Lấy mẫu LocalDsBackdrop (ảnh nền); lúc pager cuộn/kéo HomeScreen bỏ backdrop nên về bề mặt tĩnh.
+                    Modifier.dsGlass(
+                        DsSurface.CARD,
+                        DsCorner.Fixed(with(density) { (size * FOLDER_CORNER_RATIO).toDp().value }, glass = true),
+                        // 2026-11-23 (chủ dự án: cài đặt kính chưa áp vào thư mục): bỏ `fixedBlurDp = 0`, độ mờ theo thanh "Độ mờ" như dock.
+                        surfaceFill = false,
+                        lensScale = FOLDER_LENS_SCALE
+                    )
+                } else {
+                    // PG3 (G4): kính mờ tĩnh như ô thư mục bản XML (GlassRole.FOLDER_CELL); chưa có bản mờ / ảnh nền màu thì phẳng `folder_background` như cũ.
+                    Modifier.dsFrosted(GlassRole.FOLDER_CELL, RoundedCornerShape(size * folderCornerRatio(glassCornerScale())))
+                }
+            )
     ) {
         shown.take(FolderPlanner.PAGE_SIZE).forEachIndexed { i, app ->
             val bitmap = rememberHomeIcon(icons, app, miniPx)
@@ -427,8 +446,12 @@ private fun screenRect(coordinates: LayoutCoordinates, view: android.view.View):
 private val LABEL_SHADOW = Color(0x99000000) // như IconCellView.LABEL_SHADOW_COLOR
 private const val FOLDER_GRID = 3
 private const val FOLDER_CORNER_RATIO = 0.225f
+
+/** 2026-11-23: tỉ lệ bo của nền thư mục / tấm hover sau khi nhân thanh "Bo góc" ([glassCornerScale]), không quá nửa cạnh. */
+private fun folderCornerRatio(scale: Float): Float = (FOLDER_CORNER_RATIO * scale).coerceAtMost(0.5f)
 private const val FOLDER_PADDING_RATIO = 0.12f
 private const val FOLDER_GAP_RATIO = 0.05f
+private const val FOLDER_LENS_SCALE = 0.6f // ô thư mục ~60 dp: khúc xạ của card (12–24 dp) quá mạnh, thu nhỏ như ô tìm (lensScale 0.5)
 private const val HOVER_GLASS_SCALE = 1.25f
 private const val HOVER_ZOOM = 1.12f
 

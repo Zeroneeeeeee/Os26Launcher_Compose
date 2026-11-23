@@ -493,7 +493,7 @@
     <string name="gt_blur">ความเบลอ</string>
     <string name="gt_blur_desc">ความพร่ามัวของพื้นหลังด้านหลังกระจก</string>
     <string name="gt_corner">ความโค้งของมุม</string>
-    <string name="gt_corner_desc">50 = เท่าเดิม 0 = เหลี่ยม ไม่เปลี่ยนรูปทรงไอคอนแอป</string>
+    <string name="gt_corner_desc">50 = เท่าเดิม 0 = เหลี่ยม เปลี่ยนรูปทรงไอคอนแอปด้วย</string>
     <string name="gt_reset">รีเซ็ตเป็นค่าเริ่มต้น</string>
 
     <!-- WN: thông báo thời tiết (tiền tố wn_) -->

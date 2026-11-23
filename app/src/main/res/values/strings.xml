@@ -529,7 +529,7 @@
     <string name="gt_blur">Blur</string>
     <string name="gt_blur_desc">How blurry the background behind the glass is.</string>
     <string name="gt_corner">Corner radius</string>
-    <string name="gt_corner_desc">50 = unchanged, 0 = square. Doesn\'t change app icon shapes.</string>
+    <string name="gt_corner_desc">50 = unchanged, 0 = square. Also changes app icon shapes.</string>
     <string name="gt_reset">Reset to default</string>
 
     <!-- WN: thông báo thời tiết (tiền tố wn_) -->

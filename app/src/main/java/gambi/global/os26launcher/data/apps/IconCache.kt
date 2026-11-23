@@ -3,6 +3,7 @@ package gambi.global.os26launcher.data.apps
 import android.graphics.Bitmap
 import android.util.LruCache
 import gambi.global.os26launcher.domain.model.ComponentKey
+import gambi.global.os26launcher.domain.model.GlassLook
 import gambi.global.os26launcher.domain.model.IconStyleKey
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,7 +29,9 @@ class IconCache @Inject constructor() {
                 // IP: gói biểu tượng cũng nằm trong khóa; rỗng thì khóa giữ y hệt trước IP
                 (if (style.pack.isEmpty()) "" else "^${style.pack}") +
                 // CF Step 7: cờ nổi chỉ nối khi bật; tắt thì khóa y hệt trước
-                if (style.bevel) "+bevel" else ""
+                (if (style.bevel) "+bevel" else "") +
+                // 2026-11-23: bo góc icon chỉ nối khi khác mặc định; mặc định thì khóa y hệt trước
+                (if (style.corner == GlassLook.DEFAULT.corner) "" else "%${style.corner}")
 
     fun get(key: ComponentKey, stamp: String, sizePx: Int, style: IconStyleKey): Bitmap? =
         cache.get(cacheKey(key, stamp, sizePx, style))

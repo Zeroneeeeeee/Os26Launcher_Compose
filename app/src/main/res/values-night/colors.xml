@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- SM: bản tối của khối shortcut_menu_* (menu nhấn giữ icon). Nhánh sau thêm màu tối vào đây thì coi như dùng chung có kiểm soát. -->
-    <color name="shortcut_menu_glass_tint">#E02C2C2E</color>
+    <color name="shortcut_menu_glass_tint">#592C2C2E</color>
     <color name="shortcut_menu_glass_border">#33FFFFFF</color>
     <color name="shortcut_menu_flat">#F22C2C2E</color>
     <color name="shortcut_menu_text">#FFFFFFFF</color>

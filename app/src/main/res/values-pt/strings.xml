@@ -493,7 +493,7 @@
     <string name="gt_blur">Desfoque</string>
     <string name="gt_blur_desc">Quanto o fundo atrás do vidro fica desfocado.</string>
     <string name="gt_corner">Arredondamento</string>
-    <string name="gt_corner_desc">50 = sem mudança, 0 = quadrado. Não muda o formato dos ícones dos apps.</string>
+    <string name="gt_corner_desc">50 = sem mudança, 0 = quadrado. Também muda o formato dos ícones dos apps.</string>
     <string name="gt_reset">Restaurar padrão</string>
 
     <!-- WN: thông báo thời tiết (tiền tố wn_) -->

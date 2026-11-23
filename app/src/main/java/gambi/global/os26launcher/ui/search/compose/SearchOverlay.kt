@@ -98,6 +98,7 @@ import gambi.global.os26launcher.core.designsystem.compose.DrawableBox
 import gambi.global.os26launcher.core.designsystem.compose.DsSpinner
 import gambi.global.os26launcher.core.designsystem.compose.dsPressHighlight
 import gambi.global.os26launcher.core.glass.compose.dsGlass
+import com.kyant.backdrop.Backdrop
 import gambi.global.os26launcher.core.ui.TransitionMotion
 import gambi.global.os26launcher.domain.config.TransitionStyle
 import gambi.global.os26launcher.domain.model.ScreenRect
@@ -138,7 +139,9 @@ internal fun SearchOverlay(
     actions: SearchActions,
     fallbackBackdrop: Bitmap?,
     onProgress: (Float) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** Lớp Home + Today + Thư viện CHƯA nhoè (HomeActivity ghi khi lớp tìm kiếm hiện): ô nhập là kính thật lấy mẫu lớp này, như iOS 26. */
+    backdrop: Backdrop? = null
 ) {
     val progress = remember { Animatable(0f) }
     // Lúc đóng: giữ nội dung đang hiện tới khi mờ hết (close() xóa truy vấn ngay, ViewModel đẩy ô trống; vẽ nó lúc đang mờ là giật).
@@ -204,13 +207,13 @@ internal fun SearchOverlay(
         }
         Box(Modifier.fillMaxSize().background(colorResource(R.color.search_scrim).copy(alpha = 0.8f * DIM_WITH_BLUR)))
         // Truyền isOpen THẬT (không phải của [shown], vốn luôn là true): đóng thì ẩn bàn phím ngay, mở lại giữa lúc mờ dần thì đặt lại ô nhập.
-        SearchContent(s, state.isOpen, spotlight, actions)
+        SearchContent(s, state.isOpen, spotlight, actions, backdrop)
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SearchContent(state: SearchUiState, isOpen: Boolean, spotlight: Boolean, actions: SearchActions) {
+private fun SearchContent(state: SearchUiState, isOpen: Boolean, spotlight: Boolean, actions: SearchActions, backdrop: Backdrop?) {
     val keyboard = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     val focus = remember { FocusRequester() }
@@ -242,7 +245,8 @@ private fun SearchContent(state: SearchUiState, isOpen: Boolean, spotlight: Bool
                 focusManager.clearFocus()
             },
             onCancel = actions.onDismiss,
-            focus = focus
+            focus = focus,
+            backdrop = backdrop
         )
     }
     if (spotlight) {
@@ -276,7 +280,7 @@ private fun SearchContent(state: SearchUiState, isOpen: Boolean, spotlight: Bool
         }
         Column(Modifier.fillMaxSize().onSizeChanged { totalH = it.height }.windowInsetsPadding(bars).windowInsetsPadding(bottomInsets)) {
             Box(Modifier.weight(1f).fillMaxWidth()) {
-                SpotlightResults(state, actions)
+                SpotlightResults(state, actions, backdrop)
             }
             Box(Modifier.onSizeChanged { fieldRowH = it.height }) { fieldRow() }
             Spacer(Modifier.height(dimensionResource(R.dimen.search_field_margin_top)))
@@ -297,7 +301,8 @@ private fun SearchFieldRow(
     onValueChange: (TextFieldValue) -> Unit,
     onSearch: () -> Unit,
     onCancel: () -> Unit,
-    focus: FocusRequester
+    focus: FocusRequester,
+    backdrop: Backdrop?
 ) {
     val hint = colorResource(R.color.search_hint_text)
     val margin = dimensionResource(R.dimen.search_field_margin_horizontal)
@@ -319,7 +324,9 @@ private fun SearchFieldRow(
                     Modifier
                         .fillMaxWidth()
                         .height(dimensionResource(R.dimen.search_field_height))
-                        .dsGlass(DsSurface.CONTROL, DsCorner.Fixed(FIELD_RADIUS_DP)),
+                        // Lớp nền là Home CHƯA nhoè: sàn độ mờ bằng độ nhoè Home (24 dp) để ô nhập không lộ chữ/icon sắc nét.
+                        // 2026-11-23: glass = true để thanh "Bo góc" của kính bo cả ô nhập.
+                        .dsGlass(DsSurface.CONTROL, DsCorner.Fixed(FIELD_RADIUS_DP, glass = true), backdrop, minBlurDp = FIELD_MIN_BLUR_DP, realGlass = true, lensScale = FIELD_LENS_SCALE),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(Modifier.weight(1f).padding(start = 16.dp, end = 8.dp), contentAlignment = Alignment.CenterStart) {
@@ -405,7 +412,7 @@ private fun segments(results: List<SearchResult>): List<Segment> {
 }
 
 @Composable
-private fun SpotlightResults(state: SearchUiState, actions: SearchActions) {
+private fun SpotlightResults(state: SearchUiState, actions: SearchActions, backdrop: Backdrop?) {
     val typing = state.query.isNotBlank()
     // Sức chứa (số hàng) tính ở SearchContent theo chiều cao cả lớp + đích bàn phím.
     val side = dimensionResource(R.dimen.search_field_margin_horizontal)
@@ -418,8 +425,8 @@ private fun SpotlightResults(state: SearchUiState, actions: SearchActions) {
                 if (prev != null && prev !is Segment.Header && seg !is Segment.Header) Spacer(Modifier.height(CARD_GAP))
                 when (seg) {
                     is Segment.Header -> HeaderRow(seg.header, inset = HEADER_SPOTLIGHT_INSET, onToggle = actions.onHeaderToggle)
-                    is Segment.Apps -> Card(enabled = typing) { AppGrid(seg.apps, actions) }
-                    is Segment.Web -> Card(enabled = true) {
+                    is Segment.Apps -> Card(enabled = typing, backdrop) { AppGrid(seg.apps, actions) }
+                    is Segment.Web -> Card(enabled = true, backdrop) {
                         seg.rows.forEachIndexed { j, r -> WebRow(r, actions, divider = j < seg.rows.lastIndex) }
                     }
                     is Segment.Other -> ResultRow(seg.result, actions)
@@ -429,14 +436,24 @@ private fun SpotlightResults(state: SearchUiState, actions: SearchActions) {
     }
 }
 
-/** Thẻ mờ kiểu iOS (bo 16, `search_card_bg`); [enabled] = false: không vẽ thẻ (lưới "Gần đây" ở ô trống để trần). */
+/**
+ * Thẻ kết quả kiểu iOS (bo 16); [enabled] = false: không vẽ thẻ (lưới "Gần đây" ở ô trống để trần).
+ * 2026-11-23 (chủ dự án): thẻ là liquid glass thật (CARD lấy mẫu [backdrop] = lớp Home chưa nhoè, sàn mờ như ô nhập), bo theo "Bo góc";
+ * không có lớp nền thì về màu phẳng `search_card_bg` như cũ. Spotlight có tối đa hai thẻ nên chi phí kính nhỏ.
+ */
 @Composable
-private fun Card(enabled: Boolean, content: @Composable () -> Unit) {
+private fun Card(enabled: Boolean, backdrop: Backdrop?, content: @Composable () -> Unit) {
     if (!enabled) {
         Column { content() }
         return
     }
-    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(CARD_RADIUS)).background(colorResource(R.color.search_card_bg))) { content() }
+    val surface = if (backdrop != null) {
+        Modifier.dsGlass(DsSurface.CARD, DsCorner.Fixed(CARD_RADIUS.value, glass = true), backdrop, minBlurDp = FIELD_MIN_BLUR_DP, surfaceFill = false)
+            .background(colorResource(R.color.search_card_bg))
+    } else {
+        Modifier.clip(RoundedCornerShape(CARD_RADIUS)).background(colorResource(R.color.search_card_bg))
+    }
+    Column(Modifier.fillMaxWidth().then(surface)) { content() }
 }
 
 @Composable
@@ -700,6 +717,8 @@ private const val SLIDE_FRACTION = 0.12f
 private const val ZOOM_START = 0.92f
 private const val DIM_WITH_BLUR = 0.4f
 private const val FIELD_RADIUS_DP = 24f
+private const val FIELD_MIN_BLUR_DP = 24f
+private const val FIELD_LENS_SCALE = 0.5f
 private val CARD_RADIUS = 16.dp
 private val CARD_GAP = 12.dp
 private val LIST_TOP = 8.dp

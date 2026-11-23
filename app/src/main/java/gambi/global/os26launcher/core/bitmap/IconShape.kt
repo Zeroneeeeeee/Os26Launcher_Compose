@@ -114,5 +114,16 @@ class IconShape(val cornerRatio: Float, val smoothing: Float) {
         const val SMOOTHING = 0.6f
 
         val DEFAULT = IconShape(CORNER_RATIO, SMOOTHING)
+
+        /** Giá trị "Bo góc" (0..100) giữ nguyên hình [DEFAULT]. */
+        const val DEFAULT_CORNER = 50
+
+        /**
+         * 2026-11-23: hình icon theo thanh "Bo góc" của kính ([corner] 0..100): bán kính = [CORNER_RATIO] × corner / 50 (0 = vuông, 50 = [DEFAULT],
+         * 100 ≈ gần tròn), kẹp ≤ nửa cạnh. Cùng hệ số nhân với `GlassTuning.cornerScale`.
+         */
+        fun forCorner(corner: Int): IconShape =
+            if (corner == DEFAULT_CORNER) DEFAULT
+            else IconShape((CORNER_RATIO * corner.coerceIn(0, 100) / DEFAULT_CORNER).coerceAtMost(0.5f), SMOOTHING)
     }
 }
