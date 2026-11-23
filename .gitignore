@@ -32,3 +32,6 @@ desktop.ini
 # Python helper scripts (m4_task4_verify.py)
 __pycache__/
 *.pyc
+
+# PG4: ket qua do hieu nang (tools/perf/measure-home.ps1)
+tools/perf/out/
