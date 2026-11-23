@@ -25,7 +25,7 @@
     <color name="folder_title_shadow">#40000000</color>
     <!-- FP Task 3: khung thư mục = kính sáng rất trong + viền sáng mảnh (ảnh mẫu iOS 26). Điểm xuất phát, chốt bằng mắt.
          Panel nhóm Library giữ gl_panel_tint / gl_panel_border / folder_panel_background. -->
-    <color name="folder_panel_glass_tint">#1AFFFFFF</color> <!-- 2026-11-18 "giảm sáng": #1F -> #0F; rồi "tăng sáng chút": -> #1A -->
+    <color name="folder_panel_glass_tint">#262F2F2F</color> <!-- 2026-11-18 "giảm sáng": #1F -> #0F; rồi "tăng sáng chút": -> #1A -->
     <color name="folder_panel_glass_border">#66FFFFFF</color>
     <!-- FLAT (Ép thấp / không có ảnh nền): màu bán trong suốt nhạt (trước là folder_panel_background #66FFFFFF). -->
     <color name="folder_panel_flat_color">#33FFFFFF</color>

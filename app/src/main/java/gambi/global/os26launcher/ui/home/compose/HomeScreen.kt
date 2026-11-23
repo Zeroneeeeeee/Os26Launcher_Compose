@@ -585,7 +585,7 @@ private const val OVERLAY_BLUR_DP = 16f
 private const val OVERLAY_DIM = 0.25f // P2-2: tối dần theo tiến độ menu; 0,6 (`icon_scrim`) quá tối so với iOS 26, chủ dự án hạ 2026-11-23
 // Thư mục mở, theo ảnh iOS 26 chủ dự án gửi 2026-11-23: nền Home mờ mạnh nhưng gần như không tối. Bằng FOLDER_MIN_BLUR_DP của
 // HomeFolderPanel để trong bảng mờ ngang ngoài, chỉ sáng hơn (bảng lấy mẫu lớp Home chưa tối).
-private const val FOLDER_BLUR_DP = 6f // chủ dự án chốt sau khi thử 24/12/8/4 dp (2026-11-23)
+private const val FOLDER_BLUR_DP = 18f // chủ dự án chốt sau khi thử 24/12/8/4 dp (2026-11-23)
 private const val FOLDER_DIM = 0.15f
 
 /**

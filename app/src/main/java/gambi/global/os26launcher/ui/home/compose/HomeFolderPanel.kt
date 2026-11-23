@@ -457,7 +457,7 @@ private fun FolderTitle(f: PlacedFolder, iconLeft: Float, panelTop: Float, panel
 }
 
 private const val PANEL_RADIUS_DP = 36f
-private const val FOLDER_MIN_BLUR_DP = 6f // độ mờ CỐ ĐỊNH kính panel thư mục, bằng FOLDER_BLUR_DP của HomeScreen (mờ liền với nền, như iOS 26)
+private const val FOLDER_MIN_BLUR_DP = 18f // độ mờ CỐ ĐỊNH kính panel thư mục, bằng FOLDER_BLUR_DP của HomeScreen (mờ liền với nền, như iOS 26)
 private const val TITLE_MAX = 30 // FolderPlanner.normalizeTitle: trim + take(30)
 private const val OPEN_EPS = 0.001f
 
