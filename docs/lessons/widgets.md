@@ -76,3 +76,9 @@ Mỗi mục giữ nguyên ngày, nhãn nguồn (đo được / đọc code / đ�
   lên khi rung ±1° (widget rộng ~344dp: ~3dp).
 - **Sửa:** `TodayView.GRID_TOP_DP` 12 → 20dp. Thứ trong khung cuộn mà vẽ tràn ra ngoài con (dấu, bóng, rung) phải chừa đệm trong khung,
   `clipChildren = false` không cứu được.
+
+## WF — kéo widget từ trang danh sách, "App gần đây" trên Home, bố cục lần đầu (2026-11-25). Plan: [../plans/WF-widget-drag-first-run.md](../plans/WF-widget-drag-first-run.md)
+
+- (WF, 2026-11-25, **đọc code**, chờ kiểm máy) Đổi một bảng từ `Dialog` (cửa sổ riêng) sang lớp phủ vẽ trong cây Compose của Activity (PG2) thì mọi chạm trong bảng **đi qua `Activity.dispatchTouchEvent`** trước Compose. Bộ cử chỉ đứng ở đó (vuốt mở / đóng Thư viện, Today) thấy cả cú lướt pager trong bảng → lướt đổi cỡ ở bảng mở từ Today bị hiểu là vuốt đóng Today. Khi chuyển `Dialog` → lớp phủ, rà mọi chỗ chặn chạm ở cấp Activity và cho bỏ qua khi lớp phủ mở (`HomeWidgetPicker.isOpen`).
+- (WF, 2026-11-25, **đọc code**) Hai `pointerInput` trên cùng một nút: pass Main đi từ modifier TRONG ra NGOÀI. Đặt cử chỉ "giữ rồi kéo" sau (`trong`) `clickable` thì nó thấy sự kiện trước, chưa arm thì không tiêu thụ (bấm vẫn chạy), arm xong tiêu thụ hết nên `clickable` huỷ (không mở chi tiết sau khi kéo).
+- (WF, 2026-11-25) Loại widget mới không vẽ bằng `WidgetRenderer` (vd "App gần đây" vẽ bằng Compose) vẫn nên là một `WidgetKind`: dùng lại nguyên đường thêm / kéo / lưu (`itemType = 4`, `className`), chỉ thêm nhánh vẽ ở `HomeWidgetCell`; `WidgetRenderers.create` trả renderer rỗng thay vì ném lỗi. Nơi đọc mã loại của chỗ khác (Today: `TodayWidget.builtin`) phải loại trừ nó nếu nơi đó đã có nhánh riêng.
