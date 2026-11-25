@@ -13,10 +13,11 @@ import kotlin.math.min
 
 /** Lịch 2x2: thứ (đỏ), ngày trong tháng thật lớn, tên tháng (ẩn khi quá thấp). Không có sự kiện (cần READ_CALENDAR, ngoài phạm vi). */
 internal class CalendarSmallRenderer(private val context: Context) : WidgetRenderer {
+    // PW: như widget Lịch iOS — thứ / tháng SF Text Semibold, số ngày SF Display Medium (Inter tương ứng).
     private val weekdayPaint =
-        newWidgetTextPaint(context, context.getColor(R.color.widget_accent), bold = true)
-    private val numberPaint = newWidgetTextPaint(context, context.getColor(R.color.widget_text))
-    private val monthPaint = newWidgetTextPaint(context, context.getColor(R.color.widget_text_dim))
+        newWidgetTextPaint(context, context.getColor(R.color.widget_accent), WidgetFont.TEXT_SEMIBOLD)
+    private val numberPaint = newWidgetTextPaint(context, context.getColor(R.color.widget_text), WidgetFont.DISPLAY_MEDIUM)
+    private val monthPaint = newWidgetTextPaint(context, context.getColor(R.color.widget_text_dim), WidgetFont.TEXT_SEMIBOLD)
     private var cx = 0f
     private var weekday = ""
     private var number = ""
@@ -76,14 +77,15 @@ internal class CalendarSmallRenderer(private val context: Context) : WidgetRende
  * (`WeekFields`, tiếng Việt: thứ Hai). Lưới ẩn khi widget quá thấp / hẹp.
  */
 internal class CalendarMediumRenderer(private val context: Context) : WidgetRenderer {
+    // PW: như widget Lịch iOS — thứ / tháng SF Text Semibold, số ngày SF Display Medium (Inter tương ứng).
     private val weekdayPaint =
-        newWidgetTextPaint(context, context.getColor(R.color.widget_accent), bold = true)
-    private val numberPaint = newWidgetTextPaint(context, context.getColor(R.color.widget_text))
-    private val monthPaint = newWidgetTextPaint(context, context.getColor(R.color.widget_text_dim))
-    private val headerPaint = newWidgetTextPaint(context, context.getColor(R.color.widget_text_dim))
-    private val dayPaint = newWidgetTextPaint(context, context.getColor(R.color.widget_text))
+        newWidgetTextPaint(context, context.getColor(R.color.widget_accent), WidgetFont.TEXT_SEMIBOLD)
+    private val numberPaint = newWidgetTextPaint(context, context.getColor(R.color.widget_text), WidgetFont.DISPLAY_MEDIUM)
+    private val monthPaint = newWidgetTextPaint(context, context.getColor(R.color.widget_text_dim), WidgetFont.TEXT_SEMIBOLD)
+    private val headerPaint = newWidgetTextPaint(context, context.getColor(R.color.widget_text_dim), WidgetFont.TEXT_SEMIBOLD)
+    private val dayPaint = newWidgetTextPaint(context, context.getColor(R.color.widget_text), WidgetFont.TEXT_SEMIBOLD, tabular = true)
     private val todayPaint =
-        newWidgetTextPaint(context, context.getColor(R.color.widget_text), bold = true)
+        newWidgetTextPaint(context, context.getColor(R.color.widget_text), WidgetFont.TEXT_SEMIBOLD, tabular = true)
     private val todayFill =
         Paint(Paint.ANTI_ALIAS_FLAG).apply { color = context.getColor(R.color.widget_accent) }
 

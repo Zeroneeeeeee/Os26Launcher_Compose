@@ -110,8 +110,8 @@ internal class ClockAnalogRenderer(private val context: Context) : WidgetRendere
 /** Đồng hồ số 4x2: giờ lớn (12/24 giờ theo máy) và một dòng ngày; dòng ngày ẩn khi widget quá thấp. */
 internal class ClockDigitalRenderer(private val context: Context) : WidgetRenderer {
     private val timePaint =
-        newWidgetTextPaint(context, context.getColor(R.color.widget_text), bold = true)
-    private val datePaint = newWidgetTextPaint(context, context.getColor(R.color.widget_text_dim))
+        newWidgetTextPaint(context, context.getColor(R.color.widget_text), WidgetFont.DISPLAY_MEDIUM, tabular = true) // PW
+    private val datePaint = newWidgetTextPaint(context, context.getColor(R.color.widget_text_dim), WidgetFont.TEXT_SEMIBOLD)
     private var w = 0f
     private var time = ""
     private var date = ""

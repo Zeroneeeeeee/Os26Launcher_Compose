@@ -2,9 +2,12 @@ package gambi.global.os26launcher.ui.home.compose
 
 import android.text.format.DateFormat
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -21,6 +24,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.min
 import gambi.global.os26launcher.core.designsystem.DsCorner
 import gambi.global.os26launcher.core.designsystem.DsSurface
@@ -41,10 +46,43 @@ import java.util.Locale
  * cấp phát trong lúc vẽ, luật GL Task 6) rồi `drawBehind` đọc giá trị mới nên vẽ lại.
  */
 @Composable
-internal fun HomeWidgetCell(widget: PlacedWidget, onClick: (() -> Unit)? = null) {
+internal fun HomeWidgetCell(widget: PlacedWidget, onClick: (() -> Unit)? = null, gapXPx: Int? = null) {
+    if (gapXPx == null) {
+        WidgetCardContent(widget, onClick)
+        return
+    }
+    // PW (chủ dự án 2026-11-25): thẻ widget luôn vuông (2 × 2) / cao bằng thẻ 2 × 2 (4 × 2) trong vùng ô của nó, xem [widgetCardFrame].
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        val frame = widgetCardFrame(constraints.maxWidth, constraints.maxHeight, widget.position.spanX, gapXPx)
+        val density = LocalDensity.current
+        Box(
+            Modifier
+                .offset { IntOffset(frame.left, frame.top) }
+                .size(with(density) { frame.width.toDp() }, with(density) { frame.height.toDp() })
+        ) { WidgetCardContent(widget, onClick) }
+    }
+}
+
+@Composable
+private fun WidgetCardContent(widget: PlacedWidget, onClick: (() -> Unit)?) {
     // WF Task 1: "App gần đây" vẽ bằng Compose; [onClick] null (edit mode, ảnh kéo) = ô app không bấm được.
     if (widget.kind == WidgetKind.RECENTS) HomeRecentsWidget(widget, interactive = onClick != null)
     else RendererWidgetCell(widget, onClick)
+}
+
+/**
+ * PW (chủ dự án 2026-11-25) — khung thẻ của widget tự vẽ trong vùng ô [widthPx] × [heightPx] (spanX × 2 ô của lưới Home), kiểu iOS: thẻ 2 × 2
+ * luôn VUÔNG, thẻ 4 × 2 cao bằng thẻ 2 × 2 (rộng = 2 thẻ vuông + khe [gapXPx]). Lưới app không đổi: một hàng icon cao hơn một cột (có nhãn
+ * tên app) nên vùng 2 × 2 thường cao hơn rộng → thẻ neo TRÊN, phần thừa ở đáy (chỗ nhãn hàng dưới, sau này đặt nhãn tên widget như iOS); tắt
+ * nhãn thì vùng rộng hơn cao → thẻ vuông theo chiều cao, căn giữa ngang. Dùng chung cho lưới Home, ảnh kéo và dấu "−".
+ */
+internal fun widgetCardFrame(widthPx: Int, heightPx: Int, spanX: Int, gapXPx: Int): IntRect {
+    val wide = spanX >= 4
+    val unit = if (wide) (widthPx - gapXPx) / 2 else widthPx
+    val side = minOf(unit, heightPx).coerceAtLeast(0)
+    val w = if (wide) 2 * side + gapXPx else side
+    val left = ((widthPx - w) / 2).coerceAtLeast(0)
+    return IntRect(left, 0, left + w, side)
 }
 
 @Composable

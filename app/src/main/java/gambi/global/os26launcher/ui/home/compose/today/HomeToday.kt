@@ -271,8 +271,12 @@ internal fun todaySlots(list: List<TodayWidget>, c: GridMetrics.Cells, top: Int,
     }
 }
 
-/** 2026-11-24: chiều cao THẬT của một khối widget (2 hàng ô Home) — không còn cộng gutterY cũ (khe giữa hàng tách riêng, xem [todaySlots]). */
-private fun blockHeight(c: GridMetrics.Cells): Int = 2 * c.cellHeight
+/**
+ * 2026-11-24: chiều cao THẬT của một khối widget — không còn cộng gutterY cũ (khe giữa hàng tách riêng, xem [todaySlots]).
+ * PW (chủ dự án 2026-11-25): khối cao bằng bề rộng một widget 2 × 2 ([c] = ô bố cục của Today) để widget 2 × 2 luôn VUÔNG, 4 × 2 cao bằng
+ * 2 × 2 như iOS (trước là 2 hàng ô Home: icon + nhãn nên cao hơn rộng).
+ */
+private fun blockHeight(c: GridMetrics.Cells): Int = 2 * c.cellWidth + c.gutterX
 
 @Composable
 private fun TodayPage(
@@ -304,13 +308,13 @@ private fun TodayPage(
     val scrollTop = barBottom + px(SCROLL_GAP_DP)
     val gridTop = scrollTop + px(GRID_TOP_DP) // đệm trên: chỗ cho dấu "−" của hàng đầu nhô lên
     val spanW = 4 * cells.cellWidth + 3 * cells.gutterX
-    val bh = blockHeight(cells)
     // 2026-11-24 (chủ dự án): khe NGANG giữa 2 widget nửa-hàng = lề 2 bên (cells.paddingLeft), không còn là gutterX (8dp, nhỏ hơn lề) — giữ
     // TỔNG chiều rộng khối 4 cột ([spanW], neo lề trái/phải không đổi), chỉ chia lại: ô widget hiệu dụng co lại tương ứng để chỗ cho khe lớn
     // hơn. Chỉ áp cho layout NGANG (vị trí/độ rộng widget); nội dung widget (icon, nhãn…) vẫn dùng [cells] gốc.
     val widgetGapX = cells.paddingLeft
     val widgetCellWidth = (spanW - 3 * widgetGapX) / 4
     val layoutCells = cells.copy(cellWidth = widgetCellWidth, gutterX = widgetGapX)
+    val bh = blockHeight(layoutCells) // PW: theo ô bố cục (khối vuông), cùng phép với [todaySlots]
     // 2026-11-24 (chủ dự án): khe DỌC giữa 2 hàng widget cũng = lề 2 bên — cùng [widgetGapX], y hệt khe ngang.
     val widgetGapY = cells.paddingLeft
 

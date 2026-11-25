@@ -3,7 +3,7 @@
 > Làm theo `docs/AGENTS.md` và `docs/Workflow.md`: plan duyệt rồi mới code; code liền các Task, chủ dự án build và kiểm một lượt; tick khi chủ dự án báo đạt. Phiên claude.ai qua VM **không build được**: chủ dự án chạy `.\gradlew.bat assembleDebug lintDebug installDebug` và gửi lỗi.
 
 **Bắt đầu:** 2026-11-25 · **Plan duyệt:** 2026-11-25 (chủ dự án trả lời Q1–Q5)
-**Trạng thái:** Đóng 2026-11-25 theo yêu cầu chủ dự án (Task 1–3); kiểm tay chưa đủ (xem "Kết quả kiểm chứng"). Hành vi giữ-là-kéo của bảng chọn đổi tiếp ở `PD-picker-menus-dialogs.md`
+**Trạng thái:** Xong 2026-11-25 (Task 1–3; chủ dự án kiểm đạt). Hành vi giữ-là-kéo của bảng chọn đổi tiếp ở `PD-picker-menus-dialogs.md`
 **Nhánh:** `an` · **Máy:** Oppo PKD130, Vsmart Live 4 · **Đổi schema Room:** không
 
 **Goal:** (1) Nhấn giữ một widget tự vẽ ngay ở trang danh sách của bảng chọn (lúc bảng vừa bật lên) cũng kéo ra lưới được, đúng cỡ của ô đó — trước đây (PG2 Q1) chỉ kéo được từ khung xem trước ở trang chi tiết. (2) Máy mới (chưa chỉnh gì) vào Home thấy trang 1: widget Đồng hồ 2×2 và Lịch 2×2 ở đầu, icon app launcher của mình ở ô đầu tiên ngay sau hai widget, rồi các app khác.
@@ -84,7 +84,7 @@ _(điền khi xong)_
 
 ## Kết quả kiểm chứng
 
-Chủ dự án đóng plan 2026-11-25 cùng PD (gộp một PR) trước khi kiểm hết kịch bản Task 1 Step 4 và Task 2 (seed lần đầu cần `pm clear`). Lỗi phát sinh sau này ghi vào plan mới, dẫn lại plan này.
+Chủ dự án đóng plan 2026-11-25 cùng PD (gộp một PR), rồi kiểm cùng ngày: **đạt** (cả bố cục lần đầu sau khi xoá dữ liệu). Lỗi phát sinh sau này ghi vào `BACKLOG.md`, dẫn lại plan này.
 
 ## Nhật ký
 | Ngày | Task | Việc đã làm | Ghi chú |
