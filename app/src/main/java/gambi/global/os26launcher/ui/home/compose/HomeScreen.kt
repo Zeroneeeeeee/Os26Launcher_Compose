@@ -40,6 +40,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -236,10 +237,12 @@ internal fun HomeScreen(
     val overlayP = maxOf(menuProgress.value, folderProgress.value, removeOverlayProgress)
     val homeBackdrop = rememberLayerBackdrop()
     // 2026-11-23: menu nhấn giữ cũng lấy mẫu lớp Home (thấy icon phía sau nhoè qua menu, như iOS 26), không chỉ ảnh nền.
+    // 2026-11-25: menu "Sửa" của edit mode cũng lấy mẫu lớp Home (thấy app bị menu đè phía sau).
     val folderLayerOn = state.openFolderId != null || folderProgress.value > 0f || state.iconMenu != null || menuProgress.value > 0f ||
-        removeOverlayProgress > 0f
+        removeOverlayProgress > 0f || (editMenuOpen && state.editMode)
     // PG4: công tắc đo (chỉ bản `perf`, `PerfSwitches`): bỏ nền của kính thật / lớp nền mờ tĩnh để so số đo.
     val glassBackdrop = if (PerfSwitches.noRealGlass) null else backdrop
+    SideEffect { drag.glassBackdrop = glassBackdrop } // ảnh nổi kéo-thả (tầng Activity) lấy mẫu cùng nền kính với lưới
     val frostedBackdrop = if (PerfSwitches.noFrosted) null else frosted.backdropOrNull
     // PG3 Task 2 Step 3 (Q3): dưới API 31 kính thật không chạy, nên bảng thư mục lấy mẫu ẢNH CHỤP lớp Home (chụp một lần lúc mở, làm mờ ngoài
     // main thread bằng bộ đệm riêng) để vẫn thấy icon phía sau; ảnh chụp chưa xong thì dùng lớp nền mờ của ảnh nền. Máy ≥ 31 không chụp.
@@ -500,6 +503,7 @@ internal fun HomeScreen(
             if (showMenu && menuAnchor != null) {
                 HomeEditMenu(
                     anchor = menuAnchor,
+                    backdrop = homeBackdrop,
                     items = buildList {
                         if (onAddWidget != null) add(HomeEditMenuItem(R.string.wp_add_widget, R.drawable.wp_ic_widgets, onAddWidget))
                         add(HomeEditMenuItem(R.string.home_wallpapers, R.drawable.ds_ic_wallpaper, onWallpapers))
@@ -635,8 +639,10 @@ internal class HomePagerInfo {
     var currentPage = 0
     var scrolling = false
     var realPageCount = 0
-    var pagerWidth = 0
-    var pagerHeight = 0
+    // MP (2026-11-25): state snapshot để HomeActivity tính lại cỡ ô Today khi pager đổi cỡ, thay vì đọc tiến độ vuốt Today mỗi khung
+    // (đọc tiến độ ở scope gốc của setContent làm cả cây Home recompose mỗi khung khi vuốt Today).
+    var pagerWidth by mutableIntStateOf(0)
+    var pagerHeight by mutableIntStateOf(0)
     /** PG1 G1: PagerState của Home đang hiện (gán/bỏ trong [HomeScreen]); null = chưa dựng. Đọc ở luồng chính lúc có sự kiện chạm. */
     var pagerState: PagerState? = null
 

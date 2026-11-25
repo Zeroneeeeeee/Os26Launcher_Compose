@@ -46,8 +46,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -55,10 +57,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.TransformOrigin
@@ -99,6 +103,8 @@ import gambi.global.os26launcher.core.designsystem.compose.dsPressable
 import gambi.global.os26launcher.core.glass.compose.FrostedWallpaperImage
 import gambi.global.os26launcher.core.glass.compose.LocalDsBackdrop
 import gambi.global.os26launcher.core.glass.compose.LocalDsFrostedBackdrop
+import gambi.global.os26launcher.core.glass.compose.PagePinnedBackdrop
+import gambi.global.os26launcher.core.glass.compose.pinnedBackdropOrigin
 import gambi.global.os26launcher.core.glass.compose.dsGlass
 import gambi.global.os26launcher.core.ui.LibraryLayoutMetrics
 import gambi.global.os26launcher.core.designsystem.compose.wallpaperSoftBlur
@@ -112,7 +118,9 @@ import gambi.global.os26launcher.ui.home.compose.HomeRemoveBadge
 import gambi.global.os26launcher.ui.home.compose.badgeCenterForIcon
 import gambi.global.os26launcher.ui.home.compose.homeJiggle
 import gambi.global.os26launcher.ui.home.compose.rememberHomeIcon
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 import gambi.global.os26launcher.core.ui.TransitionMotion
 import gambi.global.os26launcher.domain.config.TransitionStyle
@@ -133,7 +141,10 @@ import gambi.global.os26launcher.ui.home.compose.PanelTransform
  */
 @Composable
 internal fun HomeLibrary(state: HomeLibraryState, icons: HomeIcons, backdrop: Bitmap?, modifier: Modifier = Modifier) {
-    val swipe = state.swipeProgress.floatValue
+    // MP (2026-11-25, đối chiếu AllAppsContainerView của Launcher3 / babydola: dựng một lần, mỗi khung chỉ setTranslationX, đóng hẳn = INVISIBLE):
+    // tiến độ vuốt CHỈ đọc trong lambda graphicsLayer/draw (đổi tiến độ không recompose), và Library luôn ở trong composition (đóng thì không vẽ)
+    // thay vì `return` sớm — trước đây mỗi lần vuốt mở, khung đầu phải dựng lại cả lưới ô + kính + thu nhỏ ảnh nền trên luồng chính.
+    val swipeState = state.swipeProgress
     val group = state.openGroup
     val panel = remember { Animatable(0f) }
     var shownGroup by remember { mutableStateOf<CategoryGroupApps?>(null) }
@@ -158,27 +169,44 @@ internal fun HomeLibrary(state: HomeLibraryState, icons: HomeIcons, backdrop: Bi
     }
     val panelP = panel.value
     state.panelProgress = panelP
-    if (swipe <= 0f && panelP <= 0f) return
+    // Chỉ đổi khi vượt ngưỡng 0 (không phải mỗi khung): bật/tắt chặn chạm và ngữ nghĩa trợ năng.
+    val shown by remember { derivedStateOf { swipeState.floatValue > 0f || panel.value > 0f } }
+    val touchable by remember { derivedStateOf { swipeState.floatValue > 0f && panel.value <= OPEN_EPS } }
 
     val night = state.night
     val legacyGlass = Build.VERSION.SDK_INT < Build.VERSION_CODES.S // PG3: máy dưới API 31
-    val blurred = remember(backdrop, legacyGlass) { if (legacyGlass) null else backdrop?.let(::shrinkForBlur) }
+    // MP: thu nhỏ ảnh nền ngoài luồng chính (trước: trong remember lúc dựng, tức đúng khung đầu của cú vuốt mở).
+    val blurred by produceState<Bitmap?>(null, backdrop, legacyGlass) {
+        value = if (legacyGlass) null else backdrop?.let { b -> withContext(Dispatchers.Default) { shrinkForBlur(b) } }
+    }
     val libBackdrop = rememberLayerBackdrop()
-    Box(modifier.fillMaxSize()) {
+    // MP: ô kính lấy mẫu nền theo vị trí trong trang, trang trượt không làm kính ghi lại mỗi khung (xem PagePinnedBackdrop).
+    val pagePinned = remember(libBackdrop) { PagePinnedBackdrop(libBackdrop) }
+    Box(
+        modifier
+            .fillMaxSize()
+            // Đóng hẳn: giữ composition + layout (lưới ô đã dựng sẵn) nhưng không vẽ gì, như View.INVISIBLE.
+            .drawWithContent { if (swipeState.floatValue > 0f || panel.value > 0f) drawContent() }
+            .then(if (shown) Modifier else Modifier.clearAndSetSemantics {})
+    ) {
         // 1. Nền mờ (ghi làm lớp backdrop của kính ô nhóm).
         Box(
             Modifier
                 .fillMaxSize()
-                .graphicsLayer { alpha = swipe.coerceIn(0f, 1f) }
+                .graphicsLayer {
+                    alpha = swipeState.floatValue.coerceIn(0f, 1f)
+                    // MP: alpha áp vào từng lệnh vẽ thay vì vẽ cả lớp ra bộ đệm offscreen 1080×2340 mỗi khung ("alpha caused saveLayer").
+                    compositingStrategy = CompositingStrategy.ModulateAlpha
+                }
                 .layerBackdrop(libBackdrop)
                 .background(Color(if (night) SCRIM_FLAT_DARK else SCRIM_FLAT_LIGHT))
         ) {
             if (legacyGlass) {
                 // PG3 Task 5 (Q4): dưới API 31 không có RenderEffect nên bản thu nhỏ lộ khối khi phóng; dùng bản mờ thật của ảnh nền.
                 FrostedWallpaperImage(backdrop, Modifier.fillMaxSize())
-            } else if (blurred != null) {
+            } else blurred?.let { b ->
                 Image(
-                    blurred.asImageBitmap(),
+                    b.asImageBitmap(),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     filterQuality = FilterQuality.High,
@@ -189,14 +217,14 @@ internal fun HomeLibrary(state: HomeLibraryState, icons: HomeIcons, backdrop: Bi
         }
         // 2. Trang Library: trượt vào từ phải; co + mờ khi màn nhóm mở ở trên.
         // PG3 Task 5: dưới API 31 lớp nền của Thư viện đã là ảnh nền mờ, nên ô nhóm lấy mẫu chính lớp này làm kính mờ tĩnh.
-        CompositionLocalProvider(LocalDsBackdrop provides libBackdrop, LocalDsFrostedBackdrop provides if (legacyGlass) libBackdrop else null) {
+        CompositionLocalProvider(LocalDsBackdrop provides pagePinned, LocalDsFrostedBackdrop provides if (legacyGlass) libBackdrop else null) {
             LibraryPage(
                 state = state,
                 icons = icons,
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
-                        translationX = size.width * (1f - swipe)
+                        translationX = size.width * (1f - swipeState.floatValue)
                         val c = panelP.coerceIn(0f, 1f)
                         val behind = 1f - ramp(c, 0f, BEHIND_FADE_END)
                         alpha = behind
@@ -204,7 +232,8 @@ internal fun HomeLibrary(state: HomeLibraryState, icons: HomeIcons, backdrop: Bi
                         scaleX = s
                         scaleY = s
                     }
-                    .blockTouches(enabled = swipe > 0f && panelP <= OPEN_EPS)
+                    .pinnedBackdropOrigin(pagePinned)
+                    .blockTouches(enabled = touchable)
                     // LD Task 2: chế độ sửa: chạm chỗ trống (không ô nào nhận cú chạm) thì thoát. Ô app / ô nhóm tiêu thụ cú chạm của chúng trước.
                     .then(if (state.editing) Modifier.pointerInput(Unit) { detectTapGestures { state.exitEditing() } } else Modifier)
             )

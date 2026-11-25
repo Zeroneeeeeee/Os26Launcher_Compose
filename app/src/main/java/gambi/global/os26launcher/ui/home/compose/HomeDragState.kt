@@ -210,6 +210,12 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
     var floatSize by mutableStateOf(Size.Zero)
         private set
 
+    /**
+     * Nền kính thật của Home (lớp ảnh nền), do `HomeScreen` gán. Ảnh nổi vẽ ở tầng Activity (ngoài `LocalDsBackdrop` của HomeScreen) đọc giá trị
+     * này để thẻ widget / thư mục đang kéo vẫn là kính như trên lưới (trước: không có nền nên thẻ gần như trong suốt, trông như biến dạng).
+     */
+    var glassBackdrop by mutableStateOf<com.kyant.backdrop.Backdrop?>(null)
+
     private var finger = Offset.Zero
     private var edgeDir = 0
     private var edgeJob: Job? = null

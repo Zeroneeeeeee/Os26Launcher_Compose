@@ -84,6 +84,9 @@ class HostedWidgetViews(
         }
     }
 
+    /** View đã tạo của [appWidgetId] (không tạo mới, không IPC): ảnh nổi lúc kéo chụp lại view này, không gỡ nó khỏi ô trên lưới. */
+    fun peek(appWidgetId: Int): AppWidgetHostView? = views[appWidgetId]
+
     private fun matches(ref: AppWidgetRef, info: AppWidgetProviderInfo): Boolean =
         info.provider.packageName == ref.packageName &&
                 (ref.className.isEmpty() || info.provider.className == ref.className)

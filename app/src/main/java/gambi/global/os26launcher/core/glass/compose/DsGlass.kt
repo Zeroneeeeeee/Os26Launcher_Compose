@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntSize
@@ -78,6 +79,9 @@ fun Modifier.dsGlass(
 ): Modifier = composed {
     val context = LocalContext.current
     val source = backdrop ?: LocalDsBackdrop.current
+    // MP: trong trang trượt cả khối (PagePinnedBackdrop), mỗi bề mặt lấy mẫu nền theo vị trí trong trang để trang dịch không làm kính ghi lại.
+    val pinned = (source as? PagePinnedBackdrop)?.let { p -> remember(p) { PinnedTileBackdrop(p) } }
+    val glassSource: Backdrop? = pinned ?: source
     // Chỉ đọc dưới API 31: máy ≥ 31 không phụ thuộc lớp nền mờ (không dựng lại khi nó đổi).
     val frostedSource = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) frosted ?: LocalDsFrostedBackdrop.current else null
     // JS1: màn Tinh chỉnh kính cho thông số đang kéo qua LocalGlassLookOverride (xem trước trước khi lưu).
@@ -108,7 +112,7 @@ fun Modifier.dsGlass(
     // mặt kính thật giật 38% khung hình khi cuộn, chỉ kính trên card còn 10%.
     val glass = if (source != null && (surface in REAL_GLASS || realGlass) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         Modifier.drawBackdrop(
-            backdrop = source,
+            backdrop = glassSource!!,
             shape = { RoundedCornerShape(radius.floatValue) },
             effects = {
                 val l = lookState.value
@@ -144,7 +148,9 @@ fun Modifier.dsGlass(
         Modifier.drawBehind(drawSurface)
     }
 
-    onSizeChanged { size = it }.then(glass).clip(shape)
+    onSizeChanged { size = it }
+        .then(if (pinned != null) Modifier.onPlaced { pinned.place(it) } else Modifier)
+        .then(glass).clip(shape)
 }
 
 /**

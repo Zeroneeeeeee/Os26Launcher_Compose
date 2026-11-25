@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import gambi.global.os26launcher.core.glass.compose.LocalDsBackdrop
 import androidx.compose.ui.Modifier
 import gambi.global.os26launcher.core.glass.compose.glassCornerScale
 import androidx.compose.ui.graphics.graphicsLayer
@@ -14,6 +16,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import gambi.global.os26launcher.core.ui.GridMetrics
+import gambi.global.os26launcher.domain.model.PlacedAppWidget
 import gambi.global.os26launcher.domain.model.PlacedWidget
 import kotlin.math.roundToInt
 
@@ -48,10 +51,17 @@ fun HomeDragLayer(drag: HomeDragState, cells: GridMetrics.Cells?, icons: HomeIco
                 clip = false
             }
     ) {
+        CompositionLocalProvider(LocalDsBackdrop provides drag.glassBackdrop) {
         when (item) {
             is DragItem.App -> rememberHomeIcon(icons, item.app, c.iconSize)?.let { Image(it, contentDescription = null, modifier = Modifier.fillMaxSize()) }
             is DragItem.Folder -> HomeFolderPlate(item.folder, c.iconSize, icons)
-            is DragItem.Widget -> (item.widget as? PlacedWidget)?.let { HomeWidgetCell(it) }
+            // Widget app (kể cả "không khả dụng"): trước đây rơi qua `as? PlacedWidget` nên ảnh nổi chỉ còn bóng, widget như biến mất khi kéo.
+            is DragItem.Widget -> when (val w = item.widget) {
+                is PlacedWidget -> HomeWidgetCell(w)
+                is PlacedAppWidget -> HomeAppWidgetDragPreview(w)
+                else -> Unit
+            }
+        }
         }
     }
 }

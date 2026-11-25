@@ -160,27 +160,30 @@ class HomeEditMenuItem(@androidx.annotation.StringRes val label: Int, @androidx.
  * thẳng mép trái nút; một lớp phủ trong suốt toàn màn bắt chạm ra ngoài để đóng (nuốt chạm). Mở: phóng từ góc trên-trái 0,85 -> 1 + hiện dần 180 ms.
  */
 @Composable
-fun HomeEditMenu(anchor: Rect, items: List<HomeEditMenuItem>, onDismiss: () -> Unit) {
+fun HomeEditMenu(anchor: Rect, backdrop: com.kyant.backdrop.Backdrop?, items: List<HomeEditMenuItem>, onDismiss: () -> Unit) {
     val density = LocalDensity.current
     val gap = with(density) { EDIT_MENU_GAP.roundToPx() }
     val open = remember { androidx.compose.animation.core.Animatable(0f) }
     androidx.compose.runtime.LaunchedEffect(Unit) {
         open.animateTo(1f, tween(EDIT_MENU_OPEN_MS, easing = androidx.compose.animation.core.LinearOutSlowInEasing))
     }
-    Box(
-        Modifier
-            .fillMaxSize()
-            .pointerInput(Unit) {
-                awaitEachGesture {
-                    awaitFirstDown(requireUnconsumed = false).consume()
-                    do {
-                        val event = awaitPointerEvent()
-                        event.changes.forEach { it.consume() }
-                    } while (event.changes.any { it.pressed })
-                    onDismiss()
+    Box(Modifier.fillMaxSize()) {
+        // Lớp bắt chạm ra ngoài: ANH EM nằm dưới thẻ, không bọc thẻ. Nếu là cha, nó consume cả sự kiện up của con nên `clickable` của hàng
+        // menu bị hủy click (onClick không chạy) và menu chỉ đóng mà không mở chức năng.
+        Box(
+            Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    awaitEachGesture {
+                        awaitFirstDown(requireUnconsumed = false).consume()
+                        do {
+                            val event = awaitPointerEvent()
+                            event.changes.forEach { it.consume() }
+                        } while (event.changes.any { it.pressed })
+                        onDismiss()
+                    }
                 }
-            }
-    ) {
+        )
         Column(
             Modifier
                 .offset { IntOffset(anchor.left.roundToInt(), anchor.bottom.roundToInt() + gap) }
@@ -193,7 +196,12 @@ fun HomeEditMenu(anchor: Rect, items: List<HomeEditMenuItem>, onDismiss: () -> U
                 }
                 .widthIn(dimensionResource(R.dimen.shortcut_menu_min_width), dimensionResource(R.dimen.shortcut_menu_max_width))
                 .width(androidx.compose.foundation.layout.IntrinsicSize.Max)
-                .dsGlass(DsSurface.CARD, DsCorner.Fixed(EDIT_MENU_RADIUS_DP, glass = true))
+                // 2026-11-25: lấy mẫu lớp Home [backdrop] (không chỉ ảnh nền), bỏ nền tối ds_surface_fill, mờ cố định như menu nhấn giữ:
+                // thấy app bị menu đè phía sau, kiểu iOS 26.
+                .dsGlass(
+                    DsSurface.CARD, DsCorner.Fixed(EDIT_MENU_RADIUS_DP, glass = true), backdrop,
+                    fixedBlurDp = EDIT_MENU_BLUR_DP, surfaceFill = false
+                )
                 .background(colorResource(R.color.shortcut_menu_glass_tint))
                 .pointerInput(Unit) { awaitEachGesture { awaitFirstDown(requireUnconsumed = false) } } // chạm trong thẻ (ngoài hàng) không đóng
                 .padding(
@@ -250,6 +258,7 @@ private val EDIT_MENU_GAP = 6.dp
 private const val EDIT_MENU_OPEN_SCALE = 0.85f
 private const val EDIT_MENU_OPEN_MS = 180
 private const val EDIT_MENU_RADIUS_DP = 24f // như MENU_RADIUS_DP của HomeIconMenu
+private const val EDIT_MENU_BLUR_DP = 6f // như MENU_BLUR_DP của HomeIconMenu: mờ cố định, vẫn thấy app phía sau
 private const val EDIT_PILL_LENS_SCALE = 0.5f // viên thuốc cao 28 dp: khúc xạ của card quá mạnh (như ô tìm Thư viện)
 
 
@@ -290,4 +299,3 @@ private const val BADGE_INSET_RATIO = 0.35f
 private val BADGE_FILL = Color(0xF2E5E5EA)
 private val BADGE_SHADOW = Color(0x40000000)
 private val BADGE_GLYPH = Color(0xFF1C1C1E)
-

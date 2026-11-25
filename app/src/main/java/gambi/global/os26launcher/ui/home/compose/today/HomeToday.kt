@@ -41,16 +41,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
@@ -66,6 +71,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -85,6 +91,8 @@ import gambi.global.os26launcher.core.designsystem.compose.wallpaperSoftBlur
 import gambi.global.os26launcher.core.glass.compose.FrostedWallpaperImage
 import gambi.global.os26launcher.core.glass.compose.LocalDsBackdrop
 import gambi.global.os26launcher.core.glass.compose.LocalDsFrostedBackdrop
+import gambi.global.os26launcher.core.glass.compose.PagePinnedBackdrop
+import gambi.global.os26launcher.core.glass.compose.pinnedBackdropOrigin
 import gambi.global.os26launcher.core.glass.compose.dsGlass
 import gambi.global.os26launcher.core.ui.GridMetrics
 import gambi.global.os26launcher.domain.model.AppItem
@@ -104,7 +112,9 @@ import gambi.global.os26launcher.ui.home.compose.library.SCRIM_FLAT_LIGHT
 import gambi.global.os26launcher.ui.home.compose.library.SCRIM_TINT_DARK
 import gambi.global.os26launcher.ui.home.compose.library.SCRIM_TINT_LIGHT
 import gambi.global.os26launcher.ui.home.compose.library.shrinkForBlur
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
@@ -138,29 +148,46 @@ internal fun HomeToday(
     actions: TodayActions,
     modifier: Modifier = Modifier
 ) {
-    val t = state.swipeProgress.floatValue
-    if (t <= 0f) return
+    // MP (2026-11-25, như ZeroPageContainerView của Launcher3 / babydola): Today luôn ở trong composition, đóng hẳn thì không vẽ; tiến độ vuốt
+    // CHỈ đọc trong lambda graphicsLayer/draw nên mỗi khung vuốt không recompose (trước: `return` khi t = 0 nên mỗi lần mở dựng lại cả trang).
+    val swipeState = state.swipeProgress
+    val shown by remember { derivedStateOf { swipeState.floatValue > 0f } }
     val night = (LocalConfiguration.current.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
     val legacyGlass = Build.VERSION.SDK_INT < Build.VERSION_CODES.S // PG3: máy dưới API 31
-    val blurred = remember(backdrop, legacyGlass) { if (legacyGlass) null else backdrop?.let(::shrinkForBlur) }
+    // MP: thu nhỏ ảnh nền ngoài luồng chính.
+    val blurred by produceState<Bitmap?>(null, backdrop, legacyGlass) {
+        value = if (legacyGlass) null else backdrop?.let { b -> withContext(Dispatchers.Default) { shrinkForBlur(b) } }
+    }
     val todayBackdrop = rememberLayerBackdrop()
+    // MP: card kính lấy mẫu nền theo vị trí trong trang, trang trượt không làm kính ghi lại mỗi khung (xem PagePinnedBackdrop).
+    val pagePinned = remember(todayBackdrop) { PagePinnedBackdrop(todayBackdrop) }
     // PG1 G1 (2026-11-23, chủ dự án thấy trên máy cũ): lớp chặn chạm KHÔNG đặt ở khung phủ toàn màn — khung này còn phủ cả lúc Today đang trượt
     // đóng (t > 0), nên cú vuốt kế tiếp (LB đã nhường cho pager) bị nuốt. Đặt trên trang Today (phần đang trượt) như Thư viện: Compose tính vùng
     // chạm theo `translationX`, phần màn đã lộ ra nhận chạm của Home.
-    Box(modifier.fillMaxSize()) {
+    Box(
+        modifier
+            .fillMaxSize()
+            // Đóng hẳn: giữ composition + layout nhưng không vẽ, như View.INVISIBLE.
+            .drawWithContent { if (swipeState.floatValue > 0f) drawContent() }
+            .then(if (shown) Modifier else Modifier.clearAndSetSemantics {})
+    ) {
         Box(
             Modifier
                 .fillMaxSize()
-                .graphicsLayer { alpha = t.coerceIn(0f, 1f) }
+                .graphicsLayer {
+                    alpha = swipeState.floatValue.coerceIn(0f, 1f)
+                    // MP: alpha theo từng lệnh vẽ, không saveLayer toàn màn mỗi khung.
+                    compositingStrategy = CompositingStrategy.ModulateAlpha
+                }
                 .layerBackdrop(todayBackdrop)
                 .background(Color(if (night) SCRIM_FLAT_DARK else SCRIM_FLAT_LIGHT))
         ) {
             if (legacyGlass) {
                 // PG3 Task 5 (Q4): dưới API 31 không có RenderEffect nên bản thu nhỏ lộ khối khi phóng; dùng bản mờ thật của ảnh nền.
                 FrostedWallpaperImage(backdrop, Modifier.fillMaxSize())
-            } else if (blurred != null) {
+            } else blurred?.let { b ->
                 Image(
-                    blurred.asImageBitmap(),
+                    b.asImageBitmap(),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     filterQuality = FilterQuality.High,
@@ -170,7 +197,7 @@ internal fun HomeToday(
             Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = if (night) SCRIM_TINT_DARK else SCRIM_TINT_LIGHT)))
         }
         // PG3 Task 5: dưới API 31 lớp nền của Today đã là ảnh nền mờ, nên card lấy mẫu chính lớp này làm kính mờ tĩnh.
-        CompositionLocalProvider(LocalDsBackdrop provides todayBackdrop, LocalDsFrostedBackdrop provides if (legacyGlass) todayBackdrop else null) {
+        CompositionLocalProvider(LocalDsBackdrop provides pagePinned, LocalDsFrostedBackdrop provides if (legacyGlass) todayBackdrop else null) {
             if (cells != null) {
                 TodayPage(
                     state = state,
@@ -182,7 +209,8 @@ internal fun HomeToday(
                     actions = actions,
                     modifier = Modifier
                         .fillMaxSize()
-                        .graphicsLayer { translationX = -size.width * (1f - t) }
+                        .graphicsLayer { translationX = -size.width * (1f - swipeState.floatValue) }
+                        .pinnedBackdropOrigin(pagePinned)
                         .blockTouches()
                 )
             }

@@ -363,7 +363,9 @@ class HomeActivity : AppCompatActivity() {
                     apps = todayApps,
                     editing = state.todayEditMode,
                     backdrop = state.backdrop,
-                    cells = if (today.swipeProgress.floatValue > 0f) todayCells(state) else null,
+                    // MP (2026-11-25): luôn truyền cỡ ô (Today giữ sẵn trong composition, như ZeroPage của Launcher3); KHÔNG đọc
+                    // today.swipeProgress ở đây — đọc ở scope gốc này làm cả HomeScreen recompose mỗi khung khi vuốt Today.
+                    cells = todayCells(state),
                     icons = icons,
                     actions = todayActions
                 )
@@ -372,8 +374,11 @@ class HomeActivity : AppCompatActivity() {
                 HomeLibrary(library, icons, state.backdrop)
                 // LD Task 4: ảnh nổi kéo-thả trên cả Library (kéo app từ Library ra Home), toạ độ gốc = cửa sổ như HomeScreen.
                 homeDrag?.let {
-                    // PG3: ô thư mục đang kéo vẫn có kính mờ tĩnh.
-                    CompositionLocalProvider(LocalDsFrostedBackdrop provides if (PerfSwitches.noFrosted) null else frosted.backdropOrNull) {
+                    // PG3: ô thư mục đang kéo vẫn có kính mờ tĩnh. LocalHostedWidgets: ảnh nổi của widget app chụp host view của nó.
+                    CompositionLocalProvider(
+                        LocalDsFrostedBackdrop provides if (PerfSwitches.noFrosted) null else frosted.backdropOrNull,
+                        LocalHostedWidgets provides hostedWidgets
+                    ) {
                         gambi.global.os26launcher.ui.home.compose.HomeDragLayer(it, it.cells, icons)
                     }
                 }

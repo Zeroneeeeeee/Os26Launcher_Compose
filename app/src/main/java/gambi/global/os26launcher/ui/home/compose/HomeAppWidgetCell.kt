@@ -1,9 +1,11 @@
 package gambi.global.os26launcher.ui.home.compose
 
+import android.graphics.Picture
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicText
@@ -13,7 +15,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
@@ -65,6 +70,47 @@ internal fun HomeAppWidgetCell(widget: PlacedAppWidget) {
                     .fillMaxSize()
                     .padding(inset)
                     .onSizeChanged { hosted?.onSized(widget.appWidgetId, view, it.width, it.height, density.density) }
+            )
+        }
+    }
+}
+
+/**
+ * Ảnh nổi lúc kéo của widget app (như `DragView` của Launcher3): thẻ kính + hình chụp `AppWidgetHostView` lúc nhấc lên. KHÔNG gắn chính view vào
+ * đây: mỗi id chỉ có một view, gắn sang lớp kéo thì ô trên lưới (vẫn trong composition, chỉ ẩn alpha) mất view và không tự gắn lại sau khi thả.
+ * Chụp bằng [Picture] (không `drawToBitmap`): widget có hardware bitmap thì canvas phần mềm ném lỗi. Không có view: chữ "không dùng được" như ô.
+ */
+@Composable
+internal fun HomeAppWidgetDragPreview(widget: PlacedAppWidget) {
+    val hosted = LocalHostedWidgets.current
+    val inset = dimensionResource(R.dimen.aw_card_inset)
+    val picture = remember(hosted, widget.appWidgetId) {
+        hosted?.peek(widget.appWidgetId)?.takeIf { it.width > 0 && it.height > 0 }?.let { v ->
+            runCatching { Picture().apply { v.draw(beginRecording(v.width, v.height)); endRecording() } }.getOrNull()
+        }
+    }
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        Box(Modifier.fillMaxSize().dsGlass(DsSurface.CARD, DsCorner.Fixed(widgetRadius(maxWidth, maxHeight).value, glass = true)))
+        if (picture != null) {
+            Spacer(
+                Modifier
+                    .fillMaxSize()
+                    .padding(inset)
+                    .drawBehind {
+                        drawIntoCanvas { c ->
+                            val nc = c.nativeCanvas
+                            nc.save()
+                            nc.scale(size.width / picture.width, size.height / picture.height)
+                            nc.drawPicture(picture)
+                            nc.restore()
+                        }
+                    }
+            )
+        } else {
+            BasicText(
+                stringResource(R.string.aw_unavailable),
+                style = TextStyle(color = Color.White, fontSize = 13.sp, textAlign = TextAlign.Center),
+                modifier = Modifier.align(Alignment.Center).padding(inset)
             )
         }
     }

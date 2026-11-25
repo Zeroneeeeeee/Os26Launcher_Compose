@@ -154,10 +154,14 @@
         <!-- Màn hình chính thật: giữ HOME. Lý do từng thuộc tính: project_structure.md mục 4.
              RR: "nosensor" = hướng tự nhiên của máy, không theo cảm biến, không chịu khóa xoay của người dùng. KHÔNG dùng "locked"
              (ghim góc xoay đang có: về từ game ngang là Home ngang) hay "portrait" (hướng cố định, dễ bị letterbox ở split-screen).
-             Xem docs/plans/RR-rotation-recovery.md. -->
+             Xem docs/plans/RR-rotation-recovery.md.
+             excludeFromRecents: chưa là launcher mặc định thì "Trải nghiệm"/"Khám phá" (HomeEntry) mở Home ở một task thường, task này hiện
+             thẻ riêng trong Recents; chủ dự án muốn ẩn (2026-11-25). Là launcher mặc định thì không đổi gì: hệ thống vốn không đưa task Home
+             vào Recents. Task Cài đặt (LauncherEntryActivity) vẫn hiện. -->
         <activity
             android:name=".ui.home.HomeActivity"
             android:exported="true"
+            android:excludeFromRecents="true"
             android:launchMode="singleTask"
             android:stateNotNeeded="true"
             android:clearTaskOnLaunch="true"
