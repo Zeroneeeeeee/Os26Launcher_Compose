@@ -204,3 +204,9 @@ Mỗi mục giữ nguyên ngày, nhãn nguồn (đo được / đọc code / đ�
 - **(2026-11-23, đọc code) Ảnh chụp `GraphicsLayer.toImageBitmap()` có thể là bitmap HARDWARE:** chép sang `ARGB_8888` (ngoài main thread) trước khi đưa cho code đọc điểm ảnh (box blur). Chờ hai khung sau khi bật `layerBackdrop` thì lớp mới có nội dung để chụp.
 - **(2026-11-23, chủ dự án) Bảng thư mục dưới API 31 phải thấy icon phía sau:** ảnh nền mờ là không đủ; chụp lớp Home một lần lúc mở thư mục rồi làm mờ (bộ đệm riêng, bỏ khi đóng).
 - **(2026-11-23, chủ dự án thấy trên máy) Oppo PKD130 giật khi lướt trang Home kể cả khi chưa bật kính icon:** đừng thêm kính sau từng icon trước khi đo (G3); tấm kính sau icon kiểu "Kính" đã bỏ.
+
+## SW — kính thật vẽ một lần cho bề mặt đứng yên (2026-11-25, Oppo PKD130). Nguồn: [plans/SW-home-swipe-smoothness.md](../plans/SW-home-swipe-smoothness.md)
+
+- **(2026-11-25, đo được) Kính thật của dock vẽ lại gần như mỗi khung khi lướt trang (~8 700 lần / lượt đo) dù dock và ảnh nền đều đứng yên.** `CachedGlass` (`core/glass/compose/DsGlassCache.kt`): vẽ kính sống vài khung, `GraphicsLayer.toImageBitmap()` (ảnh chụp gồm cả lớp Backdrop con có RenderEffect), rồi bỏ kính sống khỏi composition và chỉ vẽ ảnh; chụp lại khi đổi ảnh nền / thông số kính / cỡ / nguồn nền; vẽ sống khi Home trượt so với ảnh nền (Today / Thư viện dịch `translationX` lớp Home còn ảnh nền đứng yên). Oppo: khung > 33 ms 74 → 63, không đổi trải nghiệm kính.
+- **(2026-11-25, chủ dự án chấp nhận) Giới hạn:** nền động (video / GIF) thì kính chụp đứng ở một khung; app hiện chỉ có ảnh nền tĩnh.
+- **(2026-11-25, đọc mã nguồn Backdrop 2.0.1) Nghi nguyên nhân vẽ lại:** `DrawBackdropNode` ghi `layoutCoordinates` (`mutableStateOf(neverEqualPolicy())`) ở mỗi `onGloballyPositioned`, và đọc nó khi ghi lớp: mỗi lần vị trí được báo lại là kính ghi lại + chạy lại hiệu ứng. Chưa kiểm riêng; ảnh chụp tránh được bất kể nguyên nhân.
