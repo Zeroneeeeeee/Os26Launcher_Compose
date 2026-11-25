@@ -698,8 +698,9 @@ private fun TodayPill(
             Modifier
                 .height(dimensionResource(R.dimen.home_edit_pill_height))
                 .widthIn(min = PILL_MIN_WIDTH_DP.dp)
-                .clip(RoundedCornerShape(dimensionResource(R.dimen.home_edit_pill_corner)))
-                .background(colorResource(R.color.search_scrim))
+                // DW (chủ dự án 2026-11-25): kính thật như viên "Sửa" / "Xong" của edit mode Home (`EditPill`), thay nền đen `search_scrim`.
+                // Lấy mẫu nền của Today (LocalDsBackdrop); dưới API 31: kính mờ tĩnh / bề mặt CONTROL.
+                .dsGlass(DsSurface.CONTROL, DsCorner.Pill, realGlass = true, lensScale = PILL_LENS_SCALE)
                 .padding(horizontal = padH.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -733,6 +734,9 @@ private val AccelerateEasing = Easing { AccelerateInterpolator().getInterpolatio
 
 /** CHỈNH TAY (chủ dự án 2026-11-20 "co lại"): vùng chạm cao 44dp -> hình viên 28dp, chữ nhỏ hơn Home. */
 private const val PILL_TOUCH_DP = 44f
+
+/** DW: như `EDIT_PILL_LENS_SCALE` của Home: viên thấp nên khúc xạ thu nửa. */
+private const val PILL_LENS_SCALE = 0.5f
 private const val PILL_MIN_WIDTH_DP = 44f
 private const val PILL_PADDING_H_DP = 14f
 private const val TITLE_PLUS_SP = 18f
