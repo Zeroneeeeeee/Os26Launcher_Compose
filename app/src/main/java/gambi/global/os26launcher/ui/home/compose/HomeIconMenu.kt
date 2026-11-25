@@ -174,7 +174,7 @@ private fun MenuCard(m: IconMenuState, above: Boolean, backdrop: Backdrop?, onAc
             .widthIn(dimensionResource(R.dimen.shortcut_menu_min_width), dimensionResource(R.dimen.shortcut_menu_max_width))
             .width(IntrinsicSize.Max)
             .dsGlass(DsSurface.CARD, DsCorner.Fixed(MENU_RADIUS_DP, glass = true), backdrop, fixedBlurDp = MENU_BLUR_DP, surfaceFill = false)
-            .background(colorResource(R.color.shortcut_menu_glass_tint)) // menu sáng như IconActionMenu (chữ tối)
+            .background(colorResource(R.color.shortcut_menu_glass_tint)) // menu sáng như IconActionMenu (chữ tối); PD 2026-11-25: tint đã tối (b2672cc), chữ / icon trắng
             .padding(
                 horizontal = dimensionResource(R.dimen.shortcut_menu_padding_horizontal),
                 vertical = dimensionResource(R.dimen.shortcut_menu_padding_vertical)

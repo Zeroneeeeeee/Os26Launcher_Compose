@@ -2,8 +2,8 @@
 
 > Làm theo `docs/AGENTS.md` và `docs/Workflow.md`: plan duyệt rồi mới code; code liền các Task, chủ dự án build và kiểm một lượt; tick khi chủ dự án báo đạt. Phiên claude.ai qua VM **không build được**: chủ dự án chạy `.\gradlew.bat assembleDebug lintDebug installDebug` và gửi lỗi.
 
-**Bắt đầu:** 2026-11-25 · **Plan duyệt:** _(chờ)_
-**Trạng thái:** Chờ chủ dự án duyệt (Q1–Q5)
+**Bắt đầu:** 2026-11-25 · **Plan duyệt:** 2026-11-25 (chủ dự án trả lời Q1–Q5)
+**Trạng thái:** Đóng 2026-11-25 theo yêu cầu chủ dự án (Task 1–3); kiểm tay chưa đủ (xem "Kết quả kiểm chứng"). Hành vi giữ-là-kéo của bảng chọn đổi tiếp ở `PD-picker-menus-dialogs.md`
 **Nhánh:** `an` · **Máy:** Oppo PKD130, Vsmart Live 4 · **Đổi schema Room:** không
 
 **Goal:** (1) Nhấn giữ một widget tự vẽ ngay ở trang danh sách của bảng chọn (lúc bảng vừa bật lên) cũng kéo ra lưới được, đúng cỡ của ô đó — trước đây (PG2 Q1) chỉ kéo được từ khung xem trước ở trang chi tiết. (2) Máy mới (chưa chỉnh gì) vào Home thấy trang 1: widget Đồng hồ 2×2 và Lịch 2×2 ở đầu, icon app launcher của mình ở ô đầu tiên ngay sau hai widget, rồi các app khác.
@@ -23,14 +23,15 @@
 
 | # | Câu hỏi | Khuyến nghị | Trả lời |
 |---|---|---|---|
-| Q1 | Kéo từ trang danh sách: những ô nào? | Mọi ô widget tự vẽ (Đồng hồ, Lịch, Thời tiết, Ảnh) đúng cỡ ô (2×2). Ô "App gần đây" (chỉ khi mở từ Today) và bảng mở từ Today không kéo (như PG2) | |
-| Q2 | "Chưa chỉnh gì" hiểu là DB bố cục rỗng (cài mới / xoá dữ liệu app)? | Có: chính là lúc seed hiện tại; người đã có bố cục không đổi | |
-| Q3 | Vị trí 2 widget? | Trang 1, hàng trên cùng: Đồng hồ (0,0) bên trái, Lịch (2,0) bên phải | |
-| Q4 | Lưới 5 cột: hai widget chiếm cột 0–3, cột 4 ở hai hàng trên trống. App launcher đặt ở đâu? | Ô trống đầu tiên theo thứ tự đọc **sau** hai widget = hàng ngay dưới widget, cột 0 (như lưới 4 cột); ô (4,0), (4,1) lấp bằng app tiếp theo A–Z. Hoặc: chừa trống | |
-| Q5 | Lưới quá nhỏ cho 2 widget 2×2 cạnh nhau (dưới 4 cột)? | Không xảy ra: preset nhỏ nhất 4×5; vẫn kiểm bằng `kind.allows` + cỡ lưới, không vừa thì seed như cũ không widget | |
+| Q1 | Kéo từ trang danh sách: những ô nào? | Mọi ô widget tự vẽ (Đồng hồ, Lịch, Thời tiết, Ảnh) đúng cỡ ô (2×2). Ô "App gần đây" (chỉ khi mở từ Today) và bảng mở từ Today không kéo (như PG2) | Kéo mọi widget tự vẽ; **thêm "App gần đây" vào bảng của Home** (thêm được lên lưới Home, kéo được); bảng mở từ Today không kéo. **Lỗi kèm theo (chủ dự án):** bảng mở từ Today, lướt pager ở trang chi tiết để đổi cỡ thì bị hiểu là vuốt ra khỏi Today → Task 1 Step 3 |
+| Q2 | "Chưa chỉnh gì" hiểu là DB bố cục rỗng (cài mới / xoá dữ liệu app)? | Có: chính là lúc seed hiện tại; người đã có bố cục không đổi | Đúng |
+| Q3 | Vị trí 2 widget? | Trang 1, hàng trên cùng: Đồng hồ (0,0) bên trái, Lịch (2,0) bên phải | Được |
+| Q4 | Lưới 5 cột: hai widget chiếm cột 0–3, cột 4 ở hai hàng trên trống. App launcher đặt ở đâu? | Ô trống đầu tiên theo thứ tự đọc **sau** hai widget = hàng ngay dưới widget, cột 0 (như lưới 4 cột); ô (4,0), (4,1) lấp bằng app tiếp theo A–Z. Hoặc: chừa trống | Lưới mặc định lúc đầu là 4 cột (`GridPreset.DEFAULT = P4X6`); đổi lưới sau thì để logic xếp icon sẵn có lo. Seed điền các ô trống theo thứ tự đọc |
+| Q5 | Lưới quá nhỏ cho 2 widget 2×2 cạnh nhau (dưới 4 cột)? | Không xảy ra: preset nhỏ nhất 4×5; vẫn kiểm bằng `kind.allows` + cỡ lưới, không vừa thì seed như cũ không widget | Không đủ chiều ngang (dưới 4 cột) thì xếp dọc (Đồng hồ (0,0), Lịch (0,2)); không đủ cả hai (vd 4×3, 3×4, ≤ 3×3) mới bỏ widget |
 
 ## Ngoài phạm vi / ghi để sau
 
+- `room-schema.md`: giá trị `className = "recents"` của `itemType = 4` (Task 3).
 - Widget Pin, thư mục gợi ý (Google / Mạng xã hội / Trò chơi), bước gợi ý trong Onboarding (phần còn lại của FL bản XML).
 - Lối "Sắp xếp lại màn hình chính" cho người đã có bố cục.
 
@@ -38,14 +39,16 @@
 
 | File | Tạo / Sửa | Task |
 |---|---|---|
-| `ui/home/compose/HomeWidgetPicker.kt` (`FeaturedCell` gắn `pickerCardDrag`) | Sửa | 1 |
+| `ui/home/compose/HomeWidgetPicker.kt` (`FeaturedCell` gắn `pickerCardDrag`; ô "App gần đây" ở Home = `WidgetKind.RECENTS`, bỏ `DetailSource.Recents` / `kind = null`; `isOpen`) | Sửa | 1 |
+| `domain/model/WidgetKind.kt` (`RECENTS`), `domain/today/TodayWidget.kt` (`builtin` bỏ `RECENTS`), `ui/widget/WidgetRenderer.kt`, `ui/home/HomeViewModel.kt` (`onWidgetTapped`) | Sửa | 1 |
+| `ui/home/compose/HomeRecentsWidget.kt` (`LocalHomeRecents`, widget trên lưới), `ui/home/compose/HomeWidgetCell.kt`, `ui/home/HomeActivity.kt` (cung cấp dữ liệu; `dispatchTouchEvent` bỏ qua bộ vuốt khi bảng chọn mở) | Tạo / Sửa | 1 |
 | `domain/usecase/BuildDefaultLayoutUseCase.kt` (ô bị chiếm trên trang 1, app ghim đầu) | Sửa | 2 |
 | `data/layout/LayoutReconciler.kt` (`seedIfEmpty` ghi 2 widget + ghim app launcher) | Sửa | 2 |
 | `docs/Launcher-Features.md`, `docs/room-schema.md` (nếu cần), `lessons/*` | Sửa | 3 |
 
 ## Global Constraints
 
-- `ui → domain ← data`: tên gói của app (`context.packageName`) truyền từ data xuống use case.
+- `ui → domain ← data`: tên gói của app (`BuildConfig.APPLICATION_ID`, không có hậu tố build type) truyền từ data xuống use case.
 - Mọi ghi bố cục qua `LayoutReconciler.mutex`, một transaction (như `seedIfEmpty` hiện tại); seed vẫn tôn trọng app ẩn / bỏ khỏi Home.
 - Không chuỗi mới; giữ CRLF; không viết `/*` trong comment Kotlin.
 
@@ -59,17 +62,19 @@
 
 ### Task 1: Kéo widget từ trang danh sách
 **Bắt buộc kiểm tay:** có.
-- [ ] Step 1: `FeaturedCell` có `kind` và bảng không mở từ Today: gắn `pickerCardDrag(kind, f.size)` (cùng cử chỉ với khung xem trước của trang chi tiết).
-- [ ] Step 2: Kịch bản kiểm: mở bảng từ menu "Sửa", giữ ô Đồng hồ ở trang danh sách rồi kéo ra lưới (ô trống, ô có icon, mép trang cuối); bấm nhanh ô vẫn mở chi tiết; vuốt dọc danh sách vẫn cuộn; mở từ "+" của Today: không kéo.
+- [x] Step 1: `FeaturedCell` (bảng không mở từ Today): gắn `pickerCardDrag(kind, f.size)` (cùng cử chỉ với khung xem trước của trang chi tiết).
+- [x] Step 2: "App gần đây" trên Home: `WidgetKind.RECENTS` (`id = "recents"`, trùng `TodayWidget.RECENTS`; cỡ 2×2, 4×2; vẽ bằng Compose `TodayRecentsCard`, không qua `WidgetRenderer`; `TodayWidget.builtin` không coi nó là widget tự vẽ để Today giữ nguyên). Bảng của Home có ô "App gần đây" 4×2 như Today; trang chi tiết "Thêm tiện ích" thêm lên lưới Home, kéo được. Ô app trong widget bấm mở app (ngoài edit mode); dữ liệu = `HomeViewModel.todayApps` (cung cấp qua `LocalHomeRecents` ở `HomeActivity`). Không đổi schema (cột `className = "recents"`).
+- [x] Step 3 (lỗi, chủ dự án 2026-11-25): bảng mở từ Today, lướt pager trang chi tiết bị hiểu là vuốt ra khỏi Today. Nguyên nhân (đọc code): từ PG2 bảng chọn là lớp phủ trong cửa sổ Home (trước là `Dialog`, cửa sổ riêng), nên mọi chạm trong bảng cũng đi qua `HomeActivity.dispatchTouchEvent` → `library.onTouch` / `today.onTouch` (bộ vuốt mở / đóng Thư viện, Today) trước; hàm chỉ bỏ qua hai bộ này khi lớp tìm kiếm mở. Ở Home cũng có thể lướt pager chi tiết ở trang cuối mà mở Thư viện. Sửa: bỏ qua hai bộ này khi bảng chọn đang mở (`HomeWidgetPicker.isOpen`).
+- [x] Step 4: Kịch bản kiểm: mở bảng từ menu "Sửa", giữ ô Đồng hồ / Ảnh / "App gần đây" ở trang danh sách rồi kéo ra lưới (ô trống, ô có icon, mép trang cuối): widget đúng cỡ ô; bấm nhanh ô vẫn mở chi tiết; vuốt dọc danh sách vẫn cuộn; "App gần đây" trên Home: bấm app mở app, edit mode không mở, kéo widget; mở bảng từ "+" của Today: không kéo, lướt pager chi tiết đổi cỡ không đóng Today; mở bảng ở Home trang cuối, lướt pager chi tiết không mở Thư viện.
 
 ### Task 2: Bố cục lần đầu có Đồng hồ + Lịch và app launcher đầu trang
 **Bắt buộc kiểm tay:** có (xoá dữ liệu app hoặc gỡ cài lại).
-- [ ] Step 1: `BuildDefaultLayoutUseCase`: nhận `reservedFirstPage` (các hình chữ nhật bị widget chiếm trên trang 1) và `pinnedFirst` (khoá app đặt ô đầu tiên); điền app vào các ô trống còn lại theo thứ tự đọc (Q4).
-- [ ] Step 2: `seedIfEmpty`: nếu lưới đủ chỗ (Q5), ghi 2 hàng `ITEM_TYPE_BUILTIN_WIDGET` (`clock` 2×2 tại (0,0), `calendar` 2×2 tại (2,0)) trên trang 1 cùng transaction; ghim app launcher của mình (`context.packageName`, app hiển thị trong danh sách) vào ô đầu tiên.
-- [ ] Step 3: Kịch bản kiểm: `adb shell pm clear gambi.global.os26launcher` (hoặc gỡ cài lại) → qua Onboarding → Home trang 1: Đồng hồ + Lịch ở hàng trên, app launcher ngay dưới ở ô đầu, app khác A–Z, dock như cũ; đổi lưới 5×6 rồi xoá dữ liệu lần nữa (Q4); bấm widget mở đúng app; cài thêm một app: nằm cuối trang cuối như cũ.
+- [x] Step 1: `BuildDefaultLayoutUseCase`: nhận `reservedFirstPage` (các hình chữ nhật bị widget chiếm trên trang 1) và `pinFirstPackage` (gói app đưa lên đầu danh sách); điền app vào các ô trống còn lại theo thứ tự đọc (Q4).
+- [x] Step 2: `seedIfEmpty`: ghi 2 hàng `ITEM_TYPE_BUILTIN_WIDGET` trên trang 1 cùng transaction: ngang (`clock` (0,0), `calendar` (2,0)) khi ≥ 4 cột và ≥ 2 hàng; không thì dọc (`clock` (0,0), `calendar` (0,2)) khi ≥ 2 cột và ≥ 4 hàng; không thì bỏ (Q5). Ghim app launcher của mình (`BuildConfig.APPLICATION_ID`, khỏi thêm tham số `Context` vào `LayoutReconciler`) vào ô đầu tiên sau widget. Log `seedIfEmpty grid=… pages=… widgets=…` (tag `LayoutReconciler`).
+- [x] Step 3: Kịch bản kiểm: `adb shell pm clear gambi.global.os26launcher` (hoặc gỡ cài lại) → qua Onboarding → Home trang 1: Đồng hồ + Lịch ở hàng trên, app launcher ngay dưới ở ô đầu, app khác A–Z, dock như cũ; đổi lưới 5×6 rồi xoá dữ liệu lần nữa (Q4); bấm widget mở đúng app; cài thêm một app: nằm cuối trang cuối như cũ.
 
 ### Task 3: Docs
-- [ ] Step 1: `Launcher-Features.md` (bố cục lần đầu, kéo từ trang danh sách), `PG2-widget-card-drag.md` ghi chú Q1 đã mở rộng, bài học vào `lessons/`.
+- [x] Step 1: `Launcher-Features.md` (bố cục lần đầu, kéo từ trang danh sách), `PG2-widget-card-drag.md` ghi chú Q1 đã mở rộng, bài học vào `lessons/`.
 
 ---
 
@@ -77,10 +82,16 @@
 _(điền khi xong)_
 **Kết quả kiểm chứng (máy, ngày):**
 
+## Kết quả kiểm chứng
+
+Chủ dự án đóng plan 2026-11-25 cùng PD (gộp một PR) trước khi kiểm hết kịch bản Task 1 Step 4 và Task 2 (seed lần đầu cần `pm clear`). Lỗi phát sinh sau này ghi vào plan mới, dẫn lại plan này.
+
 ## Nhật ký
 | Ngày | Task | Việc đã làm | Ghi chú |
 |---|---|---|---|
 | 2026-11-25 | — | Chủ dự án yêu cầu 3 việc; mục "bảng chọn không bật ở một số máy" chủ dự án tự sửa. Đọc `HomeWidgetPicker` (`Gallery`, `FeaturedCell`, `pickerCardDrag`), `LayoutReconciler.seedIfEmpty`, `BuildDefaultLayoutUseCase`, `WidgetKind`, `LauncherItemEntity` (`ITEM_TYPE_BUILTIN_WIDGET`), FL bản XML; viết plan | Chờ duyệt Q1–Q5 |
+| 2026-11-25 | — | Chủ dự án trả lời Q1–Q5 (thêm "App gần đây" vào bảng của Home; lỗi lướt pager chi tiết ở bảng mở từ Today; lưới đầu 4 cột; xếp dọc khi không đủ ngang) | Bắt đầu code |
+| 2026-11-25 | 1–3 | Code Task 1 (kéo từ trang danh sách, `WidgetKind.RECENTS` + `HomeRecentsWidget`, `dispatchTouchEvent` bỏ qua bộ vuốt khi bảng chọn mở), Task 2 (`seedWidgets` ngang / dọc, `pinFirstPackage`), Task 3 (`room-schema.md`, `lessons/widgets.md`) | Chủ dự án đóng plan cùng PD |
 
 ## Bằng chứng Review Focus (điền khi chốt)
 | # | Dòng Review Focus | Bằng chứng | Kết quả |
