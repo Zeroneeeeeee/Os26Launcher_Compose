@@ -7,7 +7,7 @@
 | # | Việc | Loại | Ưu tiên | Nguồn | Ghi chú |
 |---|---|---|---|---|---|
 | B2 | Spotlight (tìm kiếm mở từ ô "Tìm kiếm" / vuốt xuống ở Home) hiện cả danh bạ, shortcut, mục Cài đặt như tìm kiếm của Thư viện | Tính năng | Chờ quyết | `PG4-home-perf-and-device-checks.md` (ngoài phạm vi) | Hiện chế độ Spotlight chỉ giữ kết quả app (`SearchViewModel` nhánh `SearchMode.SPOTLIGHT`, `filterIsInstance<SearchResult.App>()`) |
-| B3 | Phần còn lại của bố cục lần đầu: widget Pin, thư mục gợi ý (Google / Mạng xã hội / Trò chơi), bước "Sắp xếp màn hình chính" trong Onboarding | Tính năng | — | `IosLauncher/docs/plans/FL-first-run-layout.md` (Q1–Q10 chưa trả lời) | Đồng hồ + Lịch + icon launcher đã làm ở WF |
+| B3 | Phần còn lại của bố cục lần đầu: widget Pin (**đang lên plan** `BW-battery-widget.md`), thư mục gợi ý (Google / Mạng xã hội / Trò chơi), bước "Sắp xếp màn hình chính" trong Onboarding | Tính năng | — | `IosLauncher/docs/plans/FL-first-run-layout.md` (Q1–Q10 chưa trả lời) | Đồng hồ + Lịch + icon launcher đã làm ở WF |
 | B4 | Mở rộng kéo từ Thư viện: gộp thư mục khi thả lên app / thư mục; kéo từ kết quả tìm kiếm; kéo nhiều app một lúc | Tính năng | — | `LD-library-drag.md` (ngoài phạm vi) | |
 | B5 | Lối "Sắp xếp lại màn hình chính" trong Cài đặt cho người đã có bố cục | Tính năng | — | FL, WF (ngoài phạm vi) | |
 | B6 | Thẻ xác nhận xóa trên máy dưới Android 12: nền là kính mờ tĩnh (`dsGlass(frosted = …)`) thay cho nền tối trong suốt | Lỗi hiển thị | Thấp | `PD-picker-menus-dialogs.md` (ngoài phạm vi), ảnh Live 4 | Theo quyết định "dưới API 31 chỉ mờ tĩnh" |
@@ -41,4 +41,5 @@
 | Kéo widget từ trang danh sách, "App gần đây" trên Home, bố cục lần đầu (chủ dự án đã kiểm) | `WF-widget-drag-first-run.md` |
 | Bảng chọn widget cao tối đa, giữ là kéo ngay, chữ trắng menu, thẻ xác nhận chung chặn chạm (chủ dự án đã kiểm) | `PD-picker-menus-dialogs.md` |
 | Đồng bộ tài liệu, mục lục, backlog | `DC-docs-sync.md` |
+| Hộp thoại hết khung mờ thừa; nút "+" / "Xong" của Today dạng kính (chủ dự án đã kiểm) | `DW-dialog-window-glass.md` |
 | B1 menu nhấn giữ chặn chạm; widget tự vẽ vuông; font Inter cho widget; tắt nhãn giữ vị trí hàng (chủ dự án đã kiểm) | `PW-menu-block-widget-square-font.md` |
