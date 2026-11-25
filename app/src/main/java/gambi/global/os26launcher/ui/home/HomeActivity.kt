@@ -305,6 +305,10 @@ class HomeActivity : AppCompatActivity() {
             // 2026-11-23: lớp Home + Today + Thư viện CHƯA nhoè, ghi khi lớp tìm kiếm đang hiện; ô nhập tìm kiếm là kính thật lấy mẫu lớp này.
             val searchBackdrop = rememberLayerBackdrop()
             val searchLayerOn by remember { derivedStateOf { searchProgress.floatValue > 0f } }
+            // WF Task 1: nguồn của widget "App gần đây" trên lưới Home (cùng dữ liệu với thẻ của Today).
+            val homeRecents = remember(todayApps, state.showLabels) {
+                gambi.global.os26launcher.ui.home.compose.HomeRecents(todayApps, icons, state.showLabels, viewModel::onAppClicked)
+            }
             Box(Modifier.fillMaxSize()) {
             // JS2: lớp tìm kiếm mở thì Home + Library phía sau nhoè (API 31+), như ảnh chụp mờ của SearchOverlayView.
             Box(
@@ -317,9 +321,19 @@ class HomeActivity : AppCompatActivity() {
                         null
                     }
                     // Đứng TRONG renderEffect: lớp ghi bản chưa nhoè, kính ô nhập tự làm mờ theo thông số kính.
-                }.then(if (searchLayerOn || search.isOpen) Modifier.layerBackdrop(searchBackdrop) else Modifier)
+                    // PD: thẻ xác nhận (RemoveAppOverlay, trên cùng) cũng lấy mẫu lớp này (Home / Today / Thư viện chưa nhoè).
+                }.then(
+                    if (searchLayerOn || search.isOpen || gambi.global.os26launcher.ui.home.compose.isRemoveDialogShown) {
+                        Modifier.layerBackdrop(searchBackdrop)
+                    } else {
+                        Modifier
+                    }
+                )
             ) {
-                CompositionLocalProvider(LocalHostedWidgets provides hostedWidgets) {
+                CompositionLocalProvider(
+                    LocalHostedWidgets provides hostedWidgets,
+                    gambi.global.os26launcher.ui.home.compose.LocalHomeRecents provides homeRecents
+                ) {
                 HomeScreen(
                     state = state,
                     frosted = frosted,
@@ -374,7 +388,10 @@ class HomeActivity : AppCompatActivity() {
                 // LD Task 4: ảnh nổi kéo-thả trên cả Library (kéo app từ Library ra Home), toạ độ gốc = cửa sổ như HomeScreen.
                 homeDrag?.let {
                     // PG3: ô thư mục đang kéo vẫn có kính mờ tĩnh.
-                    CompositionLocalProvider(LocalDsFrostedBackdrop provides if (PerfSwitches.noFrosted) null else frosted.backdropOrNull) {
+                    CompositionLocalProvider(
+                        LocalDsFrostedBackdrop provides if (PerfSwitches.noFrosted) null else frosted.backdropOrNull,
+                        gambi.global.os26launcher.ui.home.compose.LocalHomeRecents provides homeRecents // WF: ảnh kéo của "App gần đây"
+                    ) {
                         gambi.global.os26launcher.ui.home.compose.HomeDragLayer(it, it.cells, icons)
                     }
                 }
@@ -382,6 +399,9 @@ class HomeActivity : AppCompatActivity() {
                 SearchOverlay(search, searchActions, state.backdrop, onProgress = { searchProgress.floatValue = it }, backdrop = searchBackdrop)
                 // PG2: bảng chọn widget là lớp phủ trong cửa sổ Home (không còn Dialog), trên Home / Today / Thư viện, để thẻ kéo được ra lưới.
                 widgetPicker.Render()
+                // PD (2026-11-25): thẻ xác nhận xóa (lưới chính, dock, thư mục, Thư viện, Today) là lớp TRÊN CÙNG: anh em phía dưới không nhận chạm
+                // (hit test dừng ở anh em trên cùng bị chạm), không còn nằm dưới `homeGestures` của HomeScreen.
+                gambi.global.os26launcher.ui.home.compose.RemoveAppOverlay(searchBackdrop)
             }
             dsDialogs.Render() // JS1: hộp thoại Compose (gợi ý launcher mặc định...)
         }
@@ -494,7 +514,7 @@ class HomeActivity : AppCompatActivity() {
     private fun confirmRemoveWidget(itemId: Long) = confirmRemove { viewModel.onRemoveWidget(itemId) }
 
     /** Hộp xác nhận gỡ widget, dùng chung cho lưới Home và màn Today (TV Task 4). UI sync U3: cùng kiểu thẻ iOS với hộp xóa app. */
-    private fun confirmRemove(onConfirm: () -> Unit) = showRemoveWidgetDialog(this, inHome = true, onRemove = onConfirm)
+    private fun confirmRemove(onConfirm: () -> Unit) = showRemoveWidgetDialog(this, onRemove = onConfirm)
 
     /** TV Task 4 — việc của màn Today. */
     private val todayActions by lazy {
@@ -595,6 +615,11 @@ class HomeActivity : AppCompatActivity() {
      */
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         if (!::library.isInitialized || !::today.isInitialized || !::libraryDrag.isInitialized || searchViewModel.uiState.value.isOpen) return super.dispatchTouchEvent(ev)
+        // WF Task 1 Step 3: từ PG2 bảng chọn widget là lớp phủ trong cửa sổ này, chạm trong bảng (lướt pager trang chi tiết, kéo thẻ) không được lọt
+        // vào bộ vuốt mở / đóng Thư viện, Today (trước: lướt pager ở bảng mở từ Today bị hiểu là vuốt đóng Today).
+        if (::widgetPicker.isInitialized && widgetPicker.isOpen) return super.dispatchTouchEvent(ev)
+        // PD: thẻ xác nhận đang hiện chặn MỌI tương tác phía dưới, kể cả vuốt Thư viện / Today và nhấn giữ app trong Thư viện (chạy trước Compose).
+        if (gambi.global.os26launcher.ui.home.compose.isRemoveDialogShown) return super.dispatchTouchEvent(ev)
         // TV: hai controller cùng xem mọi chạm (Home 1 trang thì cả hai là ứng viên lúc DOWN, chiều vuốt quyết bên nào). Library hỏi trước; bên nào
         // tiếp quản thì bên kia nhận một ACTION_CANCEL giả để bỏ ứng viên (canOpen của mỗi bên đã chặn mở chồng khi bên kia đang hiện).
         // LD Task 3: nhấn giữ app trong Library xét TRƯỚC (DOWN vẫn đi tiếp; đã giữ / đang kéo ra thì nuốt hết cử chỉ).

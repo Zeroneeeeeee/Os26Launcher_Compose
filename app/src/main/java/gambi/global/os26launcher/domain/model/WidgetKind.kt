@@ -18,7 +18,13 @@ enum class WidgetKind(val id: String, val sizes: List<WidgetSize>) {
     WEATHER("weather", listOf(WidgetSize(2, 2), WidgetSize(4, 2))),
 
     /** G3b: widget Ảnh (một ảnh hoặc bộ ảnh đổi mỗi giờ). Cùng `itemType = 4`, không đổi schema; `className = "photo"`. */
-    PHOTO("photo", listOf(WidgetSize(2, 2), WidgetSize(4, 2)));
+    PHOTO("photo", listOf(WidgetSize(2, 2), WidgetSize(4, 2))),
+
+    /**
+     * WF Task 1 (chủ dự án 2026-11-25): "App gần đây" trên lưới Home (trước chỉ có ở Today). Cùng `itemType = 4`, không đổi schema;
+     * `className = "recents"` (trùng `TodayWidget.RECENTS`). Vẽ bằng Compose (`HomeRecentsWidget`), không qua `WidgetRenderer`.
+     */
+    RECENTS("recents", listOf(WidgetSize(2, 2), WidgetSize(4, 2)));
 
     /** Cỡ ([spanX] x [spanY]) có được phép với loại này không (hàng DB ngoài danh sách bị bỏ qua khi đọc). */
     fun allows(spanX: Int, spanY: Int): Boolean =

@@ -236,15 +236,13 @@ internal fun HomeScreen(
     var rootSize by remember { mutableStateOf(IntSize.Zero) }
     val menuProgress = remember { Animatable(0f) }
     val folderProgress = remember { Animatable(0f) }
-    // RA3 (2026-11-24): thẻ xác nhận xóa app blur + tối lớp Home phía sau Y HỆT lúc mở thư mục (không chỉ tối như menu nhấn giữ icon) —
-    // removeOverlayProgress (RemoveAppDialog.kt) góp vào overlayP/blur dưới đây cùng folderProgress.
-    val overlayP = maxOf(menuProgress.value, folderProgress.value, removeOverlayProgress)
+    // PD (2026-11-25): thẻ xác nhận (RA3) không còn ở đây: `RemoveAppOverlay` vẽ ở HomeActivity, tự vẽ lớp tối của nó.
+    val overlayP = maxOf(menuProgress.value, folderProgress.value)
     val homeBackdrop = rememberLayerBackdrop()
     // 2026-11-23: menu nhấn giữ cũng lấy mẫu lớp Home (thấy icon phía sau nhoè qua menu, như iOS 26), không chỉ ảnh nền.
     // SW Task 3: Home (trang, pill, dock) đang trượt so với ảnh nền theo Today / Thư viện → kính dock vẽ sống (ảnh chụp sai chỗ khi đang trượt).
     val dockGlassLive by remember { derivedStateOf { libraryProgress() > 0f || todayProgress() > 0f } }
-    val folderLayerOn = state.openFolderId != null || folderProgress.value > 0f || state.iconMenu != null || menuProgress.value > 0f ||
-        removeOverlayProgress > 0f
+    val folderLayerOn = state.openFolderId != null || folderProgress.value > 0f || state.iconMenu != null || menuProgress.value > 0f
     // PG4: công tắc đo (chỉ bản `perf`, `PerfSwitches`): bỏ nền của kính thật / lớp nền mờ tĩnh để so số đo.
     val glassBackdrop = if (PerfSwitches.noRealGlass) null else backdrop
     val frostedBackdrop = if (PerfSwitches.noFrosted) null else frosted.backdropOrNull
@@ -349,8 +347,8 @@ internal fun HomeScreen(
                 // blur cần API 31+, dưới đó chỉ tối. Hai modifier này đứng NGOÀI layerBackdrop nên lớp ghi cho kính bảng thư mục là Home CHƯA mờ:
                 // qua bảng vẫn thấy rõ icon phía sau, kính của bảng tự làm mờ theo thông số kính.
                 // P2-2 (2026-11-19): menu nhấn giữ chỉ LÀM TỐI (icon_scrim, đen 60%), không nhoè; thư mục mở vẫn nhoè + tối.
-                // RA4 (2026-11-24, chủ dự án): thẻ xác nhận xóa app KHÔNG nhoè lớp Home (lưới vẫn rõ), chỉ tối nhẹ (drawRect dưới); kính chỉ ở
-                // chính thẻ. Nhoè ở đây chỉ còn cho thư mục.
+                // RA4 (2026-11-24, chủ dự án): thẻ xác nhận xóa app KHÔNG nhoè lớp Home (lưới vẫn rõ), chỉ tối nhẹ; PD: lớp tối đó do chính thẻ vẽ
+                // (HomeActivity). Nhoè ở đây chỉ còn cho thư mục.
                 .then(
                     if (folderProgress.value > 0f && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                         Modifier.blur((FOLDER_BLUR_DP * folderProgress.value).dp)
@@ -363,8 +361,7 @@ internal fun HomeScreen(
                             Color.Black.copy(
                                 alpha = maxOf(
                                     OVERLAY_DIM * menuProgress.value,
-                                    FOLDER_DIM * folderProgress.value,
-                                    FOLDER_DIM * removeOverlayProgress
+                                    FOLDER_DIM * folderProgress.value
                                 )
                             )
                         )
@@ -576,9 +573,8 @@ internal fun HomeScreen(
                 onShortcut = overlays.onIconMenuShortcut,
                 onDismiss = overlays.closeIconMenu
             )
-            // RA2 (2026-11-24): thẻ xác nhận xóa app (dấu "−" lưới/dock/thư mục) vẽ NGAY TRONG cây này, cùng homeBackdrop với menu nhấn giữ ở
-            // trên — có kính thật (khúc xạ + mờ lấy mẫu Home), không còn Dialog cửa sổ riêng (chỉ làm mờ cửa sổ hệ thống).
-            RemoveAppOverlay(homeBackdrop)
+            // RA2 → PD (2026-11-25): thẻ xác nhận xóa (dấu "−") chuyển lên HomeActivity, lớp trên cùng: ở đây nó nằm dưới `homeGestures` (pass
+            // Initial) của Box gốc nên chạm ngoài thẻ vẫn tới lưới (thoát edit mode, nhấn giữ icon).
             // LD Task 4: ảnh nổi vẽ ở HomeActivity, trên lớp App Library (kéo app từ Library ra phải thấy ngay khi Library còn hiện).
         }
     }

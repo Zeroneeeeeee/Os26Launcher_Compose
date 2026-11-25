@@ -55,7 +55,6 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -81,7 +80,6 @@ import gambi.global.os26launcher.domain.model.AppWidgetProviderEntry
 import gambi.global.os26launcher.domain.model.WidgetKind
 import gambi.global.os26launcher.domain.model.WidgetSize
 import gambi.global.os26launcher.domain.repository.AppWidgetRepository
-import gambi.global.os26launcher.domain.today.TodayWidget
 import gambi.global.os26launcher.ui.home.HomeViewModel
 import gambi.global.os26launcher.ui.home.compose.today.TodayRecentsCard
 import gambi.global.os26launcher.ui.widget.WidgetRenderers
@@ -89,7 +87,6 @@ import gambi.global.os26launcher.ui.widget.host.AppWidgetAddRequest
 import java.text.Normalizer
 import java.time.ZonedDateTime
 import kotlin.math.abs
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.ui.composed
@@ -103,8 +100,8 @@ import kotlinx.coroutines.withTimeoutOrNull
 /**
  * P2-9 (REF a013dd8 `WidgetPickerController`) — bảng chọn widget kiểu iOS của Home Compose, qua host hộp thoại của Activity (bottom sheet DS3).
  *
- * Trang danh sách (cao 85% màn): ô tìm (lọc không phân biệt hoa thường / dấu), lưới gợi ý (mỗi loại widget tự vẽ một ô ở cỡ 2 × 2, xếp đôi; bảng của
- * Today thêm "App gần đây" 4 × 2 ở hàng dưới), rồi danh sách app có widget (A–Z, bỏ gói chỉ còn app đã ẩn — P3-7). Bấm một ô / một app mở trang
+ * Trang danh sách (cao 85% màn): ô tìm (lọc không phân biệt hoa thường / dấu), lưới gợi ý (mỗi loại widget tự vẽ một ô ở cỡ 2 × 2, xếp đôi;
+ * "App gần đây" 4 × 2 ở hàng dưới, WF: cả bảng của Home), rồi danh sách app có widget (A–Z, bỏ gói chỉ còn app đã ẩn — P3-7). Bấm một ô / một app mở trang
  * chi tiết (bottom sheet thứ hai đè lên): pager các cỡ (hoặc các widget của app) nghiêng 3D theo độ vuốt, chấm trang, nút "Thêm tiện ích" xanh hệ
  * thống. Thêm xong thì đóng cả hai bảng.
  *
@@ -113,7 +110,8 @@ import kotlinx.coroutines.withTimeoutOrNull
  * PG2 (F2, hướng B, chủ dự án 2026-11-23): bảng không còn là cửa sổ `Dialog` mà là lớp phủ vẽ bằng [Render] trong cây Compose của `HomeActivity`
  * (`DsBottomSheetLayer`), nên ở trang chi tiết, nhấn giữ khung xem trước của widget tự vẽ rồi kéo ([pickerCardDrag]) thì chính chuỗi chạm đó lái
  * phiên kéo "widget mới" của `HomeDragState` (REF `CardDragGesture` + `beginNewWidgetDrag`, G2c Task 13): bảng mờ đi, ảnh widget đúng cỡ ô theo
- * ngón tay, thả lên lưới thì `HomeViewModel.onNewWidgetDropped`; xong (nhận hay không) đóng cả hai bảng. Widget của app khác vẫn chỉ "Thêm tiện ích"
+ * ngón tay, thả lên lưới thì `HomeViewModel.onNewWidgetDropped`; xong (nhận hay không) đóng cả hai bảng. WF Task 1: ô gợi ý ở trang danh sách
+ * cũng kéo được như vậy. Widget của app khác vẫn chỉ "Thêm tiện ích"
  * (như XML: luồng gắn / cấu hình của hệ thống).
  */
 internal class HomeWidgetPicker(
@@ -129,6 +127,9 @@ internal class HomeWidgetPicker(
 ) {
     // PG2: trạng thái của lớp phủ (trước đây là hai DsDialogHandle). Đọc trong [Render].
     private var open by mutableStateOf(false)
+
+    /** WF Task 1 Step 3: `HomeActivity.dispatchTouchEvent` bỏ qua bộ vuốt Thư viện / Today khi bảng đang mở. */
+    val isOpen: Boolean get() = open
     private var detail by mutableStateOf<DetailContent?>(null)
 
     /** PG2: đang kéo một thẻ ra lưới: bảng mờ về 0 (Q4) nhưng vẫn ở trong composition để cử chỉ của thẻ không bị huỷ. */
@@ -146,8 +147,8 @@ internal class HomeWidgetPicker(
         val start: Int
     )
 
-    /** Một ô gợi ý của bảng: [kind] null = widget "App gần đây" (TV-3). */
-    private data class Featured(val kind: WidgetKind?, val size: WidgetSize)
+    /** Một ô gợi ý của bảng (WF: "App gần đây" là [WidgetKind.RECENTS], trước là `kind = null`). */
+    private data class Featured(val kind: WidgetKind, val size: WidgetSize)
 
     /** P2-9e: mục "Thêm tiện ích" của menu "Sửa" (Home); TV-3: viên "+" của Today ([forToday] = true). */
     fun show(forToday: Boolean = false) {
@@ -165,18 +166,25 @@ internal class HomeWidgetPicker(
     @Composable
     fun Render() {
         if (!open) return
-        val fade by animateFloatAsState(if (dragging) 0f else 1f, tween(DRAG_FADE_MS), label = "pickerFade")
-        Box(Modifier.fillMaxSize().graphicsLayer { alpha = fade }) {
-            DsBottomSheetLayer(onDismiss = ::closeAll, showClose = false) { Gallery() }
+        // PD (chủ dự án 2026-11-25): đang kéo thì cả hai bảng TRƯỢT XUỐNG (`retracted`, vẫn trong composition), thay cho mờ alpha của PG2.
+        Box(Modifier.fillMaxSize()) {
+            DsBottomSheetLayer(onDismiss = ::closeAll, showClose = false, maxHeightFraction = GALLERY_MAX_FRACTION, retracted = dragging) {
+                Gallery(Modifier.weight(1f))
+            }
             val d = detail
             if (d != null) {
                 androidx.compose.runtime.key(d) {
-                    DsBottomSheetLayer(onDismiss = { if (detail === d) detail = null }, showClose = false) {
+                    DsBottomSheetLayer(
+                        onDismiss = { if (detail === d) detail = null },
+                        showClose = false,
+                        maxHeightFraction = DETAIL_MAX_FRACTION,
+                        retracted = dragging
+                    ) {
                         Detail(d.name, d.icon, d.pages, d.start.coerceIn(0, d.pages.lastIndex), onClose = { if (detail === d) detail = null })
                     }
                 }
             }
-            // PG2 (ngón thứ hai, chủ dự án 2026-11-23): đang kéo thì bảng chỉ mờ về 0 nhưng vẫn phủ màn và nhận chạm; ngón MỚI chạm lớp mờ /
+            // PG2 (ngón thứ hai, chủ dự án 2026-11-23): đang kéo thì bảng chỉ trượt đi (PD; trước là mờ về 0) nhưng vẫn phủ màn; ngón MỚI chạm lớp mờ /
             // thân sheet sẽ đóng bảng → cử chỉ của thẻ bị huỷ → widget mất. Lớp trên cùng này nuốt mọi ngón mới; ngón đang kéo đã gắn với khung
             // xem trước từ lúc nhấn xuống nên không đi qua đây.
             if (dragging) {
@@ -223,17 +231,17 @@ internal class HomeWidgetPicker(
 
     // ---- P2-9a: trang danh sách (tìm kiếm, lưới gợi ý, danh sách nguồn) ----
 
+    /** PD: cả bảng cao đúng [GALLERY_MAX_FRACTION] màn ([modifier] = `weight(1f)` trong vùng nội dung của `DsBottomSheetLayer`). */
     @Composable
-    private fun Gallery() {
-        val sheetH = with(LocalDensity.current) { (LocalWindowInfo.current.containerSize.height * SHEET_HEIGHT_FRACTION).toDp() }
+    private fun Gallery(modifier: Modifier) {
         var query by remember { mutableStateOf("") }
         val q = normalize(query)
         val context = androidx.compose.ui.platform.LocalResources.current
-        Column(Modifier.fillMaxWidth().height(sheetH).padding(top = 12.dp)) {
+        Column(modifier.fillMaxWidth().padding(top = 12.dp)) {
             DsSearchField(query, { query = it }, stringResource(R.string.wp_search_hint), Modifier.fillMaxWidth())
             Column(Modifier.fillMaxWidth().weight(1f).verticalScroll(rememberScrollState()).padding(top = GAP)) {
                 // Lưới gợi ý: ô 2×2 xếp đôi, ô 4×2 chiếm cả hàng; hàng không còn ô nào khớp chuỗi tìm thì ẩn cả hàng.
-                val featured = if (forToday) FEATURED + FEATURED_TODAY_EXTRA else FEATURED
+                val featured = FEATURED // WF Task 1: "App gần đây" có ở cả bảng của Home
                 val visible = featured.filter { f ->
                     q.isEmpty() || listOf(context.getString(kindNameRes(f.kind)), context.getString(variantTitleRes(f.kind, f.size)))
                         .any { normalize(it).contains(q) }
@@ -270,7 +278,10 @@ internal class HomeWidgetPicker(
         return rows
     }
 
-    /** Ô gợi ý: bản xem trước + tên loại + tên biến thể. Bấm -> trang chi tiết đúng cỡ đó. */
+    /**
+     * Ô gợi ý: bản xem trước + tên loại + tên biến thể. Bấm -> trang chi tiết đúng cỡ đó. WF Task 1: bảng của Home thì nhấn giữ cả ô rồi kéo ra lưới
+     * ([pickerCardDrag], như khung xem trước của trang chi tiết): widget đúng cỡ của ô. Di trước khi giữ đủ lâu thì vẫn cuộn danh sách / bấm như cũ.
+     */
     @Composable
     private fun FeaturedCell(f: Featured, modifier: Modifier) {
         val name = stringResource(kindNameRes(f.kind))
@@ -280,11 +291,10 @@ internal class HomeWidgetPicker(
             modifier
                 .semantics(mergeDescendants = true) { contentDescription = "$name, $variant" }
                 .clickable(interactionSource = null, indication = null, role = Role.Button) {
-                    openDetail(
-                        if (f.kind == null) DetailSource.Recents(RECENTS_SIZES.indexOf(f.size).coerceAtLeast(0))
-                        else DetailSource.Builtin(f.kind, f.kind.sizes.indexOf(f.size).coerceAtLeast(0))
-                    )
-                },
+                    openDetail(DetailSource.Builtin(f.kind, f.kind.sizes.indexOf(f.size).coerceAtLeast(0)))
+                }
+                // Đứng TRONG clickable: pass Main đi từ trong ra, cử chỉ kéo thấy sự kiện trước; arm xong nó tiêu thụ hết nên clickable huỷ (không mở chi tiết).
+                .then(if (forToday) Modifier else Modifier.pickerCardDrag(f.kind, f.size)), // PG2 (QĐ 3): bảng của Today không kéo
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Preview(f.kind, f.size, Modifier.fillMaxWidth())
@@ -344,11 +354,11 @@ internal class HomeWidgetPicker(
      * `widget_preview_bg`, không bấm được); loại khác vẽ bằng chính `WidgetRenderer` (dữ liệu mẫu). Cao theo tỉ lệ cỡ.
      */
     @Composable
-    private fun Preview(kind: WidgetKind?, size: WidgetSize, modifier: Modifier) {
+    private fun Preview(kind: WidgetKind, size: WidgetSize, modifier: Modifier) {
         val ratio = size.spanX.toFloat() / size.spanY
         val bg = colorResource(R.color.widget_preview_bg)
         when (kind) {
-            null -> Box(modifier.aspectRatio(ratio)) {
+            WidgetKind.RECENTS -> Box(modifier.aspectRatio(ratio)) {
                 val apps by viewModel.todayApps.collectAsState()
                 val ui by viewModel.uiState.collectAsState()
                 TodayRecentsCard(
@@ -399,8 +409,7 @@ internal class HomeWidgetPicker(
     // ---- P2-9b/9c: trang chi tiết (bottom sheet thứ hai đè lên bảng danh sách) ----
 
     private sealed class DetailSource {
-        class Builtin(val kind: WidgetKind, val startIndex: Int = 0) : DetailSource()
-        class Recents(val startIndex: Int = 0) : DetailSource() // TV-3
+        class Builtin(val kind: WidgetKind, val startIndex: Int = 0) : DetailSource() // WF: gồm cả "App gần đây" (RECENTS)
         class App(val app: AppWidgetAppEntry) : DetailSource()
     }
 
@@ -412,7 +421,7 @@ internal class HomeWidgetPicker(
         /** Cỡ của widget tự vẽ (bề ngang khung xem trước theo cỡ); null = widget của app khác (ảnh xem trước tự đo). */
         val previewSize: WidgetSize?,
         val add: (() -> Boolean)?,
-        /** PG2: loại widget tự vẽ kéo được ra lưới từ khung xem trước (cỡ = [previewSize]); null = không kéo (Today, "App gần đây", widget app). */
+        /** PG2: loại widget tự vẽ kéo được ra lưới từ khung xem trước (cỡ = [previewSize]); null = không kéo (bảng của Today, widget app). */
         val dragKind: WidgetKind? = null
     )
 
@@ -436,27 +445,8 @@ internal class HomeWidgetPicker(
                         previewSize = size,
                         dragKind = if (forToday) null else kind, // PG2 (QĐ 3): bảng của Today không kéo ra lưới
                         add = {
-                            if (forToday) viewModel.addTodayWidget(kind.id, size.spanX >= 4) // TV-3: thêm vào cuối Today
+                            if (forToday) viewModel.addTodayWidget(kind.id, size.spanX >= 4) // TV-3: thêm vào cuối Today (RECENTS.id = TodayWidget.RECENTS)
                             else viewModel.onAddWidget(kind, size.spanX, size.spanY, pagerInfo.currentPage)
-                            true
-                        }
-                    )
-                }
-            }
-
-            is DetailSource.Recents -> {
-                // TV-3: widget "App gần đây" (chỉ Today): hai cỡ 2 × 2 (4 app) và 4 × 2 (8 app), xem trước bằng dữ liệu thật.
-                start = source.startIndex
-                name = { stringResource(kindNameRes(null)) }
-                icon = { m -> Preview(null, WidgetSize(2, 2), m) }
-                pages = RECENTS_SIZES.map { size ->
-                    DetailPage(
-                        title = { stringResource(variantTitleRes(null, size)) },
-                        description = { stringResource(variantDescRes(null, size)) },
-                        preview = { m -> Preview(null, size, m) },
-                        previewSize = size,
-                        add = {
-                            viewModel.addTodayWidget(TodayWidget.RECENTS, size.spanX >= 4)
                             true
                         }
                     )
@@ -546,14 +536,16 @@ internal class HomeWidgetPicker(
                 }
             }
             // Pager các cỡ: tiêu đề + mô tả trên, ảnh xem trước giữa; nghiêng 3D theo độ vuốt (P2-9b, chỉnh tay theo video).
-            androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxWidth()) {
+            // PD: trang chi tiết tối đa [DETAIL_MAX_FRACTION] màn: pager cao [PAGER_HEIGHT], co lại khi không đủ chỗ (máy màn thấp).
+            androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxWidth().weight(1f, fill = false)) {
                 val previewW = maxWidth
+                val pagerH = if (constraints.hasBoundedHeight) minOf(PAGER_HEIGHT, maxHeight) else PAGER_HEIGHT
                 HorizontalPager(
                     state = pager,
                     beyondViewportPageCount = 1,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(PAGER_HEIGHT)
+                        .height(pagerH)
                         .graphicsLayer {
                             val s = ENTER_SCALE + (1f - ENTER_SCALE) * enter.value
                             scaleX = s
@@ -634,11 +626,14 @@ internal class HomeWidgetPicker(
     }
 
     /**
-     * PG2 — cử chỉ trên khung xem trước ở trang chi tiết (REF `CardDragGesture`): giữ đủ `longPressTimeout` trong touch slop thì rung và "arm"; từ đó
-     * tiêu thụ mọi sự kiện (khung không cuộn pager / kéo sheet, nhả tay không di thì không làm gì). Di quá slop sau khi arm thì mở phiên kéo widget
-     * mới ở `HomeDragState` (toạ độ đổi sang gốc cửa sổ, cùng hệ với lưới); mỗi lần di → `move`, nhấc ngón đó → `drop`, cử chỉ bị huỷ → `cancel`.
-     * Kéo xong (nhận hay không) đóng cả hai bảng (Q3, như XML `onNewWidgetDragFinished`). Di quá slop TRƯỚC khi arm: không phải của ta (pager
-     * chi tiết lật trang, sheet kéo xuống). Nút nhận cú nhấn xuống nhận tiếp mọi sự kiện kể cả khi ngón ra ngoài khung, nên bảng chỉ mờ đi, không gỡ.
+     * PG2 — cử chỉ trên khung xem trước ở trang chi tiết (REF `CardDragGesture`), WF: cả ô gợi ý ở trang danh sách. Giữ đủ `longPressTimeout`
+     * trong touch slop thì rung và "arm". Di quá slop TRƯỚC khi arm: không phải của ta (danh sách cuộn, pager chi tiết lật trang, sheet kéo xuống,
+     * hoặc nhả tay = bấm).
+     *
+     * PD (chủ dự án 2026-11-25): arm là vào phiên kéo NGAY, chưa cần di: mở phiên kéo widget mới ở `HomeDragState` tại vị trí ngón (toạ độ gốc cửa
+     * sổ, cùng hệ với lưới), cả hai bảng trượt xuống ([dragging] → `retracted`). Từ đó tiêu thụ mọi sự kiện; mỗi lần di → `move`, nhấc ngón đó
+     * → `drop` (nhả tại chỗ = thả vào ô dưới ngón, Q1), cử chỉ bị huỷ → `cancel`. Kéo xong (nhận hay không) đóng cả hai bảng (như XML
+     * `onNewWidgetDragFinished`). Nút nhận cú nhấn xuống nhận tiếp mọi sự kiện kể cả khi bảng đã trượt đi, nên bảng không bị gỡ khỏi composition.
      */
     private fun Modifier.pickerCardDrag(kind: WidgetKind, size: WidgetSize): Modifier = composed {
         val haptic = LocalHapticFeedback.current
@@ -649,6 +644,7 @@ internal class HomeWidgetPicker(
                 awaitEachGesture {
                     val down = awaitFirstDown(requireUnconsumed = false)
                     val slop = viewConfiguration.touchSlop
+                    var last = down.position
                     // null = giữ đủ lâu trong slop (arm); true = nhấc tay / di quá slop / bị nút khác tiêu thụ trước đó.
                     val notArmed = withTimeoutOrNull(viewConfiguration.longPressTimeoutMillis) {
                         while (true) {
@@ -656,13 +652,18 @@ internal class HomeWidgetPicker(
                             if (change == null || !change.pressed || change.isConsumed ||
                                 (change.position - down.position).getDistance() > slop
                             ) break
+                            last = change.position
                         }
                         true
                     }
                     if (notArmed != null) return@awaitEachGesture
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     val drag = pagerInfo.drag ?: return@awaitEachGesture
-                    var started = false
+                    val c0 = coords[0]?.takeIf { it.isAttached } ?: return@awaitEachGesture
+                    val start = c0.localToRoot(last)
+                    if (!drag.startNewWidget(kind, size, TEMP_ID_BASE - (++tempIdSeq), start)) return@awaitEachGesture
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    dragging = true
+                    drag.move(start) // tính ô đích ngay: nhả tại chỗ cũng thả đúng ô dưới ngón
                     var finished = false
                     try {
                         while (true) {
@@ -670,29 +671,16 @@ internal class HomeWidgetPicker(
                             val change = event.changes.firstOrNull { it.id == down.id }
                             event.changes.forEach { it.consume() }
                             if (change == null || !change.pressed) {
-                                if (started) drag.drop()
+                                drag.drop()
                                 finished = true
                                 break
                             }
                             val c = coords[0]?.takeIf { it.isAttached } ?: continue
-                            val root = c.localToRoot(change.position)
-                            if (!started) {
-                                if ((change.position - down.position).getDistance() > slop) {
-                                    started = drag.startNewWidget(kind, size, TEMP_ID_BASE - (++tempIdSeq), root)
-                                    if (!started) {
-                                        finished = true
-                                        break
-                                    }
-                                    dragging = true
-                                    drag.move(root)
-                                }
-                            } else {
-                                drag.move(root)
-                            }
+                            drag.move(c.localToRoot(change.position)) // bảng đang trượt: toạ độ trong và gốc của nút cùng dịch, vị trí gốc vẫn đúng
                         }
                     } finally {
-                        if (started && !finished) drag.cancel()
-                        if (started) closeAll()
+                        if (!finished) drag.cancel()
+                        closeAll()
                     }
                 }
             }
@@ -719,10 +707,10 @@ internal class HomeWidgetPicker(
             .replace(Regex("\\p{Mn}+"), "")
             .replace('đ', 'd')
 
-    private fun variantTitleRes(kind: WidgetKind?, size: WidgetSize): Int {
+    private fun variantTitleRes(kind: WidgetKind, size: WidgetSize): Int {
         val wide = size.spanX >= 4
         return when (kind) {
-            null -> if (wide) R.string.today_recents_wide_title else R.string.today_recents_small_title // TV-3
+            WidgetKind.RECENTS -> if (wide) R.string.today_recents_wide_title else R.string.today_recents_small_title // TV-3
             WidgetKind.CLOCK -> if (wide) R.string.wp_clock_wide_title else R.string.wp_clock_small_title
             WidgetKind.CALENDAR -> if (wide) R.string.wp_calendar_wide_title else R.string.wp_calendar_small_title
             WidgetKind.WEATHER -> if (wide) R.string.wp_weather_wide_title else R.string.wp_weather_small_title
@@ -730,10 +718,10 @@ internal class HomeWidgetPicker(
         }
     }
 
-    private fun variantDescRes(kind: WidgetKind?, size: WidgetSize): Int {
+    private fun variantDescRes(kind: WidgetKind, size: WidgetSize): Int {
         val wide = size.spanX >= 4
         return when (kind) {
-            null -> if (wide) R.string.today_recents_wide_desc else R.string.today_recents_small_desc // TV-3
+            WidgetKind.RECENTS -> if (wide) R.string.today_recents_wide_desc else R.string.today_recents_small_desc // TV-3
             WidgetKind.CLOCK -> if (wide) R.string.wp_clock_wide_desc else R.string.wp_clock_small_desc
             WidgetKind.CALENDAR -> if (wide) R.string.wp_calendar_wide_desc else R.string.wp_calendar_small_desc
             WidgetKind.WEATHER -> if (wide) R.string.wp_weather_wide_desc else R.string.wp_weather_small_desc
@@ -741,8 +729,8 @@ internal class HomeWidgetPicker(
         }
     }
 
-    private fun kindNameRes(kind: WidgetKind?): Int = when (kind) {
-        null -> R.string.today_recents_name // TV-3
+    private fun kindNameRes(kind: WidgetKind): Int = when (kind) {
+        WidgetKind.RECENTS -> R.string.today_recents_name // TV-3
         WidgetKind.CLOCK -> R.string.widget_name_clock
         WidgetKind.CALENDAR -> R.string.widget_name_calendar
         WidgetKind.WEATHER -> R.string.weather_name
@@ -750,18 +738,15 @@ internal class HomeWidgetPicker(
     }
 
     private companion object {
-        // P2-9: bảng chọn widget kiểu iOS (chỉnh tay theo video). TV-3 (chủ dự án 2026-11-20): Thời tiết và Ảnh 2×2 cùng hàng; bảng của Today
-        // thêm "App gần đây" 4×2 ở hàng dưới.
+        // P2-9: bảng chọn widget kiểu iOS (chỉnh tay theo video). TV-3 (chủ dự án 2026-11-20): Thời tiết và Ảnh 2×2 cùng hàng; "App gần đây" 4×2 ở
+        // hàng dưới (WF Task 1, chủ dự án 2026-11-25: có ở cả bảng của Home, trước chỉ bảng của Today). Cỡ ở trang chi tiết: `WidgetKind.sizes`.
         val FEATURED = listOf(
             Featured(WidgetKind.CLOCK, WidgetSize(2, 2)),
             Featured(WidgetKind.CALENDAR, WidgetSize(2, 2)),
             Featured(WidgetKind.WEATHER, WidgetSize(2, 2)),
-            Featured(WidgetKind.PHOTO, WidgetSize(2, 2))
+            Featured(WidgetKind.PHOTO, WidgetSize(2, 2)),
+            Featured(WidgetKind.RECENTS, WidgetSize(4, 2))
         )
-        val FEATURED_TODAY_EXTRA = listOf(Featured(null, WidgetSize(4, 2)))
-
-        /** TV-3: các cỡ của widget "App gần đây" ở trang chi tiết (nhỏ trước, như các loại khác). */
-        val RECENTS_SIZES = listOf(WidgetSize(2, 2), WidgetSize(4, 2))
 
         val GAP: Dp = 6.dp // widget_picker_gap của REF
         val ROW_HEIGHT: Dp = 56.dp
@@ -780,10 +765,10 @@ internal class HomeWidgetPicker(
         const val CAMERA_DISTANCE_FACTOR = 12f
         const val ENTER_SCALE = 0.85f
         const val ENTER_MS = 260
-        const val SHEET_HEIGHT_FRACTION = 0.85f
+        /** PD (chủ dự án 2026-11-25): cao tối đa của cả bảng (gồm tay nắm, lề, thanh điều hướng) theo phần cao màn. */
+        const val GALLERY_MAX_FRACTION = 0.85f
+        const val DETAIL_MAX_FRACTION = 0.80f
 
-        /** PG2 (Q4): bảng mờ về 0 trong chừng này ms khi bắt đầu kéo thẻ. */
-        const val DRAG_FADE_MS = 150
 
         /** PG2: id tạm của widget mới đang kéo (âm, xa mọi id Room và các hằng âm khác: -1 app con thư mục, ContainerId, DOCK_GAP). */
         const val TEMP_ID_BASE = -(1L shl 40)

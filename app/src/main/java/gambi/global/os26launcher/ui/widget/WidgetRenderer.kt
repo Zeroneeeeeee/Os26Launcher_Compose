@@ -56,5 +56,16 @@ internal object WidgetRenderers {
         WidgetKind.WEATHER -> WeatherRenderer(context, medium = spanX > 2, sample = sample)
 
         WidgetKind.PHOTO -> PhotoWidgetRenderer(context, sample = sample) // G3b
+
+        WidgetKind.RECENTS -> EmptyWidgetRenderer // WF: "App gần đây" vẽ bằng Compose (HomeRecentsWidget), không gọi tới đây
     }
+}
+
+/** WF: renderer rỗng cho loại không vẽ bằng Canvas (để `create` vẫn đủ nhánh, không ném lỗi nếu lỡ gọi). */
+private object EmptyWidgetRenderer : WidgetRenderer {
+    override fun prepare(width: Int, height: Int, density: Float, now: ZonedDateTime, locale: Locale, is24h: Boolean) {}
+
+    override fun draw(canvas: Canvas) {}
+
+    override fun contentDescription(): String = ""
 }

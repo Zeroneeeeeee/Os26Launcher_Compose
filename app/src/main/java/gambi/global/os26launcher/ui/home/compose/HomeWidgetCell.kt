@@ -26,6 +26,7 @@ import gambi.global.os26launcher.core.designsystem.DsCorner
 import gambi.global.os26launcher.core.designsystem.DsSurface
 import gambi.global.os26launcher.core.glass.compose.dsGlass
 import gambi.global.os26launcher.domain.model.PlacedWidget
+import gambi.global.os26launcher.domain.model.WidgetKind
 import gambi.global.os26launcher.ui.widget.WidgetRenderers
 import gambi.global.os26launcher.ui.widget.WidgetTicker
 import java.time.ZonedDateTime
@@ -41,6 +42,13 @@ import java.util.Locale
  */
 @Composable
 internal fun HomeWidgetCell(widget: PlacedWidget, onClick: (() -> Unit)? = null) {
+    // WF Task 1: "App gần đây" vẽ bằng Compose; [onClick] null (edit mode, ảnh kéo) = ô app không bấm được.
+    if (widget.kind == WidgetKind.RECENTS) HomeRecentsWidget(widget, interactive = onClick != null)
+    else RendererWidgetCell(widget, onClick)
+}
+
+@Composable
+private fun RendererWidgetCell(widget: PlacedWidget, onClick: (() -> Unit)?) {
     val context = LocalContext.current
     val density = LocalDensity.current
     val locale = LocalConfiguration.current.locales[0] ?: Locale.ROOT // đọc theo cấu hình (quan sát được); ROOT chỉ là dự phòng
