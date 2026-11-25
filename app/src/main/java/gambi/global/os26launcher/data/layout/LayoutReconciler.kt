@@ -1,6 +1,7 @@
 package gambi.global.os26launcher.data.layout
 
 import android.util.Log
+import gambi.global.os26launcher.BuildConfig
 import androidx.room.withTransaction
 import gambi.global.os26launcher.core.coroutines.IoDispatcher
 import gambi.global.os26launcher.core.ui.GridMetrics
@@ -114,13 +115,21 @@ class LayoutReconciler @Inject constructor(
                     }
                 )
 
-                val pages = buildDefaultLayout(apps, dock, grid.columns, grid.rows)
+                // WF Task 2: Đồng hồ + Lịch 2 × 2 ở đầu trang 1, app launcher của mình ở ô trống đầu tiên sau widget.
+                val widgets = seedWidgets(grid.columns, grid.rows)
+                val pages = buildDefaultLayout(
+                    apps, dock, grid.columns, grid.rows,
+                    reservedFirstPage = widgets.map { it.second },
+                    pinFirstPackage = BuildConfig.APPLICATION_ID
+                )
+                var firstPageId: Long? = null
                 if (pages.isEmpty()) {
                     // Mọi app đã nằm trong dock: vẫn giữ một trang rỗng để app cài sau có chỗ đặt.
-                    pageDao.insert(HomePageEntity(rank = 0))
+                    firstPageId = pageDao.insert(HomePageEntity(rank = 0))
                 }
                 pages.forEach { page ->
                     val pageId = pageDao.insert(HomePageEntity(rank = page.index))
+                    if (page.index == 0) firstPageId = pageId
                     itemDao.insertAll(
                         page.items.filterIsInstance<PlacedApp>().map { placed ->
                             placed.app.toEntity(
@@ -134,8 +143,42 @@ class LayoutReconciler @Inject constructor(
                         }
                     )
                 }
+                val widgetPage = firstPageId
+                if (widgetPage != null && widgets.isNotEmpty()) {
+                    itemDao.insertAll(
+                        widgets.map { (kind, pos) ->
+                            LauncherItemEntity(
+                                container = LauncherItemEntity.CONTAINER_HOME,
+                                pageId = widgetPage,
+                                gridX = pos.x,
+                                gridY = pos.y,
+                                spanX = pos.spanX,
+                                spanY = pos.spanY,
+                                itemType = LauncherItemEntity.ITEM_TYPE_BUILTIN_WIDGET,
+                                className = kind.id
+                            )
+                        }
+                    )
+                }
+                Log.i(TAG, "seedIfEmpty grid=${grid.columns}x${grid.rows} pages=${pages.size} widgets=${widgets.size}")
             }
         }
+    }
+
+    /**
+     * WF Task 2 (chủ dự án 2026-11-25, Q3/Q5): widget seed của lần đầu, Đồng hồ và Lịch 2 × 2 ở đầu trang 1. Đủ 4 cột × 2 hàng thì đặt ngang
+     * (Đồng hồ (0,0), Lịch (2,0)); không thì đủ 2 cột × 4 hàng đặt dọc (Đồng hồ (0,0), Lịch (0,2)); không đủ cả hai thì không có widget.
+     */
+    private fun seedWidgets(columns: Int, rows: Int): List<Pair<WidgetKind, GridPosition>> = when {
+        columns >= 4 && rows >= 2 -> listOf(
+            WidgetKind.CLOCK to GridPosition(0, 0, 2, 2),
+            WidgetKind.CALENDAR to GridPosition(2, 0, 2, 2)
+        )
+        columns >= 2 && rows >= 4 -> listOf(
+            WidgetKind.CLOCK to GridPosition(0, 0, 2, 2),
+            WidgetKind.CALENDAR to GridPosition(0, 2, 2, 2)
+        )
+        else -> emptyList()
     }
 
     /**

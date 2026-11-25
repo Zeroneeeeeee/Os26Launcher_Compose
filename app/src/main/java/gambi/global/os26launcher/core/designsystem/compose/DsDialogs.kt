@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -221,12 +222,19 @@ fun DsBottomSheet(
  * PG2 — thân của [DsBottomSheet] không có `Dialog`: lớp mờ toàn vùng + khối sheet ở đáy (trượt lên khi mở, kéo xuống để đóng, tay nắm, tiêu đề,
  * nút đóng), Back đóng (có hoạt ảnh). Đặt trên cùng một lớp phủ toàn màn của màn đang hiện (vd bảng chọn widget của Home, để thẻ trong sheet kéo
  * được ra lưới cùng cửa sổ). [onDismiss] gọi khi hoạt ảnh đóng xong. Không dùng kính thật (`LocalDsBackdrop = null`), như bản Dialog.
+ *
+ * PD (2026-11-25): [maxHeightFraction] (null = theo nội dung) giới hạn CẢ khối bảng (tính cả tay nắm, lề, inset thanh điều hướng) theo phần cao cửa
+ * sổ; khi có giới hạn, vùng [content] là `weight(1f, fill = false)` nên con dùng `Modifier.weight` để lấp / co theo chỗ còn lại. [retracted] = true:
+ * bảng trượt xuống khỏi màn (lớp tối nhạt theo) nhưng VẪN trong composition (cử chỉ đang chạy trong bảng không bị huỷ), không kéo được; về false thì
+ * trượt lên lại. Không gọi [onDismiss].
  */
 @Composable
 fun DsBottomSheetLayer(
     onDismiss: () -> Unit,
     title: String? = null,
     showClose: Boolean = true,
+    maxHeightFraction: Float? = null,
+    retracted: Boolean = false,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -244,12 +252,14 @@ fun DsBottomSheetLayer(
         }
     }
 
-    LaunchedEffect(sheetHeight) {
+    LaunchedEffect(sheetHeight, retracted) {
         if (sheetHeight > 0f && !closing) {
             if (offset.value == Float.MAX_VALUE) offset.snapTo(sheetHeight)
-            offset.animateTo(0f, spring(dampingRatio = 0.85f, stiffness = 380f))
+            if (retracted) offset.animateTo(sheetHeight, tween(EXIT_MS)) // PD: trượt xuống, giữ trong composition
+            else offset.animateTo(0f, spring(dampingRatio = 0.85f, stiffness = 380f))
         }
     }
+    val maxSheetHeight = maxHeightFraction?.let { f -> with(density) { (LocalWindowInfo.current.containerSize.height * f).toDp() } }
 
     BackHandler { close() }
     run {
@@ -265,10 +275,12 @@ fun DsBottomSheetLayer(
                 Column(
                     Modifier
                         .fillMaxWidth()
+                        .then(if (maxSheetHeight != null) Modifier.heightIn(max = maxSheetHeight) else Modifier)
                         .onSizeChanged { sheetHeight = it.height.toFloat() }
                         .offset { IntOffset(0, if (offset.value == Float.MAX_VALUE) 100_000 else offset.value.roundToInt()) }
                         .draggable(
                             orientation = Orientation.Vertical,
+                            enabled = !retracted,
                             state = rememberDraggableState { delta ->
                                 if (!closing) scope.launch { offset.snapTo((offset.value + delta).coerceAtLeast(0f)) }
                             },
@@ -321,7 +333,13 @@ fun DsBottomSheetLayer(
                             }
                         }
                     }
-                    Column(Modifier.fillMaxWidth().padding(top = 16.dp), content = content)
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .then(if (maxSheetHeight != null) Modifier.weight(1f, fill = false) else Modifier)
+                            .padding(top = 16.dp),
+                        content = content
+                    )
                 }
             }
         }

@@ -15,8 +15,8 @@ data class TodayWidget(val id: Long, val kindId: String, val wide: Boolean) {
     val spanY: Int get() = 2
     val isRecents: Boolean get() = kindId == RECENTS
 
-    /** Loại widget tự vẽ; null với thẻ app gần đây. */
-    val builtin: WidgetKind? get() = WidgetKind.fromId(kindId)
+    /** Loại widget tự vẽ; null với thẻ app gần đây (WF: `WidgetKind.RECENTS` chỉ dùng cho lưới Home, Today vẫn đi nhánh [isRecents]). */
+    val builtin: WidgetKind? get() = WidgetKind.fromId(kindId)?.takeIf { it != WidgetKind.RECENTS }
 
     companion object {
         const val RECENTS = "recents"

@@ -56,9 +56,10 @@
     <color name="shortcut_menu_glass_tint">#595B5B5B</color>
     <color name="shortcut_menu_glass_border">#66FFFFFF</color>
     <color name="shortcut_menu_flat">#F2F2F2F7</color>
-    <color name="shortcut_menu_text">#FF1C1C1E</color>
+    <!-- PD (chủ dự án 2026-11-25): tint menu đã tối (#595B5B5B, b2672cc) nên chữ / icon trắng và đường kẻ trắng 20%, như values-night. -->
+    <color name="shortcut_menu_text">#FFFFFFFF</color>
     <color name="shortcut_menu_destructive">#FFFF3B30</color>
-    <color name="shortcut_menu_divider">#1F000000</color>
+    <color name="shortcut_menu_divider">#33FFFFFF</color>
 
     <!-- G3e: biểu tượng thời tiết tự vẽ (khối weather_) -->
     <color name="weather_cloud">#F2FFFFFF</color>

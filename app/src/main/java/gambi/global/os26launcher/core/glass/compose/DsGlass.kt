@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -41,7 +42,9 @@ import gambi.global.os26launcher.domain.model.GlassLook
  * JD Task 2 — lớp nền mà kính của màn đang vẽ đọc vào (lớp `layerBackdrop`). `DsScreen` cung cấp; `null` = không có nền để khúc xạ,
  * [dsGlass] vẽ bề mặt tĩnh. Đặt ở `core/glass` (không phải `DsScreen.kt`) để gói kính không phụ thuộc ngược vào gói design system.
  */
-val LocalDsBackdrop: ProvidableCompositionLocal<Backdrop?> = staticCompositionLocalOf { null }
+// SW Task 3 (2026-11-25): `compositionLocalOf` thay `staticCompositionLocalOf`. Pager Home đổi giá trị này theo từng trang (trang đang hiện mới có
+// kính thật): static thì mỗi lần đổi dựng lại CẢ trang (24 icon) ngay lúc trang trượt vào màn; dynamic thì chỉ bề mặt kính đọc nó dựng lại.
+val LocalDsBackdrop: ProvidableCompositionLocal<Backdrop?> = compositionLocalOf { null }
 
 /**
  * Bề mặt kính DS cho Compose, dùng chung cho mọi bề mặt (JC D4).
