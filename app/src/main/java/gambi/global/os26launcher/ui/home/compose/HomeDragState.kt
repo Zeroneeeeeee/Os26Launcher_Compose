@@ -429,10 +429,12 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
                     }
                 }
                 // AN Task 9e: đang đẩy-dồn thì ô thả là ô NEO (khe vừa mở); G2c Task 7: ô bị widget phủ → ô tự do kế sau.
-                val cell = shown.takeIf { it.mode == HoverMode.PUSH && it.area == HoverArea.GRID }?.cell
+                val hovered = shown.takeIf { it.mode == HoverMode.PUSH && it.area == HoverArea.GRID }?.cell
                     ?: if (s.isWidget) widgetAnchor(s, pt) else c.cellAt(pt.x - pagerRect.left, pt.y - pagerRect.top)?.let { resolveInsertCell(page, it) }
-                if (cell == null) return cancelDrop(s)
-                if (s.isWidget && overlapsOtherWidget(page, cell, s)) return cancelDrop(s) // G2c Task 8: widget không chồng widget
+                if (hovered == null) return cancelDrop(s)
+                // G2c Task 8 + WS: widget chồng widget chỉ thả được khi đổi chỗ được (cùng luật planner với DB), ở đúng neo planner chọn;
+                // không thì bay về.
+                val cell = if (s.isWidget && overlapsOtherWidget(page, hovered, s)) widgetSwapAnchor(s, page, hovered) ?: return cancelDrop(s) else hovered
                 if (s.sourceContainer == ContainerId.HOME && s.sourcePageId == page.pageId && cell == GridPosition(s.sourceCell.x, s.sourceCell.y)) {
                     return cancelDrop(s)
                 }
@@ -686,7 +688,12 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
         if (s.isWidget) {
             // G2c Task 8: widget không bao giờ gộp. Chỉ đẩy-dồn khi hình chữ nhật của nó phủ ít nhất một icon và KHÔNG chồng widget khác.
             val at = targetCell ?: return NO_HOVER
-            if (overlapsOtherWidget(page, at, s)) return NO_HOVER
+            if (overlapsOtherWidget(page, at, s)) {
+                // WS: chồng đúng một widget cùng trang thì đổi chỗ (planner quyết, có thể dời neo về chỗ widget kia); ô neo của PUSH là neo
+                // planner chọn, nên thả ghi đúng thứ đang xem trước.
+                val anchor = widgetSwapAnchor(s, page, at) ?: return NO_HOVER
+                return Hover(HoverMode.PUSH, HoverArea.GRID, cell = anchor, pageId = page.pageId)
+            }
             val coversIcon = page.items.any {
                 it !is PlacedWidgetBase && it.itemId != s.item.itemId &&
                     it.position.x in at.x until at.x + s.spanX && it.position.y in at.y until at.y + s.spanY
@@ -749,6 +756,18 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
         val k = PageGeometry.resolveInsertSeq(free, cell.y * c.columns + cell.x)
         if (k < 0) return cell
         return GridPosition(free[k] % c.columns, free[k] / c.columns)
+    }
+
+    /** WS: neo của widget đang kéo khi thả ở [at] đổi chỗ được với widget nó đè (cùng luật với DB), hoặc null nếu planner từ chối. */
+    private fun widgetSwapAnchor(s: HomeDragSession, page: HomePage, at: GridPosition): GridPosition? {
+        val c = cells ?: return null
+        val slots = page.items.map { GridInsertPlanner.Slot(it.itemId, it.position.x, it.position.y, it.position.spanX, it.position.spanY) }
+        val plan = GridInsertPlanner.plan(
+            listOf(GridInsertPlanner.PageSlots(page.pageId, slots)), s.item.itemId, 0, at.x, at.y, c.columns, c.rows, s.spanX, s.spanY
+        )
+        if (plan.rejected) return null
+        val p = plan.placements.firstOrNull { it.itemId == s.item.itemId } ?: return null
+        return GridPosition(p.x, p.y)
     }
 
     private fun overlapsOtherWidget(page: HomePage, pos: GridPosition, s: HomeDragSession): Boolean =

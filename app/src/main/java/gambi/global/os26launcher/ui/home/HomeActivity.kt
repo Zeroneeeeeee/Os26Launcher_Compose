@@ -17,7 +17,9 @@ import gambi.global.os26launcher.core.perf.PerfSwitches
 import gambi.global.os26launcher.core.glass.compose.LocalDsFrostedBackdrop
 import gambi.global.os26launcher.core.glass.compose.rememberFrostedBackdrop
 import gambi.global.os26launcher.domain.config.GeneralConfigRepository
+import gambi.global.os26launcher.domain.model.IconStyle
 import gambi.global.os26launcher.domain.model.IconStyleKey
+import gambi.global.os26launcher.core.glass.compose.LocalIconGlassCorner
 import gambi.global.os26launcher.ui.home.controller.RecreateGuard
 import gambi.global.os26launcher.ui.onboarding.OnboardingActivity
 import gambi.global.os26launcher.ui.onboarding.OnboardingRuntime
@@ -178,6 +180,9 @@ class HomeActivity : AppCompatActivity() {
 
     /** LD Task 4: trạng thái kéo-thả của HomeScreen (HomeScreen báo lên khi dựng). */
     private var homeDrag by mutableStateOf<HomeDragState?>(null)
+
+    /** LI: "Bo góc" của icon kiểu Kính để vẽ kính thật sau icon (LocalIconGlassCorner); null = kiểu khác / gói icon. Đặt ở setupRecreateGuard. */
+    private var iconGlassCorner by mutableStateOf<Int?>(null)
     private val todayModel = TodayGridModel() // TV-3: thứ tự, kéo đổi chỗ, thêm/xóa của lưới Today
     private val icons by lazy { HomeIcons(viewModel::loadIcon) } // JH1 D7: dùng chung cho Home, Today và bảng chọn widget
     private val pagerInfo = HomePagerInfo()
@@ -332,7 +337,8 @@ class HomeActivity : AppCompatActivity() {
             ) {
                 CompositionLocalProvider(
                     LocalHostedWidgets provides hostedWidgets,
-                    gambi.global.os26launcher.ui.home.compose.LocalHomeRecents provides homeRecents
+                    gambi.global.os26launcher.ui.home.compose.LocalHomeRecents provides homeRecents,
+                    LocalIconGlassCorner provides iconGlassCorner // LI: kính thật sau icon kiểu Kính (lưới, dock)
                 ) {
                 HomeScreen(
                     state = state,
@@ -393,7 +399,8 @@ class HomeActivity : AppCompatActivity() {
                     CompositionLocalProvider(
                         LocalDsFrostedBackdrop provides if (PerfSwitches.noFrosted) null else frosted.backdropOrNull,
                         LocalHostedWidgets provides hostedWidgets,
-                        gambi.global.os26launcher.ui.home.compose.LocalHomeRecents provides homeRecents // WF: ảnh kéo của "App gần đây"
+                        gambi.global.os26launcher.ui.home.compose.LocalHomeRecents provides homeRecents, // WF: ảnh kéo của "App gần đây"
+                        LocalIconGlassCorner provides iconGlassCorner // LI: icon kiểu Kính đang kéo giữ kính thật
                     ) {
                         gambi.global.os26launcher.ui.home.compose.HomeDragLayer(it, it.cells, icons)
                     }
@@ -717,7 +724,12 @@ class HomeActivity : AppCompatActivity() {
     private fun setupRecreateGuard() {
         recreateGuard = RecreateGuard(lifecycleScope, ::recreate)
         var appliedIconStyle: IconStyleKey? = null
-        lifecycleScope.launch { appliedIconStyle = viewModel.currentIconStyleKey() }
+        lifecycleScope.launch {
+            val key = viewModel.currentIconStyleKey()
+            appliedIconStyle = key
+            // LI: kiểu Kính (không gói icon: icon gói đục, kính phía sau không lộ) → kính thật sau icon, cắt theo cùng "Bo góc" với bitmap.
+            iconGlassCorner = if (key.style == IconStyle.GLASS && key.pack.isEmpty() && !PerfSwitches.noIconGlass) key.corner else null
+        }
         recreateGuard.add { appliedIconStyle?.let { viewModel.currentIconStyleKey() != it } ?: false }
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {

@@ -162,10 +162,12 @@ object GridInsertPlanner {
 
     /**
      * G2c Task 2 — thả widget [spanX] x [spanY] xuống neo ([targetX], [targetY]) của trang [targetPageIndex].
-     * - Neo bị kẹp vào `[0, columns - spanX] x [0, rows - spanY]`. Widget lớn hơn lưới, hoặc hình chữ nhật chồng widget khác
-     *   (trừ chính nó, đã bị gỡ khỏi chỗ cũ): từ chối ([Plan.rejected]).
+     * - Neo bị kẹp vào `[0, columns - spanX] x [0, rows - spanY]`. Widget lớn hơn lưới: từ chối ([Plan.rejected]).
+     * - WS (2026-11-25): hình chữ nhật chồng đúng MỘT widget khác và widget đang kéo ở cùng trang: đổi chỗ ([planSwap]); widget kia cũng
+     *   có trong [Plan.placements]. Chồng nhiều widget, widget kéo từ trang khác / widget mới, hoặc đổi chỗ không vừa: từ chối.
      * - Hình chữ nhật không phủ icon nào: chỉ đặt widget, không icon nào đổi chỗ.
-     * - Phủ >= 1 icon: ĐUÔI (mọi icon có chỉ số đọc >= chỉ số đọc của neo, kể cả icon bị phủ) xếp sát nhau theo thứ tự đọc vào
+     * - Phủ >= 1 icon (đổi chỗ: phủ bởi widget kéo HOẶC widget bị đổi; "neo" = neo nhỏ hơn trong hai neo mới):
+     *   ĐUÔI (mọi icon có chỉ số đọc >= chỉ số đọc của neo, kể cả icon bị phủ) xếp sát nhau theo thứ tự đọc vào
      *   các ô tự do (sau khi có widget mới) từ ô tự do đầu tiên có chỉ số đọc >= neo — cùng luật "dồn sát đuôi" của chèn icon.
      *   Icon vượt hết ô tự do của trang (có thể nhiều) thành một KHỐI có thứ tự sang trang kế ([insertBlock], lặp, tạo trang nếu cần).
      */
@@ -195,20 +197,35 @@ object GridInsertPlanner {
         val result = LinkedHashMap<Long, Placement>()
         var newPages = 0
 
-        val ax = targetX.coerceIn(0, columns - spanX)
-        val ay = targetY.coerceIn(0, rows - spanY)
+        val tx = targetX.coerceIn(0, columns - spanX)
+        val ty = targetY.coerceIn(0, rows - spanY)
         val inPage = working[targetPageIndex]
-        val overlapsWidget = inPage.any {
-            PageGeometry.isWidget(it) &&
-                    ax < it.x + it.spanX && it.x < ax + spanX && ay < it.y + it.spanY && it.y < ay + spanY
+        val overlapped = inPage.filter { PageGeometry.isWidget(it) && overlaps(it, tx, ty, spanX, spanY) }
+        // WS: chồng đúng một widget W và item đang kéo ở cùng trang: đổi chỗ (W về neo cũ của item kéo), xem [planSwap]. Còn lại từ chối.
+        val swap = if (overlapped.isEmpty()) {
+            null
+        } else {
+            val own = pages[targetPageIndex].slots.firstOrNull { it.itemId == movingItemId }
+            (if (overlapped.size == 1 && own != null) planSwap(inPage, overlapped[0], own, tx, ty, spanX, spanY, columns, rows) else null)
+                ?: return rejected
         }
-        if (overlapsWidget) return rejected
+        val ax = swap?.first ?: tx
+        val ay = swap?.second ?: ty
+        val swapped: Slot? = swap?.third
 
-        val anchorIndex = ay * columns + ax
+        val anchorIndex = minOf(ay * columns + ax, swapped?.let { it.y * columns + it.x } ?: Int.MAX_VALUE)
         val icons = inPage.filter { !PageGeometry.isWidget(it) && isInside(it, columns, rows) }
-        val displaced = icons.any { it.x in ax until ax + spanX && it.y in ay until ay + spanY }
+        val displaced = icons.any {
+            (it.x in ax until ax + spanX && it.y in ay until ay + spanY) ||
+                (swapped != null && it.x in swapped.x until swapped.x + swapped.spanX && it.y in swapped.y until swapped.y + swapped.spanY)
+        }
         inPage.add(Slot(movingItemId, ax, ay, spanX, spanY))
         result[movingItemId] = Placement(movingItemId, targetPageIndex, ax, ay)
+        if (swapped != null) {
+            inPage.removeAll { it.itemId == swapped.itemId }
+            inPage.add(swapped)
+            result[swapped.itemId] = Placement(swapped.itemId, targetPageIndex, swapped.x, swapped.y)
+        }
 
         var block: List<Slot> = emptyList()
         if (displaced) {
@@ -245,6 +262,40 @@ object GridInsertPlanner {
             result.values.filter { original[it.itemId] != Triple(it.pageIndex, it.x, it.y) }
         return Plan(changed, newPages)
     }
+
+    /**
+     * WS — đổi chỗ widget: item kéo (chỗ cũ [own], cỡ [spanX] x [spanY]) đè lên đúng một widget [other] của [inPage] (đã gỡ item kéo).
+     * [other] về neo cũ của item kéo; neo mới của item kéo thử lần lượt (a) neo đích ([ax], [ay]), (b) neo của [other] (lấy đúng chỗ nó).
+     * Trả (neo x, neo y, [other] ở chỗ mới) của lựa chọn đầu tiên hợp lệ: [other] mới vừa lưới, không chồng item kéo mới, không chồng widget
+     * khác; item kéo mới chỉ chồng [other] (ở chỗ cũ). null = không đổi chỗ được (người gọi từ chối).
+     */
+    private fun planSwap(
+        inPage: List<Slot>,
+        other: Slot,
+        own: Slot,
+        ax: Int,
+        ay: Int,
+        spanX: Int,
+        spanY: Int,
+        columns: Int,
+        rows: Int
+    ): Triple<Int, Int, Slot>? {
+        val moved = Slot(other.itemId, own.x, own.y, other.spanX, other.spanY)
+        if (moved.x < 0 || moved.y < 0 || moved.x + moved.spanX > columns || moved.y + moved.spanY > rows) return null
+        val rest = inPage.filter { PageGeometry.isWidget(it) && it.itemId != other.itemId }
+        if (rest.any { overlaps(it, moved.x, moved.y, moved.spanX, moved.spanY) }) return null
+        val candidates = listOf(ax to ay, other.x.coerceIn(0, columns - spanX) to other.y.coerceIn(0, rows - spanY))
+        for ((cx, cy) in candidates) {
+            if (overlaps(moved, cx, cy, spanX, spanY)) continue
+            if (rest.any { overlaps(it, cx, cy, spanX, spanY) }) continue
+            return Triple(cx, cy, moved)
+        }
+        return null
+    }
+
+    /** Hình chữ nhật của [slot] chồng hình chữ nhật [spanX] x [spanY] neo ([x], [y]). */
+    private fun overlaps(slot: Slot, x: Int, y: Int, spanX: Int, spanY: Int): Boolean =
+        x < slot.x + slot.spanX && slot.x < x + spanX && y < slot.y + slot.spanY && slot.y < y + spanY
 
     /**
      * FX3 (B3): ô của [slot] nằm trong lưới [columns] x [rows]. Chỉ số đọc `y * columns + x` của item có `x >= columns` trùng

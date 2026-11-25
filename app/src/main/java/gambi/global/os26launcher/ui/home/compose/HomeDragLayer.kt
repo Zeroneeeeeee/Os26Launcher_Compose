@@ -9,6 +9,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import gambi.global.os26launcher.core.glass.compose.LocalDsBackdrop
+import gambi.global.os26launcher.core.glass.compose.LocalIconGlassCorner
+import gambi.global.os26launcher.core.glass.compose.iconGlassPlate
 import androidx.compose.ui.Modifier
 import gambi.global.os26launcher.core.glass.compose.glassCornerScale
 import androidx.compose.ui.graphics.graphicsLayer
@@ -53,7 +55,11 @@ fun HomeDragLayer(drag: HomeDragState, cells: GridMetrics.Cells?, icons: HomeIco
     ) {
         CompositionLocalProvider(LocalDsBackdrop provides drag.glassBackdrop) {
         when (item) {
-            is DragItem.App -> rememberHomeIcon(icons, item.app, c.iconSize)?.let { Image(it, contentDescription = null, modifier = Modifier.fillMaxSize()) }
+            is DragItem.App -> rememberHomeIcon(icons, item.app, c.iconSize)?.let {
+                // LI: icon kiểu Kính bay theo tay vẫn có kính thật phía sau (lấy mẫu drag.glassBackdrop).
+                LocalIconGlassCorner.current?.let { corner -> Box(Modifier.fillMaxSize().iconGlassPlate(c.iconSize, corner)) }
+                Image(it, contentDescription = null, modifier = Modifier.fillMaxSize())
+            }
             is DragItem.Folder -> HomeFolderPlate(item.folder, c.iconSize, icons)
             // Widget app (kể cả "không khả dụng"): trước đây rơi qua `as? PlacedWidget` nên ảnh nổi chỉ còn bóng, widget như biến mất khi kéo.
             is DragItem.Widget -> when (val w = item.widget) {

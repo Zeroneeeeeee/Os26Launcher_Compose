@@ -58,6 +58,8 @@ import gambi.global.os26launcher.core.glass.compose.dsGlass
 import gambi.global.os26launcher.core.glass.compose.glassCornerScale
 import gambi.global.os26launcher.core.glass.GlassRole
 import gambi.global.os26launcher.core.glass.compose.dsFrosted
+import gambi.global.os26launcher.core.glass.compose.LocalIconGlassCorner
+import gambi.global.os26launcher.core.glass.compose.CachedIconGlassPlate
 import gambi.global.os26launcher.core.ui.GridMetrics
 import gambi.global.os26launcher.domain.layout.FolderPlanner
 import gambi.global.os26launcher.domain.model.AppItem
@@ -213,6 +215,7 @@ private fun HomeGridItem(
             editMode = edit.editMode,
             badges = edit.badges,
             hoverPlate = merge,
+            glassPlate = true,
             onRemove = { edit.onRemoveApp(item.itemId) },
             onClick = onAppClick
         )
@@ -268,6 +271,8 @@ internal fun HomeAppCell(
     modifier: Modifier = Modifier,
     editMode: Boolean = false,
     hoverPlate: Boolean = false,
+    /** LI: vẽ kính thật sau icon khi kiểu icon là Kính ([LocalIconGlassCorner]); chỉ lưới và dock (nằm thẳng trên ảnh nền). */
+    glassPlate: Boolean = false,
     badges: NotificationBadges.State? = null,
     onRemove: (() -> Unit)? = null,
     onClick: (AppItem, ScreenRect?) -> Unit
@@ -310,7 +315,12 @@ internal fun HomeAppCell(
                             .dsFrosted(GlassRole.FOLDER_CELL, RoundedCornerShape(cells.iconSize * HOVER_GLASS_SCALE * folderCornerRatio(glassCornerScale())))
                     )
                 }
-                if (bitmap != null) Image(bitmap, contentDescription = null, modifier = Modifier.fillMaxSize())
+                if (bitmap != null) {
+                    // LI: liquid glass thật sau icon kiểu Kính (chụp thành ảnh khi vùng đứng yên); bitmap (lòng trắng nhạt + viền sáng) vẽ đè lên.
+                    val glassCorner = if (glassPlate) LocalIconGlassCorner.current else null
+                    if (glassCorner != null) CachedIconGlassPlate(cells.iconSize, glassCorner, Modifier.fillMaxSize())
+                    Image(bitmap, contentDescription = null, modifier = Modifier.fillMaxSize())
+                }
             }
             if (cells.showLabels) HomeLabel(app.label, cells)
         }

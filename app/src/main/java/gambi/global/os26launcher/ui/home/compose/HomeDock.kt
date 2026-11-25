@@ -137,6 +137,7 @@ internal fun HomeDock(
                             editMode = edit.editMode,
                             badges = edit.badges,
                             hoverPlate = merge,
+                            glassPlate = true,
                             onRemove = { edit.onRemoveApp(item.itemId) },
                             onClick = onAppClick
                         )

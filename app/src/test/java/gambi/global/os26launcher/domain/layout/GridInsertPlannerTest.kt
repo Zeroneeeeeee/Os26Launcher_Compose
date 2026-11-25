@@ -156,6 +156,67 @@ class GridInsertPlannerTest {
         assertEquals(0, plan.newPages)
     }
 
+    // ---- WS: đổi chỗ widget ----
+
+    @Test
+    fun `widget dropped onto one widget on the same page swaps places`() {
+        // 4x4: W 2x2 ở (0,0), D 2x2 ở (2,2); kéo D lên (0,0): D vào (0,0), W về (2,2).
+        val pages = listOf(page(100, slot(50, 0, 0, 2, 2), slot(60, 2, 2, 2, 2)))
+        val plan = GridInsertPlanner.plan(pages, 60, 0, 0, 0, columns = 4, rows = 4)
+        assertFalse(plan.rejected)
+        assertEquals(listOf(Placement(60, 0, 0, 0), Placement(50, 0, 2, 2)), plan.placements)
+    }
+
+    @Test
+    fun `swap falls back to the other widget anchor when the target would overlap its new spot`() {
+        // 4x4: W 4x2 ở (0,0), D 4x2 ở (0,2); kéo D lên 1 hàng (0,1): W ở (0,2) sẽ chồng D ở (0,1) -> D lấy đúng neo của W (0,0).
+        val pages = listOf(page(100, slot(50, 0, 0, 4, 2), slot(60, 0, 2, 4, 2)))
+        val plan = GridInsertPlanner.plan(pages, 60, 0, 0, 1, columns = 4, rows = 4)
+        assertFalse(plan.rejected)
+        assertEquals(listOf(Placement(60, 0, 0, 0), Placement(50, 0, 0, 2)), plan.placements)
+    }
+
+    @Test
+    fun `swap is rejected when the other widget does not fit at the old spot`() {
+        // 4x3: W 4x1 ở (0,0), D 2x2 ở (2,1); W (rộng 4) không vừa neo (2,1).
+        val pages = listOf(page(100, slot(50, 0, 0, 4, 1), slot(60, 2, 1, 2, 2)))
+        val plan = GridInsertPlanner.plan(pages, 60, 0, 0, 0, columns = 4, rows = 3)
+        assertTrue(plan.rejected)
+        assertTrue(plan.placements.isEmpty())
+    }
+
+    @Test
+    fun `widget overlapping two widgets is rejected`() {
+        val pages = listOf(page(100, slot(50, 0, 0, 2, 2), slot(51, 2, 0, 2, 2), slot(60, 0, 2, 4, 2)))
+        val plan = GridInsertPlanner.plan(pages, 60, 0, 0, 0, columns = 4, rows = 4)
+        assertTrue(plan.rejected)
+    }
+
+    @Test
+    fun `widget from another page does not swap`() {
+        val pages = listOf(page(100, slot(50, 0, 0, 2, 2)), page(101, slot(60, 0, 0, 2, 2)))
+        val plan = GridInsertPlanner.plan(pages, 60, 0, 0, 0, columns = 4, rows = 4)
+        assertTrue(plan.rejected)
+    }
+
+    @Test
+    fun `icons covered by the swapped widget are packed after the earlier anchor`() {
+        // 4x5: W 2x2 (0,0), D 2x1 (0,3), icon 1 ở (1,4), icon 2 ở (0,2). Kéo D lên (0,0): D (0,0), W 2x2 về (0,3) phủ icon 1.
+        // Đuôi từ neo nhỏ nhất (0): icon 2 rồi icon 1 dồn sát vào ô tự do đầu tiên (2,0), (3,0).
+        val pages = listOf(page(100, slot(50, 0, 0, 2, 2), slot(60, 0, 3, 2, 1), slot(1, 1, 4), slot(2, 0, 2)))
+        val plan = GridInsertPlanner.plan(pages, 60, 0, 0, 0, columns = 4, rows = 5)
+        assertFalse(plan.rejected)
+        assertEquals(
+            listOf(
+                Placement(60, 0, 0, 0),
+                Placement(50, 0, 0, 3),
+                Placement(2, 0, 2, 0),
+                Placement(1, 0, 3, 0)
+            ),
+            plan.placements
+        )
+    }
+
     @Test(expected = IllegalArgumentException::class)
     fun `target page index out of range throws`() {
         GridInsertPlanner.plan(listOf(page(100)), 1, 1, 0, 0, columns = 4, rows = 2)

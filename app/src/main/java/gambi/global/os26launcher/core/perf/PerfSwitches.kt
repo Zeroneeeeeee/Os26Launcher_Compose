@@ -32,6 +32,12 @@ object PerfSwitches {
     /** SW: vẽ cả trang dựng sẵn đang nằm ngoài màn (như trước Task 3b), để so số đo. */
     const val NO_OFFSCREEN_SKIP = "noOffscreenSkip"
 
+    /** LI: tắt kính thật sau icon kiểu Kính (chỉ còn tấm nướng sẵn trong bitmap), để so số đo. */
+    const val NO_ICON_GLASS = "noIconGlass"
+
+    /** LI: kính sau icon dùng ảnh chụp thay cho kính tự vẽ bằng shader trên ảnh nền đã mờ sẵn, để so số đo. */
+    const val NO_ICON_SHADER = "noIconShader"
+
     private val flags: Set<String> by lazy { if (BuildConfig.PERF_SWITCHES) read() else emptySet() }
 
     val noRealGlass: Boolean get() = NO_REAL_GLASS in flags
@@ -40,6 +46,8 @@ object PerfSwitches {
     val noGlassCache: Boolean get() = NO_GLASS_CACHE in flags
     val noPrebuild: Boolean get() = NO_PREBUILD in flags
     val noOffscreenSkip: Boolean get() = NO_OFFSCREEN_SKIP in flags
+    val noIconGlass: Boolean get() = NO_ICON_GLASS in flags
+    val noIconShader: Boolean get() = NO_ICON_SHADER in flags
 
     private fun read(): Set<String> = try {
         val process = ProcessBuilder("getprop", PROP).redirectErrorStream(true).start()
