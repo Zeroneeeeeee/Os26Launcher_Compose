@@ -428,6 +428,10 @@
     <string name="wallpaper_color_confirm_message">The Home Screen will use this wallpaper.</string>
     <string name="wallpaper_color_confirm_ok">Confirm</string>
     <!-- WI: tên 5 hình nền cài sẵn (ảnh thử, xem plan WI) ở 0.3 và 2.2; nút ngắn của hộp hỏi đặt mặc định khi về Home. -->
+    <string name="wallpaper_preset_ios27_1">Gold</string>
+    <string name="wallpaper_preset_ios27_2">Midnight</string>
+    <string name="wallpaper_preset_ios27_3">Sky blue</string>
+    <string name="wallpaper_preset_ios27_4">Rose</string>
     <string name="wallpaper_preset_lake">Lake</string>
     <string name="wallpaper_preset_blue_wave">Blue wave</string>
     <string name="wallpaper_preset_red">Red</string>

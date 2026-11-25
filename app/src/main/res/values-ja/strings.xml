@@ -680,6 +680,10 @@
     <string name="today_widget_remove_message">ウィジェットは「今日」から削除されます。＋ボタンで再度追加できます。</string>
 
     <!-- Dong bo tu REF HEAD -->
+    <string name="wallpaper_preset_ios27_1">ゴールド</string>
+    <string name="wallpaper_preset_ios27_2">ミッドナイト</string>
+    <string name="wallpaper_preset_ios27_3">スカイブルー</string>
+    <string name="wallpaper_preset_ios27_4">ローズ</string>
     <string name="wallpaper_preset_lake">湖</string>
     <string name="wallpaper_preset_blue_wave">ブルーウェーブ</string>
     <string name="wallpaper_preset_red">レッド</string>

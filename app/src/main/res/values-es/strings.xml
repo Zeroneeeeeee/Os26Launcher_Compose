@@ -682,6 +682,10 @@
     <string name="today_widget_remove_message">El widget se quitará de Hoy. Puedes volver a añadirlo con el botón +.</string>
 
     <!-- Dong bo tu REF HEAD -->
+    <string name="wallpaper_preset_ios27_1">Dorado</string>
+    <string name="wallpaper_preset_ios27_2">Medianoche</string>
+    <string name="wallpaper_preset_ios27_3">Azul cielo</string>
+    <string name="wallpaper_preset_ios27_4">Rosa</string>
     <string name="wallpaper_preset_lake">Lago</string>
     <string name="wallpaper_preset_blue_wave">Ola azul</string>
     <string name="wallpaper_preset_red">Rojo</string>

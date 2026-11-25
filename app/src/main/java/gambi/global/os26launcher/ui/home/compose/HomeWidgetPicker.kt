@@ -374,7 +374,7 @@ internal class HomeWidgetPicker(
             WidgetKind.PHOTO -> Box(modifier.aspectRatio(ratio)) {
                 androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxSize()) {
                     Image(
-                        painterResource(R.drawable.default_wallpaper_ios27),
+                        painterResource(R.drawable.wp_ios27_1_thumb), // WI: ảnh nền mặc định wp_ios27_1 (bản nhỏ)
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(minOf(maxWidth, maxHeight) * 0.12f))

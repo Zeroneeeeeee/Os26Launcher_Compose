@@ -79,6 +79,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.biometric) // HL-2: khóa Ứng dụng ẩn
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen) // splash khởi động thống nhất API 26+ (Theme.Os26Launcher.Starting)
     implementation(libs.androidx.dynamicanimation)
 
     implementation(libs.androidx.lifecycle.viewmodel.ktx)

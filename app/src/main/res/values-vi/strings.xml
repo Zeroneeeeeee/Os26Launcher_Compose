@@ -679,6 +679,10 @@
     <string name="today_widget_remove_message">Tiện ích sẽ bị xoá khỏi màn Hôm nay. Bạn có thể thêm lại bằng nút +.</string>
 
     <!-- Dong bo tu REF HEAD -->
+    <string name="wallpaper_preset_ios27_1">Vàng kim</string>
+    <string name="wallpaper_preset_ios27_2">Nửa đêm</string>
+    <string name="wallpaper_preset_ios27_3">Xanh trời</string>
+    <string name="wallpaper_preset_ios27_4">Hồng</string>
     <string name="wallpaper_preset_lake">Hồ nước</string>
     <string name="wallpaper_preset_blue_wave">Sóng xanh</string>
     <string name="wallpaper_preset_red">Đỏ</string>

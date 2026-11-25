@@ -680,6 +680,10 @@
     <string name="today_widget_remove_message">위젯이 오늘 화면에서 제거됩니다. + 버튼으로 다시 추가할 수 있습니다.</string>
 
     <!-- Dong bo tu REF HEAD -->
+    <string name="wallpaper_preset_ios27_1">골드</string>
+    <string name="wallpaper_preset_ios27_2">미드나이트</string>
+    <string name="wallpaper_preset_ios27_3">스카이 블루</string>
+    <string name="wallpaper_preset_ios27_4">로즈</string>
     <string name="wallpaper_preset_lake">호수</string>
     <string name="wallpaper_preset_blue_wave">블루 웨이브</string>
     <string name="wallpaper_preset_red">레드</string>
