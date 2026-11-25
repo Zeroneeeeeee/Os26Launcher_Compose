@@ -23,11 +23,23 @@ object PerfSwitches {
     /** Bỏ widget (tự vẽ và của app khác) khỏi các trang Home khi vẽ (chỉ hiển thị, không đụng dữ liệu). */
     const val NO_WIDGETS = "noWidgets"
 
+    /** SW: tắt ảnh chụp kính dock (`CachedGlass`): dock vẽ kính thật sống như trước SW, để so số đo. */
+    const val NO_GLASS_CACHE = "noGlassCache"
+
+    /** SW: pager chỉ dựng sẵn 1 trang mỗi bên như trước SW, để so số đo. */
+    const val NO_PREBUILD = "noPrebuild"
+
+    /** SW: vẽ cả trang dựng sẵn đang nằm ngoài màn (như trước Task 3b), để so số đo. */
+    const val NO_OFFSCREEN_SKIP = "noOffscreenSkip"
+
     private val flags: Set<String> by lazy { if (BuildConfig.PERF_SWITCHES) read() else emptySet() }
 
     val noRealGlass: Boolean get() = NO_REAL_GLASS in flags
     val noFrosted: Boolean get() = NO_FROSTED in flags
     val noWidgets: Boolean get() = NO_WIDGETS in flags
+    val noGlassCache: Boolean get() = NO_GLASS_CACHE in flags
+    val noPrebuild: Boolean get() = NO_PREBUILD in flags
+    val noOffscreenSkip: Boolean get() = NO_OFFSCREEN_SKIP in flags
 
     private fun read(): Set<String> = try {
         val process = ProcessBuilder("getprop", PROP).redirectErrorStream(true).start()

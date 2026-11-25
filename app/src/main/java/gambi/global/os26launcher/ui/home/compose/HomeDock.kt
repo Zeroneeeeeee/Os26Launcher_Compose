@@ -22,7 +22,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import gambi.global.os26launcher.core.designsystem.DsCorner
 import gambi.global.os26launcher.core.designsystem.DsSurface
-import gambi.global.os26launcher.core.glass.compose.dsGlass
+import gambi.global.os26launcher.core.glass.compose.CachedGlass
+import gambi.global.os26launcher.core.perf.HomePerfLog
+import gambi.global.os26launcher.core.perf.PerfSwitches
 import gambi.global.os26launcher.core.ui.GridMetrics
 import gambi.global.os26launcher.domain.layout.FolderPlanner
 import gambi.global.os26launcher.domain.model.AppItem
@@ -44,7 +46,11 @@ internal fun HomeDock(
     icons: HomeIcons,
     edit: HomeEditContext,
     onAppClick: (AppItem, ScreenRect?) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** SW Task 3: danh tính ảnh nền (đổi thì chụp lại kính dock). */
+    glassKey: Any? = null,
+    /** SW Task 3: true khi Home đang trượt so với ảnh nền (Today / Thư viện): kính dock vẽ sống. Nên đọc state đã gộp. */
+    glassLive: () -> Boolean = { false }
 ) {
     val density = LocalDensity.current
     var widthPx by remember { mutableIntStateOf(0) }
@@ -62,10 +68,18 @@ internal fun HomeDock(
                 .then(if (glassHeight != null) Modifier.height(glassHeight) else Modifier.fillMaxSize()),
             contentAlignment = Alignment.CenterStart
         ) {
-        Box(
-            Modifier
-                .fillMaxSize()
-                .dsGlass(DsSurface.CARD, DsCorner.Fixed(CORNER_DP, glass = true))
+        // SW Task 3 (C', chủ dự án 2026-11-25): dock và ảnh nền sau nó đứng yên khi lướt trang, nên kính thật vẽ MỘT lần rồi giữ thành ảnh;
+        // chỉ vẽ lại khi đổi ảnh nền / thông số kính / cỡ dock, và vẽ sống trong lúc Home trượt theo Today / Thư viện. Kính tách khỏi lớp icon
+        // (Box riêng) nên icon rung / kéo / huy hiệu không làm kính vẽ lại. Công tắc đo `noGlassCache` tắt ảnh chụp (bản `perf`).
+        CachedGlass(
+            DsSurface.CARD,
+            DsCorner.Fixed(CORNER_DP, glass = true),
+            cacheKey = glassKey,
+            modifier = Modifier.fillMaxSize(),
+            live = glassLive,
+            enabled = !PerfSwitches.noGlassCache,
+            onLiveDraw = if (HomePerfLog.enabled) HomePerfLog::dockGlassLiveDraw else null,
+            onCaptured = if (HomePerfLog.enabled) { s -> HomePerfLog.dockGlassCaptured(s.width, s.height) } else null
         )
         // PG1 A1: icon rời dock không do kéo (dấu "−", ẩn) thu về 0 tại chỗ cũ; app mới vào dock không do kéo thì phình (AN Task 9d, DockView).
         // "Thay tại chỗ" (thư mục ở dock giải tán còn một app) so theo chỉ số ô.
