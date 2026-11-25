@@ -28,10 +28,10 @@ object WallpaperPresets {
     const val DEFAULT_ID = "wp_ios27_1"
 
     val list: List<WallpaperPreset> = listOf(
-        WallpaperPreset("wp_ios27_1", R.string.wallpaper_preset_ios27_1, R.drawable.wp_ios27_1, R.drawable.wp_ios27_1_thumb, isNew = true),
-        WallpaperPreset("wp_ios27_2", R.string.wallpaper_preset_ios27_2, R.drawable.wp_ios27_2, R.drawable.wp_ios27_2_thumb, isNew = true),
-        WallpaperPreset("wp_ios27_3", R.string.wallpaper_preset_ios27_3, R.drawable.wp_ios27_3, R.drawable.wp_ios27_3_thumb, isNew = true),
-        WallpaperPreset("wp_ios27_4", R.string.wallpaper_preset_ios27_4, R.drawable.wp_ios27_4, R.drawable.wp_ios27_4_thumb, isNew = true),
+        WallpaperPreset("wp_ios27_1", R.string.wallpaper_preset_ios27_1, R.drawable.wp_ios27_1, R.drawable.wp_ios27_1_thumb),
+        WallpaperPreset("wp_ios27_2", R.string.wallpaper_preset_ios27_2, R.drawable.wp_ios27_2, R.drawable.wp_ios27_2_thumb),
+        WallpaperPreset("wp_ios27_3", R.string.wallpaper_preset_ios27_3, R.drawable.wp_ios27_3, R.drawable.wp_ios27_3_thumb),
+        WallpaperPreset("wp_ios27_4", R.string.wallpaper_preset_ios27_4, R.drawable.wp_ios27_4, R.drawable.wp_ios27_4_thumb),
         WallpaperPreset("wp_lake", R.string.wallpaper_preset_lake, R.drawable.wp_lake, R.drawable.wp_lake_thumb),
         WallpaperPreset("wp_blue_wave", R.string.wallpaper_preset_blue_wave, R.drawable.wp_blue_wave, R.drawable.wp_blue_wave_thumb),
         WallpaperPreset("wp_red", R.string.wallpaper_preset_red, R.drawable.wp_red, R.drawable.wp_red_thumb),
