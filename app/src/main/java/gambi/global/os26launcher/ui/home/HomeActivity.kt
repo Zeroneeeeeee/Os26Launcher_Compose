@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.ViewTreeObserver
 import gambi.global.os26launcher.core.glass.GlassEnvironment
+import gambi.global.os26launcher.core.perf.HomePerfLog
 import gambi.global.os26launcher.core.perf.PerfSwitches
 import gambi.global.os26launcher.core.glass.compose.LocalDsFrostedBackdrop
 import gambi.global.os26launcher.core.glass.compose.rememberFrostedBackdrop
@@ -548,11 +549,13 @@ class HomeActivity : AppCompatActivity() {
         if (navBarHidden) applyNavBar() // PB Task 4
         // Cài đặt có thể vừa đổi ảnh nền (M8a Task 5, như BackdropController.onResume).
         if (sizeReported) viewModel.reloadBackdropIfChanged(rootWidth, rootHeight)
+        HomePerfLog.attach(this) // SW Task 1: log khung chậm (chỉ debug / perf)
     }
 
     override fun onPause() {
         super.onPause()
         defaultPrompt.onPause()
+        HomePerfLog.detach(this)
     }
 
     /** Home View thoát edit mode ở onStop, trừ khi đang đổi cấu hình (HomeActivity 354). */

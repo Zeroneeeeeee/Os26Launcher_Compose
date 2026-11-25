@@ -13,6 +13,8 @@ import gambi.global.os26launcher.domain.model.ComponentKey
 import gambi.global.os26launcher.domain.model.PlacedApp
 import gambi.global.os26launcher.domain.model.PlacedFolder
 import gambi.global.os26launcher.domain.model.PlacedWidgetBase
+import gambi.global.os26launcher.domain.model.PlacedWidget
+import gambi.global.os26launcher.domain.model.PlacedAppWidget
 import gambi.global.os26launcher.ui.home.IconMenuAction
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
@@ -66,6 +68,7 @@ import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import gambi.global.os26launcher.R
 import gambi.global.os26launcher.core.glass.BlurredBackdropCache
+import gambi.global.os26launcher.core.perf.HomePerfLog
 import gambi.global.os26launcher.core.perf.PerfSwitches
 import gambi.global.os26launcher.core.glass.GlassTuning
 import gambi.global.os26launcher.core.glass.compose.FrostedBackdrop
@@ -213,6 +216,8 @@ internal fun HomeScreen(
     SideEffect {
         pagerInfo.currentPage = pagerState.currentPage
         pagerInfo.scrolling = pagerState.isScrollInProgress
+        HomePerfLog.scrolling = pagerState.isScrollInProgress // SW Task 1: ngữ cảnh cho log khung chậm
+        HomePerfLog.currentPage = pagerState.currentPage
         pagerInfo.realPageCount = state.pages.size
         drag.actions = actions
         drag.pagerState = pagerState
@@ -236,6 +241,8 @@ internal fun HomeScreen(
     val overlayP = maxOf(menuProgress.value, folderProgress.value, removeOverlayProgress)
     val homeBackdrop = rememberLayerBackdrop()
     // 2026-11-23: menu nhấn giữ cũng lấy mẫu lớp Home (thấy icon phía sau nhoè qua menu, như iOS 26), không chỉ ảnh nền.
+    // SW Task 3: Home (trang, pill, dock) đang trượt so với ảnh nền theo Today / Thư viện → kính dock vẽ sống (ảnh chụp sai chỗ khi đang trượt).
+    val dockGlassLive by remember { derivedStateOf { libraryProgress() > 0f || todayProgress() > 0f } }
     val folderLayerOn = state.openFolderId != null || folderProgress.value > 0f || state.iconMenu != null || menuProgress.value > 0f ||
         removeOverlayProgress > 0f
     // PG4: công tắc đo (chỉ bản `perf`, `PerfSwitches`): bỏ nền của kính thật / lớp nền mờ tĩnh để so số đo.
@@ -410,7 +417,11 @@ internal fun HomeScreen(
                 ) {
                     HorizontalPager(
                         state = pagerState,
-                        beyondViewportPageCount = 1,
+                        // SW Task 3 (A, chủ dự án 2026-11-25): Home ít trang (tới [PREBUILD_ALL_MAX]) thì dựng sẵn MỌI trang để vuốt không phải dựng trang
+                        // giữa lúc trượt (đo SW Task 2: khung > 33 ms gần như luôn trùng lúc vừa dựng một trang); nhiều trang thì 1 mỗi bên (Task 3c).
+                        // Trước đây 1 (commit a350f1a: "nhiều trang thì giật" do kính thật ở trang đệm; nay chỉ trang đang hiện có kính thật, và đổi
+                        // nguồn kính không còn dựng lại cả trang: `LocalDsBackdrop` là compositionLocalOf). Công tắc đo `noPrebuild` (bản `perf`) về 1.
+                        beyondViewportPageCount = prebuiltPages(pages.size),
                         // JH2 Task 1 (H5): dừng trang theo đường easeOutQuint của TunedPagerSnapHelper; Compose không cho thời lượng theo từng cú vuốt nên lấy FULL_MS.
                         flingBehavior = PagerDefaults.flingBehavior(pagerState, snapAnimationSpec = tween(PageMotion.FULL_MS, easing = EaseOutQuint)),
                         key = { pages.getOrNull(it)?.pageId ?: it.toLong() },
@@ -425,14 +436,40 @@ internal fun HomeScreen(
                             .onGloballyPositioned { coords.pager = it; syncRects() }
                     ) { index ->
                         val page = pages.getOrNull(index)
-                        // 2026-11-23 (chủ dự án: nhiều trang thì giật): pager chỉ dựng trang hiện tại + 1 trang mỗi bên (beyondViewportPageCount = 1).
-                        // Trang đệm nằm ngoài màn vẫn vẽ ô thư mục/widget kính thật (RenderEffect mỗi khung), nên chỉ trang ĐANG HIỆN (một phần) được
-                        // lấy mẫu nền; trang đệm vẽ bề mặt tĩnh tới khi trượt vào.
+                        // SW Task 1: log đo thời gian dựng trang lần đầu (chỉ bản debug / perf; `HomePerfLog.enabled` là hằng lúc chạy).
+                        if (HomePerfLog.enabled) {
+                            val composeStart = remember { System.nanoTime() }
+                            val logged = remember { booleanArrayOf(false) }
+                            SideEffect {
+                                if (!logged[0] && page != null) {
+                                    logged[0] = true
+                                    HomePerfLog.pageComposed(
+                                        index,
+                                        (System.nanoTime() - composeStart) / 1_000_000.0,
+                                        widgets = page.items.count { it is PlacedWidget },
+                                        appWidgets = page.items.count { it is PlacedAppWidget },
+                                        items = page.items.size
+                                    )
+                                }
+                            }
+                        }
+                        // 2026-11-23 (chủ dự án: nhiều trang thì giật): trang đệm nằm ngoài màn vẫn vẽ widget kính thật (RenderEffect mỗi khung), nên
+                        // chỉ trang ĐANG HIỆN (một phần) được lấy mẫu nền; trang đệm vẽ bề mặt tĩnh tới khi trượt vào. SW Task 3: trang dựng sẵn hết
+                        // (xem beyondViewportPageCount), đổi nguồn ở đây chỉ dựng lại bề mặt kính (LocalDsBackdrop là compositionLocalOf).
                         val onScreen by remember(index) {
                             derivedStateOf { abs(index - (pagerState.currentPage + pagerState.currentPageOffsetFraction)) < 1f }
                         }
+                        // SW Task 3b (đo 2026-11-25, Oppo 15 trang): dựng sẵn mọi trang hết khựng lúc dựng trang nhưng trang ngoài màn vẫn được vẽ mỗi
+                        // khung (pha draw ×2, khung > 33 ms nhiều hơn). Trang ngoài màn KHÔNG vẽ: `onScreen` là derivedStateOf nên đọc trong pha vẽ chỉ
+                        // vẽ lại khi trang vào / ra màn. Công tắc đo `noOffscreenSkip` (bản `perf`) vẽ như trước.
+                        val skipOffscreen = !PerfSwitches.noOffscreenSkip
                         CompositionLocalProvider(LocalDsBackdrop provides if (onScreen) backdrop else null) {
-                            if (page != null && cells != null) HomeGridPage(page, cells, icons, edit, onAppClick, Modifier.fillMaxSize())
+                            if (page != null && cells != null) {
+                                HomeGridPage(
+                                    page, cells, icons, edit, onAppClick,
+                                    Modifier.fillMaxSize().drawWithContent { if (onScreen || !skipOffscreen) drawContent() }
+                                )
+                            }
                         }
                     }
                     HomeSearchPill(
@@ -468,6 +505,8 @@ internal fun HomeScreen(
                         icons = icons,
                         edit = edit,
                         onAppClick = onAppClick,
+                        glassKey = state.backdrop, // SW Task 3: đổi ảnh nền thì chụp lại kính dock
+                        glassLive = { dockGlassLive },
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(DOCK_WEIGHT)
@@ -567,6 +606,17 @@ private fun Wallpaper(bitmap: Bitmap?, modifier: Modifier) {
 // Trọng số như activity_home.xml (pager 6 = GridMetrics.DEFAULT_ROWS, dock 1).
 private const val PAGER_WEIGHT = 6f
 private const val FOLDER_SNAPSHOT_MIN_BLUR_PX = 4 // PG3: sàn bán kính mờ (px của bản nhỏ 25 %) cho ảnh chụp sau bảng thư mục, như sàn 24 dp của kính thật
+/**
+ * SW Task 3c: số trang dựng sẵn mỗi bên trang hiện tại. Đo 2026-11-25: Live 4 (4 trang) dựng sẵn hết thì Janky 1,05 → 0,16 %, mở app rồi vuốt
+ * 1,6 → 0,56 %; Oppo (15 trang) dựng sẵn hết thì XẤU hơn (2,35 → 2,99 %, khung > 33 ms 35 → 54) kể cả khi trang ngoài màn không vẽ: mỗi khung
+ * cuộn pager vẫn đặt chỗ mọi trang đã dựng. Nên chỉ dựng sẵn hết khi Home ít trang ([PREBUILD_ALL_MAX]); nhiều trang thì 1 mỗi bên như trước.
+ */
+private fun prebuiltPages(count: Int): Int = when {
+    PerfSwitches.noPrebuild -> 1
+    count <= PREBUILD_ALL_MAX -> (count - 1).coerceAtLeast(1)
+    else -> 1
+}
+private const val PREBUILD_ALL_MAX = 5
 private const val SETTLED_FRACTION = 0.01f // PG1 G1: lệch dưới 1 % bề rộng trang coi như đã đứng ở trang
 private const val DOCK_WEIGHT = 1f
 private const val PILL_IDLE_MS = 600L

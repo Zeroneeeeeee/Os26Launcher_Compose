@@ -10,6 +10,7 @@
 
   Kịch bản:
     swipe  - lướt qua lại giữa trang 1 và trang -Pages (không chạm Today / Thư viện). Home phải mở ở trang 1.
+    cold   - SW: vuốt ngay sau khi mở app (một lượt đi-về qua -Pages trang), đo cú khựng của lần đầu; dùng kèm -WarmupSec 1.
     jiggle - nhấn giữ chỗ trống (-GapX, -GapY) vào edit mode, đứng yên -IdleSec giây (icon rung).
     folder - chạm ô thư mục (-FolderX, -FolderY) rồi Back, -Cycles lần.
     idle   - đứng yên -IdleSec giây.
@@ -20,7 +21,7 @@
   .\tools\perf\measure-home.ps1 -Scenario jiggle -GapX 540 -GapY 1500 -Configs full,noRealGlass
 #>
 param(
-    [ValidateSet('swipe', 'jiggle', 'folder', 'idle')] [string]$Scenario = 'swipe',
+    [ValidateSet('swipe', 'cold', 'jiggle', 'folder', 'idle')] [string]$Scenario = 'swipe',
     [string[]]$Configs = @('full', 'noRealGlass', 'noRealGlass+noFrosted', 'noRealGlass+noFrosted+noWidgets'),
     [int]$Rounds = 3,
     [int]$Pages = 2,
@@ -35,7 +36,10 @@ param(
     [int]$WarmupSec = 4,
     [string]$Serial = '',
     # Đặt app làm launcher mặc định trước khi đo: không thì mỗi lần mở Home hiện hộp hỏi "đặt làm mặc định" (PB) che màn và làm sai số đo.
-    [bool]$SetHome = $true
+    [bool]$SetHome = $true,
+    # SW: ép ART biên dịch xong app (theo profile) trước khi đo. Vừa cài APK thì máy yếu còn biên dịch nền vài phút, làm số đo xấu đi
+    # ở MỌI cấu hình (đo 2026-11-25, Live 4: 6–10 % so với 0–1 % sau khi biên dịch xong). Bỏ qua với bản debug.
+    [bool]$Compile = $true
 )
 
 $ErrorActionPreference = 'Stop'
@@ -75,7 +79,19 @@ function Read-GfxInfo {
         P90    = Get-Number $text '^\s*90th percentile:\s*(\d+)ms'
         P95    = Get-Number $text '^\s*95th percentile:\s*(\d+)ms'
         P99    = Get-Number $text '^\s*99th percentile:\s*(\d+)ms'
+        # SW: số khung > 33 ms (cú khựng mắt thấy) đếm từ HISTOGRAM của gfxinfo (lần xuất hiện đầu = toàn app).
+        Slow33 = Get-Slow33 $text
     }
+}
+
+function Get-Slow33([string]$text) {
+    $m = [regex]::Match($text, '^\s*HISTOGRAM:(.*)$', 'Multiline')
+    if (-not $m.Success) { return $null }
+    $sum = 0
+    foreach ($b in [regex]::Matches($m.Groups[1].Value, '(\d+)ms=(\d+)')) {
+        if ([int]$b.Groups[1].Value -gt 33) { $sum += [int]$b.Groups[2].Value }
+    }
+    return $sum
 }
 
 function Get-BatteryTemp {
@@ -96,6 +112,17 @@ function Start-Home([string]$config) {
 function Invoke-Scenario([int]$w, [int]$h) {
     $y = [int]($h * 0.45)
     switch ($Scenario) {
+        'cold' {
+            $left = [int]($w * 0.2); $right = [int]($w * 0.8)
+            for ($i = 1; $i -lt $Pages; $i++) {
+                Invoke-Adb shell input swipe $right $y $left $y $SwipeMs | Out-Null
+                Start-Sleep -Milliseconds $SettleMs
+            }
+            for ($i = 1; $i -lt $Pages; $i++) {
+                Invoke-Adb shell input swipe $left $y $right $y $SwipeMs | Out-Null
+                Start-Sleep -Milliseconds $SettleMs
+            }
+        }
         'swipe' {
             $left = [int]($w * 0.2); $right = [int]($w * 0.8)
             for ($c = 0; $c -lt $Cycles; $c++) {
@@ -139,7 +166,7 @@ function Enter-EditMode {
 $Configs = @($Configs | ForEach-Object { $_ -split '[,;]' } | ForEach-Object { $_.Trim() } | Where-Object { $_ })
 
 # Kiểm tham số
-if ($Scenario -eq 'swipe' -and $Pages -lt 2) { throw '-Pages phải >= 2 (số trang lưới thật để lướt qua lại).' }
+if (($Scenario -eq 'swipe' -or $Scenario -eq 'cold') -and $Pages -lt 2) { throw '-Pages phải >= 2 (số trang lưới thật để lướt qua lại).' }
 if ($Scenario -eq 'jiggle' -and ($GapX -lt 0 -or $GapY -lt 0)) { throw 'jiggle cần -GapX -GapY (toạ độ một chỗ trống trên trang 1).' }
 if ($Scenario -eq 'folder' -and ($FolderX -lt 0 -or $FolderY -lt 0)) { throw 'folder cần -FolderX -FolderY (tâm ô thư mục trên trang 1).' }
 
@@ -150,6 +177,10 @@ if ($flags -match 'pkgFlags=\[[^\]]*DEBUGGABLE') {
     Write-Warning 'App đang cài là bản DEBUG: số đo không đại diện (trình thông dịch). Cài bản perf: .\gradlew.bat installPerf'
 }
 $size = Get-ScreenSize
+if ($Compile -and -not ($flags -match 'pkgFlags=\[[^\]]*DEBUGGABLE')) {
+    Write-Host 'Đang ép biên dịch app (cmd package compile -m speed-profile -f), có thể mất một lúc trên máy yếu...'
+    Invoke-Adb shell cmd package compile -m speed-profile -f $pkg | Out-Null
+}
 if ($SetHome) {
     Invoke-Adb shell cmd package set-home-activity $activity | Out-Null
     Write-Host "Đã đặt $activity làm launcher mặc định (tắt bằng -SetHome `$false)."
@@ -160,23 +191,36 @@ $plan = @()
 for ($r = 1; $r -le $Rounds; $r++) { foreach ($c in $Configs) { $plan += [pscustomobject]@{ Round = $r; Config = $c } } }
 $plan += [pscustomobject]@{ Round = 'cuối'; Config = $Configs[0] }
 
+$outDir = Join-Path $PSScriptRoot 'out'
+New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+$stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+
 $results = @()
 foreach ($step in $plan) {
     Write-Host "-> vòng $($step.Round): $($step.Config)"
     Start-Home $step.Config
     if ($Scenario -eq 'jiggle') { Enter-EditMode }
     Invoke-Adb shell dumpsys gfxinfo $pkg reset | Out-Null
+    Invoke-Adb logcat -c | Out-Null
     Invoke-Scenario $size[0] $size[1]
     $g = Read-GfxInfo
+    # SW: log khung chậm / dựng trang của app (HomePerfLog, chỉ bản debug / perf), lưu mỗi lượt.
+    $log = Invoke-Adb logcat -d -s SwFrame:I SwPage:I SwDock:I
+    $logFile = Join-Path $outDir ("{0}-{1}-{2}-r{3}-{4}.log" -f $stamp, ($model -replace '\W', ''), $Scenario, $step.Round, ($step.Config -replace '\W', '_'))
+    $log | Set-Content -Path $logFile -Encoding UTF8
+    $slowLog = @($log | Select-String -SimpleMatch 'SwFrame').Count
+    $pageLog = @($log | Select-String -SimpleMatch 'composed page=').Count
+    $dockLive = @($log | Select-String -SimpleMatch 'live draw').Count # SW: số lần kính dock vẽ sống (RenderEffect chạy)
     $results += [pscustomobject]@{
         Model = $model; Api = $sdk; Scenario = $Scenario; Round = $step.Round; Config = $step.Config
-        Frames = $g.Frames; JankyPct = $g.Janky; P50 = $g.P50; P90 = $g.P90; P95 = $g.P95; P99 = $g.P99
+        Frames = $g.Frames; JankyPct = $g.Janky; P50 = $g.P50; P90 = $g.P90; P95 = $g.P95; P99 = $g.P99; Slow33 = $g.Slow33
+        SlowLog = $slowLog; PagesComposed = $pageLog; DockLive = $dockLive
         TempC = Get-BatteryTemp
     }
 }
 Invoke-Adb shell setprop debug.os26.perf none | Out-Null
 
-$results | Format-Table Round, Config, Frames, JankyPct, P50, P90, P95, P99, TempC -AutoSize
+$results | Format-Table Round, Config, Frames, JankyPct, P50, P90, P95, P99, Slow33, SlowLog, PagesComposed, DockLive, TempC -AutoSize
 
 Write-Host 'Trung bình theo cấu hình (bỏ lượt lặp cuối):'
 $results | Where-Object { $_.Round -ne 'cuối' } | Group-Object Config | ForEach-Object {
@@ -186,11 +230,10 @@ $results | Where-Object { $_.Round -ne 'cuối' } | Group-Object Config | ForEac
         P50      = [math]::Round(($_.Group | Measure-Object P50 -Average).Average, 1)
         P95      = [math]::Round(($_.Group | Measure-Object P95 -Average).Average, 1)
         P99      = [math]::Round(($_.Group | Measure-Object P99 -Average).Average, 1)
+        Slow33   = [math]::Round(($_.Group | Measure-Object Slow33 -Average).Average, 1)
     }
 } | Format-Table -AutoSize
 
-$outDir = Join-Path $PSScriptRoot 'out'
-New-Item -ItemType Directory -Force -Path $outDir | Out-Null
-$file = Join-Path $outDir ("{0}-{1}-{2}.csv" -f (Get-Date -Format 'yyyyMMdd-HHmmss'), ($model -replace '\W', ''), $Scenario)
+$file = Join-Path $outDir ("{0}-{1}-{2}.csv" -f $stamp, ($model -replace '\W', ''), $Scenario)
 $results | Export-Csv -Path $file -NoTypeInformation -Encoding UTF8
 Write-Host "CSV: $file"
