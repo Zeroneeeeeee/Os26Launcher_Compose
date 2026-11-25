@@ -163,7 +163,8 @@ fun SettingsList(
             contentPadding = PaddingValues(
                 top = dimensionResource(R.dimen.ds_screen_content_top),
                 bottom = dimensionResource(R.dimen.ds_screen_content_bottom)
-            )
+            ),
+            overscrollEffect = null
         ) {
             itemsIndexed(rows, key = { _, row -> row.id }, contentType = { _, row -> row::class }) { i, row ->
                 val kind = kinds[i]
@@ -263,7 +264,6 @@ private fun Modifier.clipGroupCorners(first: Boolean, last: Boolean): Modifier =
 
 @Composable
 private fun CardRow(row: SettingsRow, last: Boolean, actions: SettingsListActions, resetKey: Int) {
-    val context = LocalContext.current
     when (row) {
         is SettingsRow.Value -> {
             val title = row.titleText ?: stringResource(row.title)
