@@ -113,8 +113,14 @@ internal fun HomeFolderPanel(
     onRemoveApp: (ComponentKey) -> Unit,
     onRename: (Long, String) -> Unit,
     onClose: () -> Unit,
-    /** PG3 Task 2 Step 3: nền mờ tĩnh của bảng dưới API 31 (ảnh chụp lớp Home đã mờ, hoặc ảnh nền mờ khi ảnh chụp chưa xong). */
-    frostedBackdrop: Backdrop? = null
+    /** PG3 Task 2 Step 3: nền mờ tĩnh của bảng dưới API 31 (FX Task 6: luôn là ảnh nền mờ, có ngay từ khung đầu). */
+    frostedBackdrop: Backdrop? = null,
+    /**
+     * FX Task 6 (dưới API 31): ảnh chụp lớp Home đã mờ (thấy icon phía sau), tới muộn vài trăm ms sau khi mở. Vẽ thành một lớp kính thứ hai
+     * cùng kiểu, hiện dần theo [shotAlpha], đè lên kính ảnh nền: không đổi phắt nền của bảng khi ảnh chụp tới.
+     */
+    frostedShot: Backdrop? = null,
+    shotAlpha: () -> Float = { 1f }
 ) {
     val drag = edit.drag
     var shown by remember { mutableStateOf(folder) }
@@ -246,6 +252,15 @@ internal fun HomeFolderPanel(
                 )
                 .graphicsLayer { clip = true } // FM-2: trang bên cạnh không lộ ra ngoài khung
         ) {
+            if (frostedShot != null) {
+                Box(
+                    Modifier
+                        .matchParentSize()
+                        .graphicsLayer { alpha = shotAlpha() }
+                        .dsGlass(DsSurface.CARD, DsCorner.Fixed(PANEL_RADIUS_DP, glass = true), backdrop, fixedBlurDp = FOLDER_MIN_BLUR_DP, frosted = frostedShot, surfaceFill = false)
+                        .background(colorResource(R.color.folder_panel_glass_tint))
+                )
+            }
             val page = drag.folderPage
             val previewing = drag.folderPreview != null
             // PG1 A1: app bị bỏ khỏi thư mục không do kéo (dấu "−") thu về 0 tại ô cũ (AN Task 9d, FolderPanelView); các app sau trượt như cũ.

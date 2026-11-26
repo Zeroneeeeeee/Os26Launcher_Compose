@@ -85,6 +85,18 @@
 **Files:** `HomeScreen.kt`.
 - [x] Step 1: Dưới API 31, ngay trước `HomeFolderPanel`: Box toàn màn `graphicsLayer { alpha = folderProgress }` + `drawPlainBackdrop(folderFrosted, RectangleShape, FrostedNoEffects, onDrawSurface = tối FOLDER_DIM)` khi `folderFrosted.backdropOrNull != null` (R6). Commit `fix: blur home behind folder panel below Android 12`.
 
+### Task 6: Nền mờ dưới Android 12 đậm dần theo hoạt ảnh phóng (sau kiểm, chủ dự án 2026-11-26 17:03)
+
+Chủ dự án kiểm Task 4: mờ "độp 1 phát". Nguyên nhân (đọc code): ảnh chụp lớp Home chỉ bắt đầu sau khi mở (2 khung + chép ảnh + làm mờ ở
+luồng nền), tới khi bảng đã phóng xong (`folderProgress` ≈ 1) nên hiện đậm ngay; kính bảng cũng đổi phắt từ ảnh nền mờ sang ảnh chụp.
+Chủ dự án chọn cách 1 (không chờ ảnh chụp rồi mới phóng).
+
+**Files:** `HomeScreen.kt`, `HomeFolderPanel.kt`.
+- [x] Step 1: Lớp phủ dưới API 31 = ảnh nền mờ (`frostedBackdrop`, có ngay) + ảnh chụp mờ (`folderShotAlpha`, `tween(150)` khi tới) + tối
+  `FOLDER_DIM`, cả khối alpha theo `folderProgress`.
+- [x] Step 2: Kính bảng luôn dùng ảnh nền mờ; ảnh chụp vẽ thành lớp kính thứ hai cùng kiểu trong bảng, alpha `folderShotAlpha`.
+- [x] Step 3: Commit `fix: folder backdrop blur fades in with the panel below Android 12`.
+
 ### Task 5: Docs
 
 - [x] `lessons/` (bài học bước trang/cắt khung, ảnh nổi menu), `BACKLOG.md` (B12, B16, B17, B18 → Đã xong khi chủ dự án kiểm), `README.md`. Commit `docs: FX folder polish`.
@@ -107,3 +119,4 @@
 | 2026-11-26 | 4 | Dưới API 31: Box toàn màn `drawPlainBackdrop(folderFrosted)` + tối `FOLDER_DIM`, alpha `folderProgress`, ngay dưới `HomeFolderPanel` | Rà bằng đọc code (chữ ký `drawPlainBackdrop` đối chiếu `DsFrosted.dsFrosted`), chưa build |
 | 2026-11-26 | 5 | Bài học ở `lessons/icons-and-app-list.md`, `drag-and-layout.md`, `glass.md`; README, BACKLOG (B12, B16–B18 chờ kiểm) | |
 | 2026-11-26 | Rà cuối | Tự rà toàn nhánh (không có reviewer riêng: chủ dự án không yêu cầu subagent) bằng đọc diff `7bb531f..HEAD` + grep tham chiếu đã xóa | Cần chủ dự án build: Claude không biên dịch được trong VM |
+| 2026-11-26 | 6 | Chủ dự án kiểm: mờ hiện độp → lớp phủ ảnh nền mờ theo `folderProgress` + ảnh chụp hiện dần 150 ms (nền và kính bảng) | Chưa build |
