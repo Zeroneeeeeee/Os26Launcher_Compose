@@ -130,15 +130,5 @@
             android:exported="true"
             android:permission="android.permission.DUMP"
             android:theme="@style/Theme.Os26Launcher.Ds" />
-        <!-- CF: CHỈ BẢN DEBUG. Áp theme bằng adb (xem ThemeDebugReceiver). Cùng cách bảo vệ như CP/WN: exported=true để `adb shell am broadcast`
-             gửi được, android:permission=DUMP để app khác không áp được. -->
-        <receiver
-            android:name="gambi.global.os26launcher.debug.ThemeDebugReceiver"
-            android:exported="true"
-            android:permission="android.permission.DUMP">
-            <intent-filter>
-                <action android:name="gambi.global.os26launcher.CF_APPLY_THEME" />
-            </intent-filter>
-        </receiver>
     </application>
 </manifest>

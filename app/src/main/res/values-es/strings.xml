@@ -129,7 +129,6 @@
     <!-- G2b: kiểu icon -->
     <string name="settings_icon_style">Estilo de iconos</string>
     <string name="settings_icon_style_default">Predeterminado</string>
-    <string name="settings_icon_style_transparent">Transparente</string>
     <string name="settings_icon_style_tinted">Teñido</string>
     <string name="settings_icon_style_3d">3D</string>
     <string name="settings_icon_style_glass">Cristal</string>
@@ -400,7 +399,6 @@
     <string name="settings_hub_group_transitions">Transiciones</string>
     <string name="settings_hub_group_icons">Personalización de iconos</string>
     <string name="settings_hub_group_contact">Contacto</string>
-    <string name="settings_hub_theme">Pantalla de inicio predeterminada</string>
     <string name="settings_hub_general">General</string>
     <string name="settings_hub_language">Idioma</string>
     <string name="settings_hub_weather">Tiempo</string>
@@ -422,7 +420,6 @@
     <!-- RS Task 2: card "Launcher hiện tại" đầu trang chủ Cài đặt (Figma 302:1522). -->
     <string name="settings_launcher_card_current">Pantalla de inicio actual</string>
     <string name="settings_launcher_card_not_default">No es el predeterminado</string>
-    <string name="settings_launcher_card_custom">Personalizado</string>
     <string name="settings_launcher_card_welcome">Te damos la bienvenida</string>
     <string name="settings_launcher_card_welcome_desc">Tu propio centro de control. Personaliza cada detalle para que tu pantalla de inicio refleje tu estilo.</string>
     <string name="settings_launcher_card_explore">Explorar</string>
@@ -431,10 +428,6 @@
     <string name="hero_default_set_toast">Establecido como predeterminado</string>
     <!-- HC Task 3: tiêu đề màn 6.2 (Figma "Ứng dụng khác"; hàng trên trang chủ giữ settings_hub_more_apps). -->
     <string name="settings_more_apps_title">Más apps</string>
-    <!-- RS Task 6: màn 1.1 Màn hình chính mặc định (Figma 302:1738). -->
-    <string name="settings_theme_subtitle">Cada launcher cambia tu pantalla de inicio, los iconos y los efectos.</string>
-    <string name="settings_theme_apply_default">Aplicar y establecer como predeterminado</string>
-    <string name="settings_theme_apply">Aplicar</string>
     <!-- RS Task 7: card xem trước thời tiết (dữ liệu mẫu) ở màn 1.4. -->
     <string name="settings_weather_preview_degree">%1$d°</string>
     <string name="settings_weather_preview_high_low">Máx. %1$s · Mín. %2$s</string>
@@ -447,7 +440,6 @@
     <!-- WI: tên 5 hình nền cài sẵn (ảnh thử, xem plan WI) ở 0.3 và 2.2; nút ngắn của hộp hỏi đặt mặc định khi về Home. -->
     <string name="default_prompt_set">Establecer</string>
     <!-- RS Task 8: giờ minh họa trên ô ảnh nền (Figma 2.2). -->
-    <string name="settings_theme_note">Se abrirá un diálogo del sistema para que elijas la app de pantalla de inicio.</string>
     <string name="settings_hub_version">Versión %1$s</string>
     <!-- AB: nhóm Liên hệ (tiền tố about_) -->
     <string name="about_rate_title">¿Qué te parece la app?</string>
@@ -516,8 +508,6 @@
     <string name="wx_loc_city_unset">Sin elegir</string>
     <string name="wx_loc_pick_city">Elegir ciudad</string>
     <string name="wx_loc_unavailable">No se pudo obtener tu ubicación. Activa los servicios de ubicación o elige una ciudad manualmente.</string>
-    <string name="wx_loc_denied">Permiso de ubicación no concedido. Aún puedes elegir una ciudad manualmente.</string>
-    <string name="wx_loc_denied_settings">El permiso de ubicación está bloqueado. Concédelo en los ajustes de la app.</string>
     <string name="wx_loc_privacy">Solo se usa la ubicación aproximada, obtenida una vez cada vez: cuando tocas Actualizar ubicación o (modo Automático con permiso) como máximo cada 2 horas mientras se ve un widget del tiempo con Ubicación actual, y solo cambia si te desplazas más de 5 km. Nada se ejecuta en segundo plano ni se hace seguimiento continuo. El modo Elegir manualmente no necesita permiso y nunca lee tu ubicación.</string>
     <string name="wx_sheet_for_widget">Este widget muestra:</string>
     <string name="wx_sheet_current_named">Ubicación actual: %1$s</string>
@@ -627,16 +617,8 @@
     <string name="onboarding_go_settings">Ir a Ajustes</string>
     <string name="onboarding_welcome_title">Un aspecto de cristal líquido para tu teléfono</string>
     <string name="onboarding_welcome_subtitle">Iconos transparentes, fondos vivos y efectos fluidos: solo unos pasos para empezar.</string>
-    <string name="onboarding_theme_title">Elige un estilo</string>
-    <string name="onboarding_theme_subtitle">Puedes cambiarlo cuando quieras en Ajustes.</string>
-    <string name="onboarding_theme_liquid_glass_27">Liquid Glass 27</string>
-    <string name="onboarding_theme_liquid_glass_27_desc">Transparente, refractivo</string>
-    <string name="onboarding_theme_classic_26">Classic 26</string>
-    <string name="onboarding_theme_classic_26_desc">Cálido, iconos de colores suaves</string>
-    <string name="onboarding_theme_minimal">Minimal</string>
-    <string name="onboarding_theme_minimal_desc">Sencillo, líneas finas</string>
-    <string name="onboarding_theme_dark_pro">Dark Pro</string>
-    <string name="onboarding_theme_dark_pro_desc">Fondo oscuro, iconos redondos</string>
+    <string name="onboarding_icon_style_title">Elige un estilo de iconos</string>
+    <string name="onboarding_icon_style_subtitle">Puedes cambiarlo cuando quieras en Ajustes.</string>
     <string name="onboarding_badge_new">NUEVO</string>
     <string name="onboarding_wallpaper_title">Elige un fondo de pantalla</string>
     <string name="onboarding_wallpaper_subtitle">Un buen fondo hace que el efecto cristal destaque más.</string>
@@ -646,7 +628,6 @@
     <string name="onboarding_default_step2">Elige %1$s en el diálogo del sistema</string>
     <string name="onboarding_done_title">¡Todo listo!</string>
     <string name="onboarding_done_subtitle">Explora tu nuevo aspecto y ajústalo cuando quieras en Ajustes.</string>
-    <string name="onboarding_done_theme">Estilo</string>
     <string name="onboarding_done_wallpaper">Fondo de pantalla</string>
     <string name="onboarding_done_home">Pantalla de inicio</string>
     <string name="onboarding_done_home_set">Establecido como predeterminado</string>
@@ -768,4 +749,10 @@
     </plurals>
     <string name="icon_style_preview_description">Vista previa del estilo de icono seleccionado</string>
     <string name="settings_search_suggestions_description">Búsquedas populares cuando el campo de búsqueda está vacío</string>
+    <!-- PM (2026-11-26): hộp "quyền bị chặn" (core/permission/PermissionRequester). -->
+    <string name="perm_blocked_grant">Dar permiso</string>
+    <string name="perm_blocked_location_title">Se necesita el permiso de ubicación</string>
+    <string name="perm_blocked_location_message">El tiempo usa tu ubicación aproximada para mostrar el tiempo donde estás. Solo se usa para el tiempo y no se sigue de forma continua. Has rechazado este permiso, así que Android no volverá a preguntar. Toca Dar permiso y luego Permisos → Ubicación → Permitir.</string>
+    <string name="perm_blocked_contacts_title">Se necesita el permiso de contactos</string>
+    <string name="perm_blocked_contacts_message">La búsqueda lee tus contactos para que encuentres personas por nombre y las llames o les escribas rápido. Los contactos solo se leen en este teléfono y nunca se envían a ningún sitio. Has rechazado este permiso, así que Android no volverá a preguntar. Toca Dar permiso y luego Permisos → Contactos → Permitir.</string>
 </resources>

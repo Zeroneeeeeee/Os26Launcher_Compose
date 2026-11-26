@@ -76,3 +76,15 @@ Mỗi mục giữ nguyên ngày, nhãn nguồn (đo được / đọc code / đ�
   đều đo bằng kích thước pager) đặt `true`.
 - **Bài học:** hằng/công thức trong lớp dùng chung mà dựa vào ngữ cảnh của một nơi gọi (ở đây: "heightPx là pager") phải bật theo
   cờ của nơi gọi đó, không áp mặc định cho mọi nơi gọi. Khi thêm luật vào `GridMetrics`, grep mọi chỗ `GridMetrics(` / `.measure(` trước.
+
+## FX — icon thư mục to hơn Home, lệch khi tắt nhãn (2026-11-26, đọc code + video máy Android 11)
+
+- **Triệu chứng:** tắt "Hiện tên" thì icon trong bảng thư mục ~92dp (Home 4 cột ~60dp) và dồn lên đỉnh ô; cột đầu của trang kế ló vào mép phải bảng.
+- **Gốc:** bảng tự đo lưới 3 × 3 bằng `GridMetrics(3, 3, showLabels)` từ thời XML (cơ chế, không phải quyết định thiết kế). Tắt nhãn thì icon
+  lấy cả chỗ nhãn nhưng ô giữ chiều cao cũ, mà `HomeAppCell` căn `TopCenter`. Bước trang = cạnh lưới trong khi bảng cắt theo khung có đệm.
+  Lệch cỡ lộ ra từ 2026-11-23 khi icon Home đổi sang công thức iOS (chỉ áp với `capToDock`).
+- **Sửa (plan FX):** đo lưới như CÓ nhãn, tắt nhãn thì đẩy `paddingTop` nửa phần ô thừa (`folderCells`); bước trang = cạnh khung.
+  Icon nổi của menu nhấn giữ lấy cỡ theo khung neo, không lấy cỡ icon Home.
+- **Bài học:** (1) Khi đổi công thức cỡ icon ở một lưới, rà mọi lưới khác dùng `GridMetrics` (thư mục, Today, recents) xem có còn khớp cỡ.
+  (2) Nội dung nhiều trang cuộn trong khung bị cắt theo khung: bước trang phải bằng bề ngang vùng CẮT, không phải bề ngang vùng nội dung.
+  (3) Bản sao "icon nổi" vẽ ở lớp phủ phải lấy cỡ từ chính khung icon thật, vì icon cùng app có cỡ khác nhau ở Home, dock và thư mục.

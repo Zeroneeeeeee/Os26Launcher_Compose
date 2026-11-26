@@ -29,6 +29,8 @@ import gambi.global.os26launcher.ui.settings.SettingsActivity
 import gambi.global.os26launcher.ui.settings.SettingsScreenId
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.roundToInt
+import gambi.global.os26launcher.ui.onboarding.compose.ONB_STYLE_ICON_DP
 
 /**
  * OB — luồng Onboarding 0.1–0.5 (plan `docs/plans/OB-onboarding.md`). Mở từ `HomeActivity.onCreate` khi chưa xem xong.
@@ -40,6 +42,7 @@ import javax.inject.Inject
 class OnboardingActivity : AppCompatActivity() {
 
     private val viewModel: OnboardingViewModel by viewModels()
+    private val iconChoices: IconStyleChoicesViewModel by viewModels() // TR: icon mẫu của bước chọn kiểu icon
 
     @Inject
     lateinit var defaultLauncherRepository: DefaultLauncherRepository
@@ -73,17 +76,19 @@ class OnboardingActivity : AppCompatActivity() {
                     startActivity(Intent(this, SettingsActivity::class.java).putExtra(SettingsActivity.EXTRA_SCREEN, SettingsScreenId.LANGUAGE.name))
                 }
             },
-            onChooseTheme = viewModel::chooseTheme,
+            onChooseIconStyle = viewModel::chooseIconStyle,
             onChooseSwatch = viewModel::chooseSwatch,
             onJump = { if (!transitioning) viewModel.jumpTo(it) }
         )
         val languageName = AppLanguages.effective().nativeName
+        iconChoices.start((ONB_STYLE_ICON_DP * resources.displayMetrics.density).roundToInt())
         setContent {
             val step by viewModel.step.collectAsStateWithLifecycle()
-            val theme by viewModel.theme.collectAsStateWithLifecycle()
+            val iconStyle by viewModel.iconStyle.collectAsStateWithLifecycle()
+            val iconPreviews by iconChoices.previews.collectAsStateWithLifecycle()
             val swatch by viewModel.swatch.collectAsStateWithLifecycle()
             @Suppress("UNUSED_VARIABLE") val tick = resumeTick // đọc để 0.5 dựng lại sau onResume
-            OnboardingScreen(OnboardingUi(step, theme, swatch, viewModel.isDefaultLauncher(), languageName), actions)
+            OnboardingScreen(OnboardingUi(step, iconStyle, iconPreviews, swatch, viewModel.isDefaultLauncher(), languageName), actions)
         }
         reassertEdgeToEdge(window) // EF: Tecno Spark 40 (Android 15) mất tràn viền sau recreate()
 

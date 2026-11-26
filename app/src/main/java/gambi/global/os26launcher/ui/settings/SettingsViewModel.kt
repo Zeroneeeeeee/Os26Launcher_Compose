@@ -109,7 +109,6 @@ class SettingsViewModel @Inject constructor(
             glassCustom = settings.glassCustom, // GS
             realGlassCapable = glassEnvironment.realGlassCapable,
             glassLook = settings.glassLook, // GT
-            themeId = settings.themeId, // RS
             wallpaperKind = settings.wallpaperKind, // RS Task 8
             wallpaperColor = settings.wallpaperColor,
             wallpaperPreset = settings.wallpaperPreset, // WI
@@ -276,9 +275,8 @@ class SettingsViewModel @Inject constructor(
     fun onIconStyleChosen(style: IconStyle) {
         viewModelScope.launch {
             try {
-                // P3-3 (chủ dự án 2026-11-20, phương án b): người dùng tự chọn kiểu thì tắt lớp nổi 3D mà theme bật (iconBevel), để kiểu hiện
-                // đúng như tên ("Mặc định" phẳng). Chọn lại đúng kiểu đang dùng vẫn tắt nổi; ghi trùng thì repository bỏ qua (putIfChanged).
-                appearance.update { it.copy(iconStyle = style, iconBevel = false) }
+                // Ghi trùng thì repository bỏ qua (putIfChanged). TR: cờ nổi 3D của theme đã bỏ, chỉ kiểu 3D còn nổi.
+                appearance.update { it.copy(iconStyle = style) }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

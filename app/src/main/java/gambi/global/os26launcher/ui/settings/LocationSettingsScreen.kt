@@ -15,6 +15,9 @@ import gambi.global.os26launcher.domain.model.weather.WeatherPlaces
 import gambi.global.os26launcher.ui.weather.CitySearchDialog
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import gambi.global.os26launcher.core.permission.PermissionKind
+import gambi.global.os26launcher.core.permission.PermissionRequester
+import gambi.global.os26launcher.core.permission.openAppDetailsSettings
 
 /**
  * WX Task 4 — màn "Vị trí" (1.5): quyền vị trí, chế độ Tự động / Chọn thủ công, "Cập nhật vị trí" (Tự động) hoặc chọn thành phố (Thủ công).
@@ -31,21 +34,8 @@ class LocationSettingsScreen(private val ctx: SettingsScreenContext) : SettingsS
     private var locating = false
     private val citySearch = CitySearchDialog(activity) { viewModel.setManualPlace(it) }
 
-    private val permissionLauncher =
-        activity.registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            when {
-                granted -> if (places.mode == LocationMode.AUTO) viewModel.updateAutoPlace(fallbackName())
-
-                // Không hiện hộp quyền nữa (đã từ chối "không hỏi lại"): chỉ còn cài đặt ứng dụng.
-                !ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_COARSE_LOCATION) -> {
-                    Toast.makeText(activity, R.string.wx_loc_denied_settings, Toast.LENGTH_LONG).show()
-                    openAppSettings()
-                }
-
-                else -> Toast.makeText(activity, R.string.wx_loc_denied, Toast.LENGTH_LONG).show()
-            }
-            ctx.rerender(false)
-        }
+    // PM (2026-11-26): luật xin quyền chung — hộp hệ thống, hoặc hộp "Cấp quyền" khi bị chặn; từ chối / chạm ngoài thì không báo gì (R4).
+    private val permission = PermissionRequester(activity, PermissionKind.LOCATION)
 
     override val titleRes: Int = R.string.settings_hub_location
 
@@ -94,7 +84,7 @@ class LocationSettingsScreen(private val ctx: SettingsScreenContext) : SettingsS
     override fun onValueClicked(row: SettingsRow.Value) {
         when (row.id) {
             SettingsRow.ID_LOCATION_PERMISSION ->
-                if (viewModel.hasPermission()) openAppSettings() else requestPermission() // đã cấp: bấm để mở cài đặt ứng dụng (thu hồi)
+                if (viewModel.hasPermission()) openAppDetailsSettings(activity) else requestPermission() // đã cấp: bấm để mở cài đặt ứng dụng (thu hồi)
 
             SettingsRow.ID_LOCATION_UPDATE ->
                 if (viewModel.hasPermission()) viewModel.updateAutoPlace(fallbackName()) else requestPermission()
@@ -139,23 +129,17 @@ class LocationSettingsScreen(private val ctx: SettingsScreenContext) : SettingsS
 
     override fun onDestroy() {
         citySearch.dismiss()
+        permission.dismissDialog()
     }
 
     private fun requestPermission() {
-        permissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+        permission.request { granted ->
+            if (granted && places.mode == LocationMode.AUTO) viewModel.updateAutoPlace(fallbackName())
+            ctx.rerender(false)
+        }
     }
 
     private fun fallbackName(): String = activity.getString(R.string.wx_places_current)
-
-    private fun openAppSettings() {
-        try {
-            activity.startActivity(
-                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", activity.packageName, null))
-            )
-        } catch (e: ActivityNotFoundException) {
-            // ROM không có màn này: bỏ qua
-        }
-    }
 
     private companion object {
         const val ID_MODE_AUTO = "location_mode_auto" // RS Task 3

@@ -16,6 +16,8 @@ import gambi.global.os26launcher.domain.config.HomeScreenConfig
 import gambi.global.os26launcher.domain.config.SearchConfig
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import gambi.global.os26launcher.core.permission.PermissionKind
+import gambi.global.os26launcher.core.permission.PermissionRequester
 
 /**
  * G2d Task 5 — màn "Cài đặt tìm kiếm" (3.3): cả khối [SearchSettingsBlock] của M8d/G3a. Có ViewModel riêng
@@ -38,23 +40,9 @@ class SearchSettingsScreen(private val ctx: SettingsScreenContext) : SettingsScr
     private var awaitingDefault = false
     private var awaitingContactsSettings = false
 
-    // PB D2: hộp quyền Danh bạ mở thẳng khi bật công tắc. Đăng ký lúc dựng (công thức G2d, trước STARTED).
-    private var rationaleBeforeRequest = false
-    private val contactsPermission =
-        activity.registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            contactsGranted = granted
-            if (!granted) {
-                val rationaleNow = ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.READ_CONTACTS)
-                // Hệ thống không hiện hộp (đã chặn từ trước, lần hỏi trước cũng không có giải thích): chỉ còn Thông tin ứng dụng.
-                // Người dùng vừa tự bấm Từ chối thì công tắc chỉ về tắt.
-                if (!rationaleBeforeRequest && !rationaleNow && searchPrefs.contactsAsked) {
-                    Toast.makeText(activity, R.string.search_contacts_prompt_settings_subtitle, Toast.LENGTH_LONG).show()
-                    awaitingContactsSettings = true
-                    openContactsPermissionSettings()
-                }
-            }
-            ctx.rerender(true)
-        }
+    // PB D2: hộp quyền Danh bạ mở thẳng khi bật công tắc. PM (2026-11-26): luật xin quyền chung — bị chặn thì hộp "Cấp quyền" (thay mở thẳng
+    // Thông tin ứng dụng). Dựng lúc dựng màn (công thức G2d, trước STARTED).
+    private val contactsPermission = PermissionRequester(activity, PermissionKind.CONTACTS)
 
     override val titleRes: Int = R.string.settings_hub_search
 
@@ -96,9 +84,10 @@ class SearchSettingsScreen(private val ctx: SettingsScreenContext) : SettingsScr
                 val ask = checked && !contactsGranted
                 searchSettings.setContacts(checked, asked = ask)
                 if (ask) {
-                    rationaleBeforeRequest =
-                        ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.READ_CONTACTS)
-                    contactsPermission.launch(Manifest.permission.READ_CONTACTS)
+                    contactsPermission.request(onOpenSettings = { awaitingContactsSettings = true }) { granted ->
+                        contactsGranted = granted
+                        ctx.rerender(true)
+                    }
                 }
             }
         }
@@ -161,19 +150,6 @@ class SearchSettingsScreen(private val ctx: SettingsScreenContext) : SettingsScr
 
     override fun onDestroy() {
         searchBlock.dismiss() // M8d Task 6
-    }
-
-    /** G3a: màn "Thông tin ứng dụng" để cấp quyền Danh bạ (hệ thống có thể không hỏi lại sau khi từ chối). */
-    private fun openContactsPermissionSettings() {
-        try {
-            activity.startActivity(
-                Intent(
-                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                    Uri.fromParts("package", activity.packageName, null)
-                )
-            )
-        } catch (e: ActivityNotFoundException) {
-            Toast.makeText(activity, R.string.search_contacts_action_failed, Toast.LENGTH_LONG).show()
-        }
+        contactsPermission.dismissDialog() // PM
     }
 }

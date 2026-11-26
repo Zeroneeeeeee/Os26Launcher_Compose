@@ -81,9 +81,7 @@ import gambi.global.os26launcher.core.designsystem.compose.drawableBackground
 import gambi.global.os26launcher.core.designsystem.compose.dsPressHighlight
 import gambi.global.os26launcher.core.designsystem.compose.dsPressable
 import gambi.global.os26launcher.core.glass.compose.dsGlass
-import gambi.global.os26launcher.ui.onboarding.ThemeCatalog
 import gambi.global.os26launcher.ui.settings.SettingsRow
-import gambi.global.os26launcher.ui.settings.ThemeBadge
 import gambi.global.os26launcher.ui.wallpaper.compose.WallpaperTile
 
 // ---------------------------------------------------------------------------------------------------------------------------------
@@ -175,12 +173,11 @@ internal fun SliderRow(row: SettingsRow.Slider, last: Boolean, actions: Settings
 
 /**
  * RS Task 2 + HF + HC: Hero Card (Figma 464:2199), cao tối thiểu 140; hai trạng thái chồng nhau và luôn được đo (card cao bằng khối cao
- * hơn, không xô danh sách). Chưa mặc định: ảnh + tên theme + badge + nút "Trải nghiệm". Đã mặc định: lời chào + phiên bản + "Khám phá"
- * + huy hiệu số của giao diện. Đổi Chưa → Đã khi card đang hiện: cross-fade 300 ms (ghi chú 464:2648 mục 3).
+ * hơn, không xô danh sách). Chưa mặc định: ảnh + tên app + badge + nút "Trải nghiệm". Đã mặc định: lời chào + phiên bản + "Khám phá"
+ * + huy hiệu số. TR R4 (2026-11-26): bỏ theme nên ảnh là `onb_hero`, tên là `app_name`, huy hiệu cố định [HERO_BADGE_NUMBER]. Đổi Chưa → Đã khi card đang hiện: cross-fade 300 ms (ghi chú 464:2648 mục 3).
  */
 @Composable
 internal fun LauncherCard(row: SettingsRow.LauncherCard, onClick: () -> Unit) {
-    val theme = row.themeId?.let(ThemeCatalog::of)
     // Như bản View: chỉ cross-fade chiều Chưa → Đã; chiều ngược lại (hiếm, đổi launcher ở ngoài) đặt thẳng.
     val shownDefault by animateFloatAsState(
         if (row.isDefault) 1f else 0f,
@@ -205,19 +202,17 @@ internal fun LauncherCard(row: SettingsRow.LauncherCard, onClick: () -> Unit) {
                 .then(if (row.isDefault) Modifier.clearAndSetSemantics { } else Modifier)
                 .padding(12.dp)
         ) {
-            if (theme != null) {
-                Image(
-                    painterResource(theme.preview),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(width = 93.dp, height = 116.dp).clip(RoundedCornerShape(12.dp))
-                )
-                Spacer(Modifier.width(14.dp))
-            }
+            Image(
+                painterResource(R.drawable.onb_hero),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.size(width = 93.dp, height = 116.dp).clip(RoundedCornerShape(12.dp))
+            )
+            Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f).align(Alignment.CenterVertically)) {
                 BasicText(stringResource(R.string.settings_launcher_card_current), style = DsTextStyles.caption.copy(color = secondary))
                 BasicText(
-                    stringResource(theme?.name ?: R.string.settings_launcher_card_custom),
+                    stringResource(R.string.app_name),
                     style = DsTextStyles.card.copy(color = primary),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -271,7 +266,7 @@ internal fun LauncherCard(row: SettingsRow.LauncherCard, onClick: () -> Unit) {
                 ExploreLink(Modifier.align(Alignment.End).padding(top = 8.dp), enabled = row.isDefault, onClick = onClick)
             }
             Spacer(Modifier.width(14.dp))
-            ThemeBadgeCircle(row)
+            HeroBadgeCircle()
         }
     }
 }
@@ -294,29 +289,25 @@ private fun ExploreLink(modifier: Modifier, enabled: Boolean, onClick: () -> Uni
     }
 }
 
-/** Huy hiệu tròn 72 (464:2196, kính như card): số của giao diện, hoặc ảnh xem trước thu nhỏ khi giao diện không có số. */
+/** Huy hiệu tròn 72 (464:2196, kính như card): số [HERO_BADGE_NUMBER] (trước TR: số của theme đang chọn, mặc định Liquid Glass 27). */
 @Composable
-private fun ThemeBadgeCircle(row: SettingsRow.LauncherCard) {
-    val number = ThemeBadge.numberOf(row.themeId)
-    val theme = row.themeId?.let(ThemeCatalog::of)
+private fun HeroBadgeCircle() {
     Box(Modifier.size(72.dp).dsGlass(DsSurface.CARD, DsCorner.Pill), contentAlignment = Alignment.Center) {
-        if (number != null) {
-            BasicText(
-                number,
-                style = DsTextStyles.title.copy(
-                    color = colorResource(R.color.ds_text_primary),
-                    fontSize = 30.sp,
-                    letterSpacing = (-0.03).em,
-                    fontFamily = FontFamily(Font(R.font.be_vietnam_pro_semibold, FontWeight.SemiBold)),
-                    fontWeight = FontWeight.SemiBold
-                ),
-                maxLines = 1
-            )
-        } else if (theme != null) {
-            Image(painterResource(theme.preview), null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
-        }
+        BasicText(
+            HERO_BADGE_NUMBER,
+            style = DsTextStyles.title.copy(
+                color = colorResource(R.color.ds_text_primary),
+                fontSize = 30.sp,
+                letterSpacing = (-0.03).em,
+                fontFamily = FontFamily(Font(R.font.be_vietnam_pro_semibold, FontWeight.SemiBold)),
+                fontWeight = FontWeight.SemiBold
+            ),
+            maxLines = 1
+        )
     }
 }
+
+private const val HERO_BADGE_NUMBER = "27"
 
 /** RS Task 7: card xem trước thời tiết (dữ liệu mẫu). Cả card là một mục TalkBack. */
 @Composable

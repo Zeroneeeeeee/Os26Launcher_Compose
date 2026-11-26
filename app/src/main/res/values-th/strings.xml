@@ -123,7 +123,6 @@
     <!-- G2b: kiểu icon -->
     <string name="settings_icon_style">สไตล์ไอคอน</string>
     <string name="settings_icon_style_default">ค่าเริ่มต้น</string>
-    <string name="settings_icon_style_transparent">โปร่งใส</string>
     <string name="settings_icon_style_tinted">แต่งสี</string>
     <string name="settings_icon_style_3d">3D</string>
     <string name="settings_icon_style_glass">กระจก</string>
@@ -394,7 +393,6 @@
     <string name="settings_hub_group_transitions">การเปลี่ยนฉาก</string>
     <string name="settings_hub_group_icons">ปรับแต่งไอคอน</string>
     <string name="settings_hub_group_contact">ติดต่อเรา</string>
-    <string name="settings_hub_theme">หน้าจอหลักเริ่มต้น</string>
     <string name="settings_hub_general">ทั่วไป</string>
     <string name="settings_hub_language">ภาษา</string>
     <string name="settings_hub_weather">สภาพอากาศ</string>
@@ -416,7 +414,6 @@
     <!-- RS Task 2: card "Launcher hiện tại" đầu trang chủ Cài đặt (Figma 302:1522). -->
     <string name="settings_launcher_card_current">หน้าจอหลักที่ใช้อยู่</string>
     <string name="settings_launcher_card_not_default">ยังไม่ได้ตั้งเป็นค่าเริ่มต้น</string>
-    <string name="settings_launcher_card_custom">กำหนดเอง</string>
     <string name="settings_launcher_card_welcome">ยินดีต้อนรับ</string>
     <string name="settings_launcher_card_welcome_desc">ศูนย์ควบคุมของคุณเอง ปรับแต่งทุกรายละเอียดให้หน้าจอหลักเป็นสไตล์ของคุณ</string>
     <string name="settings_launcher_card_explore">สำรวจ</string>
@@ -425,10 +422,6 @@
     <string name="hero_default_set_toast">ตั้งเป็นค่าเริ่มต้นแล้ว</string>
     <!-- HC Task 3: tiêu đề màn 6.2 (Figma "Ứng dụng khác"; hàng trên trang chủ giữ settings_hub_more_apps). -->
     <string name="settings_more_apps_title">แอปอื่นๆ</string>
-    <!-- RS Task 6: màn 1.1 Màn hình chính mặc định (Figma 302:1738). -->
-    <string name="settings_theme_subtitle">ตัวเรียกใช้งานแต่ละแบบจะเปลี่ยนหน้าจอหลัก ไอคอน และเอฟเฟกต์ของเครื่อง</string>
-    <string name="settings_theme_apply_default">ใช้และตั้งเป็นค่าเริ่มต้น</string>
-    <string name="settings_theme_apply">ใช้</string>
     <!-- RS Task 7: card xem trước thời tiết (dữ liệu mẫu) ở màn 1.4. -->
     <string name="settings_weather_preview_degree">%1$d°</string>
     <string name="settings_weather_preview_high_low">สูง %1$s · ต่ำ %2$s</string>
@@ -441,7 +434,6 @@
     <!-- WI: tên 5 hình nền cài sẵn (ảnh thử, xem plan WI) ở 0.3 và 2.2; nút ngắn của hộp hỏi đặt mặc định khi về Home. -->
     <string name="default_prompt_set">ตั้งเลย</string>
     <!-- RS Task 8: giờ minh họa trên ô ảnh nền (Figma 2.2). -->
-    <string name="settings_theme_note">เครื่องจะเปิดหน้าต่างของระบบให้เลือกแอปหน้าจอหลัก</string>
     <string name="settings_hub_version">เวอร์ชัน %1$s</string>
     <!-- AB: nhóm Liên hệ (tiền tố about_) -->
     <string name="about_rate_title">คุณคิดว่าแอปนี้เป็นอย่างไร</string>
@@ -510,8 +502,6 @@
     <string name="wx_loc_city_unset">ยังไม่ได้เลือก</string>
     <string name="wx_loc_pick_city">เลือกเมือง</string>
     <string name="wx_loc_unavailable">หาตำแหน่งไม่ได้ เปิดบริการตำแหน่งหรือเลือกเมืองเอง</string>
-    <string name="wx_loc_denied">ยังไม่ได้อนุญาตสิทธิ์ตำแหน่ง คุณยังเลือกเมืองเองได้</string>
-    <string name="wx_loc_denied_settings">สิทธิ์ตำแหน่งถูกบล็อก อนุญาตได้ในการตั้งค่าแอป</string>
     <string name="wx_loc_privacy">ใช้เฉพาะตำแหน่งโดยประมาณ ดึงครั้งเดียวในแต่ละครั้ง: เมื่อคุณแตะอัปเดตตำแหน่ง หรือ (โหมดอัตโนมัติที่อนุญาตแล้ว) ไม่เกินทุก 2 ชั่วโมงขณะที่วิดเจ็ตสภาพอากาศซึ่งใช้ตำแหน่งปัจจุบันแสดงอยู่ และจะเปลี่ยนเมื่อคุณเคลื่อนที่ไกลกว่า 5 กม. เท่านั้น ไม่ทำงานเบื้องหลังและไม่ติดตามต่อเนื่อง โหมดเลือกเองไม่ต้องใช้สิทธิ์และไม่อ่านตำแหน่ง</string>
     <string name="wx_sheet_for_widget">วิดเจ็ตนี้แสดง:</string>
     <string name="wx_sheet_current_named">ตำแหน่งปัจจุบัน: %1$s</string>
@@ -619,16 +609,8 @@
     <string name="onboarding_go_settings">ไปที่การตั้งค่า</string>
     <string name="onboarding_welcome_title">ดีไซน์กระจกเหลวสำหรับโทรศัพท์ของคุณ</string>
     <string name="onboarding_welcome_subtitle">ไอคอนโปร่งใส วอลเปเปอร์มีชีวิตชีวา และเอฟเฟกต์ลื่นไหล — แค่ไม่กี่ขั้นตอนก็เริ่มได้</string>
-    <string name="onboarding_theme_title">เลือกสไตล์</string>
-    <string name="onboarding_theme_subtitle">คุณเปลี่ยนได้ทุกเมื่อในการตั้งค่า</string>
-    <string name="onboarding_theme_liquid_glass_27">Liquid Glass 27</string>
-    <string name="onboarding_theme_liquid_glass_27_desc">โปร่งใส หักเหแสง</string>
-    <string name="onboarding_theme_classic_26">Classic 26</string>
-    <string name="onboarding_theme_classic_26_desc">อบอุ่น ไอคอนสีนุ่ม</string>
-    <string name="onboarding_theme_minimal">Minimal</string>
-    <string name="onboarding_theme_minimal_desc">เรียบง่าย เส้นบาง</string>
-    <string name="onboarding_theme_dark_pro">Dark Pro</string>
-    <string name="onboarding_theme_dark_pro_desc">พื้นหลังมืด ไอคอนกลม</string>
+    <string name="onboarding_icon_style_title">เลือกสไตล์ไอคอน</string>
+    <string name="onboarding_icon_style_subtitle">คุณเปลี่ยนได้ทุกเมื่อในการตั้งค่า</string>
     <string name="onboarding_badge_new">ใหม่</string>
     <string name="onboarding_wallpaper_title">เลือกวอลเปเปอร์</string>
     <string name="onboarding_wallpaper_subtitle">วอลเปเปอร์สวยๆ ช่วยให้เอฟเฟกต์กระจกโดดเด่นขึ้น</string>
@@ -638,7 +620,6 @@
     <string name="onboarding_default_step2">เลือก %1$s ในหน้าต่างของระบบ</string>
     <string name="onboarding_done_title">พร้อมแล้ว!</string>
     <string name="onboarding_done_subtitle">สำรวจดีไซน์ใหม่และปรับแต่งเพิ่มได้ทุกเมื่อในการตั้งค่า</string>
-    <string name="onboarding_done_theme">สไตล์</string>
     <string name="onboarding_done_wallpaper">วอลเปเปอร์</string>
     <string name="onboarding_done_home">หน้าจอหลัก</string>
     <string name="onboarding_done_home_set">ตั้งเป็นค่าเริ่มต้นแล้ว</string>
@@ -758,4 +739,10 @@
     </plurals>
     <string name="icon_style_preview_description">ตัวอย่างสไตล์ไอคอนที่เลือก</string>
     <string name="settings_search_suggestions_description">การค้นหายอดนิยมเมื่อช่องค้นหาว่าง</string>
+    <!-- PM (2026-11-26): hộp "quyền bị chặn" (core/permission/PermissionRequester). -->
+    <string name="perm_blocked_grant">ให้สิทธิ์</string>
+    <string name="perm_blocked_location_title">ต้องใช้สิทธิ์ตำแหน่ง</string>
+    <string name="perm_blocked_location_message">สภาพอากาศใช้ตำแหน่งโดยประมาณของคุณเพื่อแสดงสภาพอากาศที่คุณอยู่ ตำแหน่งใช้เพื่อสภาพอากาศเท่านั้นและไม่ถูกติดตามตลอดเวลา คุณปฏิเสธสิทธิ์นี้แล้ว Android จึงจะไม่ถามอีก แตะให้สิทธิ์ แล้วไปที่ สิทธิ์ → ตำแหน่ง → อนุญาต</string>
+    <string name="perm_blocked_contacts_title">ต้องใช้สิทธิ์รายชื่อติดต่อ</string>
+    <string name="perm_blocked_contacts_message">การค้นหาอ่านรายชื่อติดต่อเพื่อให้คุณค้นหาคนตามชื่อ แล้วโทรหรือส่งข้อความได้รวดเร็ว รายชื่อติดต่อถูกอ่านในโทรศัพท์เครื่องนี้เท่านั้นและไม่ถูกส่งไปที่ใด คุณปฏิเสธสิทธิ์นี้แล้ว Android จึงจะไม่ถามอีก แตะให้สิทธิ์ แล้วไปที่ สิทธิ์ → รายชื่อติดต่อ → อนุญาต</string>
 </resources>

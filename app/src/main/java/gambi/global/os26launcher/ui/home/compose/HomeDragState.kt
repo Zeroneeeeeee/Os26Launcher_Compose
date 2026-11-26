@@ -38,6 +38,7 @@ import kotlin.math.max
 import gambi.global.os26launcher.domain.model.PlacedWidget
 import gambi.global.os26launcher.domain.model.WidgetKind
 import gambi.global.os26launcher.domain.model.WidgetSize
+import kotlin.math.abs
 
 /** Việc ghi của kéo-thả, nối thẳng vào `HomeViewModel` (JH2 D4). */
 interface HomeDragActions {
@@ -386,6 +387,7 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
             stopFolderEdge()
             folderPreview = null
             actions.closeFolder()
+            shrinkToHomeIcon()
         }
         updateEdge(s, pos.x, pt.x)
         if (flipping) return
@@ -416,7 +418,7 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
                 if (s.sourceContainer == ContainerId.DOCK && slot == dock.indexOfFirst { it.itemId == s.item.itemId }) return cancelDrop(s)
                 val remaining = dock.count { it.itemId != s.item.itemId }
                 commitDrop(s, ContainerId.DOCK, null, GridPosition(slot, 0))
-                settle(s, dockIconRect(slot, remaining + 1), 1f, 1f)
+                dockIconRect(slot, remaining + 1).let { settle(s, it, fitScale(s, it), 1f) }
             }
 
             page != null && c != null && pagerRect.contains(pt) -> {
@@ -439,7 +441,7 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
                     return cancelDrop(s)
                 }
                 commitDrop(s, ContainerId.HOME, page.pageId, cell)
-                settle(s, visualRect(GridPosition(cell.x, cell.y, s.spanX, s.spanY), s.isWidget), 1f, 1f)
+                visualRect(GridPosition(cell.x, cell.y, s.spanX, s.spanY), s.isWidget).let { settle(s, it, fitScale(s, it), 1f) }
             }
 
             else -> cancelDrop(s)
@@ -494,7 +496,7 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
         val order = folderPreview
         if (order != null && order != panel.childIds) actions.onReorderFolder(panel.folderId, order) else actions.onDragCancelled()
         folderPreview = null // ViewModel vừa cập nhật lạc quan (hoặc hủy): bỏ xem trước, dữ liệu đã đúng thứ tự
-        settle(s, rect, 1f, 1f)
+        settle(s, rect, fitScale(s, rect), 1f)
     }
 
     /** CANCEL của hệ thống (G2c13: huỷ, không bao giờ thả). */
@@ -524,11 +526,30 @@ class HomeDragState(private val scope: CoroutineScope, private val density: Floa
         if (panel != null && panel.folderId == s.sourceContainer) {
             val index = panel.childIds.indexOf(s.item.itemId)
             val slot = if (index >= 0) folderSlotOf(panel, index) else -1
-            if (slot >= 0 && slot / FolderPlanner.PAGE_SIZE == folderPage) settle(s, panel.slotIconRect(slot, folderPage), 1f, 1f) else finish()
+            if (slot >= 0 && slot / FolderPlanner.PAGE_SIZE == folderPage) panel.slotIconRect(slot, folderPage).let { settle(s, it, fitScale(s, it), 1f) } else finish()
             return
         }
         val back = s.sourceContainer == ContainerId.DOCK || currentPage()?.pageId == s.sourcePageId
-        if (back) settle(s, s.sourceRect, 1f, 1f) else finish()
+        if (back) settle(s, s.sourceRect, fitScale(s, s.sourceRect), 1f) else finish()
+    }
+
+    /**
+     * FX R5: tỉ lệ để ảnh nổi (cỡ [floatSize] lúc nhấc) hạ cánh đúng cỡ khung [rect]. App kéo ra khỏi thư mục có ảnh cỡ ô thư mục nhưng đích
+     * là ô Home / dock; app khác: khung đích cùng cỡ nên = 1. Widget giữ 1 (khung đích cùng span, cùng cỡ).
+     */
+    private fun fitScale(s: HomeDragSession, rect: Rect): Float =
+        if (s.isWidget || floatSize.width <= 0f || rect.width <= 0f) 1f else rect.width / floatSize.width
+
+    /**
+     * FX (chủ dự án 2026-11-26): app kéo ra khỏi bảng thư mục co dần (lò xo [SETTLE_F]) về cỡ icon Home, vẫn giữ độ phóng nhấc [LIFT_SCALE].
+     * Gọi mỗi lần ngón đi ngoài bảng tới khi bảng đóng hẳn: đích không đổi thì không khởi động lại hoạt ảnh.
+     */
+    private fun shrinkToHomeIcon() {
+        val home = cells?.iconSize?.toFloat() ?: return
+        if (floatSize.width <= 0f || abs(home - floatSize.width) < 0.5f) return
+        val target = LIFT_SCALE * home / floatSize.width
+        if (floatScale.targetValue == target) return
+        scope.launch { floatScale.animateTo(target, SETTLE_F) }
     }
 
     private fun settle(s: HomeDragSession, rect: Rect, endScale: Float, endAlpha: Float) {

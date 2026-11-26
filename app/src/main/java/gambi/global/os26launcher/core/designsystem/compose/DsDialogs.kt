@@ -109,6 +109,8 @@ fun DsAlertDialog(
     negative: Pair<String, () -> Unit>? = null,
     cancelable: Boolean = true,
     positiveEnabled: Boolean = true,
+    /** PM (2026-11-26): false = chạm ra ngoài không làm gì (Back vẫn theo [cancelable]). */
+    dismissOnClickOutside: Boolean = cancelable,
     content: (@Composable () -> Unit)? = null
 ) {
     val scope = rememberCoroutineScope()
@@ -131,7 +133,7 @@ fun DsAlertDialog(
         // DW (chủ dự án 2026-11-25, cách 1): `usePlatformDefaultWidth = true` để cửa sổ hộp thoại ÔM VỪA thẻ. Kính của hộp thoại là blur nền
         // cửa sổ của hệ thống (DialogWindowGlass), vùng mờ = cả cửa sổ (chỉ bo góc theo nền); với `false` Compose cho cửa sổ rộng hết màn nên
         // lộ một khung mờ có tint lớn hơn thẻ. Thẻ rộng `ds_dialog_width` (312) > bề rộng tối thiểu của hộp thoại trên điện thoại (65 %).
-        properties = DialogProperties(dismissOnBackPress = cancelable, dismissOnClickOutside = cancelable, usePlatformDefaultWidth = true)
+        properties = DialogProperties(dismissOnBackPress = cancelable, dismissOnClickOutside = cancelable && dismissOnClickOutside, usePlatformDefaultWidth = true)
     ) {
         // Lớp mờ 60% hiện/tắt theo hoạt ảnh. Phải THEO DÕI progress (snapshotFlow): SideEffect chỉ chạy lúc dựng lại nên đặt một lần
         // ở 0 rồi thôi (đo được trên Oppo: hộp thoại không có lớp mờ).

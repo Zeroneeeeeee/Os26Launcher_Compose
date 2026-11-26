@@ -272,13 +272,6 @@
             android:exported="false"
             android:theme="@style/Theme.Os26Launcher.Ds" />
 
-        <!-- RS Task 6: màn 1.1 Màn hình chính mặc định, chỉ mở từ trang chủ Cài đặt. -->
-        <activity
-            android:name=".ui.settings.ThemeSettingsActivity"
-            android:exported="false"
-            android:screenOrientation="nosensor"
-            android:theme="@style/Theme.Os26Launcher.Ds" />
-
         <!-- GT: màn Tinh chỉnh kính, chỉ mở từ SettingsActivity. -->
         <activity
             android:name=".ui.settings.GlassTuningActivity"

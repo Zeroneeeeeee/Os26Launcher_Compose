@@ -13,7 +13,7 @@ Bố cục màn hình chính (trang, ô, thư mục, widget) không phải confi
 - **Ghi:** mỗi nhóm có một repository với `config: Flow<X>` và `update { }`. Một lần `update` = một `DataStore.edit`, chỉ ghi khóa có giá trị đổi (nhờ vậy khóa chưa từng chỉnh vẫn vắng).
 - **Đọc:** enum lạ hoặc null → mặc định, không crash; số ngoài khoảng → kẹp vào khoảng.
 - **Trường chưa có tính năng:** vẫn khai đủ ở đây và trong model; cột "Ai đọc hôm nay" ghi "—". Tính năng làm sau tự nối, không đổi khóa.
-- **Theme:** cột "Theme" = "ghi" nghĩa là áp theme ghi đè trường này (áp một lần, quyết định CF 1). Trường "không" là lựa chọn riêng, theme không đụng.
+- **Theme:** TR (2026-11-26): preset theme và màn 1.1 đã bỏ (mục 6), không còn đường áp theme. Cột "Theme" chỉ còn ghi lại preset CŨ có ghi đè trường đó hay không; trường chỉ theme ghi (như `surfaceTone`) giờ chỉ còn giá trị mặc định.
 
 ## 2. Bản đồ kho
 
@@ -22,6 +22,7 @@ Bố cục màn hình chính (trang, ô, thư mục, widget) không phải confi
 | DataStore `launcher_settings` | `files/datastore/launcher_settings.preferences_pb` | Mọi cài đặt dạng giá trị (mục 3) | Có |
 | DataStore `control_center` | `files/datastore/control_center.preferences_pb` | Trung tâm điều khiển (mục 4) | Có |
 | DataStore `today_widgets` | `files/datastore/today_widgets.preferences_pb` | Danh sách widget của Today View (mục 4b, TV-3) | Có |
+| SharedPreferences `permission_denials` | `shared_prefs/permission_denials.xml` | PM (2026-11-26): cờ Boolean `location`, `contacts` = người dùng đã từ chối rõ ràng quyền đó (để biết khi nào Android không hỏi nữa và hiện hộp "Cấp quyền"). Đọc đồng bộ lúc bấm nên không dùng DataStore. Cấp quyền thì xóa cờ. Chỉ `core/permission/PermissionRequester` đọc/ghi | Có |
 | Room `launcher.db`, bảng `app_overrides` | `databases/launcher.db` | Tùy chỉnh theo app: ẩn, tên, icon (mục 5) | Có |
 | File `backdrop_image` | `files/backdrop_image` | Ảnh nền người dùng chọn (dùng khi `appearance_wallpaper_kind` = PHOTO, hoặc AUTO và file có) | Có |
 | File `control_center_background.jpg` | `files/` | Ảnh nền riêng của Trung tâm điều khiển | Có |
@@ -40,13 +41,11 @@ Khóa **đậm** là khóa mới từ CF. Màn theo số màn Figma v3 (`Figma-D
 
 | Trường | Khóa | Kiểu | Mặc định | Màn | Theme | Ai đọc hôm nay |
 |---|---|---|---|---|---|---|
-| `themeId` | **`appearance_theme_id`** | `ThemeId?` (LIQUID_GLASS_27, CLASSIC_26, MINIMAL, DARK_PRO) | null | 1.1, 0.2 | ghi | `ObserveThemeStateUseCase` (chưa có màn; debug `CF_APPLY_THEME`) |
 | `wallpaperKind` | **`appearance_wallpaper_kind`** | `WallpaperKind` (AUTO, PHOTO, COLOR, PRESET) | AUTO (ảnh đã chọn nếu có, không thì ảnh mặc định). PRESET = ảnh cài sẵn `wallpaperPreset` (WI) | 2.2, 0.3 | giữ (WI) | Nền Home |
 | `wallpaperColor` | **`appearance_wallpaper_color`** | Int ARGB | `0xFF000000` | 2.2, 0.3 | giữ (WI) | Nền Home |
 | `wallpaperPreset` | **`appearance_wallpaper_preset`** | String? (id trong `WallpaperPresets`: `wi_dawn`, `wi_rose`, `wi_ocean`, `wi_copper`, `wi_sand`) | null | 2.2, 0.3 | giữ | Nền Home khi `wallpaperKind` = PRESET (WI). Id lạ = như AUTO |
-| `iconStyle` | `icon_style` | `IconStyle` (DEFAULT, TINTED, THREE_D, GLASS, **TRANSPARENT**) | DEFAULT | 2.3 | ghi | Icon (TRANSPARENT: chỉ vẽ hình, không ô nền; icon không tách được hình vẽ như DEFAULT) |
+| `iconStyle` | `icon_style` | `IconStyle` (DEFAULT, TINTED, THREE_D, GLASS) | DEFAULT | 2.3, 0.2 (TR) | ghi | Icon. TRANSPARENT (Trong suốt) bỏ 2026-11-26 (chủ dự án: icon lỗi, lẫn vào nền): giá trị cũ đọc ra DEFAULT |
 | `iconTint` | `icon_tint` | `IconTint` (BLUE, PINK, GREEN, ORANGE, GRAPHITE) | BLUE | 2.3 | ghi | Icon |
-| `iconBevel` | **`appearance_icon_bevel`** | Boolean | false | — (chỉ theme ghi) | ghi | Icon: lớp nổi 3D chồng lên `iconStyle` (THREE_D luôn nổi) |
 | `iconPack` | `icon_pack` | String? (package) | null | 2.3 | **không** | Icon |
 | `iconShape` | **`appearance_icon_shape`** | `IconShapeKind` (SQUIRCLE, CIRCLE, SQUARE, TEARDROP) | SQUIRCLE | 2.3 | ghi | — |
 | `iconCorner` | **`appearance_icon_corner`** | Int 0..100 | 62 | 2.3 | ghi | — |
@@ -182,19 +181,7 @@ Một hàng cho mỗi app (khóa `packageName` + `className` + `userSerial`) có
 
 Gỡ app thật hoặc xóa hồ sơ công việc → xóa cả hàng. Chi tiết: [room-schema.md](room-schema.md) mục 4.
 
-## 6. Preset theme
+## 6. Preset theme (đã bỏ)
 
-Theme là một `AppearanceConfig` cài sẵn trong code (`ThemePresets`). Áp theme = một `update` chép mọi trường cột "Theme = ghi" của preset và đặt `themeId`; `iconPack`, `glassCustom` giữ nguyên. Thẻ theme hiện "đã chỉnh" khi config hiện tại khác preset của `themeId`. Giá trị (chốt 2026-11-17; Classic 26, Minimal, Dark Pro chỉnh theo ảnh xem trước màn 0.2, Figma `302:3704`):
+TR (2026-11-26, chủ dự án): bỏ màn 1.1 "Màn hình chính mặc định", `ThemeId`, `ThemePresets`, `ApplyThemeUseCase`, `ObserveThemeStateUseCase`, khóa `appearance_theme_id` và cờ `appearance_icon_bevel` (lớp nổi 3D chỉ theme bật được, trùng hiệu ứng của kiểu 3D). Giá trị cũ của hai khóa trong máy bị bỏ qua khi đọc. Onboarding 0.2 nay chọn `iconStyle`. Bảng bộ số của 4 preset cũ: xem lịch sử git của file này (trước TR) hoặc `plans/CF-config-refactor.md`.
 
-WI (2026-11-18): áp theme **giữ nguyên** `wallpaperKind`, `wallpaperColor`, `wallpaperPreset` (hình nền là lựa chọn riêng; chọn nền không làm theme thành "đã chỉnh"). Hàng nền màu bên dưới chỉ còn là giá trị tham khảo trong `ThemePresets`.
-
-| Trường | LIQUID_GLASS_27 | CLASSIC_26 | MINIMAL | DARK_PRO |
-|---|---|---|---|---|
-| `wallpaperKind` / `wallpaperColor` (không chép, WI) | COLOR `#FF1E3A8A` | COLOR `#FF27142C` | COLOR `#FF11141B` | COLOR `#FF000000` |
-| `iconStyle` / `iconTint` | GLASS / BLUE | DEFAULT / BLUE | TRANSPARENT / BLUE | TINTED / GRAPHITE |
-| `iconBevel` | true | false | false | true |
-| `iconShape` / `iconCorner` / `iconSize` | SQUIRCLE / 62 / 50 | SQUIRCLE / 62 / 50 | SQUARE / 30 / 50 | CIRCLE / 100 / 50 |
-| `showLabels` | true | true | false | true |
-| `glassLevel` | AUTO | FORCE_LOW | FORCE_LOW | AUTO |
-| `glassLook` (khúc xạ / bóng / mờ / bo góc) | 40 / 60 / 55 / 50 | 0 / 30 / 50 / 50 | 0 / 20 / 40 / 30 | 20 / 40 / 60 / 50 |
-| `glassTransparency` / `glassTint` / `surfaceTone` | 70 / 0 / LIGHT | 80 / 0 / LIGHT | 90 / 0 / LIGHT | 50 / 0 / DARK |

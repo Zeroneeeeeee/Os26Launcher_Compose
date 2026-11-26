@@ -7,9 +7,6 @@ package gambi.global.os26launcher.domain.config
 inline fun <reified E : Enum<E>> enumFromName(name: String?, default: E): E =
     enumValues<E>().firstOrNull { it.name == name } ?: default
 
-/** Bốn kiểu giao diện cài sẵn (màn 1.1, onboarding 0.2). Giá trị ở `ThemePresets`. */
-enum class ThemeId { LIQUID_GLASS_27, CLASSIC_26, MINIMAL, DARK_PRO }
-
 /** Nguồn nền Home. AUTO = hành vi trước CF (ảnh đã chọn nếu có, không thì ảnh mặc định). PRESET dành cho thư viện hình nền (G3f), chưa có. */
 enum class WallpaperKind { AUTO, PHOTO, COLOR, PRESET }
 

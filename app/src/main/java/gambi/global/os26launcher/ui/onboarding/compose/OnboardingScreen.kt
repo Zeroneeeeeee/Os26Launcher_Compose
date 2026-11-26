@@ -39,6 +39,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
@@ -56,6 +57,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -88,10 +90,10 @@ import gambi.global.os26launcher.core.designsystem.compose.dsPressable
 import gambi.global.os26launcher.core.glass.compose.LocalDsBackdrop
 import gambi.global.os26launcher.core.glass.compose.dsGlass
 import gambi.global.os26launcher.core.wallpaper.WallpaperPresets
-import gambi.global.os26launcher.domain.config.ThemeId
+import gambi.global.os26launcher.domain.model.IconStyle
 import gambi.global.os26launcher.ui.onboarding.OnboardingStep
-import gambi.global.os26launcher.ui.onboarding.ThemeCatalog
-import gambi.global.os26launcher.ui.settings.ThemeCard
+import gambi.global.os26launcher.ui.onboarding.IconStyleChoices
+import gambi.global.os26launcher.ui.settings.labelRes
 import gambi.global.os26launcher.ui.wallpaper.compose.CheckMark
 import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
@@ -103,7 +105,10 @@ import java.util.Locale
 /** JS5 — dữ liệu và lệnh của màn Onboarding (đọc từ `OnboardingViewModel` ở Activity). */
 internal class OnboardingUi(
     val step: OnboardingStep,
-    val theme: ThemeId,
+    /** TR: kiểu icon đang chọn ở 0.2. */
+    val iconStyle: IconStyle,
+    /** TR: icon mẫu theo từng kiểu (rỗng = app chưa nạp xong, thẻ chỉ có tên). */
+    val iconPreviews: Map<IconStyle, List<android.graphics.Bitmap>>,
     val swatch: Int,
     val isDefaultLauncher: Boolean,
     val languageName: String
@@ -115,7 +120,7 @@ internal class OnboardingActions(
     val onPrimary: () -> Unit,
     val onSecondary: () -> Unit,
     val onLanguage: () -> Unit,
-    val onChooseTheme: (ThemeId) -> Unit,
+    val onChooseIconStyle: (IconStyle) -> Unit,
     val onChooseSwatch: (Int) -> Unit,
     val onJump: (OnboardingStep) -> Unit
 )
@@ -150,7 +155,7 @@ internal fun OnboardingScreen(ui: OnboardingUi, actions: OnboardingActions) {
                 ) { step ->
                     when (step) {
                         OnboardingStep.WELCOME -> WelcomePage()
-                        OnboardingStep.THEME -> ThemePage(ui.theme, actions.onChooseTheme)
+                        OnboardingStep.ICON_STYLE -> IconStylePage(ui.iconStyle, ui.iconPreviews, actions.onChooseIconStyle)
                         OnboardingStep.WALLPAPER -> WallpaperPage(ui.swatch, actions.onChooseSwatch)
                         OnboardingStep.DEFAULT_LAUNCHER -> DefaultLauncherPage()
                         OnboardingStep.DONE -> DonePage(ui, actions.onJump)
@@ -327,21 +332,76 @@ private fun WelcomePage() {
     }
 }
 
-/** 0.2 Chọn kiểu giao diện (Figma `302:3695`): lưới 2 × 2 thẻ theme (dùng chung thẻ Compose của màn 1.1). Chạm thẻ chỉ đổi lựa chọn. */
+/**
+ * 0.2 Chọn kiểu icon (TR, 2026-11-26: thay bước chọn theme): lưới 2 cột thẻ kính, mỗi thẻ 4 icon mẫu vẽ theo kiểu đó ([IconStyleChoices]).
+ * Chạm thẻ chỉ đổi lựa chọn; "Tiếp tục" mới ghi.
+ */
 @Composable
-private fun ThemePage(chosen: ThemeId, onChoose: (ThemeId) -> Unit) {
+private fun IconStylePage(chosen: IconStyle, previews: Map<IconStyle, List<android.graphics.Bitmap>>, onChoose: (IconStyle) -> Unit) {
     val margin = dimensionResource(R.dimen.ds_screen_margin_h)
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(start = margin, end = margin, top = 8.dp, bottom = 16.dp)) {
-        Title(stringResource(R.string.onboarding_theme_title), center = false)
-        Subtitle(stringResource(R.string.onboarding_theme_subtitle), center = false)
+        Title(stringResource(R.string.onboarding_icon_style_title), center = false)
+        Subtitle(stringResource(R.string.onboarding_icon_style_subtitle), center = false)
         Spacer(Modifier.height(20.dp))
-        ThemeCatalog.list.chunked(2).forEachIndexed { r, row ->
+        IconStyleChoices.list.chunked(2).forEachIndexed { r, row ->
             if (r > 0) Spacer(Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                row.forEach { info -> ThemeCard(info, info.id == chosen, onClick = { onChoose(info.id) }, modifier = Modifier.weight(1f)) }
+                row.forEach { style ->
+                    IconStyleCard(style, previews[style].orEmpty(), style == chosen, onClick = { onChoose(style) }, modifier = Modifier.weight(1f))
+                }
                 if (row.size < 2) Spacer(Modifier.weight(1f))
             }
         }
+    }
+}
+
+/** TR: thẻ một kiểu icon: 2 × 2 icon mẫu ([ONB_STYLE_ICON_DP]) + tên kiểu; đang chọn thì có dấu tích góc trên phải (như thẻ theme cũ). */
+@Composable
+private fun IconStyleCard(style: IconStyle, icons: List<android.graphics.Bitmap>, chosen: Boolean, onClick: () -> Unit, modifier: Modifier) {
+    val interaction = remember { MutableInteractionSource() }
+    Column(
+        modifier
+            .dsPressable(interaction)
+            .dsGlass(DsSurface.CARD, DsCorner.Role(DsCornerRole.CARD))
+            .dsPressHighlight(interaction)
+            // selectable gộp chữ con: TalkBack đọc tên kiểu kèm trạng thái chọn.
+            .selectable(selected = chosen, interactionSource = interaction, indication = null, role = Role.RadioButton, onClick = onClick)
+            .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(Modifier.fillMaxWidth().height(ONB_STYLE_PREVIEW_HEIGHT_DP.dp), contentAlignment = Alignment.Center) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                for (r in 0 until 2) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        for (c in 0 until 2) {
+                            val bitmap = icons.getOrNull(r * 2 + c)
+                            Box(Modifier.size(ONB_STYLE_ICON_DP.dp)) {
+                                if (bitmap != null) {
+                                    val image = remember(bitmap) { bitmap.asImageBitmap() }
+                                    Image(image, contentDescription = null, modifier = Modifier.fillMaxSize())
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (chosen) {
+                Box(
+                    Modifier
+                        .align(Alignment.TopEnd)
+                        .size(24.dp)
+                        .background(colorResource(R.color.ds_accent), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(painter = painterResource(R.drawable.onb_ic_check), contentDescription = null, modifier = Modifier.size(14.dp))
+                }
+            }
+        }
+        BasicText(
+            text = stringResource(style.labelRes()),
+            style = DsTextStyles.bodyStrong.copy(color = colorResource(R.color.ds_text_primary)),
+            modifier = Modifier.padding(top = 8.dp)
+        )
     }
 }
 
@@ -467,11 +527,11 @@ private fun NumberedStep(number: String, text: String, minHeight: Int) {
 private fun DonePage(ui: OnboardingUi, onJump: (OnboardingStep) -> Unit) {
     val margin = dimensionResource(R.dimen.ds_screen_margin_h)
     val context = LocalContext.current
-    val theme = stringResource(ThemeCatalog.of(ui.theme).name)
+    val iconStyle = stringResource(ui.iconStyle.labelRes())
     val preset = WallpaperPresets.list.getOrNull(ui.swatch) ?: WallpaperPresets.list.first() // WI
     val wallpaper = stringResource(preset.name)
     val home = stringResource(if (ui.isDefaultLauncher) R.string.onboarding_done_home_set else R.string.onboarding_done_home_not_set)
-    val themeTitle = stringResource(R.string.onboarding_done_theme)
+    val iconStyleTitle = stringResource(R.string.settings_icon_style)
     val wallpaperTitle = stringResource(R.string.onboarding_done_wallpaper)
     val homeTitle = stringResource(R.string.onboarding_done_home)
     Column(
@@ -482,8 +542,8 @@ private fun DonePage(ui: OnboardingUi, onJump: (OnboardingStep) -> Unit) {
         Title(stringResource(R.string.onboarding_done_title), center = true, modifier = Modifier.padding(top = 20.dp))
         Subtitle(stringResource(R.string.onboarding_done_subtitle), center = true)
         DsCardGroup(Modifier.padding(top = 20.dp)) {
-            row(themeTitle, { onJump(OnboardingStep.THEME) },
-                leading = { DsIconTile(R.drawable.ds_ic_liquid_glass, DsTileColor.VIOLET) }, trailing = DsRowTrailing.Value(theme))
+            row(iconStyleTitle, { onJump(OnboardingStep.ICON_STYLE) },
+                leading = { DsIconTile(R.drawable.ds_ic_liquid_glass, DsTileColor.VIOLET) }, trailing = DsRowTrailing.Value(iconStyle))
             row(wallpaperTitle, { onJump(OnboardingStep.WALLPAPER) },
                 leading = { DsIconTile(R.drawable.ds_ic_wallpaper, DsTileColor.PINK) }, trailing = DsRowTrailing.Value(wallpaper))
             row(homeTitle, { onJump(OnboardingStep.DEFAULT_LAUNCHER) },
@@ -493,5 +553,9 @@ private fun DonePage(ui: OnboardingUi, onJump: (OnboardingStep) -> Unit) {
 }
 
 private const val SLIDE_MS = 280
+
+/** TR: cạnh icon mẫu trong thẻ kiểu icon (Activity vẽ bitmap đúng cỡ này) và chiều cao vùng xem trước của thẻ. */
+internal const val ONB_STYLE_ICON_DP = 40
+private const val ONB_STYLE_PREVIEW_HEIGHT_DP = 112
 private const val CHROME_MS = 150
 private const val SLIDE_FRACTION = 0.3f

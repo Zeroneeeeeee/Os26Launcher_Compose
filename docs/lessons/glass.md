@@ -214,3 +214,9 @@ Mỗi mục giữ nguyên ngày, nhãn nguồn (đo được / đọc code / đ�
 ## DW — kính của hộp thoại cửa sổ riêng (2026-11-25). Plan: [../plans/DW-dialog-window-glass.md](../plans/DW-dialog-window-glass.md)
 
 - (DW, 2026-11-25, **đọc mã nguồn Android**) `Window.setBackgroundBlurRadius` làm mờ CẢ cửa sổ: `DecorView` đặt lớp mờ dưới nền gốc trong cùng `LayerDrawable`, nền chỉ cho bán kính bo góc (`getOutline`); thu nền bằng `InsetDrawable` không thu được vùng mờ. Muốn vùng mờ trùng thẻ thì cửa sổ phải ôm vừa thẻ (`DialogProperties(usePlatformDefaultWidth = true)`; với `false` Compose cho cửa sổ rộng hết màn), và không phóng thẻ to hơn cửa sổ (bị cắt).
+
+## FX — nền mờ sau bảng thư mục dưới Android 12 (2026-11-26, video máy Android 11)
+
+- `Modifier.blur` chỉ chạy API ≥ 31: dưới đó lớp Home sau bảng thư mục chỉ tối. Ảnh chụp lớp Home đã mờ (`rememberLayerSnapshot` +
+  `rememberFrostedBackdrop`, PG3) có sẵn cho kính bảng thì dùng luôn để phủ toàn màn (`drawPlainBackdrop` với `FrostedNoEffects`), không
+  cần thêm bộ làm mờ. Hai khung đầu khi mở chưa có ảnh chụp: chỉ tối như cũ.
