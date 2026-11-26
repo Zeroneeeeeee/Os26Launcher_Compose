@@ -6,13 +6,16 @@
 
 | # | Việc | Loại | Ưu tiên | Nguồn | Ghi chú |
 |---|---|---|---|---|---|
-| B3 | Phần còn lại của bố cục lần đầu: thư mục gợi ý (Google / Mạng xã hội / Trò chơi), bước "Sắp xếp màn hình chính" trong Onboarding | Tính năng | — | `IosLauncher/docs/plans/FL-first-run-layout.md` (Q1–Q10 chưa trả lời) | **Đang làm ở AG** (`AG-app-groups.md`, 2026-11-26): thư mục gợi ý thành mục "Gom nhóm ứng dụng" trong Cài đặt → Chung (6 nhóm, sheet xem trước); bước Onboarding bỏ (chủ dự án). Chờ kiểm tay |
 | B4 | Mở rộng kéo từ Thư viện: gộp thư mục khi thả lên app / thư mục; kéo từ kết quả tìm kiếm; kéo nhiều app một lúc | Tính năng | — | `LD-library-drag.md` (ngoài phạm vi) | |
-| B5 | Lối "Sắp xếp lại màn hình chính" trong Cài đặt cho người đã có bố cục | Tính năng | — | FL, WF (ngoài phạm vi) | AG (2026-11-26) cho người đã có bố cục gom app thành thư mục theo nhóm; sắp xếp lại cả màn hình vẫn chưa có |
+| B5 | Lối "Sắp xếp lại màn hình chính" trong Cài đặt cho người đã có bố cục | Tính năng | — | FL, WF (ngoài phạm vi) | AG (2026-11-26): Cài đặt → Chung gom app thành thư mục theo nhóm; sắp xếp lại cả màn hình vẫn chưa có |
 | B6 | Thẻ xác nhận xóa trên máy dưới Android 12: nền là kính mờ tĩnh (`dsGlass(frosted = …)`) thay cho nền tối trong suốt | Lỗi hiển thị | Thấp | `PD-picker-menus-dialogs.md` (ngoài phạm vi), ảnh Live 4 | Theo quyết định "dưới API 31 chỉ mờ tĩnh" |
 | B7 | Kiểm TalkBack (K1 mục 5c) | Kiểm | — | `PG4-home-perf-and-device-checks.md` | Chủ dự án bỏ qua 2026-11-23 |
 | B8 | Nhãn tên dưới widget tự vẽ như iOS (dùng phần đáy để trống của thẻ vuông) | Tính năng | — | `PW-menu-block-widget-square-font.md` (ngoài phạm vi), FL Q9 | |
 | B9 | `GridMetricsTest` hỏng 4/112 test (default sizing, dock cap, measure at density one, cellAt): test viết từ `2615d5d`, chưa cập nhật theo `5d96e78` của anh Nam (icon scale 1, nhãn 12,5 sp, `ROW_GUTTER_SCALE = 0.5` nên `gutterY` 8 → 4, hàng thấp hơn); code đúng thiết kế, cần sửa số trong test | Test | Thấp | `.\gradlew.bat :app:testDebugUnitTest` (chủ dự án chạy 2026-11-26, sau merge `016c6d0`) | Chủ dự án 2026-11-26: bỏ qua, để anh Nam sửa; `master` cũng hỏng đúng 4 test này |
+| B10 | Widget mới thêm vào Today View không có kính: lỗi hay chủ ý? (Today chỉ cho kính thật tối đa `GLASS_BUDGET` widget đầu, xem `HomeToday`) | Kiểm | — | Chủ dự án 2026-11-26 | |
+| B11 | Nút "−" (ẩn / xóa app) ở edit mode: hoạt ảnh phóng to khi vào, thu nhỏ khi ra edit mode | Tính năng | — | Chủ dự án 2026-11-26 | |
+| B12 | Ẩn nhãn ("Hiện tên" tắt) thì icon trong thư mục vẽ lệch | Lỗi hiển thị | — | Chủ dự án 2026-11-26, ảnh `screenshot.png` ở gốc dự án | |
+| B13 | Widget của app khác lấy kích cỡ sai | Lỗi | — | Chủ dự án 2026-11-26 | Chưa có ảnh / log; chủ dự án cho xem khi cần |
 
 ## Chờ anh dvha (tick khi merge lên `master`)
 
@@ -38,6 +41,7 @@
 
 | Việc | Plan |
 |---|---|
+| B3: bố cục lần đầu gom sẵn thư mục theo nhóm (thay bước Onboarding, chủ dự án bỏ) + mục "Gom nhóm ứng dụng" trong Cài đặt → Chung | `AG-app-groups.md` |
 | WS: kéo widget đè lên widget khác thì đổi chỗ (anh dvha, kiểm A17 2026-11-25) | `WS-widget-swap.md` |
 | B2: Thư viện chỉ tìm app; Spotlight lúc gõ chia section cuộn được (Lối tắt, Danh bạ, Cài đặt, Đề xuất), mọi section thẻ kính thật; "Gần đây" ở ô trống trong thẻ kính; thanh tìm kiếm Today kính thật (chủ dự án đã kiểm) | `SP-spotlight-sections.md` |
 | D3 · G2: pager dừng lệch khi kéo icon về trang cuối (chủ dự án kiểm ổn 2026-11-26) | `PG4-home-perf-and-device-checks.md` (K1 mục 1a) |

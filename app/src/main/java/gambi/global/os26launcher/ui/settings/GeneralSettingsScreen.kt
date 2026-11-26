@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import gambi.global.os26launcher.core.designsystem.compose.DsDialogHandle
 import gambi.global.os26launcher.R
+import gambi.global.os26launcher.core.locale.AppLocaleContext
 import gambi.global.os26launcher.domain.model.AppGroupKind
 import gambi.global.os26launcher.domain.model.GridPreset
 import kotlinx.coroutines.coroutineScope
@@ -22,9 +23,9 @@ class GeneralSettingsScreen(private val ctx: SettingsScreenContext) : SettingsSc
     private var gridDialog: DsDialogHandle? =
         null // hộp thoại chọn preset HOẶC hộp thoại xác nhận (lần lượt, không cùng lúc)
 
-    // AG: tên nhóm đọc bằng Activity (đúng ngôn ngữ app) rồi đưa ViewModel để so tên thư mục đã có.
+    // AG: tên nhóm do ViewModel lấy từ AppGroupTitleProvider (cùng nguồn với bố cục lần đầu).
     private val groupsViewModel = ViewModelProvider(activity)[AppGroupsViewModel::class.java].also { vm ->
-        vm.setTitles(AppGroupKind.entries.associateWith { folderTitle(it) })
+        vm.onScreenLocale(AppLocaleContext.localeKey(activity)) // đổi ngôn ngữ app → Activity dựng lại → tên nhóm đọc lại
     }
     private var groups: List<AppGroupsViewModel.AppGroupState>? = null
     private var groupSheet: AppGroupSheet? = null
@@ -85,11 +86,8 @@ class GeneralSettingsScreen(private val ctx: SettingsScreenContext) : SettingsSc
         val rows = ArrayList<SettingsRow>(list.size + 2)
         rows.add(SettingsRow.Header(ID_GROUP_HEADER, R.string.app_groups_header))
         // Máy Google (Pixel): app của hãng chính là nhóm "Google" (cùng tên thư mục), bỏ hàng thứ hai.
-        val shown = if (brandName().equals(activity.getString(R.string.app_group_google), ignoreCase = true)) {
-            list.filter { it.kind != AppGroupKind.MANUFACTURER }
-        } else {
-            list
-        }
+        val googleTitle = list.firstOrNull { it.kind == AppGroupKind.GOOGLE }?.title
+        val shown = list.filterNot { it.kind == AppGroupKind.MANUFACTURER && it.title.equals(googleTitle, ignoreCase = true) }
         shown.mapTo(rows) { g ->
             val value = if (!g.enabled && g.folderId != null) {
                 activity.getString(R.string.app_groups_already)
@@ -108,28 +106,11 @@ class GeneralSettingsScreen(private val ctx: SettingsScreenContext) : SettingsSc
         groupSheet = AppGroupSheet(activity, groupsViewModel, state, onDismissed = { groupSheet = null }).show()
     }
 
-    /** Tên thư mục sẽ tạo / so khớp. "Ứng dụng của hãng" lấy tên hãng của máy (vd "OPPO", "Samsung"). */
-    private fun folderTitle(kind: AppGroupKind): String = when (kind) {
-        AppGroupKind.GOOGLE -> activity.getString(R.string.app_group_google)
-        AppGroupKind.SOCIAL -> activity.getString(R.string.app_group_social)
-        AppGroupKind.GAMES -> activity.getString(R.string.app_group_games)
-        AppGroupKind.ENTERTAINMENT -> activity.getString(R.string.app_group_entertainment)
-        AppGroupKind.UTILITIES -> activity.getString(R.string.app_group_utilities)
-        AppGroupKind.MANUFACTURER -> brandName()
-    }
-
     private fun rowTitle(g: AppGroupsViewModel.AppGroupState): String = when {
         g.kind != AppGroupKind.MANUFACTURER -> g.title
         // Không đọc được tên hãng: tên thư mục đã là "Ứng dụng của hãng", không lồng thêm vào mẫu "Ứng dụng của %1$s".
         Build.MANUFACTURER.isNullOrBlank() -> g.title
         else -> activity.getString(R.string.app_group_manufacturer_row, g.title)
-    }
-
-    /** `Build.MANUFACTURER` như máy ghi; toàn chữ thường (vd "samsung") thì viết hoa chữ đầu. Rỗng thì dùng chữ chung. */
-    private fun brandName(): String {
-        val raw = Build.MANUFACTURER.orEmpty().trim()
-        if (raw.isEmpty()) return activity.getString(R.string.app_group_manufacturer_fallback)
-        return if (raw == raw.lowercase()) raw.replaceFirstChar { it.uppercase() } else raw
     }
 
     override fun onSwitchChanged(row: SettingsRow.Switch, checked: Boolean) {
