@@ -305,6 +305,9 @@ class HomeViewModel @Inject constructor(
     /** Icon cho danh sách debug; M3 thay bằng lưới. Cache nằm ở repository nên gọi lại rẻ. */
     suspend fun loadIcon(key: ComponentKey, sizePx: Int): Bitmap? = appRepository.icon(key, sizePx)
 
+    /** HW: icon đã có trong cache RAM (đồng bộ), null nếu chưa. */
+    fun peekIcon(key: ComponentKey, sizePx: Int): Bitmap? = appRepository.peekIcon(key, sizePx)
+
     /** [source] là vùng icon đã bấm trên màn hình, để animation mở app xuất phát từ đó. */
     fun onAppClicked(item: AppItem, source: ScreenRect?) {
         if (!appRepository.launch(item.key, source)) {

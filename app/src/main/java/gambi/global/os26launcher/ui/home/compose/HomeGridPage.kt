@@ -434,7 +434,7 @@ internal fun HomeFolderPlate(folder: PlacedFolder, sizePx: Int, icons: HomeIcons
     val pad = size * FOLDER_PADDING_RATIO
     val gap = size * FOLDER_GAP_RATIO
     val mini = ((size - 2 * pad - 2 * gap) / FOLDER_GRID)
-    val miniPx = mini.roundToInt()
+    val miniPx = folderMiniPx(sizePx) // = mini.roundToInt()
     Box(
         modifier
             .requiredSize(with(density) { size.toDp() })
@@ -491,6 +491,12 @@ private const val FOLDER_CORNER_RATIO = 0.225f
 private fun folderCornerRatio(scale: Float): Float = (FOLDER_CORNER_RATIO * scale).coerceAtMost(0.5f)
 private const val FOLDER_PADDING_RATIO = 0.12f
 private const val FOLDER_GAP_RATIO = 0.05f
+
+/** HW: cỡ px icon thu nhỏ trong ô thư mục cỡ [sizePx], đúng phép tính của [HomeFolderPlate] (lượt nạp sẵn màn đầu hỏi đúng khóa cache). */
+internal fun folderMiniPx(sizePx: Int): Int {
+    val size = sizePx.toFloat()
+    return ((size - 2 * (size * FOLDER_PADDING_RATIO) - 2 * (size * FOLDER_GAP_RATIO)) / FOLDER_GRID).roundToInt()
+}
 private const val FOLDER_LENS_SCALE = 0.6f // ô thư mục ~60 dp: khúc xạ của card (12–24 dp) quá mạnh, thu nhỏ như ô tìm (lensScale 0.5)
 private const val HOVER_GLASS_SCALE = 1.25f
 private const val HOVER_ZOOM = 1.12f

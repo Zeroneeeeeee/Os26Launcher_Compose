@@ -593,6 +593,7 @@
 
     <!-- OB: Onboarding 0.1–0.5 (chữ theo Figma 302:3673) -->
     <string name="onboarding_start">Bắt đầu</string>
+    <string name="home_hello">Xin chào</string> <!-- HH: màn chào khi mở Home từ "Trải nghiệm" -->
     <string name="onboarding_continue">Tiếp tục</string>
     <string name="onboarding_set_default">Đặt làm mặc định</string>
     <string name="onboarding_later">Để sau</string>

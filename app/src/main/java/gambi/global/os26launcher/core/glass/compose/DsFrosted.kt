@@ -111,9 +111,9 @@ fun FrostedWallpaperLayer(frosted: FrostedBackdrop, source: Bitmap?, modifier: M
  * `Image(ContentScale.Crop)` của ảnh nền gốc. Chưa có bản mờ thì không vẽ gì (nền phẳng phía sau hiện ra).
  */
 @Composable
-fun FrostedWallpaperImage(source: Bitmap?, modifier: Modifier = Modifier) {
+fun FrostedWallpaperImage(source: Bitmap?, modifier: Modifier = Modifier, cache: BlurredBackdropCache? = null) {
     var size by remember { mutableStateOf(IntSize.Zero) }
-    val small = rememberSmallBlur(source, size, null)
+    val small = rememberSmallBlur(source, size, cache) // HH: [cache] riêng (vd màn chào, mờ mạnh hơn "Độ mờ" của kính); null = của ảnh nền
     val sourceState = rememberUpdatedState(source)
     Box(modifier.onSizeChanged { size = it }.drawBehind { drawFrosted(sourceState.value, small) })
 }

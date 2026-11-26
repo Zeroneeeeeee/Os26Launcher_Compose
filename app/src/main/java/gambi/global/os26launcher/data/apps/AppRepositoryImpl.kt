@@ -88,6 +88,8 @@ class AppRepositoryImpl @Inject constructor(
     override fun isPackageInstalled(packageName: String, userSerial: Long): Boolean =
         dataSource.isPackageInstalled(packageName, userSerial)
 
+    override fun peekIcon(key: ComponentKey, sizePx: Int): Bitmap? = iconLoader.peek(key, sizePx)
+
     override suspend fun icon(key: ComponentKey, sizePx: Int): Bitmap? =
         withContext(io) { iconLoader.load(key, sizePx) }
 

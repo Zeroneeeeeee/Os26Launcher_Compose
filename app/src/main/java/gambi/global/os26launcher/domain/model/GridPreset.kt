@@ -10,7 +10,7 @@ package gambi.global.os26launcher.domain.model
 enum class GridPreset(val columns: Int, val rows: Int) {
     P4X5(4, 5),
     P4X6(4, 6),
-    P5X6(5, 6);
+    /*P5X6(5, 6)*/;
 
     /** Số ô tối đa của một trang. */
     val capacity: Int get() = columns * rows
