@@ -294,6 +294,14 @@
     <string name="cc_perm_granted">허용됨</string>
     <string name="cc_perm_missing">허용 안 됨</string>
     <string name="cc_perm_open_failed">이 기기에서는 권한 화면을 열 수 없습니다</string>
+    <string name="cc_perm_grant">허용</string>
+    <string name="cc_perm_later">나중에</string>
+    <string name="cc_perm_reason_overlay">제어 센터는 가장자리 핸들과 패널을 다른 앱 위에 표시합니다. 사용하려면 다른 앱 위에 표시를 허용하세요.</string>
+    <string name="cc_perm_reason_listener">제어 센터가 백그라운드에서 계속 실행되고 미디어 컨트롤을 표시하려면 알림 접근이 필요합니다.</string>
+    <string name="cc_perm_reason_battery">시스템이 백그라운드에서 제어 센터를 중지하지 않도록 배터리 제한 없음을 허용하세요.</string>
+    <string name="cc_perm_reason_write_settings">밝기와 자동 회전을 변경하려면 제어 센터에 시스템 설정 수정 권한이 필요합니다.</string>
+    <string name="cc_perm_reason_dnd">방해 금지 모드를 켜고 끄려면 제어 센터에 방해 금지 접근 권한이 필요합니다.</string>
+    <string name="cc_perm_reason_bluetooth">블루투스를 켜고 끄려면 제어 센터에 근처 기기 권한이 필요합니다.</string>
     <string name="cc_tile_airplane">비행기 모드</string>
     <string name="cc_tile_cellular">모바일 데이터</string>
     <string name="cc_tile_wifi">Wi-Fi</string>

@@ -300,6 +300,14 @@
     <string name="cc_perm_granted">Concedido</string>
     <string name="cc_perm_missing">No concedido</string>
     <string name="cc_perm_open_failed">Este dispositivo no puede abrir la pantalla de permisos</string>
+    <string name="cc_perm_grant">Conceder</string>
+    <string name="cc_perm_later">Más tarde</string>
+    <string name="cc_perm_reason_overlay">El Centro de control muestra el borde y el panel sobre otras apps. Activa Mostrar sobre otras apps para usarlo.</string>
+    <string name="cc_perm_reason_listener">El Centro de control necesita Acceso a notificaciones para seguir activo en segundo plano y mostrar los controles multimedia.</string>
+    <string name="cc_perm_reason_battery">Permite el uso de batería sin restricciones para que el sistema no detenga el Centro de control en segundo plano.</string>
+    <string name="cc_perm_reason_write_settings">El Centro de control necesita Modificar ajustes del sistema para cambiar el brillo y la rotación automática.</string>
+    <string name="cc_perm_reason_dnd">El Centro de control necesita Acceso a No molestar para activar y desactivar No molestar.</string>
+    <string name="cc_perm_reason_bluetooth">El Centro de control necesita el permiso Dispositivos cercanos para activar y desactivar el Bluetooth.</string>
     <string name="cc_tile_airplane">Modo avión</string>
     <string name="cc_tile_cellular">Datos móviles</string>
     <string name="cc_tile_wifi">Wi-Fi</string>

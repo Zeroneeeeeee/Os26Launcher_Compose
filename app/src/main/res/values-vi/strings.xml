@@ -293,6 +293,14 @@
     <string name="cc_perm_granted">Đã cấp</string>
     <string name="cc_perm_missing">Chưa cấp</string>
     <string name="cc_perm_open_failed">Máy này không mở được màn cấp quyền</string>
+    <string name="cc_perm_grant">Cấp quyền</string>
+    <string name="cc_perm_later">Để sau</string>
+    <string name="cc_perm_reason_overlay">Trung tâm điều khiển vẽ dải mép và panel đè lên ứng dụng khác. Hãy bật Hiển thị trên ứng dụng khác để dùng.</string>
+    <string name="cc_perm_reason_listener">Trung tâm điều khiển cần Truy cập thông báo để chạy nền và hiện điều khiển nhạc.</string>
+    <string name="cc_perm_reason_battery">Cho phép không tối ưu pin để hệ thống không tắt Trung tâm điều khiển khi chạy nền.</string>
+    <string name="cc_perm_reason_write_settings">Trung tâm điều khiển cần Sửa đổi cài đặt hệ thống để chỉnh độ sáng và khóa xoay.</string>
+    <string name="cc_perm_reason_dnd">Trung tâm điều khiển cần Quyền Không làm phiền để bật/tắt chế độ Không làm phiền.</string>
+    <string name="cc_perm_reason_bluetooth">Trung tâm điều khiển cần quyền Thiết bị ở gần để bật/tắt Bluetooth.</string>
     <string name="cc_tile_airplane">Chế độ máy bay</string>
     <string name="cc_tile_cellular">Dữ liệu di động</string>
     <string name="cc_tile_wifi">Wi-Fi</string>

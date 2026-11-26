@@ -6,7 +6,8 @@ package gambi.global.os26launcher.domain.model.controlcenter
 data class ControlCenterConfig(
     val enabled: Boolean = false,
     val edge: EdgeConfig = EdgeConfig(),
-    val background: BackgroundMode = BackgroundMode.NONE,
+    // 2026-11-26: tạm ẩn NONE (máy không hỗ trợ blur xuyên cửa sổ thì nền không mờ, vd SM-A176B) nên mặc định là ảnh nền launcher.
+    val background: BackgroundMode = BackgroundMode.WALLPAPER,
     val blurBackground: Boolean = true,
     val vibrateOnOpen: Boolean = true,
     val tiles: List<CustomTile> = DEFAULT_TILES,

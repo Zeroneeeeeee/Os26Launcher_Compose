@@ -297,6 +297,14 @@
     <string name="cc_perm_granted">दी गई</string>
     <string name="cc_perm_missing">नहीं दी गई</string>
     <string name="cc_perm_open_failed">इस डिवाइस पर अनुमति वाली स्क्रीन नहीं खुल सकती</string>
+    <string name="cc_perm_grant">अनुमति दें</string>
+    <string name="cc_perm_later">बाद में</string>
+    <string name="cc_perm_reason_overlay">कंट्रोल सेंटर किनारे की पट्टी और पैनल को दूसरे ऐप के ऊपर दिखाता है। इसे इस्तेमाल करने के लिए दूसरे ऐप के ऊपर दिखाएं चालू करें।</string>
+    <string name="cc_perm_reason_listener">कंट्रोल सेंटर को बैकग्राउंड में चलते रहने और मीडिया कंट्रोल दिखाने के लिए सूचना का ऐक्सेस चाहिए।</string>
+    <string name="cc_perm_reason_battery">बैटरी पर पाबंदी हटाएं ताकि सिस्टम बैकग्राउंड में कंट्रोल सेंटर को बंद न करे।</string>
+    <string name="cc_perm_reason_write_settings">चमक और ऑटो-रोटेट बदलने के लिए कंट्रोल सेंटर को सिस्टम सेटिंग में बदलाव करने की अनुमति चाहिए।</string>
+    <string name="cc_perm_reason_dnd">परेशान न करें को चालू/बंद करने के लिए कंट्रोल सेंटर को परेशान न करें का ऐक्सेस चाहिए।</string>
+    <string name="cc_perm_reason_bluetooth">ब्लूटूथ चालू/बंद करने के लिए कंट्रोल सेंटर को आस-पास के डिवाइस की अनुमति चाहिए।</string>
     <string name="cc_tile_airplane">हवाई जहाज़ मोड</string>
     <string name="cc_tile_cellular">मोबाइल डेटा</string>
     <string name="cc_tile_wifi">वाई-फ़ाई</string>
