@@ -604,6 +604,7 @@
 
     <!-- OB: Onboarding 0.1–0.5 (chữ theo Figma 302:3673) -->
     <string name="onboarding_start">はじめる</string>
+    <string name="home_hello">こんにちは</string> <!-- HH: màn chào khi mở Home từ "Trải nghiệm" -->
     <string name="onboarding_continue">続ける</string>
     <string name="onboarding_set_default">デフォルトに設定</string>
     <string name="onboarding_later">あとで</string>

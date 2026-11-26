@@ -42,6 +42,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.derivedStateOf
@@ -87,6 +88,7 @@ import gambi.global.os26launcher.ui.photo.PhotoWidgetActivity
 import kotlinx.coroutines.flow.MutableSharedFlow
 import gambi.global.os26launcher.ui.home.compose.HomeDragActions
 import gambi.global.os26launcher.ui.home.compose.HomeIcons
+import gambi.global.os26launcher.ui.home.compose.HomeIconLoader
 import gambi.global.os26launcher.ui.home.compose.HomeScreen
 import gambi.global.os26launcher.ui.home.compose.showRemoveWidgetDialog
 import gambi.global.os26launcher.ui.home.compose.dismissRemoveDialog
@@ -184,7 +186,28 @@ class HomeActivity : AppCompatActivity() {
     /** LI: "Bo góc" của icon kiểu Kính để vẽ kính thật sau icon (LocalIconGlassCorner); null = kiểu khác / gói icon. Đặt ở setupRecreateGuard. */
     private var iconGlassCorner by mutableStateOf<Int?>(null)
     private val todayModel = TodayGridModel() // TV-3: thứ tự, kéo đổi chỗ, thêm/xóa của lưới Today
-    private val icons by lazy { HomeIcons(viewModel::loadIcon) } // JH1 D7: dùng chung cho Home, Today và bảng chọn widget
+    // JH1 D7: dùng chung cho Home, Today và bảng chọn widget. HW: tra cache RAM đồng bộ (khung đầu có ngay icon đã nạp), gộp lần nạp trùng.
+    private val icons by lazy {
+        HomeIcons(
+            object : HomeIconLoader {
+                override suspend fun load(key: ComponentKey, sizePx: Int) = viewModel.loadIcon(key, sizePx)
+                override fun peek(key: ComponentKey, sizePx: Int) = viewModel.peekIcon(key, sizePx)
+            },
+            lifecycleScope
+        )
+    }
+
+    @Inject
+    lateinit var homeWarmup: HomeWarmup // HW: nhớ icon màn đầu để Cài đặt nạp sẵn
+
+    // HH: màn "Xin chào" đang phủ (mở bằng HomeEntry: "Trải nghiệm" / "Khám phá ›"); Home đã hiện đủ lần nào chưa (HomeScreen.onHomeShown).
+    private val helloVisible = mutableStateOf(false)
+    private val homeShown = mutableStateOf(false)
+    // HH: màn chào đang phủ KÍN (chưa bắt đầu mờ đi): lớp Home alpha 0, RenderThread bỏ qua không vẽ, dành cho nét viết của màn chào.
+    private val helloCovering = mutableStateOf(false)
+    // HH: Home dựng mới kèm màn chào: khung đầu CHỈ vẽ màn chào (nhẹ), để hệ thống chuyển từ Cài đặt sang ngay; Home (lưới, Today, Thư viện)
+    // dựng từ khung sau, dưới màn chào. Mở lại Home đã có sẵn (onNewIntent) thì không cần.
+    private val homeComposeAllowed = mutableStateOf(true)
     private val pagerInfo = HomePagerInfo()
 
     private var rootWidth = 0
@@ -264,6 +287,11 @@ class HomeActivity : AppCompatActivity() {
         // HW: ảnh nền đã giải mã sẵn (Cài đặt làm nóng / Home trước) gắn ngay để khung đầu có ảnh nền, không nền tối. Chia đôi màn: cỡ gốc khác
         // cỡ cửa sổ toàn màn, để onRootSize nạp như cũ.
         if (!isInMultiWindowMode) HomeWarmup.windowSize(this).let { (w, h) -> viewModel.primeBackdrop(w, h) }
+        // HH: dựng lại (xoay, đổi giao diện) thì không chào lại.
+        if (savedInstanceState == null && intent?.getBooleanExtra(HomeEntry.EXTRA_HELLO, false) == true) {
+            showHello()
+            homeComposeAllowed.value = false
+        }
         setContent {
             val state by viewModel.uiState.collectAsStateWithLifecycle()
             val search by searchViewModel.uiState.collectAsStateWithLifecycle()
@@ -317,10 +345,19 @@ class HomeActivity : AppCompatActivity() {
             val homeRecents = remember(todayApps, state.showLabels) {
                 gambi.global.os26launcher.ui.home.compose.HomeRecents(todayApps, icons, state.showLabels, viewModel::onAppClicked)
             }
-            Box(Modifier.fillMaxSize()) {
+            if (!homeComposeAllowed.value) {
+                // HH: khung 1 chỉ có màn chào; khung 2 đồng bộ lệnh chạy nét viết (AVD) sang RenderThread; từ khung 3 mới dựng Home.
+                LaunchedEffect(Unit) {
+                    withFrameNanos { }
+                    withFrameNanos { }
+                    homeComposeAllowed.value = true
+                }
+            }
+            if (homeComposeAllowed.value) Box(Modifier.fillMaxSize()) {
             // JS2: lớp tìm kiếm mở thì Home + Library phía sau nhoè (API 31+), như ảnh chụp mờ của SearchOverlayView.
             Box(
                 Modifier.fillMaxSize().graphicsLayer {
+                    alpha = if (helloCovering.value) 0f else 1f // HH
                     val sp = searchProgress.floatValue
                     renderEffect = if (sp > 0f && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         val r = SEARCH_BLUR_DP * density * sp
@@ -378,6 +415,9 @@ class HomeActivity : AppCompatActivity() {
                     pageScrollRequests = pageScrollRequests,
                     isNavBarHidden = { navBarHidden },
                     onDragState = { homeDrag = it }, // LD Task 4
+                    onFirstScreenIcons = homeWarmup::rememberFirstScreenIcons, // HW
+                    onHomeShown = { homeShown.value = true }, // HH
+                    prebuildAllAtStart = helloVisible.value, // HH: dựng hết trang khi màn chào còn che
                     modifier = Modifier.onSizeChanged { onRootSize(it.width, it.height) }
                 )
                 // TV Task 3: màn Today phía trên Home (trong LocalHostedWidgets để widget app vẽ được), trượt vào từ trái.
@@ -417,6 +457,18 @@ class HomeActivity : AppCompatActivity() {
                 gambi.global.os26launcher.ui.home.compose.RemoveAppOverlay(searchBackdrop)
             }
             dsDialogs.Render() // JS1: hộp thoại Compose (gợi ý launcher mặc định...)
+            // HH: màn "Xin chào" trên cùng (cả trên hộp thoại), phủ Home đang dựng / nạp icon; Home hiện đủ thì mờ đi rồi tự gỡ.
+            if (helloVisible.value) {
+                gambi.global.os26launcher.ui.home.compose.HomeHello(
+                    backdrop = state.backdrop, // nền = ảnh nền Home làm mờ
+                    homeReady = { homeShown.value },
+                    onUncover = { helloCovering.value = false },
+                    onFinished = {
+                        helloCovering.value = false
+                        helloVisible.value = false
+                    }
+                )
+            }
         }
         reassertEdgeToEdge(window)
         if (savedInstanceState == null) startOnboardingIfNeeded() // OB (JH4 D4): không mở lại khi recreate()
@@ -556,8 +608,16 @@ class HomeActivity : AppCompatActivity() {
     }
 
     /** JH3a D4 — phím Home khi đang ở Home (HomeActivity.onNewIntent): đóng tìm kiếm, thoát edit mode. */
+    /** HH: phủ màn chào (HomeHello) và ẩn lớp Home phía dưới tới khi màn chào bắt đầu mờ đi. */
+    private fun showHello() {
+        helloVisible.value = true
+        helloCovering.value = true
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        // HH: Home đã có sẵn (singleTask) mà mở lại bằng "Trải nghiệm": vẫn chào; Home đã đủ nên chào xong là mờ đi ngay sau thời gian tối thiểu.
+        if (intent.getBooleanExtra(HomeEntry.EXTRA_HELLO, false)) showHello()
         if (intent.action == Intent.ACTION_MAIN && intent.hasCategory(Intent.CATEGORY_HOME)) {
             // HB (2026-11-10): nút Home đóng cả menu nhấn giữ và bảng thư mục, như Back (quy tắc HB: mọi lớp tạm đóng ở cả Back và Home).
             viewModel.closeIconMenu()

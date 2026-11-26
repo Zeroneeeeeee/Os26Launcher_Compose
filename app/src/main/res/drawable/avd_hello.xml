@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- HH: chữ "hello" viết tay (một nét liền, tự vẽ cho app) vẽ dần bằng trimPathEnd 0 -> 1. AnimatedVectorDrawable chạy trên RenderThread
+     (API 25+), nên nét viết vẫn mượt khi main thread đang bận dựng Home bên dưới màn chào (HomeHello.kt). Hệ toạ độ 440 x 200: chân chữ
+     y = 160, đỉnh chữ thường y = 110, đỉnh nét cao y ~ 25. Đổi thời lượng thì sửa cả HELLO_WRITE_MS trong HomeHello.kt. -->
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:width="440dp"
+            android:height="200dp"
+            android:viewportWidth="440"
+            android:viewportHeight="200">
+            <path
+                android:name="hello"
+                android:pathData="M 20 158 C 50 148, 92 96, 102 58 C 109 30, 90 22, 84 46 C 78 74, 72 128, 68 162 C 76 132, 94 110, 110 112 C 126 114, 122 148, 126 158 C 130 170, 144 168, 156 158 C 172 146, 194 132, 189 117 C 185 104, 160 108, 160 134 C 160 160, 182 172, 206 160 C 226 148, 246 108, 250 72 C 254 42, 238 32, 232 56 C 226 86, 225 140, 232 158 C 238 172, 256 170, 268 158 C 286 140, 306 106, 310 72 C 314 42, 298 32, 292 56 C 286 86, 285 140, 292 158 C 298 172, 318 170, 332 152 C 338 132, 348 113, 366 112 C 390 110, 400 140, 386 160 C 373 176, 346 172, 346 148 C 346 126, 366 110, 382 116 C 394 120, 406 120, 422 110"
+                android:strokeColor="#FFFFFFFF"
+                android:strokeWidth="6.5"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round"
+                android:trimPathEnd="0" />
+        </vector>
+    </aapt:attr>
+    <target android:name="hello">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="trimPathEnd"
+                android:valueFrom="0"
+                android:valueTo="1"
+                android:valueType="floatType"
+                android:startOffset="150"
+                android:duration="1800"
+                android:interpolator="@android:interpolator/fast_out_slow_in" />
+        </aapt:attr>
+    </target>
+</animated-vector>

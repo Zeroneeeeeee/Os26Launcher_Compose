@@ -66,6 +66,15 @@ class CustomIconStore @Inject constructor(
 
     override val customized: Flow<Set<ComponentKey>> = stamps.map { it.keys }.distinctUntilChanged()
 
+    /**
+     * HW: như [fileFor] nhưng đồng bộ, không chờ, không chạm đĩa: null = chưa đọc CSDL lần nào; "" = không có icon riêng; còn lại = tên file
+     * (chưa kiểm file còn trên đĩa).
+     */
+    fun peekName(key: ComponentKey): String? {
+        val map = names.value ?: return null
+        return map[key].orEmpty()
+    }
+
     /** File icon riêng của [key], null nếu không có (hoặc file đã mất). Chờ lần đọc CSDL đầu. */
     suspend fun fileFor(key: ComponentKey): File? {
         val name = names.filterNotNull().first()[key] ?: return null
