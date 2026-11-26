@@ -173,7 +173,7 @@ Vì sao toạ độ 2 chiều thay vì một số thứ tự (ví dụ `position
 | `1` | FOLDER | `title` |
 | `2` | SHORTCUT (deep shortcut, TT#7) | `packageName`, `shortcutId`, `userSerial` |
 | `3` | WIDGET (AppWidgetHost, TT#19, G3c) | `packageName` + `className` = provider, `userSerial` = hồ sơ của provider, `appWidgetId`, `spanX`, `spanY` |
-| `4` | BUILTIN_WIDGET (widget tự vẽ, TT#13, G2c) | `className` = mã loại (`clock`, `calendar`, `weather`, `photo` G3b, `recents` WF 2026-11-25: "App gần đây" trên lưới Home), `spanX`, `spanY`; `packageName` và `appWidgetId` null |
+| `4` | BUILTIN_WIDGET (widget tự vẽ, TT#13, G2c) | `className` = mã loại (`clock`, `calendar`, `weather`, `photo` G3b, `recents` WF 2026-11-25: "App gần đây" trên lưới Home, `battery` BW 2026-11-25: widget Pin 2 × 2), `spanX`, `spanY`; `packageName` và `appWidgetId` null |
 
 Cấu hình riêng của từng widget tự vẽ (WX 2026-11-13: địa điểm của widget thời tiết; G3b 2026-11-16: danh sách ảnh và vùng cắt của widget ảnh, `no_backup/photo_widgets.json`) **không nằm trong Room**: lưu ở `no_backup/weather_places.json`, khóa theo `launcher_items.id`. An toàn vì `id` là `AUTOINCREMENT` (không dùng lại) và không đường ghi nào xóa-rồi-tạo-lại hàng widget (đã đọc mọi đường, xem plan WX mục D1). Khi nhiều loại widget cần cấu hình thì xét một cột `config` + migration chung.
 

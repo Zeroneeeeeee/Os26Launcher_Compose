@@ -82,6 +82,7 @@ import gambi.global.os26launcher.domain.model.WidgetSize
 import gambi.global.os26launcher.domain.repository.AppWidgetRepository
 import gambi.global.os26launcher.ui.home.HomeViewModel
 import gambi.global.os26launcher.ui.home.compose.today.TodayRecentsCard
+import gambi.global.os26launcher.ui.widget.BatteryWidgetHub
 import gambi.global.os26launcher.ui.widget.WidgetRenderers
 import gambi.global.os26launcher.ui.widget.host.AppWidgetAddRequest
 import java.text.Normalizer
@@ -374,7 +375,7 @@ internal class HomeWidgetPicker(
             WidgetKind.PHOTO -> Box(modifier.aspectRatio(ratio)) {
                 androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxSize()) {
                     Image(
-                        painterResource(R.drawable.default_wallpaper_ios27),
+                        painterResource(R.drawable.wp_ios27_1_thumb), // WI: ảnh nền mặc định wp_ios27_1 (bản nhỏ)
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(minOf(maxWidth, maxHeight) * 0.12f))
@@ -393,12 +394,23 @@ internal class HomeWidgetPicker(
         val bg = colorResource(R.color.widget_preview_bg)
         val locale = androidx.compose.ui.text.intl.Locale.current.platformLocale
         var prepared by remember { mutableStateOf(androidx.compose.ui.unit.IntSize.Zero) }
+        // BW (chủ dự án 2026-11-25): xem trước Pin dùng dữ liệu thật: bảng mở thì hub nghe pin; số đổi ([BatteryWidgetHub.version]) thì vẽ lại.
+        val battery = kind == WidgetKind.BATTERY
+        if (battery) {
+            androidx.compose.runtime.DisposableEffect(Unit) {
+                BatteryWidgetHub.acquire(context)
+                onDispose { BatteryWidgetHub.release() }
+            }
+        }
+        var preparedVersion by remember { mutableStateOf(-1) }
         Canvas(modifier) {
             val w = this.size.width.toInt()
             val h = this.size.height.toInt()
-            if (w > 0 && h > 0 && prepared != androidx.compose.ui.unit.IntSize(w, h)) {
+            val version = if (battery) BatteryWidgetHub.version.intValue else 0
+            if (w > 0 && h > 0 && (prepared != androidx.compose.ui.unit.IntSize(w, h) || preparedVersion != version)) {
                 renderer.prepare(w, h, density, ZonedDateTime.now(), locale, DateFormat.is24HourFormat(context))
                 prepared = androidx.compose.ui.unit.IntSize(w, h)
+                preparedVersion = version
             }
             val r = minOf(this.size.width, this.size.height) * 0.12f
             drawRoundRect(bg, cornerRadius = CornerRadius(r, r))
@@ -715,6 +727,7 @@ internal class HomeWidgetPicker(
             WidgetKind.CALENDAR -> if (wide) R.string.wp_calendar_wide_title else R.string.wp_calendar_small_title
             WidgetKind.WEATHER -> if (wide) R.string.wp_weather_wide_title else R.string.wp_weather_small_title
             WidgetKind.PHOTO -> if (wide) R.string.wp_photo_wide_title else R.string.wp_photo_small_title
+            WidgetKind.BATTERY -> R.string.wp_battery_small_title // BW: chỉ 2 × 2
         }
     }
 
@@ -726,6 +739,7 @@ internal class HomeWidgetPicker(
             WidgetKind.CALENDAR -> if (wide) R.string.wp_calendar_wide_desc else R.string.wp_calendar_small_desc
             WidgetKind.WEATHER -> if (wide) R.string.wp_weather_wide_desc else R.string.wp_weather_small_desc
             WidgetKind.PHOTO -> if (wide) R.string.wp_photo_wide_desc else R.string.wp_photo_small_desc
+            WidgetKind.BATTERY -> R.string.wp_battery_small_desc
         }
     }
 
@@ -735,16 +749,19 @@ internal class HomeWidgetPicker(
         WidgetKind.CALENDAR -> R.string.widget_name_calendar
         WidgetKind.WEATHER -> R.string.weather_name
         WidgetKind.PHOTO -> R.string.ph_name // G3b
+        WidgetKind.BATTERY -> R.string.widget_battery_name // BW
     }
 
     private companion object {
         // P2-9: bảng chọn widget kiểu iOS (chỉnh tay theo video). TV-3 (chủ dự án 2026-11-20): Thời tiết và Ảnh 2×2 cùng hàng; "App gần đây" 4×2 ở
         // hàng dưới (WF Task 1, chủ dự án 2026-11-25: có ở cả bảng của Home, trước chỉ bảng của Today). Cỡ ở trang chi tiết: `WidgetKind.sizes`.
+        // BW (chủ dự án 2026-11-25): Pin 2×2 vào chỗ Ảnh (cạnh Thời tiết); Ảnh chuyển 4×2, đặt trên "App gần đây".
         val FEATURED = listOf(
             Featured(WidgetKind.CLOCK, WidgetSize(2, 2)),
             Featured(WidgetKind.CALENDAR, WidgetSize(2, 2)),
             Featured(WidgetKind.WEATHER, WidgetSize(2, 2)),
-            Featured(WidgetKind.PHOTO, WidgetSize(2, 2)),
+            Featured(WidgetKind.BATTERY, WidgetSize(2, 2)),
+            Featured(WidgetKind.PHOTO, WidgetSize(4, 2)),
             Featured(WidgetKind.RECENTS, WidgetSize(4, 2))
         )
 

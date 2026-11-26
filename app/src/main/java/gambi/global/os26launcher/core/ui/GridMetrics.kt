@@ -223,13 +223,17 @@ data class GridMetrics(
             // cách tính giữ nguyên như cũ, chỉ đổi vai trò từ "khe thật" thành "khe tối đa lưới còn cho phép". Kẹp ≥ 0 để chắc không vượt
             // [heightPx] dù lề trên + tổng hàng có sát/vượt heightPx (icon/nhãn quá cao).
             val safeTop = topPaddingOverridePx.coerceIn(0, heightPx)
-            val totalRowsHeight = rows * cellHeightFinal
+            // PW Task 4 (chủ dự án 2026-11-25): người dùng TẮT nhãn thì các hàng giữ đúng vị trí như khi có nhãn (như "icon lớn" của iOS: nhãn
+            // biến mất, lưới không dồn lên). Trước đây ô chỉ cao bằng icon nên các hàng dồn lên nửa trên, đáy trang trống (5×6 tắt nhãn ~200 dp).
+            // Chỗ của nhãn (khe trong + nhãn cỡ đầy đủ) cộng vào khe hàng; nhãn bị ẩn tự động vì màn quá thấp ([showLabels] vẫn bật) thì không.
+            val labelSlotPx = if (!showLabels) fullInnerGapPx + fullLabelHeightPx else 0
+            val totalRowsHeight = rows * (cellHeightFinal + labelSlotPx)
             val availableForGutters = heightPx - safeTop - totalRowsHeight
             val gridMaxGutterY = if (rows > 1) (availableForGutters / (rows - 1)).coerceAtLeast(0) else 0
             // 2026-11-24 (chủ dự án): khe DỌC thật = 0.7 × khe NGANG (iconSpacingX, khe giữa 2 icon theo hàng ngang) — không vượt trần
             // [gridMaxGutterY] ở trên.
             val desiredGutterY = (0.7f * iconSpacingX).toInt()
-            renderGutterY = minOf(desiredGutterY, gridMaxGutterY).coerceAtLeast(0)
+            renderGutterY = minOf(desiredGutterY, gridMaxGutterY).coerceAtLeast(0) + labelSlotPx
             renderPaddingTop = minOf(safeTop, maxOf(0, heightPx - totalRowsHeight))
         } else {
             // 2026-11-23: lề TRÊN cố định bằng lề 2 BÊN đã tính cuối (cellPaddingLeft — ở lưới capToDock là (space+gutter)/2 theo X, không còn

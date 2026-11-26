@@ -125,6 +125,12 @@
     <string name="home_add_widget">วิดเจ็ต</string>
     <string name="widget_picker_title">เพิ่มวิดเจ็ต</string>
     <string name="widget_name_clock">นาฬิกา</string>
+    <!-- BW: widget Pin -->
+    <string name="widget_battery_name">แบตเตอรี่</string>
+    <string name="wp_battery_small_title">แบตเตอรี่</string>
+    <string name="wp_battery_small_desc">แสดงระดับแบตเตอรี่และสถานะการชาร์จของโทรศัพท์</string>
+    <string name="widget_battery_description">แบตเตอรี่, %1$d%%</string>
+    <string name="widget_battery_description_charging">แบตเตอรี่, %1$d%%, กำลังชาร์จ</string>
     <string name="widget_name_calendar">ปฏิทิน</string>
     <string name="widget_size_label">%1$d×%2$d</string>
     <string name="widget_remove_title">นำวิดเจ็ตออกไหม</string>
@@ -680,6 +686,10 @@
     <string name="today_widget_remove_message">วิดเจ็ตจะถูกลบออกจากหน้าวันนี้ คุณเพิ่มกลับได้ด้วยปุ่ม +</string>
 
     <!-- Dong bo tu REF HEAD -->
+    <string name="wallpaper_preset_ios27_1">ทอง</string>
+    <string name="wallpaper_preset_ios27_2">เที่ยงคืน</string>
+    <string name="wallpaper_preset_ios27_3">ฟ้าคราม</string>
+    <string name="wallpaper_preset_ios27_4">ชมพูกุหลาบ</string>
     <string name="wallpaper_preset_lake">ทะเลสาบ</string>
     <string name="wallpaper_preset_blue_wave">คลื่นสีน้ำเงิน</string>
     <string name="wallpaper_preset_red">สีแดง</string>

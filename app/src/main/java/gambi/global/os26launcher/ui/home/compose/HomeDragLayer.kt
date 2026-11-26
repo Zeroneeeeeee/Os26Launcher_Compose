@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -12,6 +13,8 @@ import gambi.global.os26launcher.core.glass.compose.LocalDsBackdrop
 import gambi.global.os26launcher.core.glass.compose.LocalIconGlassCorner
 import gambi.global.os26launcher.core.glass.compose.iconGlassPlate
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.RoundRect
 import gambi.global.os26launcher.core.glass.compose.glassCornerScale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
@@ -35,8 +38,22 @@ fun HomeDragLayer(drag: HomeDragState, cells: GridMetrics.Cells?, icons: HomeIco
     val size = drag.floatSize
     // 2026-11-23: bóng theo thanh "Bo góc" của kính như icon / thư mục / widget (kẹp nửa cạnh ngắn).
     val cornerScale = glassCornerScale()
-    val baseCorner = if (item is DragItem.Widget) widgetRadius(with(density) { size.width.toDp() }, with(density) { size.height.toDp() }) else (c.iconSize * 0.225f / density.density).dp
-    val corner = minOf(baseCorner * cornerScale, with(density) { (minOf(size.width, size.height) / 2f).toDp() })
+    // PW: widget tự vẽ chỉ vẽ thẻ vuông kiểu iOS trong vùng ô ([widgetCardFrame]): bóng theo đúng khung thẻ, không theo cả vùng.
+    val card = ((item as? DragItem.Widget)?.widget as? PlacedWidget)?.let {
+        widgetCardFrame(size.width.toInt(), size.height.toInt(), it.position.spanX, c.gutterX)
+    }
+    val frameW = card?.width?.toFloat() ?: size.width
+    val frameH = card?.height?.toFloat() ?: size.height
+    val baseCorner = if (item is DragItem.Widget) widgetRadius(with(density) { frameW.toDp() }, with(density) { frameH.toDp() }) else (c.iconSize * 0.225f / density.density).dp
+    val corner = minOf(baseCorner * cornerScale, with(density) { (minOf(frameW, frameH) / 2f).toDp() })
+    val cornerPx = with(density) { corner.toPx() }
+    val shadowShape = if (card != null) {
+        GenericShape { _, _ ->
+            addRoundRect(RoundRect(card.left.toFloat(), card.top.toFloat(), card.right.toFloat(), card.bottom.toFloat(), CornerRadius(cornerPx)))
+        }
+    } else {
+        RoundedCornerShape(corner)
+    }
     Box(
         Modifier
             .offset {
@@ -49,7 +66,7 @@ fun HomeDragLayer(drag: HomeDragState, cells: GridMetrics.Cells?, icons: HomeIco
                 scaleY = drag.floatScale.value
                 alpha = drag.floatAlpha.value
                 shadowElevation = LIFT_SHADOW_DP * density.density * ((drag.floatScale.value - 1f) / 0.1f).coerceIn(0f, 1f)
-                shape = RoundedCornerShape(corner)
+                shape = shadowShape
                 clip = false
             }
     ) {
@@ -63,7 +80,7 @@ fun HomeDragLayer(drag: HomeDragState, cells: GridMetrics.Cells?, icons: HomeIco
             is DragItem.Folder -> HomeFolderPlate(item.folder, c.iconSize, icons)
             // Widget app (kể cả "không khả dụng"): trước đây rơi qua `as? PlacedWidget` nên ảnh nổi chỉ còn bóng, widget như biến mất khi kéo.
             is DragItem.Widget -> when (val w = item.widget) {
-                is PlacedWidget -> HomeWidgetCell(w)
+                is PlacedWidget -> HomeWidgetCell(w, gapXPx = c.gutterX) // PW: thẻ vuông như trên lưới
                 is PlacedAppWidget -> HomeAppWidgetDragPreview(w)
                 else -> Unit
             }

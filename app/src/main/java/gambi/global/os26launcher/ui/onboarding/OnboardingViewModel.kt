@@ -57,7 +57,7 @@ class OnboardingViewModel @Inject constructor(
     /** Theme đang chọn ở 0.2 (chưa chắc đã ghi). */
     val theme: StateFlow<ThemeId> = _theme.asStateFlow()
 
-    private val _swatch = MutableStateFlow(saved.get<Int>(KEY_SWATCH) ?: 0)
+    private val _swatch = MutableStateFlow(saved.get<Int>(KEY_SWATCH) ?: WallpaperPresets.indexOf(WallpaperPresets.DEFAULT_ID).coerceAtLeast(0)) // WI: mặc định wp_ios27_1
 
     /** Chỉ số ô hình nền đang chọn ở 0.3 ([WallpaperPresets.list], WI). */
     val swatch: StateFlow<Int> = _swatch.asStateFlow()

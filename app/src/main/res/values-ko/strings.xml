@@ -125,6 +125,12 @@
     <string name="home_add_widget">위젯</string>
     <string name="widget_picker_title">위젯 추가</string>
     <string name="widget_name_clock">시계</string>
+    <!-- BW: widget Pin -->
+    <string name="widget_battery_name">배터리</string>
+    <string name="wp_battery_small_title">배터리</string>
+    <string name="wp_battery_small_desc">휴대전화의 배터리 잔량과 충전 상태를 표시합니다.</string>
+    <string name="widget_battery_description">배터리, %1$d%%</string>
+    <string name="widget_battery_description_charging">배터리, %1$d%%, 충전 중</string>
     <string name="widget_name_calendar">캘린더</string>
     <string name="widget_size_label">%1$d×%2$d</string>
     <string name="widget_remove_title">위젯을 삭제할까요?</string>
@@ -680,6 +686,10 @@
     <string name="today_widget_remove_message">위젯이 오늘 화면에서 제거됩니다. + 버튼으로 다시 추가할 수 있습니다.</string>
 
     <!-- Dong bo tu REF HEAD -->
+    <string name="wallpaper_preset_ios27_1">골드</string>
+    <string name="wallpaper_preset_ios27_2">미드나이트</string>
+    <string name="wallpaper_preset_ios27_3">스카이 블루</string>
+    <string name="wallpaper_preset_ios27_4">로즈</string>
     <string name="wallpaper_preset_lake">호수</string>
     <string name="wallpaper_preset_blue_wave">블루 웨이브</string>
     <string name="wallpaper_preset_red">레드</string>

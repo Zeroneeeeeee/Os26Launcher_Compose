@@ -251,14 +251,23 @@ private fun HomeGridItem(
         is PlacedWidgetBase -> {
             val privacyHidden = item is PlacedAppWidget && (item.provider.packageName to item.provider.userSerial) in edit.hiddenWidgetPackages
             if (item is PlacedWidget) {
-                HomeWidgetCell(item, onClick = if (edit.editMode) null else ({ edit.onWidgetClick(item.kind, item.itemId) }))
+                HomeWidgetCell(
+                    item,
+                    onClick = if (edit.editMode) null else ({ edit.onWidgetClick(item.kind, item.itemId) }),
+                    gapXPx = cells.gutterX // PW: thẻ vuông kiểu iOS
+                )
             } else if (item is PlacedAppWidget) {
                 if (privacyHidden) return // P3-7: ẩn tạm, giữ chỗ
                 HomeAppWidgetCell(item)
             }
             if (edit.editMode) {
                 val r = cells.iconSize * MINUS_BADGE_RATIO / 2f
-                HomeRemoveBadge(cells.iconSize, r / 2f, r / 2f, stringResource(R.string.widget_remove_title)) { edit.onRemoveWidget(item.itemId) }
+                // PW: dấu "−" bám góc trên trái của THẺ (thẻ widget tự vẽ có thể hẹp hơn vùng ô, căn giữa ngang — [widgetCardFrame]).
+                val left = if (item is PlacedWidget) {
+                    val p = item.position
+                    widgetCardFrame(spanPx(p.spanX, cells.cellWidth, cells.gutterX), spanPx(p.spanY, cells.cellHeight, cells.gutterY), p.spanX, cells.gutterX).left
+                } else 0
+                HomeRemoveBadge(cells.iconSize, left + r / 2f, r / 2f, stringResource(R.string.widget_remove_title)) { edit.onRemoveWidget(item.itemId) }
             }
         }
     }

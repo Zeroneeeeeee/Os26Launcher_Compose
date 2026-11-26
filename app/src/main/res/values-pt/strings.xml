@@ -125,6 +125,12 @@
     <string name="home_add_widget">Widgets</string>
     <string name="widget_picker_title">Adicionar widget</string>
     <string name="widget_name_clock">Relógio</string>
+    <!-- BW: widget Pin -->
+    <string name="widget_battery_name">Baterias</string>
+    <string name="wp_battery_small_title">Bateria</string>
+    <string name="wp_battery_small_desc">Mostra o nível da bateria e o estado de carregamento do telefone.</string>
+    <string name="widget_battery_description">Bateria, %1$d%%</string>
+    <string name="widget_battery_description_charging">Bateria, %1$d%%, carregando</string>
     <string name="widget_name_calendar">Agenda</string>
     <string name="widget_size_label">%1$d×%2$d</string>
     <string name="widget_remove_title">Remover widget?</string>
@@ -682,6 +688,10 @@
     <string name="today_widget_remove_message">O widget será removido de Hoje. Você pode adicioná-lo de novo com o botão +.</string>
 
     <!-- Dong bo tu REF HEAD -->
+    <string name="wallpaper_preset_ios27_1">Dourado</string>
+    <string name="wallpaper_preset_ios27_2">Meia-noite</string>
+    <string name="wallpaper_preset_ios27_3">Azul-céu</string>
+    <string name="wallpaper_preset_ios27_4">Rosa</string>
     <string name="wallpaper_preset_lake">Lago</string>
     <string name="wallpaper_preset_blue_wave">Onda azul</string>
     <string name="wallpaper_preset_red">Vermelho</string>

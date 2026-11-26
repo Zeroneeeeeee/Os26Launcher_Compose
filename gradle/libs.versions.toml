@@ -6,6 +6,7 @@ hilt = "2.60.1"
 lifecycle = "2.11.0"
 datastore = "1.2.1"
 coreKtx = "1.19.1"
+coreSplashscreen = "1.2.0"
 appcompat = "1.8.0"
 activityKtx = "1.13.0"
 room = "2.8.5"
@@ -22,6 +23,7 @@ junit = "4.13.2"
 androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
 androidx-dynamicanimation = { group = "androidx.dynamicanimation", name = "dynamicanimation", version.ref = "dynamicanimation" }

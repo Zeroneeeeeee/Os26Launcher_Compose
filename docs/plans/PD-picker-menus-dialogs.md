@@ -3,7 +3,7 @@
 > Làm theo `docs/AGENTS.md` và `docs/Workflow.md`: plan duyệt rồi mới code; code liền các Task, chủ dự án build và kiểm một lượt; tick khi chủ dự án báo đạt. Phiên claude.ai qua VM **không build được**: chủ dự án chạy `.\gradlew.bat assembleDebug lintDebug installDebug` và gửi lỗi.
 
 **Bắt đầu:** 2026-11-25 · **Plan duyệt:** 2026-11-25 (chủ dự án: "ghi vào plan và làm luôn", trả lời Q1–Q3)
-**Trạng thái:** Đóng 2026-11-25 theo yêu cầu chủ dự án (Task 1–5); kiểm tay mới một phần (xem "Kết quả kiểm chứng")
+**Trạng thái:** Xong 2026-11-25 (Task 1–5; chủ dự án kiểm đạt)
 **Nhánh:** `an` (chồng lên WF chưa commit) · **Máy:** Oppo PKD130, Vsmart Live 4 · **Đổi schema Room:** không
 
 **Goal:** (1) Bảng chọn widget: trang danh sách cao tối đa 85% màn, trang chi tiết tối đa 80%. (2) Nhấn giữ một widget trong bảng (trang danh sách hoặc khung xem trước ở trang chi tiết) đủ lâu, chưa kéo: bảng trượt xuống đóng ngay, widget nổi dưới ngón tay và vào phiên kéo luôn. (3) Menu nhấn giữ icon và dropdown nút "Sửa" (đã có lớp tint tối) dùng chữ / icon trắng, "Gỡ cài đặt" giữ đỏ. (4) Mọi thẻ xác nhận của lưới chính, Thư viện, Today dùng chung kiểu thẻ kính tối chữ trắng của commit `b2672cc` "color dialog"; thẻ luôn ở lớp trên cùng, chặn mọi tương tác phía dưới.
@@ -83,7 +83,7 @@
 
 ## Kết quả kiểm chứng
 
-Chủ dự án đóng plan 2026-11-25 trước khi kiểm hết các kịch bản ở Task 2 Step 3 và Task 4 Step 4 (đã xem thẻ trên Oppo và Live 4). Lỗi phát sinh sau này ghi vào plan mới, dẫn lại plan này.
+Chủ dự án đóng plan 2026-11-25 rồi kiểm cùng ngày: Task 2 Step 3 và Task 4 Step 4 **đạt**. Phát hiện kèm: menu nhấn giữ icon cũng không chặn chạm (cùng kiểu lỗi Task 4, ngoài phạm vi PD) → `BACKLOG.md` B1. Thẻ dưới Android 12 → B6.
 
 ## Nhật ký
 
