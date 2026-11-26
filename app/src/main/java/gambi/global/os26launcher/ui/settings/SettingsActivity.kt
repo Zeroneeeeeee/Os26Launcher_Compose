@@ -29,6 +29,7 @@ import gambi.global.os26launcher.core.designsystem.compose.dsDialogs
 import gambi.global.os26launcher.core.ui.reassertEdgeToEdge
 import gambi.global.os26launcher.domain.config.AppStateRepository
 import gambi.global.os26launcher.domain.repository.DefaultLauncherRepository
+import gambi.global.os26launcher.ui.home.HomeWarmup
 import gambi.global.os26launcher.ui.onboarding.OnboardingActivity
 import gambi.global.os26launcher.ui.settings.compose.SettingsList
 import gambi.global.os26launcher.ui.settings.compose.listActions
@@ -53,6 +54,9 @@ class SettingsActivity : AppCompatActivity() {
 
     @Inject
     lateinit var appState: AppStateRepository // HC: cờ Onboarding khi vào app từ icon // OB: DefaultLauncherAction nhận thẳng repository
+
+    @Inject
+    lateinit var homeWarmup: HomeWarmup // HW
 
     private val viewModel: SettingsViewModel by viewModels()
     private var lastState: SettingsUiState? = null
@@ -156,6 +160,8 @@ class SettingsActivity : AppCompatActivity() {
         screen.onResume()
         // RS: kính của card đọc GlassEnvironment trực tiếp (rememberGlassLook) nên đổi ở màn Tinh chỉnh kính tự áp, không cần dựng lại.
         lastState?.let { render(it, forceRebind = false) }
+        // HW: trang chủ có Hero Card ("Trải nghiệm" / "Khám phá ›" mở Home): giải mã sẵn ảnh nền + bản mờ để Home mở không khựng, đen màn.
+        if (screen is SettingsHubScreen) homeWarmup.warmAfterNextFrame(this)
     }
 
     private fun render(state: SettingsUiState, forceRebind: Boolean) {

@@ -2,6 +2,7 @@ package gambi.global.os26launcher.domain.repository
 
 import android.graphics.Bitmap
 import android.net.Uri
+import gambi.global.os26launcher.domain.model.HomeBackdrop
 import gambi.global.os26launcher.domain.model.WallpaperTarget
 import kotlinx.coroutines.flow.StateFlow
 
@@ -47,6 +48,19 @@ interface BackdropRepository {
 
     /** Nạp ảnh đã lưu, thu nhỏ vừa [reqW] x [reqH]. Trả null nếu chưa có ảnh hoặc ảnh không đọc được. */
     suspend fun loadBackdrop(reqW: Int, reqH: Int): Bitmap?
+
+    /**
+     * HW: ảnh nền cỡ màn Home ([reqW] x [reqH]) theo lựa chọn hiện tại: ảnh đã chọn; chưa chọn thì ảnh mặc định / nền màu / ảnh cài sẵn
+     * ([HomeBackdrop.Empty] nếu không có gì, [HomeBackdrop.Error] nếu ảnh đã chọn không giải mã được). Tự chờ [awaitWallpaperConfig].
+     *
+     * Giữ bản [HomeBackdrop.Ready] gần nhất trong RAM (một ô, khóa = [backdropVersion] + cỡ): `HomeActivity` dựng mới (mở từ Cài đặt) hoặc
+     * Cài đặt đã làm nóng (`HomeWarmup`) thì trả ngay mà KHÔNG treo, nên gọi trên main thread là có ảnh ngay trong khung đó. Bitmap trả về
+     * dùng chung giữa các nơi gọi: không được recycle.
+     */
+    suspend fun loadHomeBackdrop(reqW: Int, reqH: Int): HomeBackdrop
+
+    /** HW: chỉ tra ô nhớ của [loadHomeBackdrop] (đồng bộ, không giải mã); null nếu chưa có, khác phiên bản / cỡ, hoặc chưa đọc nguồn nền. */
+    fun peekHomeBackdrop(reqW: Int, reqH: Int): HomeBackdrop.Ready?
 
     /**
      * Nhập ảnh người dùng vừa chọn: lưu bản sao toàn ảnh (xoay theo EXIF, cắt viền trong suốt, có trần pixel; JPEG bình thường chép nguyên
