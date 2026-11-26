@@ -170,7 +170,8 @@
             android:configChanges="keyboard|keyboardHidden|navigation|screenSize|smallestScreenSize|screenLayout|orientation"
             android:windowSoftInputMode="adjustNothing"
             android:enableOnBackInvokedCallback="true"
-            android:theme="@style/Theme.Os26Launcher">
+            android:theme="@style/Theme.Os26Launcher.Home">
+            <!-- HW (2026-11-26): Theme.Os26Launcher.Home = theme thường + không cửa sổ khởi động (khung tối khi mở từ Cài đặt), xem themes.xml. -->
             <!-- HC Task 2: bỏ LAUNCHER (icon app mở Cài đặt); giữ HOME để vẫn là launcher. Theme thường, không còn theme khởi động: Home
                  không là điểm vào app nữa, theme khởi động làm lóe logo splash mỗi lần mở Home từ "Trải nghiệm"/"Khám phá" (2026-11-18).
                  Splash của app nằm ở LauncherEntryActivity. -->

@@ -38,6 +38,9 @@ object PerfSwitches {
     /** LI: kính sau icon dùng ảnh chụp thay cho kính tự vẽ bằng shader trên ảnh nền đã mờ sẵn, để so số đo. */
     const val NO_ICON_SHADER = "noIconShader"
 
+    /** HW: màn Cài đặt không làm nóng ảnh nền / bản mờ của Home (`HomeWarmup`), để so số đo lúc bấm "Trải nghiệm". */
+    const val NO_HOME_WARMUP = "noHomeWarmup"
+
     private val flags: Set<String> by lazy { if (BuildConfig.PERF_SWITCHES) read() else emptySet() }
 
     val noRealGlass: Boolean get() = NO_REAL_GLASS in flags
@@ -48,6 +51,7 @@ object PerfSwitches {
     val noOffscreenSkip: Boolean get() = NO_OFFSCREEN_SKIP in flags
     val noIconGlass: Boolean get() = NO_ICON_GLASS in flags
     val noIconShader: Boolean get() = NO_ICON_SHADER in flags
+    val noHomeWarmup: Boolean get() = NO_HOME_WARMUP in flags
 
     private fun read(): Set<String> = try {
         val process = ProcessBuilder("getprop", PROP).redirectErrorStream(true).start()

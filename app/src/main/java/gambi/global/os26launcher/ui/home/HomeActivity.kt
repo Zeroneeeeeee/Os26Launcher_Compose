@@ -261,6 +261,9 @@ class HomeActivity : AppCompatActivity() {
             pillClaims = pagerInfo::pillClaims // chạm trên pill dạng chấm không mở Today (như Library)
         )
         libraryDrag = createLibraryDrag() // LD Task 3
+        // HW: ảnh nền đã giải mã sẵn (Cài đặt làm nóng / Home trước) gắn ngay để khung đầu có ảnh nền, không nền tối. Chia đôi màn: cỡ gốc khác
+        // cỡ cửa sổ toàn màn, để onRootSize nạp như cũ.
+        if (!isInMultiWindowMode) HomeWarmup.windowSize(this).let { (w, h) -> viewModel.primeBackdrop(w, h) }
         setContent {
             val state by viewModel.uiState.collectAsStateWithLifecycle()
             val search by searchViewModel.uiState.collectAsStateWithLifecycle()
@@ -775,6 +778,9 @@ class HomeActivity : AppCompatActivity() {
     private fun startOnboardingIfNeeded() {
         val launchedAsHome = intent?.hasCategory(Intent.CATEGORY_HOME) == true
         if (launchedAsHome) removeStaleAppTasks()
+        // HW: cờ đã đọc trong process (vd mở từ Cài đặt, Cài đặt vừa đọc) và đã xong thì không che: khung đầu là lưới + ảnh nền, không khung
+        // tối. Chưa đọc / chưa xong thì che và đọc như cũ.
+        if (viewModel.cachedOnboardingDone() == true) return
         coverForOnboarding()
         contentRoot.postDelayed({ uncoverAfterOnboarding() }, ONBOARDING_HOLD_MAX_MS)
         lifecycleScope.launch {
