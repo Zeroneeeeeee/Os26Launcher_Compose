@@ -44,26 +44,46 @@ object SpotlightLayoutBuilder {
         return BuildResult(list, taken.size, hot.size)
     }
 
+    /**
+     * SP (2026-11-26): Spotlight lúc đang gõ, danh sách cuộn được. Thứ tự: một hàng app ([columns] ô, không tiêu đề) → Phím tắt →
+     * Danh bạ (kèm [contactsPrompt] cuối section, không tính vào giới hạn) → Cài đặt → Đề xuất tìm kiếm ([WEB_SUGGESTIONS_MAX] gợi ý
+     * từ lịch sử rồi từ mạng, hàng "tìm đúng chữ đã gõ" đứng cuối). Mỗi section tối đa [SECTION_MAX] kết quả; section rỗng thì không
+     * có cả tiêu đề. Đầu vào đã lọc sẵn (app ẩn, công tắc Cài đặt tìm kiếm, độ dài truy vấn tối thiểu) và đã xếp hạng.
+     */
     fun buildTypingState(
         query: String,
-        matchedApps: List<SearchResult.App>,
+        apps: List<SearchResult.App>,
+        shortcuts: List<SearchResult.Shortcut>,
+        contacts: List<SearchResult.Contact>,
+        contactsPrompt: SearchResult.ContactsPermissionPrompt?,
+        settings: List<SearchResult.Setting>,
         historyQueries: List<String>,
         remoteSuggestions: List<String>,
-        maxAppRows: Int,
-        maxWebRows: Int,
         columns: Int
     ): BuildResult {
         val list = ArrayList<SearchResult>()
         val trimmed = query.trim()
 
-        // Kiểu iOS Spotlight: không tiêu đề nhóm. Một hàng app (thẻ kính), rồi thẻ gợi ý web; hàng "tìm đúng chữ đã gõ" đứng cuối.
-        val allowedApps = matchedApps.take(maxAppRows * columns)
+        val allowedApps = apps.take(columns.coerceAtLeast(1))
         list.addAll(allowedApps)
 
+        fun section(section: SearchResult.Section, rows: List<SearchResult>, extra: SearchResult? = null) {
+            val taken = rows.take(SECTION_MAX)
+            if (taken.isEmpty() && extra == null) return
+            list.add(SearchResult.Header(section))
+            list.addAll(taken)
+            if (extra != null) list.add(extra)
+        }
+        section(SearchResult.Section.SHORTCUTS, shortcuts)
+        section(SearchResult.Section.CONTACTS, contacts, contactsPrompt)
+        section(SearchResult.Section.SETTINGS, settings)
+
+        val webStart = list.size
         val webList = ArrayList<String>()
-        if (trimmed.isNotEmpty() && maxWebRows > 0) {
+        if (trimmed.isNotEmpty()) {
+            list.add(SearchResult.Header(SearchResult.Section.WEB))
             val typedLower = trimmed.lowercase()
-            val maxSuggestions = maxWebRows - 1 // chừa 1 chỗ cho hàng chữ đã gõ
+            val maxSuggestions = WEB_SUGGESTIONS_MAX
             for (h in historyQueries) {
                 if (webList.size >= maxSuggestions) break
                 val hl = h.lowercase()
@@ -84,6 +104,12 @@ object SpotlightLayoutBuilder {
             list.add(SearchResult.WebSuggestion(trimmed, SearchResult.WebSuggestion.SuggestionKind.TYPED))
         }
 
-        return BuildResult(list, allowedApps.size, list.size - allowedApps.size)
+        return BuildResult(list, allowedApps.size, (list.size - webStart - 1).coerceAtLeast(0))
     }
+
+    /** SP: tối đa chừng này kết quả mỗi section (Phím tắt, Danh bạ, Cài đặt) lúc đang gõ. */
+    const val SECTION_MAX = 3
+
+    /** SP: số gợi ý web (lịch sử + mạng) trước hàng chữ đã gõ. */
+    const val WEB_SUGGESTIONS_MAX = 3
 }

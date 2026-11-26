@@ -1,7 +1,6 @@
 package gambi.global.os26launcher.domain.search
 
 import kotlin.math.floor
-import kotlin.math.max
 
 object SearchCapacity {
 
@@ -13,8 +12,9 @@ object SearchCapacity {
 
     /**
      * Ô trống: tiêu đề "Gần đây" + [recentRows] hàng app (2, hoặc 1 khi người dùng thu gọn), rồi tiêu đề "Tìm kiếm thịnh hành" + số
-     * hàng thịnh hành vừa khít phía trên ô nhập (tối đa [MAX_TRENDING_ROWS]; webRows = 0 thì không hiện mục này). Tham số như
-     * [calculateTypingCapacity].
+     * hàng thịnh hành vừa khít phía trên ô nhập (tối đa [MAX_TRENDING_ROWS]; webRows = 0 thì không hiện mục này).
+     * [listHeightPx]: chiều cao vùng danh sách, từ đáy ô nhập tới mép trên bàn phím (hoặc thanh điều hướng); [topPaddingPx]: đệm trên.
+     * SP (2026-11-26): lúc gõ Spotlight cuộn được nên không còn hàm tính sức chứa lúc gõ.
      */
     fun calculateEmptyCapacity(
         listHeightPx: Int,
@@ -37,30 +37,4 @@ object SearchCapacity {
 
     /** Ô trống: tối đa chừng này hàng tìm kiếm thịnh hành. */
     private const val MAX_TRENDING_ROWS = 5
-
-    /**
-     * [listHeightPx]: chiều cao vùng danh sách, từ đáy ô nhập tới mép trên bàn phím (hoặc thanh điều hướng).
-     * [topPaddingPx]: đệm trên của danh sách; [sectionGapPx]: khoảng hở giữa thẻ app và thẻ web.
-     */
-    fun calculateTypingCapacity(
-        listHeightPx: Int,
-        topPaddingPx: Int,
-        cellHeightPx: Int,
-        webRowHeightPx: Int,
-        sectionGapPx: Int,
-        columns: Int
-    ): CapacityResult {
-        val appRows = TYPING_APP_ROWS
-        if (listHeightPx <= 0) return CapacityResult(appRows, 3, columns * appRows)
-
-        // Khi search (kiểu iOS Spotlight): 1 hàng app (tối đa `columns` = 4 app), không tiêu đề nhóm; phần còn lại cho gợi ý web.
-        // Danh sách không cuộn: chỉ lấy số hàng web vừa khít phía trên bàn phím.
-        val remainingForWeb = listHeightPx - topPaddingPx - (appRows * cellHeightPx) - sectionGapPx
-        val webRows = max(1, floor(remainingForWeb.toFloat() / webRowHeightPx).toInt())
-
-        return CapacityResult(appRows, webRows, appRows * columns)
-    }
-
-    /** Lúc gõ: chỉ 1 hàng app khớp nhất (4 cột = tối đa 4 app). */
-    private const val TYPING_APP_ROWS = 1
 }

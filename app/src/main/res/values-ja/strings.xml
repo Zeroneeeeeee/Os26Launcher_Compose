@@ -24,6 +24,28 @@
     <string name="settings_show_labels">アプリ名を表示</string>
     <string name="settings_nav_bar_hidden">ナビゲーションバーを隠す</string>
     <string name="settings_nav_bar_hidden_description">ホーム画面のみ。下端から上にスワイプすると一時的に表示されます。</string>
+    <!-- AG: gom nhóm app (Cài đặt → Chung) -->
+    <string name="app_groups_header">アプリをグループ化</string>
+    <string name="app_group_google">Google</string>
+    <string name="app_group_social">SNS</string>
+    <string name="app_group_games">ゲーム</string>
+    <string name="app_group_entertainment">エンターテインメント</string>
+    <string name="app_group_utilities">ユーティリティ</string>
+    <string name="app_group_manufacturer_row">%1$s のアプリ</string>
+    <string name="app_group_manufacturer_fallback">メーカーのアプリ</string>
+    <string name="app_groups_already">グループ化済み</string>
+    <string name="app_groups_footer">ホーム画面のアプリをフォルダにまとめます。ドックにあるアプリやフォルダ内のアプリはそのままです。</string>
+    <string name="app_groups_apply">グループ化</string>
+    <string name="app_groups_failed">グループ化できませんでした。ホーム画面が変更されています。</string>
+    <plurals name="app_groups_count">
+        <item quantity="other">%d 個のアプリ</item>
+    </plurals>
+    <plurals name="app_groups_add">
+        <item quantity="other">%d 個のアプリを追加</item>
+    </plurals>
+    <plurals name="app_groups_done">
+        <item quantity="other">%1$d 個のアプリを「%2$s」に移動しました</item>
+    </plurals>
     <string name="settings_backdrop">壁紙</string>
     <string name="settings_backdrop_set">画像を選択済み</string>
     <string name="settings_backdrop_unset">未選択</string>
@@ -183,6 +205,10 @@
     <string name="search_extras_header_recent">最近</string>
     <string name="search_extras_header_frequent">おすすめ</string>
     <string name="search_extras_header_trending">人気の検索</string>
+    <string name="search_section_shortcuts">ショートカット</string>
+    <string name="search_section_contacts">連絡先</string>
+    <string name="search_section_settings">設定</string>
+    <string name="search_section_web">検索候補</string>
 
     <!-- M8d Task 4 -->
     <string name="search_extras_shortcut_description">%1$s、%2$s のショートカット</string>

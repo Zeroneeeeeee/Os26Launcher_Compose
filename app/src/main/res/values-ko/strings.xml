@@ -24,6 +24,28 @@
     <string name="settings_show_labels">앱 이름 표시</string>
     <string name="settings_nav_bar_hidden">탐색 메뉴 숨기기</string>
     <string name="settings_nav_bar_hidden_description">홈 화면에서만 적용됩니다. 아래쪽 가장자리에서 위로 스와이프하면 잠시 표시됩니다.</string>
+    <!-- AG: gom nhóm app (Cài đặt → Chung) -->
+    <string name="app_groups_header">앱 그룹화</string>
+    <string name="app_group_google">Google</string>
+    <string name="app_group_social">소셜</string>
+    <string name="app_group_games">게임</string>
+    <string name="app_group_entertainment">엔터테인먼트</string>
+    <string name="app_group_utilities">유틸리티</string>
+    <string name="app_group_manufacturer_row">%1$s 앱</string>
+    <string name="app_group_manufacturer_fallback">제조사 앱</string>
+    <string name="app_groups_already">그룹화됨</string>
+    <string name="app_groups_footer">홈 화면의 앱을 폴더로 옮깁니다. 독에 있거나 이미 폴더에 있는 앱은 그대로 유지됩니다.</string>
+    <string name="app_groups_apply">그룹화</string>
+    <string name="app_groups_failed">앱을 그룹화하지 못했습니다. 홈 화면이 변경되었습니다.</string>
+    <plurals name="app_groups_count">
+        <item quantity="other">앱 %d개</item>
+    </plurals>
+    <plurals name="app_groups_add">
+        <item quantity="other">앱 %d개 추가</item>
+    </plurals>
+    <plurals name="app_groups_done">
+        <item quantity="other">앱 %1$d개를 “%2$s”(으)로 옮겼습니다</item>
+    </plurals>
     <string name="settings_backdrop">배경화면</string>
     <string name="settings_backdrop_set">이미지 선택됨</string>
     <string name="settings_backdrop_unset">선택 안 함</string>
@@ -183,6 +205,10 @@
     <string name="search_extras_header_recent">최근</string>
     <string name="search_extras_header_frequent">추천</string>
     <string name="search_extras_header_trending">인기 검색어</string>
+    <string name="search_section_shortcuts">바로가기</string>
+    <string name="search_section_contacts">연락처</string>
+    <string name="search_section_settings">설정</string>
+    <string name="search_section_web">검색 제안</string>
 
     <!-- M8d Task 4 -->
     <string name="search_extras_shortcut_description">%1$s, %2$s의 바로가기</string>

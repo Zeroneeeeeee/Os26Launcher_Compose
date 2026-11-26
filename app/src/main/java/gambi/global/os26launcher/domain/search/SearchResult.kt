@@ -72,5 +72,6 @@ sealed interface SearchResult {
         enum class SuggestionKind { TYPED, HISTORY, REMOTE, TRENDING }
     }
 
-    enum class Section { RECENT, FREQUENT, TRENDING }
+    /** SP: SHORTCUTS / CONTACTS / SETTINGS / WEB là tiêu đề section của Spotlight lúc đang gõ (hàng app không có tiêu đề). */
+    enum class Section { RECENT, FREQUENT, TRENDING, SHORTCUTS, CONTACTS, SETTINGS, WEB }
 }

@@ -24,6 +24,31 @@
     <string name="settings_show_labels">ऐप के नाम दिखाएं</string>
     <string name="settings_nav_bar_hidden">नेविगेशन बार छिपाएं</string>
     <string name="settings_nav_bar_hidden_description">केवल होम स्क्रीन पर। कुछ देर दिखाने के लिए नीचे के किनारे से ऊपर स्वाइप करें।</string>
+    <!-- AG: gom nhóm app (Cài đặt → Chung) -->
+    <string name="app_groups_header">ऐप्स का समूह बनाएं</string>
+    <string name="app_group_google">Google</string>
+    <string name="app_group_social">सोशल</string>
+    <string name="app_group_games">गेम</string>
+    <string name="app_group_entertainment">मनोरंजन</string>
+    <string name="app_group_utilities">उपयोगिताएं</string>
+    <string name="app_group_manufacturer_row">%1$s ऐप्स</string>
+    <string name="app_group_manufacturer_fallback">डिवाइस ऐप्स</string>
+    <string name="app_groups_already">समूह बना</string>
+    <string name="app_groups_footer">होम स्क्रीन के ऐप्स को एक फ़ोल्डर में ले जाता है। डॉक या पहले से फ़ोल्डर में रखे ऐप्स अपनी जगह रहते हैं।</string>
+    <string name="app_groups_apply">समूह बनाएं</string>
+    <string name="app_groups_failed">ऐप्स का समूह नहीं बन सका। होम स्क्रीन बदल गई है।</string>
+    <plurals name="app_groups_count">
+        <item quantity="one">%d ऐप</item>
+        <item quantity="other">%d ऐप्स</item>
+    </plurals>
+    <plurals name="app_groups_add">
+        <item quantity="one">%d ऐप जोड़ें</item>
+        <item quantity="other">%d ऐप्स जोड़ें</item>
+    </plurals>
+    <plurals name="app_groups_done">
+        <item quantity="one">%1$d ऐप “%2$s” में ले जाया गया</item>
+        <item quantity="other">%1$d ऐप्स “%2$s” में ले जाए गए</item>
+    </plurals>
     <string name="settings_backdrop">वॉलपेपर</string>
     <string name="settings_backdrop_set">इमेज चुनी गई</string>
     <string name="settings_backdrop_unset">नहीं चुना गया</string>
@@ -183,6 +208,10 @@
     <string name="search_extras_header_recent">हाल ही के</string>
     <string name="search_extras_header_frequent">सुझाव</string>
     <string name="search_extras_header_trending">लोकप्रिय खोजें</string>
+    <string name="search_section_shortcuts">शॉर्टकट</string>
+    <string name="search_section_contacts">संपर्क</string>
+    <string name="search_section_settings">सेटिंग</string>
+    <string name="search_section_web">खोज सुझाव</string>
 
     <!-- M8d Task 4 -->
     <string name="search_extras_shortcut_description">%1$s, %2$s का शॉर्टकट</string>

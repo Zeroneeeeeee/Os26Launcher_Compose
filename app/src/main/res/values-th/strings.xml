@@ -24,6 +24,28 @@
     <string name="settings_show_labels">แสดงชื่อแอป</string>
     <string name="settings_nav_bar_hidden">ซ่อนแถบนำทาง</string>
     <string name="settings_nav_bar_hidden_description">เฉพาะในหน้าจอหลัก ปัดขึ้นจากขอบล่างเพื่อแสดงชั่วคราว</string>
+    <!-- AG: gom nhóm app (Cài đặt → Chung) -->
+    <string name="app_groups_header">จัดกลุ่มแอป</string>
+    <string name="app_group_google">Google</string>
+    <string name="app_group_social">โซเชียล</string>
+    <string name="app_group_games">เกม</string>
+    <string name="app_group_entertainment">ความบันเทิง</string>
+    <string name="app_group_utilities">ยูทิลิตี้</string>
+    <string name="app_group_manufacturer_row">แอปของ %1$s</string>
+    <string name="app_group_manufacturer_fallback">แอปของผู้ผลิต</string>
+    <string name="app_groups_already">จัดกลุ่มแล้ว</string>
+    <string name="app_groups_footer">ย้ายแอปบนหน้าจอหลักไปไว้ในโฟลเดอร์ แอปใน Dock หรือแอปที่อยู่ในโฟลเดอร์แล้วจะอยู่ที่เดิม</string>
+    <string name="app_groups_apply">จัดกลุ่ม</string>
+    <string name="app_groups_failed">จัดกลุ่มแอปไม่ได้ หน้าจอหลักมีการเปลี่ยนแปลง</string>
+    <plurals name="app_groups_count">
+        <item quantity="other">%d แอป</item>
+    </plurals>
+    <plurals name="app_groups_add">
+        <item quantity="other">เพิ่ม %d แอป</item>
+    </plurals>
+    <plurals name="app_groups_done">
+        <item quantity="other">ย้าย %1$d แอปไปที่ “%2$s” แล้ว</item>
+    </plurals>
     <string name="settings_backdrop">วอลเปเปอร์</string>
     <string name="settings_backdrop_set">เลือกรูปแล้ว</string>
     <string name="settings_backdrop_unset">ยังไม่ได้เลือก</string>
@@ -183,6 +205,10 @@
     <string name="search_extras_header_recent">ล่าสุด</string>
     <string name="search_extras_header_frequent">คำแนะนำ</string>
     <string name="search_extras_header_trending">คำค้นหายอดนิยม</string>
+    <string name="search_section_shortcuts">ทางลัด</string>
+    <string name="search_section_contacts">รายชื่อติดต่อ</string>
+    <string name="search_section_settings">การตั้งค่า</string>
+    <string name="search_section_web">คำแนะนำการค้นหา</string>
 
     <!-- M8d Task 4 -->
     <string name="search_extras_shortcut_description">%1$s, ทางลัดของ %2$s</string>

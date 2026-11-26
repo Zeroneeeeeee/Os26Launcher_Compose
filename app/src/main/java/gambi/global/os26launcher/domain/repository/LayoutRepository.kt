@@ -88,6 +88,12 @@ interface LayoutRepository {
      */
     suspend fun createFolder(draggedItemId: Long, targetItemId: Long): Boolean
 
+    /**
+     * AG — gom các app [itemIds] (đang nằm phẳng trên lưới chính) vào thư mục [folderId] (null = tạo thư mục [title] tại ô của app đầu,
+     * cần ≥ 2 app), rồi dồn các trang có app rời đi và gỡ trang vừa hết item. Trả số app đã chuyển; 0 = không ghi gì.
+     */
+    suspend fun groupIntoFolder(title: String, itemIds: List<Long>, folderId: Long?): Int
+
     /** G2a A3a — thêm app vào cuối thư mục. `false` nếu bị từ chối (thư mục đầy / không hợp lệ), không ghi gì. */
     suspend fun addToFolder(itemId: Long, folderId: Long): Boolean
 
