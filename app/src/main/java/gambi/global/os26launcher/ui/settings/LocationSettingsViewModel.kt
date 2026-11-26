@@ -7,11 +7,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import gambi.global.os26launcher.R
 import gambi.global.os26launcher.domain.model.weather.GeoPlace
 import gambi.global.os26launcher.domain.model.weather.LocationMode
-import gambi.global.os26launcher.domain.model.weather.WeatherException
 import gambi.global.os26launcher.domain.model.weather.WeatherPlaces
 import gambi.global.os26launcher.domain.weather.CoarseLocationSource
 import gambi.global.os26launcher.domain.weather.WeatherPlacesRepository
-import gambi.global.os26launcher.domain.weather.WeatherRepository
+import gambi.global.os26launcher.domain.usecase.UpdateAutoPlaceUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -32,8 +31,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LocationSettingsViewModel @Inject constructor(
     private val placesRepository: WeatherPlacesRepository,
-    private val weatherRepository: WeatherRepository,
-    private val location: CoarseLocationSource
+    private val location: CoarseLocationSource,
+    private val updateAuto: UpdateAutoPlaceUseCase // PM: dùng chung với widget thời tiết ở Home
 ) : ViewModel() {
 
     val places: StateFlow<WeatherPlaces> = placesRepository.places
@@ -86,18 +85,7 @@ class LocationSettingsViewModel @Inject constructor(
         job = viewModelScope.launch {
             _locating.value = true
             try {
-                val fix = location.getOnce()
-                if (fix == null) {
-                    _messages.trySend(R.string.wx_loc_unavailable)
-                    return@launch
-                }
-                val named = try {
-                    weatherRepository.reverse(fix.lat, fix.lon)
-                } catch (e: WeatherException) {
-                    null
-                }
-                val place = (named ?: GeoPlace(fallbackName, fix.lat, fix.lon)).copy(lat = fix.lat, lon = fix.lon)
-                placesRepository.setAutoPlace(place)
+                if (!updateAuto(fallbackName)) _messages.trySend(R.string.wx_loc_unavailable)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

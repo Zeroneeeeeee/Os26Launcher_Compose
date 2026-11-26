@@ -67,9 +67,9 @@ của Spotlight), `ui/settings/LocationSettingsScreen.kt`, `LocationSettingsView
 
 ### Task 2: Widget thời tiết xin quyền tại chỗ (Y1, Y2)
 
-- [ ] Step 1: `UpdateAutoPlaceUseCase` (lấy vị trí một lần, `reverse`, ghi `setAutoPlace`; trả `false` khi không lấy được vị trí); `LocationSettingsViewModel.updateAutoPlace` gọi nó.
-- [ ] Step 2: `HomeActivity`: widget thời tiết đang dùng "Vị trí hiện tại" + chế độ Tự động + chưa có quyền (R2) → `PermissionRequester.request`; được cấp → use case (Toast `wx_loc_unavailable` khi không lấy được); còn lại mở bảng như cũ.
-- [ ] Step 3: Commit `feat: weather widget asks for location permission in place`.
+- [x] Step 1: `UpdateAutoPlaceUseCase` (lấy vị trí một lần, `reverse`, ghi `setAutoPlace`; trả `false` khi không lấy được vị trí); `LocationSettingsViewModel.updateAutoPlace` gọi nó.
+- [x] Step 2: `HomeActivity`: widget thời tiết đang dùng "Vị trí hiện tại" + chế độ Tự động + chưa có quyền (R2) → `PermissionRequester.request`; được cấp → use case (Toast `wx_loc_unavailable` khi không lấy được); còn lại mở bảng như cũ.
+- [x] Step 3: Commit `feat: weather widget asks for location permission in place`.
 
 ### Task 3: Mọi chỗ xin Vị trí / Danh bạ dùng chung (Y3–Y5)
 
@@ -90,3 +90,4 @@ Xem báo cáo cuối lô (TR + FX + PM) trong chat.
 | Ngày | Task | Việc | Ghi chú |
 |---|---|---|---|
 | 2026-11-26 | 1 | `DsAlertDialog(dismissOnClickOutside)`; `core/permission/PermissionRequester.kt` (`PermissionKind`, `PermissionDenials`, `PermissionRequester`, `showPermissionBlockedDialog`, `openAppDetailsSettings`); 5 chuỗi × 9; `config-schema.md` mục 2 | XML parse được, chưa build |
+| 2026-11-26 | 2 | `UpdateAutoPlaceUseCase` (tách từ `LocationSettingsViewModel`); `HomeActivity`: widget thời tiết xin quyền khi dùng Vị trí hiện tại + Tự động + chưa có quyền, cấp xong tự cập nhật; Danh bạ của Spotlight dùng `PermissionRequester` (làm sớm cùng commit vì chung chỗ khai báo trong HomeActivity) | Ruling: gộp phần Danh bạ của HomeActivity (Task 3 Step 2) vào commit này — cùng khối khai báo, tách ra thì commit giữa không biên dịch được. Chưa build |
