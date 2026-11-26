@@ -7,6 +7,13 @@
 
     <style name="Theme.Os26Launcher" parent="Base.Theme.Os26Launcher" />
 
+    <!-- HW: theme của HomeActivity (manifest). Không cửa sổ khởi động: mở từ Cài đặt ("Trải nghiệm"/"Khám phá") hệ thống chèn cửa sổ
+         khởi động màu nền tối tới khi Home vẽ khung đầu (đo A17 2026-11-26: ~150 ms bản perf, ~600 ms bản debug) = "đen màn". Tắt thì
+         Cài đặt còn trên màn tới khi Home vẽ xong rồi mới chuyển. Hệ thống vẫn bỏ qua cờ này khi mở từ launcher / Gần đây. -->
+    <style name="Theme.Os26Launcher.Home" parent="Theme.Os26Launcher">
+        <item name="android:windowDisablePreview">true</item>
+    </style>
+
     <!-- OB 0.0: splash khởi động của LauncherEntryActivity (manifest), dùng androidx.core:core-splashscreen nên API 26+ cùng một kiểu:
          nền ds_bg_base + logo app (adaptive icon @mipmap/logo, hệ thống/thư viện cắt theo hình icon). LauncherEntryActivity gọi
          installSplashScreen() trước super.onCreate; xong splash, thư viện đổi sang postSplashScreenTheme. -->

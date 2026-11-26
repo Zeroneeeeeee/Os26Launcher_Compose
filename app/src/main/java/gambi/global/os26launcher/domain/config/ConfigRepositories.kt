@@ -31,5 +31,11 @@ interface MotionConfigRepository : ConfigRepository<MotionConfig>
 
 interface AppStateRepository {
     val state: Flow<AppState>
+
+    /**
+     * HW: cờ Onboarding lần đọc gần nhất trong process (đọc đồng bộ, không chờ DataStore); null = chưa đọc lần nào. Home dùng để khỏi che
+     * khung đầu khi đã biết chắc Onboarding xong (vd mở từ Cài đặt, Cài đặt vừa đọc cờ).
+     */
+    fun cachedOnboardingDone(): Boolean?
     suspend fun setOnboardingDone(done: Boolean)
 }

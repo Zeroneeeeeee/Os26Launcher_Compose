@@ -188,6 +188,17 @@ internal fun HomeScreen(
         if (state.ghostPage) shown + HomePage(shown.size, PageId.NEW, emptyList()) else shown
     }
     val pagerState = rememberPagerState { pages.size }
+    // HW: số trang dựng sẵn mỗi bên tăng dần sau khi Home hiện (xem [prebuiltPages], [PREBUILD_STAGE_START_MS]).
+    var prebuildCap by remember { mutableIntStateOf(1) }
+    val hasPages by rememberUpdatedState(pages.isNotEmpty())
+    LaunchedEffect(Unit) {
+        snapshotFlow { hasPages }.first { it } // đếm từ lúc có lưới để vẽ, không từ lúc dựng khung rỗng
+        delay(PREBUILD_STAGE_START_MS)
+        while (prebuildCap < PREBUILD_ALL_MAX) {
+            prebuildCap++
+            delay(PREBUILD_STAGE_STEP_MS)
+        }
+    }
     val drag = remember { HomeDragState(scope, density.density) }
     LaunchedEffect(drag) { onDragState(drag) }
     var editMenuOpen by remember { mutableStateOf(false) } // P2-9e: menu "Sửa" của thanh edit mode
@@ -441,7 +452,9 @@ internal fun HomeScreen(
                         // giữa lúc trượt (đo SW Task 2: khung > 33 ms gần như luôn trùng lúc vừa dựng một trang); nhiều trang thì 1 mỗi bên (Task 3c).
                         // Trước đây 1 (commit a350f1a: "nhiều trang thì giật" do kính thật ở trang đệm; nay chỉ trang đang hiện có kính thật, và đổi
                         // nguồn kính không còn dựng lại cả trang: `LocalDsBackdrop` là compositionLocalOf). Công tắc đo `noPrebuild` (bản `perf`) về 1.
-                        beyondViewportPageCount = prebuiltPages(pages.size),
+                        // HW: lúc Home vừa dựng chỉ 1 mỗi bên, rồi tăng dần tới số của SW (prebuildCap): dựng cả 5 trang (121 icon) trong khung đầu
+                        // làm khựng khi mở Home từ Cài đặt.
+                        beyondViewportPageCount = minOf(prebuiltPages(pages.size), prebuildCap),
                         // JH2 Task 1 (H5): dừng trang theo đường easeOutQuint của TunedPagerSnapHelper; Compose không cho thời lượng theo từng cú vuốt nên lấy FULL_MS.
                         flingBehavior = PagerDefaults.flingBehavior(pagerState, snapAnimationSpec = tween(PageMotion.FULL_MS, easing = EaseOutQuint)),
                         key = { pages.getOrNull(it)?.pageId ?: it.toLong() },
@@ -656,6 +669,14 @@ private fun prebuiltPages(count: Int): Int = when {
     else -> 1
 }
 private const val PREBUILD_ALL_MAX = 5
+
+/**
+ * HW: Home dựng mới (mở từ Cài đặt, lần đầu sau khởi động) chỉ dựng trang hiện tại + 1 mỗi bên; sau chừng này ms mới dựng thêm, mỗi
+ * [PREBUILD_STAGE_STEP_MS] một trang mỗi bên, tới [prebuiltPages]. Đo A17 2026-11-26: dựng cả 5 trang ngay khung đầu là các khung 140–180 ms
+ * (bản `perf`), 1,2–2 s (bản debug) lúc Home vừa hiện. Vuốt sớm hơn thì pager tự dựng trang cần như khi nhiều trang.
+ */
+private const val PREBUILD_STAGE_START_MS = 1200L
+private const val PREBUILD_STAGE_STEP_MS = 250L
 private const val SETTLED_FRACTION = 0.01f // PG1 G1: lệch dưới 1 % bề rộng trang coi như đã đứng ở trang
 private const val DOCK_WEIGHT = 1f
 private const val PILL_IDLE_MS = 600L

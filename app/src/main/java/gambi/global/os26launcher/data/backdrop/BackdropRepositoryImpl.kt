@@ -1,6 +1,8 @@
 package gambi.global.os26launcher.data.backdrop
 
+import android.content.ComponentCallbacks2
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -14,6 +16,7 @@ import gambi.global.os26launcher.core.wallpaper.WallpaperPresets
 import gambi.global.os26launcher.core.coroutines.IoDispatcher
 import gambi.global.os26launcher.domain.config.AppearanceRepository
 import gambi.global.os26launcher.domain.config.WallpaperKind
+import gambi.global.os26launcher.domain.model.HomeBackdrop
 import gambi.global.os26launcher.domain.model.WallpaperTarget
 import gambi.global.os26launcher.domain.repository.BackdropRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -64,13 +67,45 @@ class BackdropRepositoryImpl @Inject constructor(
     private val _versions = MutableStateFlow(backdropVersion())
     override val backdropVersions: StateFlow<Long> = _versions.asStateFlow()
 
+    /** HW: ảnh nền cỡ Home đã giải mã gần nhất ([loadHomeBackdrop]), khóa theo phiên bản nền lúc bắt đầu giải mã và cỡ. */
+    private class Decoded(val version: Long, val w: Int, val h: Int, val backdrop: HomeBackdrop.Ready)
+
+    @Volatile
+    private var decoded: Decoded? = null
+
+    // HW: Cài đặt làm nóng và Home mở ngay sau đó cùng xin một ảnh: lần thứ hai chờ lần đầu rồi lấy từ [decoded], không giải mã hai lần.
+    private val homeDecodeMutex = Mutex()
+
+    /**
+     * HW: phát phiên bản nền mới. Bỏ ảnh đã giải mã TRƯỚC: dấu phiên bản của ảnh tự chọn là `lastModified` (có máy chỉ tới giây), hai lần
+     * chọn trong cùng một giây trùng dấu, không bỏ thì Home nạp lại nhận ảnh cũ.
+     */
+    private fun publishVersion() {
+        decoded = null
+        _versions.value = backdropVersion()
+    }
+
     init {
+        // HW: hệ thống đưa process vào nền (Cài đặt đã đóng, Home không ở trên): nhả ảnh nền đã giải mã (~10 MB ở 1080x2340). Home đang sống
+        // vẫn giữ bitmap của nó trong state, nên chỉ mất lối tắt cho lần dựng Home kế tiếp.
+        context.registerComponentCallbacks(object : ComponentCallbacks2 {
+            override fun onTrimMemory(level: Int) {
+                if (level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND) decoded = null
+            }
+
+            override fun onConfigurationChanged(newConfig: Configuration) {}
+
+            @Suppress("OVERRIDE_DEPRECATION")
+            override fun onLowMemory() {
+                decoded = null
+            }
+        })
         // CF: đổi nguồn nền hoặc màu (theme, Cài đặt) thì phát phiên bản mới để Home nạp lại tại chỗ. Lần đọc đầu chỉ điền bộ đệm.
         scope.launch {
             appearance.config.map { WallpaperChoice(it.wallpaperKind, it.wallpaperColor, it.wallpaperPreset) }.distinctUntilChanged().collect { next ->
                 val first = choice == null
                 choice = next
-                if (!first) _versions.value = backdropVersion()
+                if (!first) publishVersion()
             }
         }
     }
@@ -119,6 +154,34 @@ class BackdropRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun loadHomeBackdrop(reqW: Int, reqH: Int): HomeBackdrop {
+        awaitWallpaperConfig()
+        // Đường nhanh: trúng ô nhớ thì trả ngay, không khóa, không đổi luồng (gọi từ main thread là có ảnh trong cùng khung).
+        cachedHome(reqW, reqH)?.let { return it }
+        return homeDecodeMutex.withLock {
+            cachedHome(reqW, reqH) ?: decodeHome(reqW, reqH)
+        }
+    }
+
+    // Nguồn nền chưa đọc (choice null) thì backdropVersion() coi như AUTO, có thể khớp nhầm ô nhớ của nền khác: không trả.
+    override fun peekHomeBackdrop(reqW: Int, reqH: Int): HomeBackdrop.Ready? = if (choice == null) null else cachedHome(reqW, reqH)
+
+    private fun cachedHome(reqW: Int, reqH: Int): HomeBackdrop.Ready? =
+        decoded?.takeIf { it.version == backdropVersion() && it.w == reqW && it.h == reqH }?.backdrop
+
+    /** Cùng nhánh như Home trước HW: chưa chọn ảnh thì ảnh mặc định (không có = Empty); có ảnh mà giải mã ra null = Error. */
+    private suspend fun decodeHome(reqW: Int, reqH: Int): HomeBackdrop {
+        val version = backdropVersion() // đọc TRƯỚC khi giải mã: ảnh đổi giữa chừng thì ô nhớ mang dấu cũ, lần sau không trúng
+        val result = if (!hasBackdrop()) {
+            val default = if (hasDefaultBackdrop()) loadDefaultBackdrop(reqW, reqH) else null
+            if (default != null) HomeBackdrop.Ready(default, isDefault = true) else HomeBackdrop.Empty
+        } else {
+            loadBackdrop(reqW, reqH)?.let { HomeBackdrop.Ready(it, isDefault = false) } ?: HomeBackdrop.Error
+        }
+        if (result is HomeBackdrop.Ready) decoded = Decoded(version, reqW, reqH, result)
+        return result
+    }
+
     // FX1 (C4): NonCancellable để thoát màn Cài đặt giữa chừng không bỏ dở việc; phát version NGAY TRONG khối vì kết quả withContext bị hủy
     // vẫn bị vứt ở người gọi, còn tác dụng phụ bên trong thì đã xảy ra.
     override suspend fun importBackdrop(uri: Uri, reqW: Int, reqH: Int): Bitmap? = withContext(io + NonCancellable) {
@@ -133,7 +196,7 @@ class BackdropRepositoryImpl @Inject constructor(
                 } catch (e: IOException) {
                     Log.w(TAG, "Không ghi được nguồn nền PHOTO", e)
                 }
-                _versions.value = backdropVersion()
+                publishVersion()
             }
         }
     }
@@ -155,7 +218,7 @@ class BackdropRepositoryImpl @Inject constructor(
     private fun importLocked(uri: Uri, reqW: Int, reqH: Int): Bitmap? {
         return try {
             source.import(uri, reqW, reqH).also { bmp ->
-                if (bmp != null) _versions.value = backdropVersion()
+                if (bmp != null) publishVersion()
             }
         } catch (e: IOException) {
             Log.w(TAG, "Không nhập được ảnh nền", e)

@@ -11,6 +11,7 @@ import gambi.global.os26launcher.ui.settings.DefaultLauncherAction
 import gambi.global.os26launcher.ui.settings.SettingsDialogs
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -55,7 +56,10 @@ internal class DefaultLauncherPromptController(
                 false
             }
             if (!done) return@launch
-            // Đọc cờ là suspend: trong lúc chờ người dùng có thể đã rời Home hoặc vừa đặt mặc định.
+            // HW: chờ Home dựng xong rồi mới mở hộp. Mở ngay thì cửa sổ hộp thoại (kính) vẽ khung đầu chồng lên lúc Home dựng mới (vừa bấm
+            // "Trải nghiệm" ở Cài đặt): đo Samsung A17 bản `perf` 2026-11-26 thêm một khung ~260 ms. onPause hủy lần chờ này.
+            delay(PROMPT_DELAY_MS)
+            // Đọc cờ và chờ là suspend: trong lúc chờ người dùng có thể đã rời Home hoặc vừa đặt mặc định.
             if (!activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return@launch
             if (dialog != null || repository.isDefaultLauncher()) return@launch
             show()
@@ -91,5 +95,8 @@ internal class DefaultLauncherPromptController(
 
     private companion object {
         const val TAG = "DefaultLauncherPrompt"
+
+        /** HW: hoãn mở hộp sau khi Home vào RESUMED, đủ để Home dựng mới qua các khung nặng đầu tiên (~1 giây trên A17 bản `perf`). */
+        const val PROMPT_DELAY_MS = 800L
     }
 }

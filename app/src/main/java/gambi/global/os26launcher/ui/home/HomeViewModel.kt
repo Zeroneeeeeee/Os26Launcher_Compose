@@ -17,6 +17,7 @@ import gambi.global.os26launcher.domain.model.ComponentKey
 import gambi.global.os26launcher.domain.model.ContainerId
 import gambi.global.os26launcher.domain.model.DockApp
 import gambi.global.os26launcher.domain.model.GridPosition
+import gambi.global.os26launcher.domain.model.HomeBackdrop
 import gambi.global.os26launcher.domain.model.HomePage
 import gambi.global.os26launcher.domain.model.IconStyleKey
 import gambi.global.os26launcher.domain.model.PageId
@@ -193,6 +194,19 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    /**
+     * HW: `HomeActivity.onCreate` gọi với cỡ cửa sổ, TRƯỚC lần dựng đầu: ảnh nền đã giải mã còn trong RAM (Cài đặt làm nóng, Home trước) thì
+     * gắn ngay để khung đầu đã có ảnh nền. Chỉ tra ô nhớ, không nạp, không đánh dấu đã nạp: [onScreenSize] vẫn chạy như cũ với cỡ thật (cùng
+     * ảnh thì state không đổi; khác cỡ thì nạp lại đúng cỡ).
+     */
+    fun primeBackdrop(width: Int, height: Int) {
+        if (_uiState.value.backdrop != null || width <= 0 || height <= 0) return
+        backdropRepository.peekHomeBackdrop(width, height)?.let { setBackdrop(BackdropStatus.Ready, it.bitmap, isDefault = it.isDefault) }
+    }
+
+    /** HW: cờ Onboarding đã đọc trong process (null = chưa đọc). */
+    fun cachedOnboardingDone(): Boolean? = appState.cachedOnboardingDone()
+
     /** Gọi khi đã biết kích thước màn hình thật. Chỉ lần đầu nạp ảnh; mọi lần đều ghi nhớ cỡ. */
     fun onScreenSize(width: Int, height: Int) {
         rememberScreenSize(width, height)
@@ -258,23 +272,14 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun loadBackdropFromDisk(width: Int, height: Int) {
-        if (!backdropRepository.hasBackdrop()) {
-            // WP: chưa chọn ảnh thì dùng ảnh mặc định nếu có (không có thì như cũ: Empty, nền đen)
-            val default =
-                if (backdropRepository.hasDefaultBackdrop()) backdropRepository.loadDefaultBackdrop(
-                    width,
-                    height
-                ) else null
-            setBackdrop(
-                if (default != null) BackdropStatus.Ready else BackdropStatus.Empty,
-                default,
-                isDefault = default != null
-            )
-            return
+        // WP: chưa chọn ảnh thì dùng ảnh mặc định nếu có (không có thì Empty, nền đen). Ảnh đã chọn mà decode ra null (file bị xóa dở
+        // hoặc hỏng) → Error, không crash. HW: ảnh đã giải mã còn trong RAM (Home trước / Cài đặt làm nóng) thì có NGAY, không treo,
+        // nên Home dựng mới vẽ ảnh nền từ khung đầu thay vì nền tối ~0,5 giây.
+        when (val b = backdropRepository.loadHomeBackdrop(width, height)) {
+            is HomeBackdrop.Ready -> setBackdrop(BackdropStatus.Ready, b.bitmap, isDefault = b.isDefault)
+            HomeBackdrop.Empty -> setBackdrop(BackdropStatus.Empty, null)
+            HomeBackdrop.Error -> setBackdrop(BackdropStatus.Error, null)
         }
-        // hasBackdrop() true mà decode ra null: file bị xóa dở hoặc hỏng → Error, không crash
-        val bmp = backdropRepository.loadBackdrop(width, height)
-        setBackdrop(if (bmp != null) BackdropStatus.Ready else BackdropStatus.Error, bmp)
     }
 
     /**
