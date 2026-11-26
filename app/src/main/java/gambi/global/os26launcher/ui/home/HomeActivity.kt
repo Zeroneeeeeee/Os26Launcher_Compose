@@ -879,9 +879,23 @@ class HomeActivity : AppCompatActivity() {
                 weatherSheet.show()
             }
             WidgetKind.PHOTO -> startActivity(PhotoWidgetActivity.intent(this, itemId))
+            WidgetKind.BATTERY -> if (!openBatteryUsage()) Toast.makeText(this, R.string.menu_action_failed, Toast.LENGTH_SHORT).show()
             else -> viewModel.onWidgetTapped(kind)
         }
     }
+
+    /** BW (Q4): bấm widget Pin mở màn dùng pin của hệ thống; ROM thiếu thì màn tiết kiệm pin (như ô Tiết kiệm pin của Trung tâm điều khiển). */
+    private fun openBatteryUsage(): Boolean =
+        listOf(Intent(Intent.ACTION_POWER_USAGE_SUMMARY), Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS)).any { intent ->
+            try {
+                startActivity(intent)
+                true
+            } catch (e: ActivityNotFoundException) {
+                false
+            } catch (e: SecurityException) {
+                false
+            }
+        }
 
     /** Như `HomeActivity`: lần có cỡ đầu → `onScreenSize` (giải mã ảnh nền theo cỡ này); các lần sau → `onWindowSizeSettled`. */
     private fun onRootSize(width: Int, height: Int) {

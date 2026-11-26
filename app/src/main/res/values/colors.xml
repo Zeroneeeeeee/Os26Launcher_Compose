@@ -51,6 +51,10 @@
     <color name="widget_text">#FFFFFFFF</color>
     <color name="widget_text_dim">#E6FFFFFF</color> <!-- 90%: chữ phụ đọc được trên vùng ảnh nền sáng (bài kiểm Live 4); bản đầu 70% -->
     <color name="widget_preview_bg">#FF2C2C2E</color>
+    <!-- BW: vòng của widget Pin, màu hệ thống iOS (xanh lá / vàng tiết kiệm pin; đỏ dùng widget_accent), rãnh trắng mờ. -->
+    <color name="battery_ring_ok">#FF30D158</color>
+    <color name="battery_ring_saver">#FFFFD60A</color>
+    <color name="battery_ring_track">#33FFFFFF</color>
 
     <!-- SM: menu nhấn giữ icon (kính, theo sáng/tối). Điểm xuất phát, chỉnh theo mắt trên Oppo. Bản tối: values-night/colors.xml. -->
     <color name="shortcut_menu_glass_tint">#595B5B5B</color>

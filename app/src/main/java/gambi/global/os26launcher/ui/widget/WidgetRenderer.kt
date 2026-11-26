@@ -57,6 +57,8 @@ internal object WidgetRenderers {
 
         WidgetKind.PHOTO -> PhotoWidgetRenderer(context, sample = sample) // G3b
 
+        WidgetKind.BATTERY -> BatteryWidgetRenderer(context) // BW: kể cả bản xem trước, dữ liệu thật ([sample] bỏ qua)
+
         WidgetKind.RECENTS -> EmptyWidgetRenderer // WF: "App gần đây" vẽ bằng Compose (HomeRecentsWidget), không gọi tới đây
     }
 }

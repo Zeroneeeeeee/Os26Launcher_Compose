@@ -125,6 +125,12 @@
     <string name="home_add_widget">ウィジェット</string>
     <string name="widget_picker_title">ウィジェットを追加</string>
     <string name="widget_name_clock">時計</string>
+    <!-- BW: widget Pin -->
+    <string name="widget_battery_name">バッテリー</string>
+    <string name="wp_battery_small_title">バッテリー</string>
+    <string name="wp_battery_small_desc">この端末のバッテリー残量と充電状態を表示します。</string>
+    <string name="widget_battery_description">バッテリー、%1$d%%</string>
+    <string name="widget_battery_description_charging">バッテリー、%1$d%%、充電中</string>
     <string name="widget_name_calendar">カレンダー</string>
     <string name="widget_size_label">%1$d×%2$d</string>
     <string name="widget_remove_title">ウィジェットを削除しますか?</string>

@@ -32,6 +32,7 @@ import gambi.global.os26launcher.core.designsystem.DsSurface
 import gambi.global.os26launcher.core.glass.compose.dsGlass
 import gambi.global.os26launcher.domain.model.PlacedWidget
 import gambi.global.os26launcher.domain.model.WidgetKind
+import gambi.global.os26launcher.ui.widget.BatteryWidgetHub
 import gambi.global.os26launcher.ui.widget.WidgetRenderers
 import gambi.global.os26launcher.ui.widget.WidgetTicker
 import java.time.ZonedDateTime
@@ -101,7 +102,13 @@ private fun RendererWidgetCell(widget: PlacedWidget, onClick: (() -> Unit)?) {
             }
         }
         WidgetTicker.register(context, tickable)
-        onDispose { WidgetTicker.unregister(tickable) }
+        // BW: widget Pin đang hiện thì hub nghe pin (gỡ khi không còn widget Pin nào hiện).
+        val battery = widget.kind == WidgetKind.BATTERY
+        if (battery) BatteryWidgetHub.acquire(context)
+        onDispose {
+            WidgetTicker.unregister(tickable)
+            if (battery) BatteryWidgetHub.release()
+        }
     }
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val widthPx = constraints.maxWidth
