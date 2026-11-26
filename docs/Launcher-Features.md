@@ -23,7 +23,7 @@ Tài liệu liên quan: [LiquidGlass-Demo.md](LiquidGlass-Demo.md) (demo đã đ
 | Widget | Tự vẽ trước, AppWidgetHost sau | Mục tiêu: hơn app mẫu nếu làm được AppWidgetHost |
 | Tìm kiếm | Bản đầu: tìm app + danh mục Cài đặt tự lập; danh bạ để sau | |
 | Kiếm tiền | Kết hợp: quảng cáo nhẹ + gói Pro bỏ quảng cáo | Do cấp trên quyết, triển khai rất muộn |
-| Thời tiết | **Xong một vị trí** (G3e, 2026-11-10): tech lead chọn OpenWeatherMap | Khóa `OWM_API_KEY` trong `local.properties`, không commit; gọi thẳng từ app, thiết kế sẵn để thêm proxy |
+| Thời tiết | **Xong một vị trí** (G3e, 2026-11-10): tech lead chọn OpenWeatherMap | Khóa gói Free ghi thẳng trong `buildTypes` của `app/build.gradle.kts` (2026-11-26, chủ dự án chấp nhận khóa public trên GitHub); `OWM_API_KEY` trong `local.properties` hoặc biến môi trường ghi đè; gọi thẳng từ app, thiết kế sẵn để thêm proxy |
 | Nguồn dữ liệu thời tiết | Giao diện `WeatherProvider`, dùng OpenWeatherMap (tech lead chọn 2026-11-09; trước đó dự tính Open-Meteo) | Gói Free: 60 lệnh/phút, 1.000.000 lệnh/tháng; điều kiện ghi nguồn xét trước phát hành |
 | Gọi API thời tiết | Gọi thẳng từ app khi phát triển, thiết kế sẵn để thêm proxy sau | Key trong APK có thể bị lấy |
 | Vị trí cho thời tiết | Cài đặt → Vị trí: Tự động (vị trí thô, lấy khi bấm hoặc tối đa 2 giờ/lần lúc widget "Vị trí hiện tại" đang hiện, chỉ đổi khi đi xa > 5 km) hoặc Chọn thủ công (không cần quyền) — WX 2026-11-13 | Không chạy nền, không xin quyền vị trí nền |
