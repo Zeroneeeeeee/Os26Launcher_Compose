@@ -7,9 +7,10 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
-// G3e: khóa OpenWeatherMap đọc từ local.properties (gitignore) hoặc biến môi trường OWM_API_KEY; thiếu thì rỗng (widget báo "chưa cấu hình khóa").
+// G3e → 2026-11-26: khóa OpenWeatherMap mặc định ghi thẳng trong `buildTypes` bên dưới (chủ dự án chấp nhận khóa public trên GitHub
+// để clone về build là có thời tiết). Ghi đè được bằng OWM_API_KEY trong local.properties (gitignore) hoặc biến môi trường.
 // Đọc qua providers.fileContents để tương thích configuration cache. KHÔNG in giá trị này ra log/console.
-val owmApiKey: String = run {
+val owmApiKeyOverride: String = run {
     val fromFile = providers.fileContents(rootProject.layout.projectDirectory.file("local.properties"))
         .asText.map { text -> Properties().apply { load(text.reader()) }.getProperty("OWM_API_KEY", "") }
         .orElse("").get().trim()
@@ -31,13 +32,20 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "OWM_API_KEY", "\"" + owmApiKey.replace("\\", "\\\\").replace("\"", "\\\"") + "\"")
         // PG4: cong tac do hieu nang (core/perf/PerfSwitches.kt), chi bat o build type `perf`.
         buildConfigField("boolean", "PERF_SWITCHES", "false")
     }
 
     buildTypes {
+        // Khóa OWM gói Free (60 lượt/phút, 1.000.000 lượt/tháng; vượt → HTTP 429, không tính tiền). Bị lạm dụng hoặc bị khóa:
+        // tạo khóa mới ở home.openweathermap.org/api_keys, thay ở đây rồi ra bản mới (bản cũ mất thời tiết tới khi cập nhật).
+        val owmBundledKey = "4b04da77dc2de007ab93e37101023e7f"
+        val owmKeyField = "\"" + owmApiKeyOverride.ifEmpty { owmBundledKey }.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+        debug {
+            buildConfigField("String", "OWM_API_KEY", owmKeyField)
+        }
         release {
+            buildConfigField("String", "OWM_API_KEY", owmKeyField)
             // RB: R8 bat (AGP 9.3.3: optimization.enable = code shrinking + resource shrinking + optimize, dung R8).
             // Keep rule nam o src/main/keepRules/rules.keep; baseline profile o src/main/baseline-prof.txt.
             optimization {
@@ -55,6 +63,7 @@ android {
             isDebuggable = false
             matchingFallbacks += listOf("release")
             buildConfigField("boolean", "PERF_SWITCHES", "true")
+            buildConfigField("String", "OWM_API_KEY", owmKeyField)
         }
     }
     compileOptions {
