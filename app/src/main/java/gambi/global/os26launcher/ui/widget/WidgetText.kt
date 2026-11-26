@@ -14,16 +14,15 @@ import gambi.global.os26launcher.R
 private const val SHADOW_COLOR = 0xB3000000.toInt()
 
 /**
- * PW (chủ dự án 2026-11-25: "giống font iOS nhất có thể") — font chữ của widget tự vẽ. SF Pro của Apple không được nhúng vào app Android (giấy
- * phép chỉ cho nền tảng Apple), nên dùng **Inter** (SIL OFL, `docs/third_party/Inter-OFL.txt`), dáng và tỉ lệ gần SF nhất. Như iOS tách SF Pro
- * Text / Display theo cỡ: chữ nhỏ dùng Inter (Text), số / chữ lớn dùng Inter Display. Bản trong `res/font` đã cắt còn Latin + tiếng Việt +
- * dấu câu, mũi tên (`pyftsubset`, giữ `kern`, `tnum`...): chữ Hindi, Thái, Nhật, Hàn rơi về font hệ thống như trước.
+ * PW (chủ dự án 2026-11-25: "giống font iOS nhất có thể") — font chữ của widget tự vẽ. 2026-11-26: chủ dự án tự thêm **SF Pro Display**
+ * vào `res/font` và yêu cầu thay hẳn Inter. Lưu ý giấy phép: SF Pro của Apple chỉ cho làm giao diện chạy trên nền tảng Apple
+ * (`docs/lessons/widgets.md`), chủ dự án tự quyết việc nhúng. Mọi cỡ chữ đều dùng SF Pro Display (không có bản Text trong dự án).
  */
 internal enum class WidgetFont(val res: Int) {
-    TEXT_REGULAR(R.font.inter_regular),
-    TEXT_SEMIBOLD(R.font.inter_semibold),
-    DISPLAY_LIGHT(R.font.inter_display_light),
-    DISPLAY_MEDIUM(R.font.inter_display_medium)
+    REGULAR(R.font.sf_pro_display_regular),
+    SEMIBOLD(R.font.sf_pro_display_semibold),
+    LIGHT(R.font.sf_pro_display_light),
+    MEDIUM(R.font.sf_pro_display_medium)
 }
 
 /** Nạp mỗi font một lần cho cả process (renderer dựng lại mỗi lần ô widget đổi cỡ / loại). Lỗi nạp thì null → font mặc định. */
@@ -39,9 +38,9 @@ internal object WidgetFonts {
 
 /**
  * Bút chữ canh giữa theo `x` của `drawText`, có bóng mềm. Dựng một lần trong constructor của renderer. PW: [font] thay cho `bold` (đậm giả);
- * mặc định Inter Semibold như chữ nhỏ của widget iOS. [tabular]: chữ số đều độ rộng (`tnum`) để giờ / số không nhảy khi đổi.
+ * mặc định SF Pro Display Semibold như chữ nhỏ của widget iOS. [tabular]: chữ số đều độ rộng (`tnum`) để giờ / số không nhảy khi đổi.
  */
-internal fun newWidgetTextPaint(context: Context, color: Int, font: WidgetFont = WidgetFont.TEXT_SEMIBOLD, tabular: Boolean = false): TextPaint =
+internal fun newWidgetTextPaint(context: Context, color: Int, font: WidgetFont = WidgetFont.SEMIBOLD, tabular: Boolean = false): TextPaint =
     TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
         this.color = color
         textAlign = Paint.Align.CENTER

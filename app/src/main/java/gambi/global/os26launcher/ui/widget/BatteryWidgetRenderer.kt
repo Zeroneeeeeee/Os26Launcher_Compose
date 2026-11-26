@@ -12,7 +12,7 @@ import kotlin.math.min
 
 /**
  * BW (chủ dự án 2026-11-25: kết hợp đề xuất và ảnh widget "Pin" của iOS) — widget Pin 2 × 2: góc trên trái một vòng tiến độ quanh biểu tượng
- * điện thoại, dưới là số % lớn (Inter Display Medium, chữ số đều). Đang cắm sạc: tia sét bên phải vòng (2026-11-26: dời khỏi hàng số % vì "100%"
+ * điện thoại, dưới là số % lớn (SF Pro Display Medium, chữ số đều). Đang cắm sạc: tia sét bên phải vòng (2026-11-26: dời khỏi hàng số % vì "100%"
  * không còn chỗ). Dữ liệu từ [BatteryWidgetHub] (cả bản xem trước trong bảng chọn: dữ liệu thật); chưa có số thì vẽ rãnh trống và "–".
  *
  * Màu vòng theo quy ước của iOS (tra 2026-11-26, cộng đồng Apple / báo công nghệ): tiết kiệm pin (Low Power Mode) VÀNG, kể cả khi đang sạc;
@@ -34,7 +34,7 @@ internal class BatteryWidgetRenderer(private val context: Context) : WidgetRende
         strokeCap = Paint.Cap.ROUND
     }
     private val glyphPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = context.getColor(R.color.widget_text) }
-    private val percentPaint = newWidgetTextPaint(context, context.getColor(R.color.widget_text), WidgetFont.DISPLAY_MEDIUM, tabular = true).apply {
+    private val percentPaint = newWidgetTextPaint(context, context.getColor(R.color.widget_text), WidgetFont.MEDIUM, tabular = true).apply {
         textAlign = Paint.Align.LEFT
     }
     private val ringRect = RectF()

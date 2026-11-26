@@ -40,11 +40,11 @@ internal class WeatherRenderer(
     private val primary = context.getColor(R.color.widget_text)
     private val secondary = context.getColor(R.color.widget_text_dim)
 
-    // PW (2026-11-25): Inter thay Be Vietnam Pro (gần SF của iOS): tên thành phố Semibold như iOS, nhiệt độ lớn Display Light.
-    private val fontLight = WidgetFont.DISPLAY_LIGHT
-    private val fontRegular = WidgetFont.TEXT_REGULAR
-    private val fontSemibold = WidgetFont.TEXT_SEMIBOLD
-    private val fontBold = WidgetFont.TEXT_SEMIBOLD
+    // PW (2026-11-25, đổi sang SF Pro Display 2026-11-26): tên thành phố Semibold như iOS, nhiệt độ lớn Display Light.
+    private val fontLight = WidgetFont.LIGHT
+    private val fontRegular = WidgetFont.REGULAR
+    private val fontSemibold = WidgetFont.SEMIBOLD
+    private val fontBold = WidgetFont.SEMIBOLD
 
     /** WU: đơn vị người dùng chọn, đọc lại ở mỗi [prepare] (kể cả bản xem trước). */
     private var unit = TemperatureUnit.DEFAULT
