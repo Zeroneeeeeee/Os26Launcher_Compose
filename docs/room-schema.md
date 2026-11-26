@@ -191,6 +191,8 @@ Vì sao `Int` chứ không phải enum Kotlin lưu qua TypeConverter: số đã 
 
 ### `title: String?` — tên thư mục, hoặc nhãn do người dùng đổi
 
+- AG (2026-11-26): thư mục do bố cục lần đầu gom sẵn hoặc do Cài đặt → Chung → "Gom nhóm ứng dụng" tạo có `title` = tên nhóm theo ngôn ngữ app lúc tạo (vd "Tiện ích", "Google", "OPPO"); Cài đặt nhận ra thư mục đã gom bằng cách so tên này (không phân biệt hoa thường). Không có cột đánh dấu riêng.
+
 - `null` = dùng nhãn hệ thống trả về.
 - Vì sao **không** lưu nhãn app vào đây cho mọi hàng: nhãn phụ thuộc **ngôn ngữ máy** và đổi khi app cập nhật. Lưu lại là tự tạo dữ liệu cũ — người dùng đổi ngôn ngữ hệ thống mà icon vẫn tên cũ.
 

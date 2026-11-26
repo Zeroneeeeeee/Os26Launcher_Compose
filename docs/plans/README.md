@@ -12,7 +12,7 @@
 
 | Plan | Nội dung | Trạng thái |
 |---|---|---|
-| [AG](AG-app-groups.md) | Gom nhóm app vào thư mục từ Cài đặt → Chung (6 nhóm, sheet xem trước, dồn trang) | Code xong, chờ kiểm tay (2026-11-26) |
+| [AG](AG-app-groups.md) | Bố cục lần đầu gom sẵn thư mục theo nhóm; Cài đặt → Chung "Gom nhóm ứng dụng" (6 nhóm, sheet xem trước, dồn trang) | Xong 2026-11-26 |
 | [WS](WS-widget-swap.md) | Kéo widget đè lên widget khác thì đổi chỗ (anh dvha) | Xong 2026-11-25 |
 | [SP](SP-spotlight-sections.md) | Thư viện chỉ tìm app; Spotlight lúc gõ chia section kính cuộn được; "Gần đây" và thanh tìm kiếm Today bằng kính | Xong 2026-11-26 |
 | [BW](BW-battery-widget.md) | Widget Pin tự vẽ kiểu iOS | Xong 2026-11-26 |

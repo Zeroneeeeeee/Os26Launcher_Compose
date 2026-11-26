@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import gambi.global.os26launcher.BuildConfig
 import gambi.global.os26launcher.core.coroutines.DefaultDispatcher
 import gambi.global.os26launcher.domain.category.AppGroupPlanner
+import gambi.global.os26launcher.domain.category.AppGroupTitleProvider
 import gambi.global.os26launcher.domain.layout.FolderPlanner
 import gambi.global.os26launcher.domain.model.AppGroupKind
 import gambi.global.os26launcher.domain.model.ComponentKey
@@ -33,13 +34,15 @@ import javax.inject.Inject
 
 /**
  * AG (2026-11-26) — dữ liệu mục "Gom nhóm ứng dụng" của Cài đặt → Chung: với mỗi [AppGroupKind], app nằm phẳng trên lưới Home thuộc nhóm
- * ([AppGroupPlanner.candidates]) và thư mục trùng tên nhóm đã có (lưới rồi dock; so không phân biệt hoa thường). Tên nhóm do màn đưa vào
- * ([setTitles], đọc chuỗi bằng Activity để đúng ngôn ngữ của app). Ghi qua [LayoutRepository.groupIntoFolder].
+ * ([AppGroupPlanner.candidates]) và thư mục trùng tên nhóm đã có (lưới rồi dock; so không phân biệt hoa thường). Tên nhóm lấy từ
+ * [AppGroupTitleProvider] (mở lại 2026-11-26: cùng nguồn với bố cục lần đầu, nên ngay sau seed mọi nhóm đã gom hiện "Đã gom"). Ghi qua
+ * [LayoutRepository.groupIntoFolder].
  */
 @HiltViewModel
 class AppGroupsViewModel @Inject constructor(
     private val layout: LayoutRepository,
     private val appRepository: AppRepository,
+    private val titles: AppGroupTitleProvider,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -62,21 +65,23 @@ class AppGroupsViewModel @Inject constructor(
         data object Failed : GroupResult
     }
 
-    private val titles = MutableStateFlow<Map<AppGroupKind, String>>(emptyMap())
+    /** Khóa ngôn ngữ của màn đang hiện ([onScreenLocale]); đổi thì đọc lại tên nhóm (ViewModel sống qua recreate khi đổi ngôn ngữ). */
+    private val localeKey = MutableStateFlow("")
 
-    /** null = đang nạp (chưa có bố cục hoặc chưa có tên nhóm). */
-    val groups: StateFlow<List<AppGroupState>?> = combine(layout.pages, layout.dock, titles) { pages, dock, names ->
-        if (names.isEmpty()) null else AppGroupKind.entries.map { build(it, names.getValue(it), pages, dock) }
+    /** null = đang nạp (chưa có bố cục). Tên đọc lại khi bố cục hoặc ngôn ngữ app đổi. */
+    val groups: StateFlow<List<AppGroupState>?> = combine(layout.pages, layout.dock, localeKey) { pages, dock, _ ->
+        AppGroupKind.entries.map { build(it, titles.title(it), pages, dock) }
     }.flowOn(defaultDispatcher).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    /** Màn gọi mỗi lần dựng (kể cả sau recreate do đổi ngôn ngữ), với khóa ngôn ngữ chuỗi của Activity. */
+    fun onScreenLocale(key: String) {
+        localeKey.value = key
+    }
 
     private val _results = Channel<GroupResult>(Channel.BUFFERED)
     val results: Flow<GroupResult> = _results.receiveAsFlow()
 
     private var writing = false
-
-    fun setTitles(map: Map<AppGroupKind, String>) {
-        titles.value = map
-    }
 
     /** Bấm "Gom nhóm" / "Thêm N ứng dụng". Chặn chạm đúp: đang ghi thì bỏ qua. */
     fun apply(state: AppGroupState) {

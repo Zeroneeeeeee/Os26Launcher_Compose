@@ -13,6 +13,8 @@ import gambi.global.os26launcher.data.layout.db.LauncherDatabase
 import gambi.global.os26launcher.data.layout.db.LauncherItemDao
 import gambi.global.os26launcher.data.layout.db.LauncherItemEntity
 import gambi.global.os26launcher.domain.layout.AppWidgetLimits
+import gambi.global.os26launcher.domain.category.AppGroupPlanner
+import gambi.global.os26launcher.domain.category.AppGroupTitleProvider
 import gambi.global.os26launcher.domain.layout.DockInsertPlanner
 import gambi.global.os26launcher.domain.layout.EmptyPagePrunePlanner
 import gambi.global.os26launcher.domain.layout.FolderPlanner
@@ -28,6 +30,7 @@ import gambi.global.os26launcher.domain.model.GridPosition
 import gambi.global.os26launcher.domain.model.GridPreset
 import gambi.global.os26launcher.domain.model.PageId
 import gambi.global.os26launcher.domain.model.PlacedApp
+import gambi.global.os26launcher.domain.model.PlacedFolder
 import gambi.global.os26launcher.domain.model.WidgetKind
 import gambi.global.os26launcher.domain.repository.AppRepository
 import gambi.global.os26launcher.domain.repository.AppWidgetRepository
@@ -68,6 +71,7 @@ class LayoutReconciler @Inject constructor(
     private val generalConfig: GeneralConfigRepository,
     private val appWidgets: AppWidgetRepository, // G3c: giải phóng id widget app sau khi xóa hàng, quét id mồ côi
     private val appState: AppStateRepository, // TV: cờ `today_seeded`
+    private val groupTitles: AppGroupTitleProvider, // AG mở lại: tên thư mục gom sẵn của bố cục lần đầu
     @IoDispatcher private val io: CoroutineDispatcher
 ) {
     private val mutex = Mutex()
@@ -116,17 +120,23 @@ class LayoutReconciler @Inject constructor(
                 )
 
                 // WF Task 2: Đồng hồ + Lịch 2 × 2 ở đầu trang 1, app launcher của mình ở ô trống đầu tiên sau widget.
+                // AG mở lại (2026-11-26, QĐ 12–15): ngay sau app launcher là các thư mục gom sẵn theo nhóm (Tiện ích, Google, …), từ app KHÔNG ở dock.
                 val widgets = seedWidgets(grid.columns, grid.rows)
+                val dockKeys = dock.mapTo(HashSet()) { it.key }
+                val folders = AppGroupPlanner.seedGroups(apps.filter { it.key !in dockKeys }, BuildConfig.APPLICATION_ID)
+                    .map { (kind, members) -> groupTitles.title(kind) to members }
                 val pages = buildDefaultLayout(
                     apps, dock, grid.columns, grid.rows,
                     reservedFirstPage = widgets.map { it.second },
-                    pinFirstPackage = BuildConfig.APPLICATION_ID
+                    pinFirstPackage = BuildConfig.APPLICATION_ID,
+                    folders = folders
                 )
                 var firstPageId: Long? = null
                 if (pages.isEmpty()) {
                     // Mọi app đã nằm trong dock: vẫn giữ một trang rỗng để app cài sau có chỗ đặt.
                     firstPageId = pageDao.insert(HomePageEntity(rank = 0))
                 }
+                var folderCount = 0
                 pages.forEach { page ->
                     val pageId = pageDao.insert(HomePageEntity(rank = page.index))
                     if (page.index == 0) firstPageId = pageId
@@ -142,6 +152,23 @@ class LayoutReconciler @Inject constructor(
                             )
                         }
                     )
+                    // AG: thư mục nháp → hàng thư mục (tên ghi theo ngôn ngữ lúc seed) + app con theo thứ tự (`rank`).
+                    for (folder in page.items.filterIsInstance<PlacedFolder>()) {
+                        val folderId = itemDao.insertAll(
+                            listOf(
+                                LauncherItemEntity(
+                                    container = LauncherItemEntity.CONTAINER_HOME,
+                                    pageId = pageId,
+                                    gridX = folder.position.x,
+                                    gridY = folder.position.y,
+                                    itemType = LauncherItemEntity.ITEM_TYPE_FOLDER,
+                                    title = FolderPlanner.normalizeTitle(folder.title)
+                                )
+                            )
+                        ).first()
+                        itemDao.insertAll(folder.previewApps.mapIndexed { i, app -> app.toEntity(container = folderId, rank = i) })
+                        folderCount++
+                    }
                 }
                 val widgetPage = firstPageId
                 if (widgetPage != null && widgets.isNotEmpty()) {
@@ -160,7 +187,7 @@ class LayoutReconciler @Inject constructor(
                         }
                     )
                 }
-                Log.i(TAG, "seedIfEmpty grid=${grid.columns}x${grid.rows} pages=${pages.size} widgets=${widgets.size}")
+                Log.i(TAG, "seedIfEmpty grid=${grid.columns}x${grid.rows} pages=${pages.size} widgets=${widgets.size} folders=$folderCount")
             }
         }
     }
