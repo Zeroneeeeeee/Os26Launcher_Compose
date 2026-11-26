@@ -60,6 +60,8 @@ import gambi.global.os26launcher.core.glass.GlassRole
 import gambi.global.os26launcher.core.glass.compose.dsFrosted
 import gambi.global.os26launcher.core.glass.compose.LocalIconGlassCorner
 import gambi.global.os26launcher.core.glass.compose.CachedIconGlassPlate
+import gambi.global.os26launcher.core.glass.compose.IconGlassPageLayer
+import androidx.compose.runtime.rememberUpdatedState
 import gambi.global.os26launcher.core.ui.GridMetrics
 import gambi.global.os26launcher.domain.layout.FolderPlanner
 import gambi.global.os26launcher.domain.model.AppItem
@@ -128,8 +130,26 @@ internal fun HomeGridPage(
     tracker.update(page.items, animate = sameGeometry && drag.session == null && drag.settlingId == null)
     val leaving = tracker.leaving
     val all = if (leaving.isEmpty()) page.items else page.items + leaving
+    Box(modifier) {
+    // LI: lúc lướt trang, kính tự vẽ sau icon kiểu Kính của cả trang vẽ bằng một lớp (xem IconGlassPageLayer), phía sau các ô.
+    val glassCorner = LocalIconGlassCorner.current
+    if (glassCorner != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val currentPage by rememberUpdatedState(page)
+        IconGlassPageLayer(
+            sizePx = cells.iconSize,
+            corner = glassCorner,
+            plates = {
+                val iconLeft = (cells.cellWidth - cells.iconSize) / 2f
+                currentPage.items.mapNotNull { item ->
+                    if (item !is PlacedApp || drag.isHidden(item.itemId)) null
+                    else cellOffset(item.position, cells).let { Offset(it.x + iconLeft, it.y.toFloat()) }
+                }
+            },
+            modifier = Modifier.matchParentSize()
+        )
+    }
     Layout(
-        modifier = modifier,
+        modifier = Modifier.fillMaxSize(),
         content = {
             page.items.forEach { item ->
                 key(item.itemId) {
@@ -180,6 +200,7 @@ internal fun HomeGridPage(
                 )
             }
         }
+    }
     }
 }
 

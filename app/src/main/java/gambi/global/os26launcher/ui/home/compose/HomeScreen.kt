@@ -486,10 +486,16 @@ internal fun HomeScreen(
                         // LI: kính sau icon kiểu Kính chỉ vẽ sống (rồi chụp) khi trang đứng yên giữa màn, ngoài edit mode, Home không trượt theo
                         // Today / Thư viện; còn lại vẽ ảnh đã chụp (đo: kính sống khi vuốt trang Janky 80 %).
                         val iconGlassHost = remember(index) {
-                            IconGlassHost(derivedStateOf {
-                                pagerState.currentPage == index && !pagerState.isScrollInProgress &&
-                                    abs(pagerState.currentPageOffsetFraction) < SETTLED_FRACTION && !editModeNow && !dockGlassLive
-                            })
+                            IconGlassHost(
+                                settled = derivedStateOf {
+                                    pagerState.currentPage == index && !pagerState.isScrollInProgress &&
+                                        abs(pagerState.currentPageOffsetFraction) < SETTLED_FRACTION && !editModeNow && !dockGlassLive
+                                },
+                                // LI: lúc lướt trang, lớp kính của trang vẽ thay tấm từng ô (edit mode giữ tấm từng ô: rung theo icon).
+                                moving = derivedStateOf {
+                                    !editModeNow && (pagerState.isScrollInProgress || abs(pagerState.currentPageOffsetFraction) >= SETTLED_FRACTION)
+                                }
+                            )
                         }
                         SideEffect { iconGlassHost.cacheKey = state.backdrop }
                         CompositionLocalProvider(LocalDsBackdrop provides if (onScreen) backdrop else null, LocalIconGlassHost provides iconGlassHost) {

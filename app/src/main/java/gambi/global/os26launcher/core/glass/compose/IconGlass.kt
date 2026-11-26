@@ -98,7 +98,11 @@ private fun Modifier.iconGlass(source: Backdrop, sizePx: Int, corner: Int): Modi
  * của cả trang) và lúc nào vùng đứng yên trên ảnh nền ([settled]) để chụp kính. [cacheKey] = danh tính ảnh nền: đổi thì chụp lại.
  */
 @Stable
-class IconGlassHost(val settled: State<Boolean>) {
+class IconGlassHost(
+    val settled: State<Boolean>,
+    /** Vùng đang lướt (trang pager trượt, ngoài edit mode): tấm kính tự vẽ của từng ô nhường cho [IconGlassPageLayer]. Dock: luôn false. */
+    val moving: State<Boolean> = mutableStateOf(false)
+) {
     var cacheKey: Any? by mutableStateOf(null)
     internal var origin: LayoutCoordinates? = null
 }

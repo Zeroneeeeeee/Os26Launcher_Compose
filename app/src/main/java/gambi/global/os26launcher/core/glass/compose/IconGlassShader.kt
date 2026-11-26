@@ -25,6 +25,9 @@ import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asComposePath
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.translate
+import gambi.global.os26launcher.domain.model.GlassLook
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onPlaced
@@ -40,7 +43,8 @@ import kotlin.math.max
  */
 @Stable
 class IconGlassWallpaper internal constructor(private val frosted: FrostedBackdrop, private val source: State<Bitmap?>) {
-    internal var coords: LayoutCoordinates? = null
+    /** State: ô vẽ trước khi lớp nền được đặt chỗ thì vẽ lại khi có (không thì ô đứng yên sẽ không bao giờ có kính). */
+    internal var coords: LayoutCoordinates? by mutableStateOf(null)
 
     /** Đã có bản mờ và ảnh nền gốc (đọc trong pha dựng: ô dựng lại một lần khi bản mờ tới / mất). */
     val ready: Boolean get() = frosted.small.value != null && source.value != null
@@ -99,41 +103,102 @@ val LocalIconGlassWallpaper: ProvidableCompositionLocal<IconGlassWallpaper?> = c
  * (bản `perf`, SM-A176B, vuốt trang 1 ↔ 2): blur + lens Janky 80 %, chỉ lens trên nền mờ sẵn vẫn 40 %. Ở đây shader chạy thẳng khi vẽ ô (như
  * tô một gradient), không lớp phụ. Vị trí lấy mẫu cập nhật qua `onGloballyPositioned`, nên kính trôi đúng trên nền khi lướt trang.
  *
+ * Lúc trang lướt (`IconGlassHost.moving`): tấm của từng ô KHÔNG vẽ, không theo dõi vị trí; [IconGlassPageLayer] của trang vẽ thay mọi tấm.
+ * Đo 2026-11-26: tấm từng ô theo vị trí mỗi khung (kể cả không vẽ gì) tốn p50 ~24 ms so với 12 ms: chi phí là đánh dấu vẽ lại ~24 node mỗi khung.
+ *
  * Giới hạn: lúc Home trượt theo Today / Thư viện (dịch bằng graphicsLayer, không đặt lại vị trí) điểm lấy mẫu đứng ở chỗ cũ tới khi dừng.
  */
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 internal fun IconGlassShaderPlate(sizePx: Int, corner: Int, wall: IconGlassWallpaper, modifier: Modifier = Modifier) {
-    val lookState = LocalGlassLookOverride.current ?: rememberGlassLook()
-    val shader = remember { RuntimeShader(ICON_GLASS_AGSL) }
-    val brush = remember(shader) { ShaderBrush(shader) }
-    val iconShape = remember(corner) { IconShape.forCorner(corner) }
-    val path = remember(iconShape, sizePx) { iconShape.path(sizePx).asComposePath() }
+    val painter = rememberIconGlassPainter(sizePx, corner)
+    val host = LocalIconGlassHost.current
+    // origin là state chỉ để vẽ lại khi ô dời chỗ trên màn; lúc vẽ luôn tính lại từ toạ độ hiện tại.
     var origin by remember { mutableStateOf(Offset.Unspecified) }
+    val self = remember { arrayOfNulls<LayoutCoordinates>(1) }
+    // Trang ngoài màn (pager dựng sẵn mọi trang, HomeScreen không cấp LocalDsBackdrop cho trang ngoài màn): không theo dõi vị trí.
+    val onScreen by rememberUpdatedState(LocalDsBackdrop.current != null)
     Box(
         modifier
             .onGloballyPositioned { c ->
-                val w = wall.coords
-                origin = if (w != null && w.isAttached && c.isAttached) w.localPositionOf(c, Offset.Zero) else Offset.Unspecified
+                self[0] = c
+                if (onScreen && host?.moving?.value != true) origin = positionOnWallpaper(wall, c)
             }
             .drawBehind {
-                val o = origin
-                val input = wall.inputShader()
-                if (!o.isSpecified || input == null || sizePx <= 0) return@drawBehind
-                val look = lookState.value
-                val radius = (iconShape.cornerRatio * sizePx).coerceAtMost(sizePx / 2f)
-                val (height, amount) = GlassTuning.backdropLensDp(look)
-                shader.setInputShader("wall", input)
-                shader.setFloatUniform("size", sizePx.toFloat(), sizePx.toFloat())
-                shader.setFloatUniform("radius", radius)
-                // Như lens của thư viện: độ cao khúc xạ ≤ bán kính góc; thu nhỏ như ô thư mục cùng cỡ.
-                shader.setFloatUniform("refractionHeight", minOf(height * density * ICON_LENS_SCALE, radius).coerceAtLeast(1f))
-                shader.setFloatUniform("refractionAmount", amount * density * ICON_LENS_SCALE)
-                shader.setFloatUniform("origin", o.x, o.y)
-                shader.setFloatUniform("saturation", VIBRANCY_SATURATION)
-                drawPath(path, brush)
+                if (host?.moving?.value == true) return@drawBehind // lớp của trang vẽ thay
+                origin // đọc để vẽ lại khi ô dời chỗ
+                val o = self[0]?.let { positionOnWallpaper(wall, it) } ?: return@drawBehind
+                painter.draw(this, wall, o)
             }
     )
+}
+
+/**
+ * LI — lớp kính của cả trang lúc trang lướt: vẽ tấm kính sau mọi icon ở [plates] (góc trên-trái icon, toạ độ trong trang) bằng một node, vị
+ * trí trang theo dõi bằng MỘT `onGloballyPositioned`. Ngoài lúc lướt không vẽ gì (tấm của từng ô vẽ). Đặt phía sau các ô của trang.
+ */
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@Composable
+fun IconGlassPageLayer(sizePx: Int, corner: Int, plates: () -> List<Offset>, modifier: Modifier = Modifier) {
+    val wall = LocalIconGlassWallpaper.current
+    val host = LocalIconGlassHost.current
+    if (wall == null || host == null || !wall.ready) return
+    val painter = rememberIconGlassPainter(sizePx, corner)
+    var origin by remember { mutableStateOf(Offset.Unspecified) }
+    val self = remember { arrayOfNulls<LayoutCoordinates>(1) }
+    Box(
+        modifier
+            .onGloballyPositioned { c ->
+                self[0] = c
+                if (host.moving.value) origin = positionOnWallpaper(wall, c)
+            }
+            .drawBehind {
+                if (!host.moving.value) return@drawBehind
+                origin
+                val page = self[0]?.let { positionOnWallpaper(wall, it) } ?: return@drawBehind
+                for (p in plates()) {
+                    translate(p.x, p.y) { painter.draw(this, wall, page + p) }
+                }
+            }
+    )
+}
+
+/** Shader + hình của tấm kính một cỡ icon; dùng chung cho tấm từng ô và lớp của trang. */
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+internal class IconGlassPainter(private val sizePx: Int, private val iconShape: IconShape, private val look: State<GlassLook>) {
+    private val shader = RuntimeShader(ICON_GLASS_AGSL)
+    private val brush = ShaderBrush(shader)
+    private val path = iconShape.path(sizePx).asComposePath()
+
+    /** Vẽ tấm ở gốc của [scope]; [origin] = góc trên-trái tấm trong toạ độ lớp nền mờ. */
+    fun draw(scope: DrawScope, wall: IconGlassWallpaper, origin: Offset) {
+        val input = wall.inputShader() ?: return
+        if (!origin.isSpecified || sizePx <= 0) return
+        val radius = (iconShape.cornerRatio * sizePx).coerceAtMost(sizePx / 2f)
+        val (height, amount) = GlassTuning.backdropLensDp(look.value)
+        val density = scope.density
+        shader.setInputShader("wall", input)
+        shader.setFloatUniform("size", sizePx.toFloat(), sizePx.toFloat())
+        shader.setFloatUniform("radius", radius)
+        // Như lens của thư viện: độ cao khúc xạ ≤ bán kính góc; thu nhỏ như ô thư mục cùng cỡ.
+        shader.setFloatUniform("refractionHeight", minOf(height * density * ICON_LENS_SCALE, radius).coerceAtLeast(1f))
+        shader.setFloatUniform("refractionAmount", amount * density * ICON_LENS_SCALE)
+        shader.setFloatUniform("origin", origin.x, origin.y)
+        shader.setFloatUniform("saturation", VIBRANCY_SATURATION)
+        scope.drawPath(path, brush)
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@Composable
+private fun rememberIconGlassPainter(sizePx: Int, corner: Int): IconGlassPainter {
+    val look = LocalGlassLookOverride.current ?: rememberGlassLook()
+    return remember(sizePx, corner, look) { IconGlassPainter(sizePx, IconShape.forCorner(corner), look) }
+}
+
+private fun positionOnWallpaper(wall: IconGlassWallpaper, c: LayoutCoordinates): Offset {
+    val w = wall.coords // đọc state: lớp nền đặt chỗ sau thì ô vẽ lại
+    return if (w != null && w.isAttached && c.isAttached) w.localPositionOf(c, Offset.Zero) else Offset.Unspecified
 }
 
 /** Như `vibrancy()` của Backdrop (bão hòa 1,5). */
