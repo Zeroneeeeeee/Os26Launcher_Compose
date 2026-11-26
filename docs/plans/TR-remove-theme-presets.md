@@ -4,7 +4,7 @@
 > Android SDK nên Claude không build được: mọi commit chỉ được rà bằng đọc code). Không có test tự động (không chạm planner/domain có test).
 
 **Bắt đầu:** 2026-11-26 · **Plan duyệt:** 2026-11-26 (chốt trong chat)
-**Trạng thái:** Đang làm
+**Trạng thái:** Code xong 2026-11-26, chờ chủ dự án build + kiểm
 **Đổi schema Room:** không · **Đổi khóa DataStore:** bỏ `appearance_theme_id`, `appearance_icon_bevel` (giá trị cũ trong máy bị bỏ qua)
 
 **Goal:** Bỏ màn chọn 4 preset theme (Liquid Glass 27 / Classic 26 / Minimal / Dark Pro) và mọi logic preset; bước THEME của Onboarding đổi thành chọn kiểu icon (G2b).
@@ -84,7 +84,7 @@
 
 ### Task 3: Docs
 
-- [ ] `Launcher-Features.md` (dòng theme / Onboarding), `project_structure.md` (file đã xóa/tạo), `plans/BACKLOG.md` (B19 → Đã xong), `plans/README.md`, `AGENTS.md` nếu có bài học. Commit `docs: TR theme preset removal`.
+- [x] `Launcher-Features.md` (dòng theme / Onboarding), `project_structure.md` (file đã xóa/tạo), `plans/BACKLOG.md` (B19 → Đã xong), `plans/README.md`, `AGENTS.md` nếu có bài học. Commit `docs: TR theme preset removal`.
 
 ## Kịch bản kiểm (chủ dự án, sau khi build)
 
@@ -99,3 +99,4 @@
 |---|---|---|---|
 | 2026-11-26 | 1 | Bước `ICON_STYLE` thay `THEME`: `IconStyleChoicesViewModel` vẽ 4 icon mẫu cho 5 kiểu, `IconStyleSamples` dùng chung với xem trước Cài đặt, `IconStyle.labelRes()` dùng chung; chuỗi `onboarding_icon_style_title` × 9 | Rà bằng grep, chưa build |
 | 2026-11-26 | 2 | Xóa 13 file đã duyệt; bỏ `ThemeId`, `themeId`, `iconBevel`, khóa `appearance_theme_id` / `appearance_icon_bevel`, `IconStyleKey.bevel`; Hero Card theo R4; hộp chọn kiểu có Trong suốt (R3); bỏ 14 chuỗi × 9; `config-schema.md` mục 1, 3.1, 6 | Review Focus 1: grep toàn `app/src` = 0. XML parse được. Chưa build |
+| 2026-11-26 | 3 | Docs: `project_structure.md`, `Figma-Draft.md` (màn 1.1 đã bỏ), `AGENTS.md`, `BACKLOG.md` (B19 chờ kiểm), `plans/README.md` | Ruling: `Launcher-Features.md` không có dòng theme/Onboarding nên không sửa |

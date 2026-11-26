@@ -27,7 +27,7 @@ File này chỉ giữ cái mọi agent cần mỗi lần. Bài học theo mốc 
 | Icon và danh sách app | [lessons/icons-and-app-list.md](lessons/icons-and-app-list.md) |
 | Quyền, hiển thị app và kiểm trên máy thật | [lessons/permissions-and-device-testing.md](lessons/permissions-and-device-testing.md) |
 | Home, pager và hoạt ảnh | [lessons/home-pager-animation.md](lessons/home-pager-animation.md) |
-| Cài đặt và dữ liệu | [lessons/settings-and-data.md](lessons/settings-and-data.md). Khóa config, kho, mặc định, preset theme: [config-schema.md](config-schema.md) (CF 2026-11-17): **thêm/đổi/bỏ khóa phải sửa file đó trong cùng commit** |
+| Cài đặt và dữ liệu | [lessons/settings-and-data.md](lessons/settings-and-data.md). Khóa config, kho, mặc định (preset theme đã bỏ ở TR 2026-11-26): [config-schema.md](config-schema.md) (CF 2026-11-17): **thêm/đổi/bỏ khóa phải sửa file đó trong cùng commit** |
 | Hệ thống thiết kế v3 (`core/designsystem`, token `ds_*`, bề mặt kính, lint API 26–27) | [lessons/design-system.md](lessons/design-system.md) |
 | Đọc thiết kế Figma (MCP chính thức không có quyền; dùng `figma-bridge`, id trang khác id frame, giải mã ảnh base64) | [Figma-Draft.md](Figma-Draft.md) mục 1 (2026-11-16, đo được) |
 
