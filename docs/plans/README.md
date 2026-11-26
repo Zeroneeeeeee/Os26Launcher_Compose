@@ -12,6 +12,7 @@
 
 | Plan | Nội dung | Trạng thái |
 |---|---|---|
+| [PM](PM-permission-flow.md) | Widget thời tiết xin quyền vị trí tại chỗ; hộp "Cấp quyền" khi quyền Vị trí / Danh bạ bị chặn, dùng chung mọi chỗ (B20) | Code xong 2026-11-26, chờ kiểm |
 | [FX](FX-folder-polish.md) | Bảng thư mục: icon giữ cỡ có nhãn + nằm giữa ô, ảnh kéo co về cỡ Home, hết dư ảnh menu, nền mờ dưới Android 12 (B12, B16, B17, B18) | Code xong 2026-11-26, chờ kiểm |
 | [TR](TR-remove-theme-presets.md) | Bỏ màn "Màn hình chính mặc định" + preset theme + cờ nổi 3D; Onboarding 0.2 chọn kiểu icon (B19) | Code xong 2026-11-26, chờ kiểm |
 | [AG](AG-app-groups.md) | Bố cục lần đầu gom sẵn thư mục theo nhóm; Cài đặt → Chung "Gom nhóm ứng dụng" (6 nhóm, sheet xem trước, dồn trang) | Xong 2026-11-26 |

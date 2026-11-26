@@ -4,7 +4,7 @@
 > Android SDK: commit chỉ được rà bằng đọc code. Không có test tự động.
 
 **Bắt đầu:** 2026-11-26 · **Plan duyệt:** 2026-11-26 (yêu cầu chi tiết trong chat)
-**Trạng thái:** Đang làm
+**Trạng thái:** Code xong 2026-11-26, chờ chủ dự án build + kiểm
 
 **Goal:** Bấm widget thời tiết khi chưa có quyền vị trí thì hiện hộp xin quyền của hệ thống (không mở bảng); cấp xong tự cập nhật vị trí. Quyền Vị trí
 hoặc Danh bạ đã bị từ chối tới mức Android không hỏi nữa thì ở MỌI chỗ xin quyền hiện một hộp xác nhận riêng ("Đóng" / "Cấp quyền") nói rõ lý do,
@@ -79,7 +79,7 @@ của Spotlight), `ui/settings/LocationSettingsScreen.kt`, `LocationSettingsView
 
 ### Task 4: Docs
 
-- [ ] `lessons/permissions-and-device-testing.md`, `BACKLOG.md`, `plans/README.md`, `project_structure.md`. Commit `docs: PM permission flow`.
+- [x] `lessons/permissions-and-device-testing.md`, `BACKLOG.md`, `plans/README.md`, `project_structure.md`. Commit `docs: PM permission flow`.
 
 ## Kịch bản kiểm (chủ dự án)
 
@@ -92,3 +92,5 @@ Xem báo cáo cuối lô (TR + FX + PM) trong chat.
 | 2026-11-26 | 1 | `DsAlertDialog(dismissOnClickOutside)`; `core/permission/PermissionRequester.kt` (`PermissionKind`, `PermissionDenials`, `PermissionRequester`, `showPermissionBlockedDialog`, `openAppDetailsSettings`); 5 chuỗi × 9; `config-schema.md` mục 2 | XML parse được, chưa build |
 | 2026-11-26 | 2 | `UpdateAutoPlaceUseCase` (tách từ `LocationSettingsViewModel`); `HomeActivity`: widget thời tiết xin quyền khi dùng Vị trí hiện tại + Tự động + chưa có quyền, cấp xong tự cập nhật; Danh bạ của Spotlight dùng `PermissionRequester` (làm sớm cùng commit vì chung chỗ khai báo trong HomeActivity) | Ruling: gộp phần Danh bạ của HomeActivity (Task 3 Step 2) vào commit này — cùng khối khai báo, tách ra thì commit giữa không biên dịch được. Chưa build |
 | 2026-11-26 | 3 | `LocationSettingsScreen` (hàng quyền, Cập nhật vị trí) và `SearchSettingsScreen` (công tắc Danh bạ) dùng `PermissionRequester`; bỏ Toast từ chối (R4) và chuỗi `wx_loc_denied`, `wx_loc_denied_settings` × 9 (không còn dùng) | Rà: `ACTION_APPLICATION_DETAILS_SETTINGS` / `RequestPermission()` cho Vị trí, Danh bạ chỉ còn ở `core/permission` (còn lại: thông báo, Bluetooth, ngoài phạm vi). Chưa build |
+| 2026-11-26 | 4 | Docs: bài học `lessons/permissions-and-device-testing.md`, BACKLOG B20, README, `project_structure.md` | |
+| 2026-11-26 | Rà cuối | Tự rà diff `8fe6311` trở về `749367e~1` (không có reviewer riêng) | Cần chủ dự án build |
