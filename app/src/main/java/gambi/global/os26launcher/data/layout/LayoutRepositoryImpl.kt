@@ -240,6 +240,10 @@ class LayoutRepositoryImpl @Inject constructor(
     override suspend fun addAppAt(key: ComponentKey, targetContainer: Long, targetPageId: Long?, cell: GridPosition): Boolean =
         reconciler.addAppAt(key, targetContainer, targetPageId, cell)
 
+    // AG
+    override suspend fun groupIntoFolder(title: String, itemIds: List<Long>, folderId: Long?): Int =
+        reconciler.groupIntoFolder(title, itemIds, folderId)
+
     override suspend fun addToFolder(itemId: Long, folderId: Long): Boolean =
         reconciler.addToFolder(itemId, folderId)
 

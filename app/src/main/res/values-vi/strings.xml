@@ -23,6 +23,28 @@
     <string name="settings_show_labels">Hiện nhãn ứng dụng</string>
     <string name="settings_nav_bar_hidden">Ẩn thanh điều hướng</string>
     <string name="settings_nav_bar_hidden_description">Chỉ trên màn hình chính. Vuốt lên từ mép dưới để hiện tạm.</string>
+    <!-- AG: gom nhóm app (Cài đặt → Chung) -->
+    <string name="app_groups_header">Gom nhóm ứng dụng</string>
+    <string name="app_group_google">Google</string>
+    <string name="app_group_social">Mạng xã hội</string>
+    <string name="app_group_games">Trò chơi</string>
+    <string name="app_group_entertainment">Giải trí</string>
+    <string name="app_group_utilities">Tiện ích</string>
+    <string name="app_group_manufacturer_row">Ứng dụng của %1$s</string>
+    <string name="app_group_manufacturer_fallback">Ứng dụng của hãng</string>
+    <string name="app_groups_already">Đã gom</string>
+    <string name="app_groups_footer">Gom các ứng dụng đang nằm trên Màn hình chính vào một thư mục. Ứng dụng ở dock hoặc đã nằm trong thư mục giữ nguyên.</string>
+    <string name="app_groups_apply">Gom nhóm</string>
+    <string name="app_groups_failed">Không gom được. Màn hình chính đã thay đổi.</string>
+    <plurals name="app_groups_count">
+        <item quantity="other">%d ứng dụng</item>
+    </plurals>
+    <plurals name="app_groups_add">
+        <item quantity="other">Thêm %d ứng dụng</item>
+    </plurals>
+    <plurals name="app_groups_done">
+        <item quantity="other">Đã gom %1$d ứng dụng vào “%2$s”</item>
+    </plurals>
     <string name="settings_backdrop">Ảnh nền</string>
     <string name="settings_backdrop_set">Đã có ảnh</string>
     <string name="settings_backdrop_unset">Chưa chọn</string>
