@@ -71,9 +71,9 @@
 ### Task 2: Ảnh kéo co về cỡ Home khi rời bảng
 
 **Files:** `HomeDragState.kt`.
-- [ ] Step 1: Nhánh rời bảng (gọi `actions.closeFolder()`): `floatScale.animateTo(LIFT_SCALE × homeIcon / floatSize.width, SETTLE_F)` khi lệch cỡ.
-- [ ] Step 2: Hàm `fitScale(s, rect)` (widget giữ 1) dùng cho mọi `settle(..., 1f, 1f)` (dock, lưới, thư mục, bay về) (R5).
-- [ ] Step 3: Rà Review Focus 3–4. Commit `fix: dragged folder app shrinks to home icon size`.
+- [x] Step 1: Nhánh rời bảng (gọi `actions.closeFolder()`): `floatScale.animateTo(LIFT_SCALE × homeIcon / floatSize.width, SETTLE_F)` khi lệch cỡ.
+- [x] Step 2: Hàm `fitScale(s, rect)` (widget giữ 1) dùng cho mọi `settle(..., 1f, 1f)` (dock, lưới, thư mục, bay về) (R5).
+- [x] Step 3: Rà Review Focus 3–4. Commit `fix: dragged folder app shrinks to home icon size`.
 
 ### Task 3: Không còn icon nổi của menu khi bắt đầu kéo (B17)
 
@@ -102,3 +102,4 @@
 | Ngày | Task | Việc | Ghi chú |
 |---|---|---|---|
 | 2026-11-26 | 1 | `folderCells` (lưới có nhãn, tắt nhãn thì đẩy `paddingTop` nửa phần ô thừa); `pageStride = panelSide` cho vị trí ô, cuộn, vuốt, chấm, `FolderPanelGeometry.pageWidth`; icon nổi của menu theo cỡ khung neo | Rà bằng đọc code, chưa build |
+| 2026-11-26 | 2 | `shrinkToHomeIcon()` ở nhánh rời bảng (bỏ qua khi đích lò xo không đổi); `fitScale(s, rect)` cho mọi `settle` của dock, lưới, thả trong thư mục, bay về | Rà bằng đọc code, chưa build |
