@@ -78,7 +78,7 @@
 ### Task 3: Không còn icon nổi của menu khi bắt đầu kéo (B17)
 
 **Files:** `HomeIconMenu.kt`, `HomeScreen.kt`.
-- [ ] Step 1: Tham số `hideIcon: Boolean` = `drag.session != null` (R4). Commit `fix: hide icon menu lift copy once a drag starts`.
+- [x] Step 1: Tham số `hideIcon: Boolean` = `drag.session != null` (R4). Commit `fix: hide icon menu lift copy once a drag starts`.
 
 ### Task 4: Nền mờ sau bảng thư mục dưới Android 12 (B16)
 
@@ -103,3 +103,4 @@
 |---|---|---|---|
 | 2026-11-26 | 1 | `folderCells` (lưới có nhãn, tắt nhãn thì đẩy `paddingTop` nửa phần ô thừa); `pageStride = panelSide` cho vị trí ô, cuộn, vuốt, chấm, `FolderPanelGeometry.pageWidth`; icon nổi của menu theo cỡ khung neo | Rà bằng đọc code, chưa build |
 | 2026-11-26 | 2 | `shrinkToHomeIcon()` ở nhánh rời bảng (bỏ qua khi đích lò xo không đổi); `fitScale(s, rect)` cho mọi `settle` của dock, lưới, thả trong thư mục, bay về | Rà bằng đọc code, chưa build |
+| 2026-11-26 | 3 | `HomeIconMenu(hideIcon)` = `dragFloating` của HomeScreen (phiên kéo hoặc ảnh đang bay về) | Ruling: dùng `dragFloating` thay `drag.session != null` để cú kéo rất ngắn (thả khi menu còn đang đóng) không hiện lại icon nổi. Chưa build |

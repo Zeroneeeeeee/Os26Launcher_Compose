@@ -627,7 +627,8 @@ internal fun HomeScreen(
                 backdrop = homeBackdrop,
                 onAction = overlays.onIconMenuAction,
                 onShortcut = overlays.onIconMenuShortcut,
-                onDismiss = overlays.closeIconMenu
+                onDismiss = overlays.closeIconMenu,
+                hideIcon = dragFloating // FX R4 (B17)
             )
             // RA2 → PD (2026-11-25): thẻ xác nhận xóa (dấu "−") chuyển lên HomeActivity, lớp trên cùng: ở đây nó nằm dưới `homeGestures` (pass
             // Initial) của Box gốc nên chạm ngoài thẻ vẫn tới lưới (thoát edit mode, nhấn giữ icon).
