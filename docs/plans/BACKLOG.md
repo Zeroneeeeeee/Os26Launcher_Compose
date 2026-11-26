@@ -12,7 +12,8 @@
 | B7 | Kiểm TalkBack (K1 mục 5c) | Kiểm | — | `PG4-home-perf-and-device-checks.md` | Chủ dự án bỏ qua 2026-11-23 |
 | B8 | Nhãn tên dưới widget tự vẽ như iOS (dùng phần đáy để trống của thẻ vuông) | Tính năng | — | `PW-menu-block-widget-square-font.md` (ngoài phạm vi), FL Q9 | |
 | B9 | `GridMetricsTest` hỏng 4/112 test (default sizing, dock cap, measure at density one, cellAt): test viết từ `2615d5d`, chưa cập nhật theo `5d96e78` của anh Nam (icon scale 1, nhãn 12,5 sp, `ROW_GUTTER_SCALE = 0.5` nên `gutterY` 8 → 4, hàng thấp hơn); code đúng thiết kế, cần sửa số trong test | Test | Thấp | `.\gradlew.bat :app:testDebugUnitTest` (chủ dự án chạy 2026-11-26, sau merge `016c6d0`) | Chủ dự án 2026-11-26: bỏ qua, để anh Nam sửa; `master` cũng hỏng đúng 4 test này |
-| B10 | Widget mới thêm vào Today View không có kính: lỗi hay chủ ý? (Today chỉ cho kính thật tối đa `GLASS_BUDGET` widget đầu, xem `HomeToday`) | Kiểm | — | Chủ dự án 2026-11-26 | |
+| B14 | Ghép hình nền cài sẵn với theme cho đúng chủ đề (đã thêm ảnh mới `wp_ios27_1..4`; ảnh xem trước theme `onb_theme_*` và nền màu của preset vẫn theo bản cũ; áp theme hiện không đổi nền, quyết định WI 2026-11-18) | Tính năng | — | Chủ dự án 2026-11-26 | Thay B10. Chủ dự án 2026-11-26 chốt ghép: Liquid Glass 27 → `wp_ios27_3`; Classic 26 → `wp_ios27_1`; Minimal → `wp_sunset`; Dark Pro → `wp_ios27_2` (lụa xám tối) (chủ dự án sửa lần cuối 14:56). Chọn theme thì đổi nền theo + làm lại ảnh xem trước `onb_theme_*` (đề xuất (c), chưa xác nhận) |
+| B15 | Cài đặt → Vị trí: "Cập nhật vị trí" hiện "Vị trí hiện tại" thay vì tên nơi. Nguyên nhân (đọc code): `LocationSettingsViewModel.updateAutoPlace` lấy được tọa độ nhưng `reverse` (OpenWeatherMap `geo/1.0/reverse`) lỗi / rỗng thì LƯU chữ dự phòng `wx_places_current` làm tên nơi; cập nhật im lặng (`CurrentLocationUpdater`) chỉ đổi tên khi đi xa > 5 km nên chữ dự phòng bị kẹt | Lỗi | — | Chủ dự án 2026-11-26, ảnh `screenshot.png` (Samsung) | Chủ dự án xác nhận: máy đó cài bản build từ GitHub, repo không có `OWM_API_KEY` (khóa chỉ ở `local.properties`, gitignore) nên `reverse` luôn lỗi `NO_KEY`; tái hiện được bằng cách comment `OWM_API_KEY` trong `local.properties` (chủ dự án, 14:56). Từ 2026-11-26 khóa đã ghi thẳng trong `buildTypes` nên bản clone từ GitHub có khóa, nhưng lỗi vẫn còn khi mạng lỗi hoặc OWM trả 429. Hướng sửa: không lưu chữ dự phòng (đánh dấu chưa có tên), cập nhật im lặng thử lại `reverse` khi chưa có tên dù chưa đi xa; thiếu khóa thì báo rõ |
 | B11 | Nút "−" (ẩn / xóa app) ở edit mode: hoạt ảnh phóng to khi vào, thu nhỏ khi ra edit mode | Tính năng | — | Chủ dự án 2026-11-26 | |
 | B12 | Ẩn nhãn ("Hiện tên" tắt) thì icon trong thư mục vẽ lệch | Lỗi hiển thị | — | Chủ dự án 2026-11-26, ảnh `screenshot.png` ở gốc dự án | |
 | B13 | Widget của app khác lấy kích cỡ sai | Lỗi | — | Chủ dự án 2026-11-26 | Chưa có ảnh / log; chủ dự án cho xem khi cần |
@@ -35,6 +36,7 @@
 
 | Việc | Quyết định |
 |---|---|
+| B10: kính cho widget Today ngoài 4 widget đầu | Chủ dự án 2026-11-26: giữ nguyên (`GLASS_BUDGET = 4` tính theo thứ tự danh sách, xóa / kéo widget thì widget kế lên có kính) |
 | Kính mờ tĩnh kiểu XML cho mọi bề mặt còn lại dưới API 31 | Chủ dự án 2026-11-25: dưới API 31 chỉ mờ tĩnh cho qua, tập trung API 31+ (`AGENTS.md`) |
 
 ## Đã xong (gần đây)
