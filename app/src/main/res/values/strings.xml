@@ -127,7 +127,6 @@
     <!-- G2b: kiểu icon -->
     <string name="settings_icon_style">Icon style</string>
     <string name="settings_icon_style_default">Default</string>
-    <string name="settings_icon_style_transparent">Clear</string>
     <string name="settings_icon_style_tinted">Tinted</string>
     <string name="settings_icon_style_3d">3D</string>
     <string name="settings_icon_style_glass">Glass</string>

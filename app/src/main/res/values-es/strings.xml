@@ -129,7 +129,6 @@
     <!-- G2b: kiểu icon -->
     <string name="settings_icon_style">Estilo de iconos</string>
     <string name="settings_icon_style_default">Predeterminado</string>
-    <string name="settings_icon_style_transparent">Transparente</string>
     <string name="settings_icon_style_tinted">Teñido</string>
     <string name="settings_icon_style_3d">3D</string>
     <string name="settings_icon_style_glass">Cristal</string>

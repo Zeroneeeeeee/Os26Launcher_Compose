@@ -126,7 +126,6 @@
     <!-- G2b: kiểu icon -->
     <string name="settings_icon_style">आइकॉन की स्टाइल</string>
     <string name="settings_icon_style_default">डिफ़ॉल्ट</string>
-    <string name="settings_icon_style_transparent">पारदर्शी</string>
     <string name="settings_icon_style_tinted">रंगीन</string>
     <string name="settings_icon_style_3d">3D</string>
     <string name="settings_icon_style_glass">ग्लास</string>

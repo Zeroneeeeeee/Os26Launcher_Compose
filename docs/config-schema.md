@@ -43,7 +43,7 @@ Khóa **đậm** là khóa mới từ CF. Màn theo số màn Figma v3 (`Figma-D
 | `wallpaperKind` | **`appearance_wallpaper_kind`** | `WallpaperKind` (AUTO, PHOTO, COLOR, PRESET) | AUTO (ảnh đã chọn nếu có, không thì ảnh mặc định). PRESET = ảnh cài sẵn `wallpaperPreset` (WI) | 2.2, 0.3 | giữ (WI) | Nền Home |
 | `wallpaperColor` | **`appearance_wallpaper_color`** | Int ARGB | `0xFF000000` | 2.2, 0.3 | giữ (WI) | Nền Home |
 | `wallpaperPreset` | **`appearance_wallpaper_preset`** | String? (id trong `WallpaperPresets`: `wi_dawn`, `wi_rose`, `wi_ocean`, `wi_copper`, `wi_sand`) | null | 2.2, 0.3 | giữ | Nền Home khi `wallpaperKind` = PRESET (WI). Id lạ = như AUTO |
-| `iconStyle` | `icon_style` | `IconStyle` (DEFAULT, TINTED, THREE_D, GLASS, **TRANSPARENT**) | DEFAULT | 2.3, 0.2 (TR) | ghi | Icon (TRANSPARENT: chỉ vẽ hình, không ô nền; icon không tách được hình vẽ như DEFAULT) |
+| `iconStyle` | `icon_style` | `IconStyle` (DEFAULT, TINTED, THREE_D, GLASS) | DEFAULT | 2.3, 0.2 (TR) | ghi | Icon. TRANSPARENT (Trong suốt) bỏ 2026-11-26 (chủ dự án: icon lỗi, lẫn vào nền): giá trị cũ đọc ra DEFAULT |
 | `iconTint` | `icon_tint` | `IconTint` (BLUE, PINK, GREEN, ORANGE, GRAPHITE) | BLUE | 2.3 | ghi | Icon |
 | `iconPack` | `icon_pack` | String? (package) | null | 2.3 | **không** | Icon |
 | `iconShape` | **`appearance_icon_shape`** | `IconShapeKind` (SQUIRCLE, CIRCLE, SQUARE, TEARDROP) | SQUIRCLE | 2.3 | ghi | — |

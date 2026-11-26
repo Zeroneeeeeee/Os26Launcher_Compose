@@ -28,9 +28,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-/** TR — các kiểu icon ở bước chọn kiểu icon của Onboarding, theo thứ tự thẻ (R3: có cả Trong suốt). */
+/** TR — các kiểu icon ở bước chọn kiểu icon của Onboarding, theo thứ tự thẻ (kiểu Trong suốt đã bỏ 2026-11-26). */
 object IconStyleChoices {
-    val list: List<IconStyle> = listOf(IconStyle.DEFAULT, IconStyle.GLASS, IconStyle.TINTED, IconStyle.THREE_D, IconStyle.TRANSPARENT)
+    val list: List<IconStyle> = listOf(IconStyle.DEFAULT, IconStyle.GLASS, IconStyle.TINTED, IconStyle.THREE_D)
 }
 
 /**

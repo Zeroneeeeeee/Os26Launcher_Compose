@@ -39,7 +39,6 @@ object IconStyleSamples {
 @StringRes
 internal fun IconStyle.labelRes(): Int = when (this) {
     IconStyle.DEFAULT -> R.string.settings_icon_style_default
-    IconStyle.TRANSPARENT -> R.string.settings_icon_style_transparent
     IconStyle.TINTED -> R.string.settings_icon_style_tinted
     IconStyle.THREE_D -> R.string.settings_icon_style_3d
     IconStyle.GLASS -> R.string.settings_icon_style_glass

@@ -43,11 +43,8 @@ class IconRenderer @Inject constructor() {
             // GI Kính: ô kính trong kiểu Bubble Kiss + hình giữ màu gốc, không đi qua flatten/tint (xem [glassContent]).
             val glyphTile = style.style == IconStyle.TINTED && drawable is AdaptiveIconDrawable &&
                 tintGlyphTile(drawable, Canvas(content), sizePx, style.tint)
-            // CF Trong suốt: adaptive có hình tách được thì chỉ vẽ foreground (không ô nền); còn lại như Mặc định.
-            val bareGlyph = !glyphTile && style.style == IconStyle.TRANSPARENT && drawable is AdaptiveIconDrawable &&
-                bareGlyph(drawable, Canvas(content), sizePx)
             if (style.style == IconStyle.GLASS) glassContent(drawable, content, sizePx, shape)
-            else if (!glyphTile && !bareGlyph) flatten(drawable, Canvas(content), sizePx)
+            else if (!glyphTile) flatten(drawable, Canvas(content), sizePx)
             // 3D vẽ lớp phủ SAU khi cắt (bevel)
             val styled = if (style.style == IconStyle.TINTED && !glyphTile) tint(
                 content,
@@ -301,20 +298,6 @@ class IconRenderer @Inject constructor() {
             foreground.setBounds(-q, -q, sizePx + q, sizePx + q)
             foreground.draw(canvas)
         }
-    }
-
-    /**
-     * CF — kiểu Trong suốt: vẽ riêng lớp foreground (màu gốc), bỏ lớp background, cùng tỉ lệ như [flattenAdaptive]. Trả false
-     * (chưa vẽ gì) khi foreground không tách được hình ([foregroundIsGlyph]): caller vẽ như Mặc định.
-     * mutate() trước khi vẽ thử: foreground chung ConstantState với mọi bản của cùng app (B8).
-     */
-    private fun bareGlyph(drawable: AdaptiveIconDrawable, canvas: Canvas, sizePx: Int): Boolean {
-        val foreground = drawable.foreground?.mutate() ?: return false
-        if (!foregroundIsGlyph(foreground)) return false
-        val q = sizePx / 4
-        foreground.setBounds(-q, -q, sizePx + q, sizePx + q)
-        foreground.draw(canvas)
-        return true
     }
 
     /**

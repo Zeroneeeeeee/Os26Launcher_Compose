@@ -93,7 +93,7 @@ class IconSetSettingsScreen(private val ctx: SettingsScreenContext) : SettingsSc
 
     private fun showIconStyleDialog() {
         if (iconStyleDialog != null) return
-        val options = IconStyle.entries // TR R3 (2026-11-26): có cả Trong suốt (trước chỉ theme MINIMAL ghi)
+        val options = IconStyle.entries // 2026-11-26 (chủ dự án): kiểu Trong suốt đã bỏ (icon lỗi, lẫn vào nền)
         val labels = options.map { activity.getString(it.labelRes()) }
         val current = viewModel.uiState.value.iconStyle
         iconStyleDialog = SettingsDialogs.singleChoice(

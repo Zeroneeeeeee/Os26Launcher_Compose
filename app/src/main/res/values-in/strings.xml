@@ -123,7 +123,6 @@
     <!-- G2b: kiểu icon -->
     <string name="settings_icon_style">Gaya ikon</string>
     <string name="settings_icon_style_default">Default</string>
-    <string name="settings_icon_style_transparent">Transparan</string>
     <string name="settings_icon_style_tinted">Berwarna</string>
     <string name="settings_icon_style_3d">3D</string>
     <string name="settings_icon_style_glass">Kaca</string>

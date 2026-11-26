@@ -122,7 +122,6 @@
     <!-- G2b: kiểu icon -->
     <string name="settings_icon_style">Kiểu icon</string>
     <string name="settings_icon_style_default">Mặc định</string>
-    <string name="settings_icon_style_transparent">Trong suốt</string>
     <string name="settings_icon_style_tinted">Tô màu</string>
     <string name="settings_icon_style_3d">3D</string>
     <string name="settings_icon_style_glass">Kính</string>

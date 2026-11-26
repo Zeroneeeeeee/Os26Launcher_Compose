@@ -5,13 +5,7 @@ enum class IconStyle {
     DEFAULT, TINTED, THREE_D,
 
     /** GI — Kính: tấm trắng mờ + hình trắng; không dùng màu tô. */
-    GLASS,
-
-    /**
-     * CF — Trong suốt: chỉ vẽ hình (lớp foreground của adaptive icon) giữ màu gốc, không ô nền, không kính.
-     * Icon không tách được hình (legacy, foreground phủ kín) vẽ như [DEFAULT]. TR (2026-11-26): hiện ở màn 2.3 và Onboarding (trước chỉ theme MINIMAL ghi).
-     */
-    TRANSPARENT;
+    GLASS;
 
     companion object {
         /** Tên lạ (bản cũ đổi tên) hoặc null -> DEFAULT, không crash Flow settings. */
