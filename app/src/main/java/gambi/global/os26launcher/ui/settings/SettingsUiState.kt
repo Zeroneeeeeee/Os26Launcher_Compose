@@ -1,6 +1,5 @@
 package gambi.global.os26launcher.ui.settings
 
-import gambi.global.os26launcher.domain.config.ThemeId
 import gambi.global.os26launcher.domain.config.WallpaperKind
 import gambi.global.os26launcher.domain.model.GlassCustom
 import gambi.global.os26launcher.domain.model.GlassLevelOverride
@@ -41,8 +40,6 @@ data class SettingsUiState(
     val realGlassCapable: Boolean = true,
     // GT: thông số kính dùng chung (bốn thanh trượt)
     val glassLook: GlassLook = GlassLook.DEFAULT,
-    /** RS: theme đang chọn (card "Launcher hiện tại"); null = chưa từng chọn theme. */
-    val themeId: ThemeId? = null,
     /** RS Task 8: nguồn nền và màu nền (ô nền màu ở màn 2.2 biết ô nào đang chọn). */
     val wallpaperKind: WallpaperKind = WallpaperKind.AUTO,
     val wallpaperColor: Int = 0,

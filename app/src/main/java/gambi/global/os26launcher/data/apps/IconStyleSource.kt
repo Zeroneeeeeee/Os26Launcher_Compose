@@ -45,7 +45,7 @@ class IconStyleSource @Inject constructor(
     @Volatile
     private var previous: IconStyleKey? = null
 
-    private data class Selection(val style: IconStyle, val tint: IconTint, val pack: String?, val bevel: Boolean, val corner: Int)
+    private data class Selection(val style: IconStyle, val tint: IconTint, val pack: String?, val corner: Int)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val config: StateFlow<IconStyleKey?> = appearance.config
@@ -55,14 +55,13 @@ class IconStyleSource @Inject constructor(
                 it.iconStyle,
                 if (it.iconStyle == IconStyle.TINTED) it.iconTint else IconTint.DEFAULT,
                 it.iconPack,
-                IconStyleKey.bevelFor(it.iconStyle, it.iconBevel),
                 it.glassLook.corner
             )
         }
         .distinctUntilChanged()
         .flatMapLatest { sel ->
             if (sel.pack == null) {
-                flowOf(IconStyleKey(sel.style, sel.tint, bevel = sel.bevel, corner = sel.corner))
+                flowOf(IconStyleKey(sel.style, sel.tint, corner = sel.corner))
             } else {
                 // Phát lại khi chính gói đó đổi (cập nhật/gỡ); callback LauncherApps báo mọi package, không chỉ app launcher.
                 dataSource.observeChanges()
@@ -70,7 +69,7 @@ class IconStyleSource @Inject constructor(
                     .onEach { iconPacks.forget(sel.pack) }
                     .map { }
                     .onStart { emit(Unit) }
-                    .map { IconStyleKey(sel.style, sel.tint, packKeyOrRevert(sel.pack), sel.bevel, sel.corner) }
+                    .map { IconStyleKey(sel.style, sel.tint, packKeyOrRevert(sel.pack), corner = sel.corner) }
             }
         }
         .distinctUntilChanged()

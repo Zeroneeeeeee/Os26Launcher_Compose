@@ -64,12 +64,11 @@ class IconStylePreviewViewModel @Inject constructor(
         val style: IconStyle,
         val tint: IconTint,
         val pack: String?,
-        val bevel: Boolean,
         val corner: Int
     )
 
     private val selection = combine(
-        appearance.config.map { StyleParts(it.iconStyle, it.iconTint, it.iconPack, it.iconBevel, it.glassLook.corner) }.distinctUntilChanged(),
+        appearance.config.map { StyleParts(it.iconStyle, it.iconTint, it.iconPack, it.glassLook.corner) }.distinctUntilChanged(),
         observeVisibleApps().filter { it.isNotEmpty() }.map(IconStyleSamples::pick).distinctUntilChanged()
     ) { style, samples -> Selection(style, samples) }
 
@@ -102,7 +101,7 @@ class IconStylePreviewViewModel @Inject constructor(
     private suspend fun render(sel: Selection): List<Bitmap> {
         val s = sel.config
         val packKey = s.pack?.let { withContext(io) { iconPacks.keyOf(it) } }.orEmpty()
-        val key = IconStyleKey(s.style, s.tint, packKey, IconStyleKey.bevelFor(s.style, s.bevel), s.corner)
+        val key = IconStyleKey(s.style, s.tint, packKey, corner = s.corner)
         return sel.samples.mapNotNull { appRepository.iconWithStyle(it.key, iconSizePx, key) }
     }
 

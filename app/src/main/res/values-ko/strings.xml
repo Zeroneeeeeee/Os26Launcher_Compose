@@ -386,7 +386,6 @@
     <string name="settings_hub_group_transitions">전환</string>
     <string name="settings_hub_group_icons">아이콘 사용자화</string>
     <string name="settings_hub_group_contact">문의하기</string>
-    <string name="settings_hub_theme">기본 홈 화면</string>
     <string name="settings_hub_general">일반</string>
     <string name="settings_hub_language">언어</string>
     <string name="settings_hub_weather">날씨</string>
@@ -408,7 +407,6 @@
     <!-- RS Task 2: card "Launcher hiện tại" đầu trang chủ Cài đặt (Figma 302:1522). -->
     <string name="settings_launcher_card_current">현재 홈 화면</string>
     <string name="settings_launcher_card_not_default">기본으로 설정되지 않음</string>
-    <string name="settings_launcher_card_custom">사용자 지정</string>
     <string name="settings_launcher_card_welcome">환영합니다</string>
     <string name="settings_launcher_card_welcome_desc">나만의 제어 센터. 모든 세부 사항을 맞춤 설정해 홈 화면을 나만의 스타일로 꾸며 보세요.</string>
     <string name="settings_launcher_card_explore">둘러보기</string>
@@ -417,10 +415,6 @@
     <string name="hero_default_set_toast">기본값으로 설정됨</string>
     <!-- HC Task 3: tiêu đề màn 6.2 (Figma "Ứng dụng khác"; hàng trên trang chủ giữ settings_hub_more_apps). -->
     <string name="settings_more_apps_title">다른 앱</string>
-    <!-- RS Task 6: màn 1.1 Màn hình chính mặc định (Figma 302:1738). -->
-    <string name="settings_theme_subtitle">런처마다 홈 화면, 아이콘, 효과가 달라집니다.</string>
-    <string name="settings_theme_apply_default">적용 후 기본으로 설정</string>
-    <string name="settings_theme_apply">적용</string>
     <!-- RS Task 7: card xem trước thời tiết (dữ liệu mẫu) ở màn 1.4. -->
     <string name="settings_weather_preview_degree">%1$d°</string>
     <string name="settings_weather_preview_high_low">최고 %1$s · 최저 %2$s</string>
@@ -433,7 +427,6 @@
     <!-- WI: tên 5 hình nền cài sẵn (ảnh thử, xem plan WI) ở 0.3 và 2.2; nút ngắn của hộp hỏi đặt mặc định khi về Home. -->
     <string name="default_prompt_set">지금 설정</string>
     <!-- RS Task 8: giờ minh họa trên ô ảnh nền (Figma 2.2). -->
-    <string name="settings_theme_note">홈 화면 앱을 고를 수 있는 시스템 대화상자가 열립니다.</string>
     <string name="settings_hub_version">버전 %1$s</string>
     <!-- AB: nhóm Liên hệ (tiền tố about_) -->
     <string name="about_rate_title">앱이 마음에 드시나요?</string>
@@ -612,14 +605,6 @@
     <string name="onboarding_welcome_subtitle">투명한 아이콘, 생생한 배경화면, 부드러운 효과 — 몇 단계면 시작할 수 있습니다.</string>
     <string name="onboarding_icon_style_title">아이콘 스타일 선택</string>
     <string name="onboarding_icon_style_subtitle">설정에서 언제든지 바꿀 수 있습니다.</string>
-    <string name="onboarding_theme_liquid_glass_27">Liquid Glass 27</string>
-    <string name="onboarding_theme_liquid_glass_27_desc">투명, 굴절</string>
-    <string name="onboarding_theme_classic_26">Classic 26</string>
-    <string name="onboarding_theme_classic_26_desc">따뜻함, 부드러운 색 아이콘</string>
-    <string name="onboarding_theme_minimal">Minimal</string>
-    <string name="onboarding_theme_minimal_desc">단순함, 얇은 선</string>
-    <string name="onboarding_theme_dark_pro">Dark Pro</string>
-    <string name="onboarding_theme_dark_pro_desc">어두운 배경, 둥근 아이콘</string>
     <string name="onboarding_badge_new">신규</string>
     <string name="onboarding_wallpaper_title">배경화면 선택</string>
     <string name="onboarding_wallpaper_subtitle">멋진 배경화면은 유리 효과를 더 돋보이게 합니다.</string>

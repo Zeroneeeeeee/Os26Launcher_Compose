@@ -75,12 +75,12 @@
 
 **Files:** xóa toàn bộ danh sách "Xóa"; sửa phần còn lại của "Vùng file"; `docs/config-schema.md`.
 
-- [ ] **Step 1:** Cài đặt: bỏ hàng `hub_theme` (`SettingsHubScreen`), `SettingsScreenId.THEME` + dòng giữ chỗ (R5), `themeId` ở `SettingsUiState`/`SettingsViewModel`/`SettingsRow.LauncherCard`; Hero Card theo R4; hộp chọn kiểu icon hiện cả `TRANSPARENT` (R3); `onIconStyleChosen` chỉ ghi `iconStyle`.
-- [ ] **Step 2:** Cấu hình: bỏ `ThemeId` (`ConfigEnums`), `AppearanceConfig.themeId`, `iconBevel`, khóa `THEME_ID`, `ICON_BEVEL` (`ConfigKeys`, `AppearanceRepositoryImpl`).
-- [ ] **Step 3:** Icon: bỏ `IconStyleKey.bevel` + `bevelFor`; `IconRenderer` chỉ nổi khi `THREE_D`; bỏ phần `+bevel`/`|bevel` trong khóa cache (`IconCache`, `IconLoader`); `IconStyleSource`, `HomeViewModel`, `IconStylePreviewViewModel`, `IconStyleChoicesViewModel` bỏ trường nổi.
-- [ ] **Step 4:** Manifest (main: `ThemeSettingsActivity`; debug: `ThemeDebugReceiver`); xóa file; bỏ chuỗi `settings_hub_theme`, `settings_theme_*`, `onboarding_theme_*`, `settings_launcher_card_custom` × 9.
-- [ ] **Step 5:** `docs/config-schema.md`: bỏ hai dòng khóa, cột/ghi chú "Theme ghi" và mục áp theme.
-- [ ] **Step 6:** Rà Review Focus 1 bằng grep (= 0 kết quả). Commit `refactor: remove theme presets screen and icon bevel flag`.
+- [x] **Step 1:** Cài đặt: bỏ hàng `hub_theme` (`SettingsHubScreen`), `SettingsScreenId.THEME` + dòng giữ chỗ (R5), `themeId` ở `SettingsUiState`/`SettingsViewModel`/`SettingsRow.LauncherCard`; Hero Card theo R4; hộp chọn kiểu icon hiện cả `TRANSPARENT` (R3); `onIconStyleChosen` chỉ ghi `iconStyle`.
+- [x] **Step 2:** Cấu hình: bỏ `ThemeId` (`ConfigEnums`), `AppearanceConfig.themeId`, `iconBevel`, khóa `THEME_ID`, `ICON_BEVEL` (`ConfigKeys`, `AppearanceRepositoryImpl`).
+- [x] **Step 3:** Icon: bỏ `IconStyleKey.bevel` + `bevelFor`; `IconRenderer` chỉ nổi khi `THREE_D`; bỏ phần `+bevel`/`|bevel` trong khóa cache (`IconCache`, `IconLoader`); `IconStyleSource`, `HomeViewModel`, `IconStylePreviewViewModel`, `IconStyleChoicesViewModel` bỏ trường nổi.
+- [x] **Step 4:** Manifest (main: `ThemeSettingsActivity`; debug: `ThemeDebugReceiver`); xóa file; bỏ chuỗi `settings_hub_theme`, `settings_theme_*`, `onboarding_theme_*`, `settings_launcher_card_custom` × 9.
+- [x] **Step 5:** `docs/config-schema.md`: bỏ hai dòng khóa, cột/ghi chú "Theme ghi" và mục áp theme.
+- [x] **Step 6:** Rà Review Focus 1 bằng grep (= 0 kết quả). Commit `refactor: remove theme presets screen and icon bevel flag`.
 
 ### Task 3: Docs
 
@@ -98,3 +98,4 @@
 | Ngày | Task | Việc | Ghi chú |
 |---|---|---|---|
 | 2026-11-26 | 1 | Bước `ICON_STYLE` thay `THEME`: `IconStyleChoicesViewModel` vẽ 4 icon mẫu cho 5 kiểu, `IconStyleSamples` dùng chung với xem trước Cài đặt, `IconStyle.labelRes()` dùng chung; chuỗi `onboarding_icon_style_title` × 9 | Rà bằng grep, chưa build |
+| 2026-11-26 | 2 | Xóa 13 file đã duyệt; bỏ `ThemeId`, `themeId`, `iconBevel`, khóa `appearance_theme_id` / `appearance_icon_bevel`, `IconStyleKey.bevel`; Hero Card theo R4; hộp chọn kiểu có Trong suốt (R3); bỏ 14 chuỗi × 9; `config-schema.md` mục 1, 3.1, 6 | Review Focus 1: grep toàn `app/src` = 0. XML parse được. Chưa build |

@@ -389,7 +389,6 @@
     <string name="settings_hub_group_transitions">ट्रांज़िशन</string>
     <string name="settings_hub_group_icons">आइकॉन में बदलाव</string>
     <string name="settings_hub_group_contact">हमसे संपर्क करें</string>
-    <string name="settings_hub_theme">डिफ़ॉल्ट होम स्क्रीन</string>
     <string name="settings_hub_general">सामान्य</string>
     <string name="settings_hub_language">भाषा</string>
     <string name="settings_hub_weather">मौसम</string>
@@ -411,7 +410,6 @@
     <!-- RS Task 2: card "Launcher hiện tại" đầu trang chủ Cài đặt (Figma 302:1522). -->
     <string name="settings_launcher_card_current">मौजूदा होम स्क्रीन</string>
     <string name="settings_launcher_card_not_default">डिफ़ॉल्ट नहीं बनाया गया</string>
-    <string name="settings_launcher_card_custom">कस्टम</string>
     <string name="settings_launcher_card_welcome">आपका स्वागत है</string>
     <string name="settings_launcher_card_welcome_desc">आपका अपना कंट्रोल सेंटर। हर डिटेल को अपने अंदाज़ में ढालें ताकि होम स्क्रीन बिल्कुल आपके स्टाइल की हो।</string>
     <string name="settings_launcher_card_explore">एक्सप्लोर करें</string>
@@ -420,10 +418,6 @@
     <string name="hero_default_set_toast">डिफ़ॉल्ट के रूप में सेट किया गया</string>
     <!-- HC Task 3: tiêu đề màn 6.2 (Figma "Ứng dụng khác"; hàng trên trang chủ giữ settings_hub_more_apps). -->
     <string name="settings_more_apps_title">और ऐप</string>
-    <!-- RS Task 6: màn 1.1 Màn hình chính mặc định (Figma 302:1738). -->
-    <string name="settings_theme_subtitle">हर लॉन्चर आपकी होम स्क्रीन, आइकॉन और इफ़ेक्ट बदल देता है।</string>
-    <string name="settings_theme_apply_default">लागू करें और डिफ़ॉल्ट बनाएं</string>
-    <string name="settings_theme_apply">लागू करें</string>
     <!-- RS Task 7: card xem trước thời tiết (dữ liệu mẫu) ở màn 1.4. -->
     <string name="settings_weather_preview_degree">%1$d°</string>
     <string name="settings_weather_preview_high_low">अधि. %1$s · न्यू. %2$s</string>
@@ -436,7 +430,6 @@
     <!-- WI: tên 5 hình nền cài sẵn (ảnh thử, xem plan WI) ở 0.3 và 2.2; nút ngắn của hộp hỏi đặt mặc định khi về Home. -->
     <string name="default_prompt_set">अभी सेट करें</string>
     <!-- RS Task 8: giờ minh họa trên ô ảnh nền (Figma 2.2). -->
-    <string name="settings_theme_note">होम स्क्रीन ऐप चुनने के लिए सिस्टम का डायलॉग खुलेगा।</string>
     <string name="settings_hub_version">वर्शन %1$s</string>
     <!-- AB: nhóm Liên hệ (tiền tố about_) -->
     <string name="about_rate_title">आपको ऐप कैसा लगा?</string>
@@ -616,14 +609,6 @@
     <string name="onboarding_welcome_subtitle">पारदर्शी आइकॉन, जीवंत वॉलपेपर और स्मूद इफ़ेक्ट — शुरू करने के लिए बस कुछ कदम।</string>
     <string name="onboarding_icon_style_title">आइकन शैली चुनें</string>
     <string name="onboarding_icon_style_subtitle">आप इसे सेटिंग में कभी भी बदल सकते हैं।</string>
-    <string name="onboarding_theme_liquid_glass_27">Liquid Glass 27</string>
-    <string name="onboarding_theme_liquid_glass_27_desc">पारदर्शी, अपवर्तक</string>
-    <string name="onboarding_theme_classic_26">Classic 26</string>
-    <string name="onboarding_theme_classic_26_desc">गर्म, हल्के रंग के आइकॉन</string>
-    <string name="onboarding_theme_minimal">Minimal</string>
-    <string name="onboarding_theme_minimal_desc">सादा, पतली लाइनें</string>
-    <string name="onboarding_theme_dark_pro">Dark Pro</string>
-    <string name="onboarding_theme_dark_pro_desc">गहरा बैकग्राउंड, गोल आइकॉन</string>
     <string name="onboarding_badge_new">नया</string>
     <string name="onboarding_wallpaper_title">वॉलपेपर चुनें</string>
     <string name="onboarding_wallpaper_subtitle">अच्छा वॉलपेपर ग्लास इफ़ेक्ट को और उभारता है।</string>

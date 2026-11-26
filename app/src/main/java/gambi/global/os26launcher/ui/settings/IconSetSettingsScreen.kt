@@ -93,7 +93,7 @@ class IconSetSettingsScreen(private val ctx: SettingsScreenContext) : SettingsSc
 
     private fun showIconStyleDialog() {
         if (iconStyleDialog != null) return
-        val options = IconStyle.entries - IconStyle.TRANSPARENT // CF: Figma 2.3 không có lựa chọn này, chỉ theme ghi
+        val options = IconStyle.entries // TR R3 (2026-11-26): có cả Trong suốt (trước chỉ theme MINIMAL ghi)
         val labels = options.map { activity.getString(it.labelRes()) }
         val current = viewModel.uiState.value.iconStyle
         iconStyleDialog = SettingsDialogs.singleChoice(

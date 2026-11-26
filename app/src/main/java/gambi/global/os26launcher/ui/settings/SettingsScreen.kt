@@ -97,7 +97,7 @@ class SettingsScreenContext(
 /** Mã màn, đi qua extra [SettingsActivity.EXTRA_SCREEN]. Thêm giá trị mới ở CUỐI. */
 enum class SettingsScreenId {
     HUB,
-    THEME, GENERAL, LANGUAGE, WEATHER, LOCATION, // nhóm Chung (1.1-1.5)
+    GENERAL, LANGUAGE, WEATHER, LOCATION, // nhóm Chung (1.2-1.5; 1.1 "Màn hình chính mặc định" bỏ ở TR 2026-11-26)
     GLASS, WALLPAPER, ICON_SET, // nhóm Giao diện (2.1-2.3)
     SWIPE, LIBRARY, SEARCH, BADGES, // nhóm Màn hình nền (3.1-3.4)
     TRANSITIONS, // nhóm Chuyển cảnh (4.1; 4.2 Hiệu ứng ứng dụng đã bỏ ở P3-1)
@@ -118,8 +118,6 @@ enum class SettingsScreenId {
 object SettingsScreens {
     private val factories: Map<SettingsScreenId, (SettingsScreenContext) -> SettingsScreen> = mapOf(
         SettingsScreenId.HUB to ::SettingsHubScreen,
-
-        // 1.1 THEME (TH)
 
         SettingsScreenId.GENERAL to ::GeneralSettingsScreen,
 

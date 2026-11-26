@@ -299,7 +299,7 @@ class HomeViewModel @Inject constructor(
             val pack =
                 s.iconPack?.let { withContext(Dispatchers.IO) { iconPackRepository.keyOf(it) } }
                     ?: ""
-            IconStyleKey(s.iconStyle, s.iconTint, pack, IconStyleKey.bevelFor(s.iconStyle, s.iconBevel), s.glassLook.corner)
+            IconStyleKey(s.iconStyle, s.iconTint, pack, corner = s.glassLook.corner)
         }
 
     /** Icon cho danh sách debug; M3 thay bằng lưới. Cache nằm ở repository nên gọi lại rẻ. */

@@ -392,7 +392,6 @@
     <string name="settings_hub_group_transitions">Transiciones</string>
     <string name="settings_hub_group_icons">Personalización de iconos</string>
     <string name="settings_hub_group_contact">Contacto</string>
-    <string name="settings_hub_theme">Pantalla de inicio predeterminada</string>
     <string name="settings_hub_general">General</string>
     <string name="settings_hub_language">Idioma</string>
     <string name="settings_hub_weather">Tiempo</string>
@@ -414,7 +413,6 @@
     <!-- RS Task 2: card "Launcher hiện tại" đầu trang chủ Cài đặt (Figma 302:1522). -->
     <string name="settings_launcher_card_current">Pantalla de inicio actual</string>
     <string name="settings_launcher_card_not_default">No es el predeterminado</string>
-    <string name="settings_launcher_card_custom">Personalizado</string>
     <string name="settings_launcher_card_welcome">Te damos la bienvenida</string>
     <string name="settings_launcher_card_welcome_desc">Tu propio centro de control. Personaliza cada detalle para que tu pantalla de inicio refleje tu estilo.</string>
     <string name="settings_launcher_card_explore">Explorar</string>
@@ -423,10 +421,6 @@
     <string name="hero_default_set_toast">Establecido como predeterminado</string>
     <!-- HC Task 3: tiêu đề màn 6.2 (Figma "Ứng dụng khác"; hàng trên trang chủ giữ settings_hub_more_apps). -->
     <string name="settings_more_apps_title">Más apps</string>
-    <!-- RS Task 6: màn 1.1 Màn hình chính mặc định (Figma 302:1738). -->
-    <string name="settings_theme_subtitle">Cada launcher cambia tu pantalla de inicio, los iconos y los efectos.</string>
-    <string name="settings_theme_apply_default">Aplicar y establecer como predeterminado</string>
-    <string name="settings_theme_apply">Aplicar</string>
     <!-- RS Task 7: card xem trước thời tiết (dữ liệu mẫu) ở màn 1.4. -->
     <string name="settings_weather_preview_degree">%1$d°</string>
     <string name="settings_weather_preview_high_low">Máx. %1$s · Mín. %2$s</string>
@@ -439,7 +433,6 @@
     <!-- WI: tên 5 hình nền cài sẵn (ảnh thử, xem plan WI) ở 0.3 và 2.2; nút ngắn của hộp hỏi đặt mặc định khi về Home. -->
     <string name="default_prompt_set">Establecer</string>
     <!-- RS Task 8: giờ minh họa trên ô ảnh nền (Figma 2.2). -->
-    <string name="settings_theme_note">Se abrirá un diálogo del sistema para que elijas la app de pantalla de inicio.</string>
     <string name="settings_hub_version">Versión %1$s</string>
     <!-- AB: nhóm Liên hệ (tiền tố about_) -->
     <string name="about_rate_title">¿Qué te parece la app?</string>
@@ -620,14 +613,6 @@
     <string name="onboarding_welcome_subtitle">Iconos transparentes, fondos vivos y efectos fluidos: solo unos pasos para empezar.</string>
     <string name="onboarding_icon_style_title">Elige un estilo de iconos</string>
     <string name="onboarding_icon_style_subtitle">Puedes cambiarlo cuando quieras en Ajustes.</string>
-    <string name="onboarding_theme_liquid_glass_27">Liquid Glass 27</string>
-    <string name="onboarding_theme_liquid_glass_27_desc">Transparente, refractivo</string>
-    <string name="onboarding_theme_classic_26">Classic 26</string>
-    <string name="onboarding_theme_classic_26_desc">Cálido, iconos de colores suaves</string>
-    <string name="onboarding_theme_minimal">Minimal</string>
-    <string name="onboarding_theme_minimal_desc">Sencillo, líneas finas</string>
-    <string name="onboarding_theme_dark_pro">Dark Pro</string>
-    <string name="onboarding_theme_dark_pro_desc">Fondo oscuro, iconos redondos</string>
     <string name="onboarding_badge_new">NUEVO</string>
     <string name="onboarding_wallpaper_title">Elige un fondo de pantalla</string>
     <string name="onboarding_wallpaper_subtitle">Un buen fondo hace que el efecto cristal destaque más.</string>

@@ -56,7 +56,7 @@ class IconRenderer @Inject constructor() {
             ) else content
             try {
                 val out = mask(styled, sizePx, shape)
-                if (style.style == IconStyle.THREE_D || style.bevel) bevel(out, sizePx, shape) // CF Step 7: nổi chồng lên kiểu khác
+                if (style.style == IconStyle.THREE_D) bevel(out, sizePx, shape)
                 return out
             } finally {
                 if (styled !== content) styled.recycle()

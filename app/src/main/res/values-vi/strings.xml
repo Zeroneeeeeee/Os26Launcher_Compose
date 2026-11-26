@@ -385,7 +385,6 @@
     <string name="settings_hub_group_transitions">Chuyển cảnh</string>
     <string name="settings_hub_group_icons">Tùy chỉnh biểu tượng</string>
     <string name="settings_hub_group_contact">Liên hệ với chúng tôi</string>
-    <string name="settings_hub_theme">Màn hình chính mặc định</string>
     <string name="settings_hub_general">Chung</string>
     <string name="settings_hub_language">Ngôn ngữ</string>
     <string name="settings_hub_weather">Thời tiết</string>
@@ -407,7 +406,6 @@
     <!-- RS Task 2: card "Launcher hiện tại" đầu trang chủ Cài đặt (Figma 302:1522). -->
     <string name="settings_launcher_card_current">Màn hình chính đang chọn</string>
     <string name="settings_launcher_card_not_default">Chưa đặt làm mặc định</string>
-    <string name="settings_launcher_card_custom">Tùy chỉnh</string>
     <string name="settings_launcher_card_welcome">Chào mừng bạn</string>
     <string name="settings_launcher_card_welcome_desc">Trung tâm điều khiển của riêng bạn. Tuỳ chỉnh mọi chi tiết để màn hình chính đúng phong cách của bạn.</string>
     <string name="settings_launcher_card_explore">Khám phá</string>
@@ -416,10 +414,6 @@
     <string name="hero_default_set_toast">Đã đặt làm mặc định</string>
     <!-- HC Task 3: tiêu đề màn 6.2 (Figma "Ứng dụng khác"; hàng trên trang chủ giữ settings_hub_more_apps). -->
     <string name="settings_more_apps_title">Ứng dụng khác</string>
-    <!-- RS Task 6: màn 1.1 Màn hình chính mặc định (Figma 302:1738). -->
-    <string name="settings_theme_subtitle">Mỗi launcher thay đổi màn hình chính, biểu tượng và hiệu ứng của máy.</string>
-    <string name="settings_theme_apply_default">Áp dụng &amp; đặt làm mặc định</string>
-    <string name="settings_theme_apply">Áp dụng</string>
     <!-- RS Task 7: card xem trước thời tiết (dữ liệu mẫu) ở màn 1.4. -->
     <string name="settings_weather_preview_degree">%1$d°</string>
     <string name="settings_weather_preview_high_low">C %1$s · T %2$s</string>
@@ -432,7 +426,6 @@
     <!-- WI: tên 5 hình nền cài sẵn (ảnh thử, xem plan WI) ở 0.3 và 2.2; nút ngắn của hộp hỏi đặt mặc định khi về Home. -->
     <string name="default_prompt_set">Đặt ngay</string>
     <!-- RS Task 8: giờ minh họa trên ô ảnh nền (Figma 2.2). -->
-    <string name="settings_theme_note">Máy sẽ mở hộp thoại hệ thống để chọn ứng dụng màn hình chính.</string>
     <string name="settings_hub_version">Phiên bản %1$s</string>
     <!-- AB: nhóm Liên hệ (tiền tố about_) -->
     <string name="about_rate_title">Bạn thấy ứng dụng thế nào?</string>
@@ -611,14 +604,6 @@
     <string name="onboarding_welcome_subtitle">Biểu tượng trong suốt, hình nền sống động và hiệu ứng mượt mà — chỉ vài bước để bắt đầu.</string>
     <string name="onboarding_icon_style_title">Chọn kiểu icon</string>
     <string name="onboarding_icon_style_subtitle">Bạn có thể đổi lại bất cứ lúc nào trong Cài đặt.</string>
-    <string name="onboarding_theme_liquid_glass_27">Liquid Glass 27</string>
-    <string name="onboarding_theme_liquid_glass_27_desc">Trong suốt, khúc xạ</string>
-    <string name="onboarding_theme_classic_26">Classic 26</string>
-    <string name="onboarding_theme_classic_26_desc">Ấm, icon màu dịu</string>
-    <string name="onboarding_theme_minimal">Minimal</string>
-    <string name="onboarding_theme_minimal_desc">Tối giản, nét mảnh</string>
-    <string name="onboarding_theme_dark_pro">Dark Pro</string>
-    <string name="onboarding_theme_dark_pro_desc">Nền tối, icon tròn</string>
     <string name="onboarding_badge_new">MỚI</string>
     <string name="onboarding_wallpaper_title">Chọn hình nền</string>
     <string name="onboarding_wallpaper_subtitle">Hình nền đẹp giúp hiệu ứng kính nổi bật hơn.</string>

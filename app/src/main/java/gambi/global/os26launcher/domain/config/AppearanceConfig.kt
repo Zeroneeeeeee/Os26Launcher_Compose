@@ -7,11 +7,10 @@ import gambi.global.os26launcher.domain.model.IconStyle
 import gambi.global.os26launcher.domain.model.IconTint
 
 /**
- * CF — nhóm "Giao diện": mọi trường theme có thể ghi, cộng [iconPack] và [glassCustom] (lựa chọn riêng, theme không đụng).
- * Khóa, mặc định và màn của từng trường: `docs/config-schema.md` mục 3.1. Mặc định = hành vi hiện tại của app.
+ * CF — nhóm "Giao diện". Khóa, mặc định và màn của từng trường: `docs/config-schema.md` mục 3.1. Mặc định = hành vi hiện tại của app.
+ * TR (2026-11-26): preset theme đã bỏ; mỗi trường do màn Cài đặt / Onboarding của nó ghi.
  */
 data class AppearanceConfig(
-    val themeId: ThemeId? = null,
     val wallpaperKind: WallpaperKind = WallpaperKind.AUTO,
     val wallpaperColor: Int = DEFAULT_WALLPAPER_COLOR,
     /** WI: id hình nền cài sẵn (`WallpaperPresets`), chỉ có nghĩa khi [wallpaperKind] = PRESET. Theme không ghi. */
@@ -24,8 +23,6 @@ data class AppearanceConfig(
     val iconStyle: IconStyle = IconStyle.DEFAULT,
     /** Chỉ có nghĩa khi [iconStyle] là TINTED. */
     val iconTint: IconTint = IconTint.DEFAULT,
-    /** CF Step 7: lớp nổi 3D chồng lên [iconStyle] (Kính, Tô màu, Trong suốt). Chỉ theme ghi; màn 2.3 không có. THREE_D luôn nổi. */
-    val iconBevel: Boolean = false,
     /** IP: package gói biểu tượng, null = không dùng. Theme không ghi. */
     val iconPack: String? = null,
     val iconShape: IconShapeKind = IconShapeKind.SQUIRCLE,

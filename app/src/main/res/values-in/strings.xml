@@ -386,7 +386,6 @@
     <string name="settings_hub_group_transitions">Transisi</string>
     <string name="settings_hub_group_icons">Kustomisasi ikon</string>
     <string name="settings_hub_group_contact">Hubungi kami</string>
-    <string name="settings_hub_theme">Layar utama default</string>
     <string name="settings_hub_general">Umum</string>
     <string name="settings_hub_language">Bahasa</string>
     <string name="settings_hub_weather">Cuaca</string>
@@ -408,7 +407,6 @@
     <!-- RS Task 2: card "Launcher hiện tại" đầu trang chủ Cài đặt (Figma 302:1522). -->
     <string name="settings_launcher_card_current">Layar utama saat ini</string>
     <string name="settings_launcher_card_not_default">Belum dijadikan default</string>
-    <string name="settings_launcher_card_custom">Kustom</string>
     <string name="settings_launcher_card_welcome">Selamat datang</string>
     <string name="settings_launcher_card_welcome_desc">Pusat kontrol milik Anda sendiri. Sesuaikan setiap detail agar layar utama sesuai gaya Anda.</string>
     <string name="settings_launcher_card_explore">Jelajahi</string>
@@ -417,10 +415,6 @@
     <string name="hero_default_set_toast">Ditetapkan sebagai default</string>
     <!-- HC Task 3: tiêu đề màn 6.2 (Figma "Ứng dụng khác"; hàng trên trang chủ giữ settings_hub_more_apps). -->
     <string name="settings_more_apps_title">Aplikasi lainnya</string>
-    <!-- RS Task 6: màn 1.1 Màn hình chính mặc định (Figma 302:1738). -->
-    <string name="settings_theme_subtitle">Setiap peluncur mengubah layar utama, ikon, dan efek Anda.</string>
-    <string name="settings_theme_apply_default">Terapkan &amp; jadikan default</string>
-    <string name="settings_theme_apply">Terapkan</string>
     <!-- RS Task 7: card xem trước thời tiết (dữ liệu mẫu) ở màn 1.4. -->
     <string name="settings_weather_preview_degree">%1$d°</string>
     <string name="settings_weather_preview_high_low">T %1$s · R %2$s</string>
@@ -433,7 +427,6 @@
     <!-- WI: tên 5 hình nền cài sẵn (ảnh thử, xem plan WI) ở 0.3 và 2.2; nút ngắn của hộp hỏi đặt mặc định khi về Home. -->
     <string name="default_prompt_set">Atur sekarang</string>
     <!-- RS Task 8: giờ minh họa trên ô ảnh nền (Figma 2.2). -->
-    <string name="settings_theme_note">Dialog sistem akan terbuka agar Anda dapat memilih aplikasi layar utama.</string>
     <string name="settings_hub_version">Versi %1$s</string>
     <!-- AB: nhóm Liên hệ (tiền tố about_) -->
     <string name="about_rate_title">Bagaimana pendapat Anda tentang aplikasi ini?</string>
@@ -612,14 +605,6 @@
     <string name="onboarding_welcome_subtitle">Ikon transparan, wallpaper hidup, dan efek halus — hanya beberapa langkah untuk memulai.</string>
     <string name="onboarding_icon_style_title">Pilih gaya ikon</string>
     <string name="onboarding_icon_style_subtitle">Anda dapat mengubahnya kapan saja di Setelan.</string>
-    <string name="onboarding_theme_liquid_glass_27">Liquid Glass 27</string>
-    <string name="onboarding_theme_liquid_glass_27_desc">Transparan, membiaskan</string>
-    <string name="onboarding_theme_classic_26">Classic 26</string>
-    <string name="onboarding_theme_classic_26_desc">Hangat, ikon warna lembut</string>
-    <string name="onboarding_theme_minimal">Minimal</string>
-    <string name="onboarding_theme_minimal_desc">Sederhana, garis tipis</string>
-    <string name="onboarding_theme_dark_pro">Dark Pro</string>
-    <string name="onboarding_theme_dark_pro_desc">Latar gelap, ikon bulat</string>
     <string name="onboarding_badge_new">BARU</string>
     <string name="onboarding_wallpaper_title">Pilih wallpaper</string>
     <string name="onboarding_wallpaper_subtitle">Wallpaper yang bagus membuat efek kaca lebih menonjol.</string>
