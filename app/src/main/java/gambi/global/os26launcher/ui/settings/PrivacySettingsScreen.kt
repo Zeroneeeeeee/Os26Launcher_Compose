@@ -2,12 +2,13 @@ package gambi.global.os26launcher.ui.settings
 
 import android.net.Uri
 import gambi.global.os26launcher.R
+import androidx.core.net.toUri
 
 /**
  * AB 6.3 — "Chính sách bảo mật". Chỉ mở trang chính sách bằng trình duyệt của máy (quyết định AB5): không WebView, không thư viện,
  * trình duyệt tự lo mạng và offline. Nội dung chính sách do trang web quyết định, đổi chính sách không phải build lại app.
  */
-class PrivacySettingsScreen(private val ctx: SettingsScreenContext) : SettingsScreen {
+class PrivacySettingsScreen(ctx: SettingsScreenContext) : SettingsScreen {
 
     private val activity = ctx.activity
 
@@ -17,7 +18,7 @@ class PrivacySettingsScreen(private val ctx: SettingsScreenContext) : SettingsSc
         SettingsRow.Value(
             ID_OPEN,
             R.string.about_privacy_open,
-            Uri.parse(activity.getString(R.string.about_privacy_url)).host.orEmpty()
+	        activity.getString(R.string.about_privacy_url).toUri().host.orEmpty()
         ),
         SettingsRow.Footer(ID_FOOTER, activity.getString(R.string.about_privacy_footer))
     )

@@ -23,6 +23,31 @@
     <string name="settings_show_labels">Show app labels</string>
     <string name="settings_nav_bar_hidden">Hide navigation bar</string>
     <string name="settings_nav_bar_hidden_description">On the Home screen only. Swipe up from the bottom edge to show it briefly.</string>
+    <!-- AG: gom nhóm app (Cài đặt → Chung) -->
+    <string name="app_groups_header">Group apps</string>
+    <string name="app_group_google">Google</string>
+    <string name="app_group_social">Social</string>
+    <string name="app_group_games">Games</string>
+    <string name="app_group_entertainment">Entertainment</string>
+    <string name="app_group_utilities">Utilities</string>
+    <string name="app_group_manufacturer_row">%1$s apps</string>
+    <string name="app_group_manufacturer_fallback">Device apps</string>
+    <string name="app_groups_already">Grouped</string>
+    <string name="app_groups_footer">Moves the apps on your Home Screen into a folder. Apps in the dock or already in a folder stay where they are.</string>
+    <string name="app_groups_apply">Group</string>
+    <string name="app_groups_failed">Couldn\'t group apps. Your Home Screen has changed.</string>
+    <plurals name="app_groups_count">
+        <item quantity="one">%d app</item>
+        <item quantity="other">%d apps</item>
+    </plurals>
+    <plurals name="app_groups_add">
+        <item quantity="one">Add %d app</item>
+        <item quantity="other">Add %d apps</item>
+    </plurals>
+    <plurals name="app_groups_done">
+        <item quantity="one">Moved %1$d app to “%2$s”</item>
+        <item quantity="other">Moved %1$d apps to “%2$s”</item>
+    </plurals>
     <string name="settings_backdrop">Wallpaper</string>
     <string name="settings_backdrop_set">Image set</string>
     <string name="settings_backdrop_unset">Not chosen</string>
@@ -209,6 +234,10 @@
     <string name="search_extras_header_recent">Recent</string>
     <string name="search_extras_header_frequent">Suggestions</string>
     <string name="search_extras_header_trending">Trending searches</string>
+    <string name="search_section_shortcuts">Shortcuts</string>
+    <string name="search_section_contacts">Contacts</string>
+    <string name="search_section_settings">Settings</string>
+    <string name="search_section_web">Search suggestions</string>
 
     <!-- M8d Task 4 -->
     <string name="search_extras_shortcut_description">%1$s, shortcut of %2$s</string>
@@ -540,6 +569,7 @@
     <string name="gt_blur_desc">How blurry the background behind the glass is.</string>
     <string name="gt_corner">Corner radius</string>
     <string name="gt_corner_desc">50 = unchanged, 0 = square. Also changes app icon shapes.</string>
+    <string name="gt_note_android13">Note: glass effects only apply on Android 13 and later.</string>
     <string name="gt_reset">Reset to default</string>
 
     <!-- WN: thông báo thời tiết (tiền tố wn_) -->

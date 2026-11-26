@@ -709,7 +709,10 @@ private fun TodayPill(
     }
 }
 
-/** Thanh tìm kiếm trên cùng (cùng kiểu thanh của App Library: bề mặt `CONTROL`, co nhẹ khi giữ); chỉ là nút mở lớp tìm kiếm. */
+/**
+ * Thanh tìm kiếm trên cùng (cùng kiểu thanh của App Library: bề mặt `CONTROL`, co nhẹ khi giữ); chỉ là nút mở lớp tìm kiếm.
+ * SP Task 5 (chủ dự án 2026-11-26): kính thật như viên "+" / "Xong" ([TodayPill]), lấy mẫu nền Today; dưới API 31 vẫn bề mặt tĩnh.
+ */
 @Composable
 private fun TodaySearchBar(onClick: () -> Unit, modifier: Modifier) {
     val hint = colorResource(R.color.search_hint_text)
@@ -717,7 +720,7 @@ private fun TodaySearchBar(onClick: () -> Unit, modifier: Modifier) {
     Row(
         modifier
             .dsPressable(interaction)
-            .dsGlass(DsSurface.CONTROL, DsCorner.Pill)
+            .dsGlass(DsSurface.CONTROL, DsCorner.Pill, realGlass = true, lensScale = PILL_LENS_SCALE)
             .clickable(interaction, indication = null, role = Role.Button, onClick = onClick)
             .dsPressHighlight(interaction)
             .padding(horizontal = 16.dp),

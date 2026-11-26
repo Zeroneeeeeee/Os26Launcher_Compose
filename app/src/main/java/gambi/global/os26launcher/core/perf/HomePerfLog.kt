@@ -25,6 +25,9 @@ object HomePerfLog {
     const val TAG_FRAME = "SwFrame"
     const val TAG_PAGE = "SwPage"
     const val TAG_DOCK = "SwDock"
+
+    /** SP: sự kiện của Spotlight khi đo (`tools/perf/measure-home.ps1 -Scenario spotlight`). */
+    const val TAG_SPOT = "SwSpot"
     private const val SLOW_FACTOR = 1.5f
     private const val RECENT_MS = 300L
 
@@ -33,6 +36,9 @@ object HomePerfLog {
     // Ngữ cảnh do HomeScreen cập nhật trên main thread; luồng đo chỉ đọc (volatile, không cần chính xác tuyệt đối).
     @Volatile var scrolling: Boolean = false
     @Volatile var currentPage: Int = 0
+
+    /** SP: Spotlight (lúc gõ) đang cuộn; `SearchOverlay` ghi. In `spot=1` trong dòng khung chậm. */
+    @Volatile var spotlightScrolling: Boolean = false
     @Volatile private var lastComposedPage: Int = -1
     @Volatile private var lastComposedAtMs: Long = 0L
 
@@ -58,12 +64,18 @@ object HomePerfLog {
                     "anim=${ms(m.getMetric(FrameMetrics.ANIMATION_DURATION))} layout=${ms(m.getMetric(FrameMetrics.LAYOUT_MEASURE_DURATION))} " +
                     "draw=${ms(m.getMetric(FrameMetrics.DRAW_DURATION))} sync=${ms(m.getMetric(FrameMetrics.SYNC_DURATION))} " +
                     "issue=${ms(m.getMetric(FrameMetrics.COMMAND_ISSUE_DURATION))} swap=${ms(m.getMetric(FrameMetrics.SWAP_BUFFERS_DURATION))} " +
-                    "gpu=${if (gpu >= 0) ms(gpu) else "-"} scrolling=$scrolling page=$currentPage recentPageComposed=${recent ?: "-"} " +
+                    "gpu=${if (gpu >= 0) ms(gpu) else "-"} scrolling=$scrolling spot=${if (spotlightScrolling) 1 else 0} page=$currentPage " +
+                    "recentPageComposed=${recent ?: "-"} " +
                     "refresh=${refresh.toInt()}"
             )
         }
         listener = l
         activity.window.addOnFrameMetricsAvailableListener(l, Handler(t.looper))
+    }
+
+    /** SP: vuốt lên đóng Spotlight (kịch bản đo đếm dòng này để biết lượt đo hỏng). */
+    fun spotlightSwipeDismissed() {
+        if (enabled) Log.i(TAG_SPOT, "swipe dismiss")
     }
 
     /** Gọi ở `onPause`. */

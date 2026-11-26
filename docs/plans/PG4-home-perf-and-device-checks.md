@@ -124,7 +124,7 @@
 ## Kết quả K1 (điền ở Task 4)
 | Mục | Máy | Kết quả | Ghi chú |
 |---|---|---|---|
-| 1a JH2 RF2 kéo icon ra khỏi trang tạm | Oppo | Đạt | Còn lỗi G2 (pager dừng lệch khi kéo về trang cuối) đã biết, bàn giao anh dvha |
+| 1a JH2 RF2 kéo icon ra khỏi trang tạm | Oppo | Đạt | Còn lỗi G2 (pager dừng lệch khi kéo về trang cuối) đã biết, bàn giao anh dvha; G2 chủ dự án kiểm ổn 2026-11-26 |
 | 1b JH2 RF3 kéo bằng hai ngón | Oppo | Đạt |  |
 | 2a JH4 RF1 vẫn là launcher mặc định khi cài đè | Oppo | Đạt | Kiểm qua các lần `installDebug` / `installPerf` khi app đang là launcher mặc định |
 | 2b JH4 bỏ qua Onboarding → "Trải nghiệm" → không vào thẳng Thư viện | Oppo | Đạt |  |

@@ -301,7 +301,7 @@ class SearchViewModel @Inject constructor(
             query = a[2] as String,
             showAll = a[3] as Boolean,
             recents = extra.first,
-            prompt = if (a[4] == SearchMode.SPOTLIGHT) null else extra.second,
+            prompt = if (a[4] == SearchMode.SPOTLIGHT) extra.second else null, // SP: hàng mời danh bạ chỉ còn ở Spotlight
             mode = a[4] as SearchMode,
             appRows = cap[0] as Int,
             webRows = cap[1] as Int,
@@ -366,29 +366,22 @@ class SearchViewModel @Inject constructor(
     }
 
     /**
-     * Kiểu iOS 17: app đứng đầu kết quả kèm tối đa 3 shortcut của nó ngay dưới. Tổng shortcut vẫn <= 5: phần khớp nhãn
-     * riêng bị cắt bớt cho vừa. Cần truy vấn >= 2 ký tự (cùng luật với khớp nhãn shortcut).
+     * SP (thay "top hit" kiểu iOS 17 của Thư viện): section Phím tắt của Spotlight = tối đa 3 shortcut của [top] (app đứng đầu hàng
+     * app) rồi shortcut khớp nhãn, không trùng. Shortcut của app đầu cần truy vấn >= 2 ký tự (cùng luật với khớp nhãn shortcut).
+     * Builder cắt còn [SpotlightLayoutBuilder.SECTION_MAX].
      */
-    private fun withTopHitShortcuts(
+    private fun spotlightShortcuts(
         results: List<SearchResult>,
+        top: SearchResult.App?,
         bundle: IndexBundle,
         q: String
-    ): List<SearchResult> {
-        val top = results.firstOrNull() as? SearchResult.App ?: return results
-        if (AppSearchMatcher.normalize(q).length < SearchKind.SHORTCUT.minQueryLength) return results
+    ): List<SearchResult.Shortcut> {
+        val matched = results.filterIsInstance<SearchResult.Shortcut>()
+        if (top == null || AppSearchMatcher.normalize(q).length < SearchKind.SHORTCUT.minQueryLength) return matched
         val own = bundle.shortcutsByApp[top.item.key].orEmpty().take(MAX_TOP_HIT_SHORTCUTS)
-        if (own.isEmpty()) return results
+        if (own.isEmpty()) return matched
         val ownIds = own.mapTo(HashSet()) { it.stableId }
-        val keptMatches = results.filter { it is SearchResult.Shortcut && it.stableId !in ownIds }
-            .take(SearchKind.SHORTCUT.maxResults - own.size).mapTo(HashSet()) { it.stableId }
-        val out = ArrayList<SearchResult>(results.size + own.size)
-        out.add(top)
-        out.addAll(own)
-        for (r in results.drop(1)) {
-            if (r is SearchResult.Shortcut && (r.stableId in ownIds || r.stableId !in keptMatches)) continue
-            out.add(r)
-        }
-        return out
+        return own + matched.filter { it.stableId !in ownIds }
     }
 
     /**
@@ -449,10 +442,20 @@ class SearchViewModel @Inject constructor(
                 )
             } else {
                 val index = input.index ?: return SearchUiState(query = q, status = SearchStatus.LOADING, mode = SearchMode.SPOTLIGHT, columns = columns, appRows = appRows, webRows = webRows)
+                // SP: tách kết quả theo loại thành các section (chỉ mục đã tắt nguồn theo công tắc Cài đặt tìm kiếm).
                 val rawResults = index.index.search(q)
                 val matchedApps = rawResults.filterIsInstance<SearchResult.App>()
+                val longEnough = AppSearchMatcher.normalize(q).length >= SearchKind.CONTACT.minQueryLength
                 val spotlightBuild = SpotlightLayoutBuilder.buildTypingState(
-                    q, matchedApps, input.history, input.remote, appRows, webRows, columns
+                    query = q,
+                    apps = matchedApps,
+                    shortcuts = spotlightShortcuts(rawResults, matchedApps.firstOrNull(), index, q),
+                    contacts = rawResults.filterIsInstance<SearchResult.Contact>(),
+                    contactsPrompt = input.prompt?.takeIf { longEnough },
+                    settings = rawResults.filterIsInstance<SearchResult.Setting>(),
+                    historyQueries = input.history,
+                    remoteSuggestions = input.remote,
+                    columns = columns
                 )
                 return SearchUiState(
                     query = q,
@@ -479,8 +482,8 @@ class SearchViewModel @Inject constructor(
                     webRows = webRows
                 )
             }
-            // G3a: hàng mời đứng cuối ô trống (hoặc một mình nếu không có gợi ý nào).
-            val rows = suggestionRows(apps, input.recents) + listOfNotNull(input.prompt)
+            // SP: Thư viện chỉ tìm app (hàng mời danh bạ chuyển sang Spotlight).
+            val rows = suggestionRows(apps, input.recents)
             return if (rows.isEmpty()) {
                 SearchUiState(query = q, status = SearchStatus.IDLE, mode = SearchMode.LIBRARY, columns = columns, appRows = appRows, webRows = webRows)
             } else {
@@ -488,11 +491,8 @@ class SearchViewModel @Inject constructor(
             }
         }
         val index = input.index ?: return SearchUiState(query = q, status = SearchStatus.LOADING, mode = SearchMode.LIBRARY, columns = columns, appRows = appRows, webRows = webRows)
-        val found = withTopHitShortcuts(index.index.search(q), index, q)
-        // G3a: hàng mời cuối kết quả (từ 2 ký tự, như danh bạ); không có kết quả nào thì hàng mời thay dòng "Không có kết quả".
-        val prompt =
-            input.prompt?.takeIf { AppSearchMatcher.normalize(q).length >= SearchKind.CONTACT.minQueryLength }
-        val results = if (prompt != null) found + prompt else found
+        // SP: Thư viện chỉ tìm app; shortcut, danh bạ, Cài đặt hệ thống chỉ ở Spotlight.
+        val results = index.index.search(q).filterIsInstance<SearchResult.App>()
         return SearchUiState(
             query = q,
             results = results,
@@ -513,11 +513,11 @@ class SearchViewModel @Inject constructor(
         showAllWhenEmpty.value = showAll
         isOpen.value = true
         indexActive.value = true // C9
-        ensureSettingsCatalog()
-        refreshShortcuts()
-        if (mode == SearchMode.LIBRARY) {
+        // SP: danh mục Cài đặt, shortcut, danh bạ chỉ phục vụ Spotlight; Thư viện chỉ tìm app nên không nạp (tên danh bạ không vào RAM).
+        if (mode == SearchMode.SPOTLIGHT) {
+            ensureSettingsCatalog()
+            refreshShortcuts()
             refreshContacts()
-        } else {
             viewModelScope.launch {
                 queryHistory.value = searchQueryHistory.getHistory()
             }
@@ -525,6 +525,11 @@ class SearchViewModel @Inject constructor(
                 if (!prefs.first().suggestions) return@launch // đã tắt gợi ý trong Cài đặt: không gọi mạng
                 trendingSearches.value = trendingSearchRepository.trending() // repo tự giữ 30 phút
             }
+        } else {
+            // SP: chuyển thẳng sang Thư viện khi lớp còn mở (không qua close()): bỏ tên danh bạ của phiên Spotlight khỏi RAM.
+            contactsLoadJob?.cancel()
+            stopContactsWatch()
+            contactEntries.value = emptyList()
         }
     }
 
@@ -538,7 +543,7 @@ class SearchViewModel @Inject constructor(
             val granted = contactsRepository.hasPermission()
             contactsGranted.value = granted
             if (granted) contactsPermanentlyDenied.value = false
-            if (!isOpen.value || !granted || !prefs.first().contacts) {
+            if (!isOpen.value || searchMode.value != SearchMode.SPOTLIGHT || !granted || !prefs.first().contacts) {
                 contactEntries.value = emptyList()
                 stopContactsWatch()
                 return@launch

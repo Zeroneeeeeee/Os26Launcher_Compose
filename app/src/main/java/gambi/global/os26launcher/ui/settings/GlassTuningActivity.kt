@@ -134,6 +134,7 @@ class GlassTuningActivity : AppCompatActivity() {
                 SettingsRow.Slider(SettingsRow.ID_GLASS_LOOK_BLUR, R.string.gt_blur, look.blur, R.string.gt_blur_desc)
             } else null,
             SettingsRow.Slider(SettingsRow.ID_GLASS_LOOK_CORNER, R.string.gt_corner, look.corner, R.string.gt_corner_desc),
+            SettingsRow.Footer("footer_glass_look_android13", getString(R.string.gt_note_android13)),
             SettingsRow.Header("header_glass_look_reset", R.string.gt_reset_header),
             SettingsRow.Value(SettingsRow.ID_GLASS_LOOK_RESET, R.string.gt_reset, "", enabled = look != GlassLook.DEFAULT)
         )

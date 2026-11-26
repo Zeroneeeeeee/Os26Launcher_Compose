@@ -13,6 +13,8 @@ import gambi.global.os26launcher.data.layout.db.LauncherDatabase
 import gambi.global.os26launcher.data.layout.db.LauncherItemDao
 import gambi.global.os26launcher.data.layout.db.LauncherItemEntity
 import gambi.global.os26launcher.domain.layout.AppWidgetLimits
+import gambi.global.os26launcher.domain.category.AppGroupPlanner
+import gambi.global.os26launcher.domain.category.AppGroupTitleProvider
 import gambi.global.os26launcher.domain.layout.DockInsertPlanner
 import gambi.global.os26launcher.domain.layout.EmptyPagePrunePlanner
 import gambi.global.os26launcher.domain.layout.FolderPlanner
@@ -28,6 +30,7 @@ import gambi.global.os26launcher.domain.model.GridPosition
 import gambi.global.os26launcher.domain.model.GridPreset
 import gambi.global.os26launcher.domain.model.PageId
 import gambi.global.os26launcher.domain.model.PlacedApp
+import gambi.global.os26launcher.domain.model.PlacedFolder
 import gambi.global.os26launcher.domain.model.WidgetKind
 import gambi.global.os26launcher.domain.repository.AppRepository
 import gambi.global.os26launcher.domain.repository.AppWidgetRepository
@@ -68,6 +71,7 @@ class LayoutReconciler @Inject constructor(
     private val generalConfig: GeneralConfigRepository,
     private val appWidgets: AppWidgetRepository, // G3c: giải phóng id widget app sau khi xóa hàng, quét id mồ côi
     private val appState: AppStateRepository, // TV: cờ `today_seeded`
+    private val groupTitles: AppGroupTitleProvider, // AG mở lại: tên thư mục gom sẵn của bố cục lần đầu
     @IoDispatcher private val io: CoroutineDispatcher
 ) {
     private val mutex = Mutex()
@@ -116,17 +120,23 @@ class LayoutReconciler @Inject constructor(
                 )
 
                 // WF Task 2: Đồng hồ + Lịch 2 × 2 ở đầu trang 1, app launcher của mình ở ô trống đầu tiên sau widget.
+                // AG mở lại (2026-11-26, QĐ 12–15): ngay sau app launcher là các thư mục gom sẵn theo nhóm (Tiện ích, Google, …), từ app KHÔNG ở dock.
                 val widgets = seedWidgets(grid.columns, grid.rows)
+                val dockKeys = dock.mapTo(HashSet()) { it.key }
+                val folders = AppGroupPlanner.seedGroups(apps.filter { it.key !in dockKeys }, BuildConfig.APPLICATION_ID)
+                    .map { (kind, members) -> groupTitles.title(kind) to members }
                 val pages = buildDefaultLayout(
                     apps, dock, grid.columns, grid.rows,
                     reservedFirstPage = widgets.map { it.second },
-                    pinFirstPackage = BuildConfig.APPLICATION_ID
+                    pinFirstPackage = BuildConfig.APPLICATION_ID,
+                    folders = folders
                 )
                 var firstPageId: Long? = null
                 if (pages.isEmpty()) {
                     // Mọi app đã nằm trong dock: vẫn giữ một trang rỗng để app cài sau có chỗ đặt.
                     firstPageId = pageDao.insert(HomePageEntity(rank = 0))
                 }
+                var folderCount = 0
                 pages.forEach { page ->
                     val pageId = pageDao.insert(HomePageEntity(rank = page.index))
                     if (page.index == 0) firstPageId = pageId
@@ -142,6 +152,23 @@ class LayoutReconciler @Inject constructor(
                             )
                         }
                     )
+                    // AG: thư mục nháp → hàng thư mục (tên ghi theo ngôn ngữ lúc seed) + app con theo thứ tự (`rank`).
+                    for (folder in page.items.filterIsInstance<PlacedFolder>()) {
+                        val folderId = itemDao.insertAll(
+                            listOf(
+                                LauncherItemEntity(
+                                    container = LauncherItemEntity.CONTAINER_HOME,
+                                    pageId = pageId,
+                                    gridX = folder.position.x,
+                                    gridY = folder.position.y,
+                                    itemType = LauncherItemEntity.ITEM_TYPE_FOLDER,
+                                    title = FolderPlanner.normalizeTitle(folder.title)
+                                )
+                            )
+                        ).first()
+                        itemDao.insertAll(folder.previewApps.mapIndexed { i, app -> app.toEntity(container = folderId, rank = i) })
+                        folderCount++
+                    }
                 }
                 val widgetPage = firstPageId
                 if (widgetPage != null && widgets.isNotEmpty()) {
@@ -160,7 +187,7 @@ class LayoutReconciler @Inject constructor(
                         }
                     )
                 }
-                Log.i(TAG, "seedIfEmpty grid=${grid.columns}x${grid.rows} pages=${pages.size} widgets=${widgets.size}")
+                Log.i(TAG, "seedIfEmpty grid=${grid.columns}x${grid.rows} pages=${pages.size} widgets=${widgets.size} folders=$folderCount")
             }
         }
     }
@@ -482,6 +509,95 @@ class LayoutReconciler @Inject constructor(
             if (fromFolder != null) dissolveFolderIfNeeded(fromFolder) // D9 cho thư mục nguồn
             true
         }
+    }
+
+    /**
+     * AG (2026-11-26) — gom các app [itemIds] (app nằm phẳng trên lưới chính) vào một thư mục, trong MỘT transaction dưới [mutex]:
+     * - [folderId] khác null: thêm vào cuối thư mục đó (ở lưới hoặc dock), nhận tối đa [FolderPlanner.MAX_ITEMS] trừ số con đang có;
+     * - null: tạo thư mục [title] tại ô của app đầu tiên (thứ tự trang, rồi hàng, rồi cột), cần ≥ 2 app.
+     * Hàng được kiểm lại tại đây (UI có thể cũ): chỉ nhận hàng còn là app `CONTAINER_HOME`. Sau khi chuyển, mỗi trang có app rời đi được
+     * dồn theo thứ tự đọc như khi ẩn app ([GridRemovePlanner], widget đứng yên, không kéo app từ trang khác sang); trang nào hết item thì gỡ
+     * (luôn giữ ≥ 1 trang). Trả số app đã chuyển; 0 = không ghi gì.
+     */
+    suspend fun groupIntoFolder(title: String, itemIds: List<Long>, folderId: Long?): Int = mutex.withLock {
+        val grid = currentGrid()
+        db.withTransaction {
+            val rows = itemDao.getAll()
+            val pages = pageDao.getAll()
+            val pageRank = pages.associate { it.id to it.rank }
+            val wanted = itemIds.toHashSet()
+            val apps = rows.filter {
+                it.id in wanted && it.container == LauncherItemEntity.CONTAINER_HOME &&
+                        it.itemType == LauncherItemEntity.ITEM_TYPE_APP && it.pageId in pageRank
+            }.sortedWith(compareBy<LauncherItemEntity>({ pageRank.getValue(it.pageId) }, { it.gridY }, { it.gridX }))
+            val folder = folderId?.let { id ->
+                rows.firstOrNull {
+                    it.id == id && it.itemType == LauncherItemEntity.ITEM_TYPE_FOLDER &&
+                            (it.container == LauncherItemEntity.CONTAINER_HOME || it.container == LauncherItemEntity.CONTAINER_DOCK)
+                } ?: return@withTransaction 0 // thư mục đã bị xóa / giải tán sau khi UI đọc: không gom
+            }
+            val existing = if (folder == null) emptyList() else rows.filter { it.container == folder.id }
+            val taken = apps.take((FolderPlanner.MAX_ITEMS - existing.size).coerceAtLeast(0))
+            if (taken.isEmpty() || (folder == null && taken.size < 2)) return@withTransaction 0
+
+            val first = taken.first()
+            val targetId = folder?.id ?: itemDao.insertAll(
+                listOf(
+                    LauncherItemEntity(
+                        container = LauncherItemEntity.CONTAINER_HOME,
+                        pageId = first.pageId,
+                        gridX = first.gridX,
+                        gridY = first.gridY,
+                        itemType = LauncherItemEntity.ITEM_TYPE_FOLDER,
+                        title = FolderPlanner.normalizeTitle(title)
+                    )
+                )
+            ).first()
+            val baseRank = (existing.maxOfOrNull { it.rank } ?: -1) + 1
+            itemDao.updateAll(
+                taken.mapIndexed { i, r -> r.copy(container = targetId, pageId = 0, gridX = 0, gridY = 0, rank = baseRank + i) }
+            )
+
+            // Thư mục mới thế chỗ app đầu: ô đó không dồn. [taken] còn giữ vị trí cũ (bản trước khi cập nhật).
+            val vacated = if (folder == null) taken.drop(1) else taken
+            val homeNow = itemDao.getAll().filter { it.container == LauncherItemEntity.CONTAINER_HOME }
+            for ((pageId, gone) in vacated.groupBy { it.pageId }) compactAfterBulkRemoval(pageId, homeNow, gone, grid)
+
+            // Chỉ gỡ trang vừa bị rút hết item (trang trống có từ trước không thuộc thao tác này).
+            val affected = vacated.mapTo(HashSet()) { it.pageId }
+            val used = homeNow.mapTo(HashSet()) { it.pageId } + pages.map { it.id }.filter { it !in affected }
+            val doomed = EmptyPagePrunePlanner.plan(pages.map { EmptyPagePrunePlanner.Page(it.id, it.rank) }, used)
+            if (doomed.isNotEmpty()) pageDao.deleteByIds(doomed)
+            val pruned = doomed.size
+            Log.i(TAG, "groupIntoFolder moved=${taken.size} newFolder=${folder == null} pagesCompacted=${affected.size} pruned=$pruned")
+            taken.size
+        }
+    }
+
+    /**
+     * AG — dồn trang [pageId] sau khi các app [gone] (vị trí CŨ) đã rời trang. [homeNow] = hàng lưới chính hiện tại (đã không còn [gone]).
+     * Mỗi app rời đi được xử lý như một lần ẩn app ([GridRemovePlanner]), từ cuối lên đầu theo thứ tự đọc, trên dãy slot cập nhật dần.
+     * PHẢI gọi trong transaction và dưới [mutex].
+     */
+    private suspend fun compactAfterBulkRemoval(
+        pageId: Long,
+        homeNow: List<LauncherItemEntity>,
+        gone: List<LauncherItemEntity>,
+        grid: GridPreset
+    ) {
+        val pageRows = homeNow.filter { it.pageId == pageId }
+        val slots = LinkedHashMap<Long, GridInsertPlanner.Slot>()
+        for (r in pageRows + gone) slots[r.id] = r.toSlot()
+        for (g in gone.sortedWith(compareByDescending<LauncherItemEntity> { it.gridY }.thenByDescending { it.gridX })) {
+            val moves = GridRemovePlanner.plan(slots.values.toList(), g.id, grid.columns, grid.rows)
+            slots.remove(g.id)
+            for (m in moves) slots[m.itemId] = slots.getValue(m.itemId).copy(x = m.x, y = m.y)
+        }
+        val changed = pageRows.mapNotNull { r ->
+            val s = slots[r.id] ?: return@mapNotNull null
+            if (s.x == r.gridX && s.y == r.gridY) null else r.copy(gridX = s.x, gridY = s.y)
+        }
+        if (changed.isNotEmpty()) itemDao.updateAll(changed)
     }
 
     /**

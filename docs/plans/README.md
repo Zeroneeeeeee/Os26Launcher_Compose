@@ -12,6 +12,9 @@
 
 | Plan | Nội dung | Trạng thái |
 |---|---|---|
+| [AG](AG-app-groups.md) | Bố cục lần đầu gom sẵn thư mục theo nhóm; Cài đặt → Chung "Gom nhóm ứng dụng" (6 nhóm, sheet xem trước, dồn trang) | Xong 2026-11-26 |
+| [WS](WS-widget-swap.md) | Kéo widget đè lên widget khác thì đổi chỗ (anh dvha) | Xong 2026-11-25 |
+| [SP](SP-spotlight-sections.md) | Thư viện chỉ tìm app; Spotlight lúc gõ chia section kính cuộn được; "Gần đây" và thanh tìm kiếm Today bằng kính | Xong 2026-11-26 |
 | [BW](BW-battery-widget.md) | Widget Pin tự vẽ kiểu iOS | Xong 2026-11-26 |
 | [DW](DW-dialog-window-glass.md) | Hộp thoại hết khung mờ thừa (cửa sổ ôm vừa thẻ); nút "+" / "Xong" của Today dạng kính | Xong 2026-11-25 |
 | [PW](PW-menu-block-widget-square-font.md) | Menu nhấn giữ chặn chạm (B1), widget tự vẽ vuông kiểu iOS, font Inter cho widget, tắt nhãn giữ vị trí hàng | Xong 2026-11-25 |

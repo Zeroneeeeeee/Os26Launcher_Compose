@@ -14,14 +14,19 @@
     jiggle - nhấn giữ chỗ trống (-GapX, -GapY) vào edit mode, đứng yên -IdleSec giây (icon rung).
     folder - chạm ô thư mục (-FolderX, -FolderY) rồi Back, -Cycles lần.
     idle   - đứng yên -IdleSec giây.
+    spotlight - SP: vuốt xuống giữa màn mở Spotlight (-OpenY1 -> -OpenY2, phần chiều cao), gõ -Query, chờ -ResultsMs rồi mới bắt đầu
+             đo; mỗi vòng -Cycles lần kéo danh sách lên rồi xuống (0,45 -> 0,15 chiều cao). Cần bật "Vuốt xuống để tìm kiếm", launcher
+             mặc định (có lối tắt) và truy vấn ra đủ section để danh sách cuộn được (danh sách không cuộn được thì kéo lên là đóng lớp).
 
 .EXAMPLE
   powershell -ExecutionPolicy Bypass -File .\tools\perf\measure-home.ps1 -Scenario swipe -Pages 3
 .EXAMPLE
   .\tools\perf\measure-home.ps1 -Scenario jiggle -GapX 540 -GapY 1500 -Configs full,noRealGlass
+.EXAMPLE
+  .\tools\perf\measure-home.ps1 -Scenario spotlight -Configs full,flatSearchCards -Cycles 5 -Query ca
 #>
 param(
-    [ValidateSet('swipe', 'cold', 'jiggle', 'folder', 'idle')] [string]$Scenario = 'swipe',
+    [ValidateSet('swipe', 'cold', 'jiggle', 'folder', 'idle', 'spotlight')] [string]$Scenario = 'swipe',
     [string[]]$Configs = @('full', 'noRealGlass', 'noRealGlass+noFrosted', 'noRealGlass+noFrosted+noWidgets'),
     [int]$Rounds = 3,
     [int]$Pages = 2,
@@ -33,6 +38,11 @@ param(
     [int]$FolderX = -1,
     [int]$FolderY = -1,
     [int]$IdleSec = 10,
+    # SP: kịch bản spotlight. Truy vấn chỉ chữ ASCII (adb input text), nên khớp cả app, lối tắt, danh bạ và mục Cài đặt.
+    [string]$Query = 'ca',
+    [double]$OpenY1 = 0.30,
+    [double]$OpenY2 = 0.60,
+    [int]$ResultsMs = 2500,
     [int]$WarmupSec = 4,
     [string]$Serial = '',
     # Đặt app làm launcher mặc định trước khi đo: không thì mỗi lần mở Home hiện hộp hỏi "đặt làm mặc định" (PB) che màn và làm sai số đo.
@@ -149,7 +159,39 @@ function Invoke-Scenario([int]$w, [int]$h) {
             }
         }
         'idle' { Start-Sleep -Seconds $IdleSec }
+        'spotlight' {
+            $x = [int]($w * 0.5); $low = [int]($h * 0.45); $high = [int]($h * 0.15)
+            for ($c = 0; $c -lt $Cycles; $c++) {
+                Invoke-Adb shell input swipe $x $low $x $high $SwipeMs | Out-Null
+                Start-Sleep -Milliseconds $SettleMs
+                Invoke-Adb shell input swipe $x $high $x $low $SwipeMs | Out-Null
+                Start-Sleep -Milliseconds $SettleMs
+            }
+        }
     }
+}
+
+function Enter-Spotlight([int]$w, [int]$h) {
+    # SP: vuốt xuống ở giữa màn (cử chỉ HT) mở Spotlight, bàn phím tự hiện; gõ truy vấn rồi chờ kết quả (gợi ý web cần mạng).
+    $x = [int]($w * 0.5)
+    Invoke-Adb logcat -c | Out-Null
+    Invoke-Adb shell input swipe $x ([int]($h * $OpenY1)) $x ([int]($h * $OpenY2)) 250 | Out-Null
+    Start-Sleep -Milliseconds 1200
+    Invoke-Adb shell input text $Query | Out-Null
+    # Chờ chỉ mục lối tắt dựng xong (log "shortcut index" của SearchViewModel, tối đa 10 giây), kẻo section Lối tắt chen vào giữa lúc đo.
+    $deadline = (Get-Date).AddSeconds(10)
+    while ((Get-Date) -lt $deadline) {
+        $idx = Invoke-Adb logcat -d -s SearchViewModel:D
+        if (@($idx | Select-String -SimpleMatch 'shortcut index').Count -gt 0) { break }
+        Start-Sleep -Milliseconds 500
+    }
+    if ((Get-Date) -ge $deadline) { Write-Warning 'Không thấy log "shortcut index" sau 10 giây (chưa là launcher mặc định?): section Lối tắt có thể rỗng.' }
+    Start-Sleep -Milliseconds $ResultsMs
+    # Kéo ngắn (200 px, dưới ngưỡng đóng 300 px) ở phần trên danh sách để hạ bàn phím trước khi đo: lượt đo không gồm hoạt cảnh IME,
+    # và các cú kéo sau không rơi vào bàn phím.
+    $y0 = [int]($h * 0.30)
+    Invoke-Adb shell input swipe $x $y0 $x ($y0 - 200) 200 | Out-Null
+    Start-Sleep -Milliseconds $SettleMs
 }
 
 function Enter-EditMode {
@@ -200,27 +242,30 @@ foreach ($step in $plan) {
     Write-Host "-> vòng $($step.Round): $($step.Config)"
     Start-Home $step.Config
     if ($Scenario -eq 'jiggle') { Enter-EditMode }
+    if ($Scenario -eq 'spotlight') { Enter-Spotlight $size[0] $size[1] }
     Invoke-Adb shell dumpsys gfxinfo $pkg reset | Out-Null
     Invoke-Adb logcat -c | Out-Null
     Invoke-Scenario $size[0] $size[1]
     $g = Read-GfxInfo
     # SW: log khung chậm / dựng trang của app (HomePerfLog, chỉ bản debug / perf), lưu mỗi lượt.
-    $log = Invoke-Adb logcat -d -s SwFrame:I SwPage:I SwDock:I
+    $log = Invoke-Adb logcat -d -s SwFrame:I SwPage:I SwDock:I SwSpot:I
     $logFile = Join-Path $outDir ("{0}-{1}-{2}-r{3}-{4}.log" -f $stamp, ($model -replace '\W', ''), $Scenario, $step.Round, ($step.Config -replace '\W', '_'))
     $log | Set-Content -Path $logFile -Encoding UTF8
     $slowLog = @($log | Select-String -SimpleMatch 'SwFrame').Count
     $pageLog = @($log | Select-String -SimpleMatch 'composed page=').Count
     $dockLive = @($log | Select-String -SimpleMatch 'live draw').Count # SW: số lần kính dock vẽ sống (RenderEffect chạy)
+    $spotClosed = @($log | Select-String -SimpleMatch 'swipe dismiss').Count # SP: Spotlight bị vuốt đóng giữa lượt = lượt hỏng
+    if ($Scenario -eq 'spotlight' -and $spotClosed -gt 0) { Write-Warning "Lượt $($step.Round) $($step.Config): Spotlight bị vuốt đóng (danh sách không cuộn được?): bỏ số lượt này, đổi -Query." }
     $results += [pscustomobject]@{
         Model = $model; Api = $sdk; Scenario = $Scenario; Round = $step.Round; Config = $step.Config
         Frames = $g.Frames; JankyPct = $g.Janky; P50 = $g.P50; P90 = $g.P90; P95 = $g.P95; P99 = $g.P99; Slow33 = $g.Slow33
-        SlowLog = $slowLog; PagesComposed = $pageLog; DockLive = $dockLive
+        SlowLog = $slowLog; PagesComposed = $pageLog; DockLive = $dockLive; SpotClosed = $spotClosed
         TempC = Get-BatteryTemp
     }
 }
 Invoke-Adb shell setprop debug.os26.perf none | Out-Null
 
-$results | Format-Table Round, Config, Frames, JankyPct, P50, P90, P95, P99, Slow33, SlowLog, PagesComposed, DockLive, TempC -AutoSize
+$results | Format-Table Round, Config, Frames, JankyPct, P50, P90, P95, P99, Slow33, SlowLog, PagesComposed, DockLive, SpotClosed, TempC -AutoSize
 
 Write-Host 'Trung bình theo cấu hình (bỏ lượt lặp cuối):'
 $results | Where-Object { $_.Round -ne 'cuối' } | Group-Object Config | ForEach-Object {

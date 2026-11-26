@@ -99,7 +99,7 @@ object SettingsHubLayout {
         HubGroup(
             CONTACT_GROUP_ID, R.string.settings_hub_group_contact, listOf(
                 screen(SettingsScreenId.RATE, R.string.settings_hub_rate, tile(R.drawable.ds_ic_rate, DsTileColor.AMBER)),
-                screen(SettingsScreenId.MORE_APPS, R.string.settings_hub_more_apps, tile(R.drawable.ds_ic_more_apps, DsTileColor.BLUE)),
+//                screen(SettingsScreenId.MORE_APPS, R.string.settings_hub_more_apps, tile(R.drawable.ds_ic_more_apps, DsTileColor.BLUE)),
                 screen(SettingsScreenId.PRIVACY, R.string.settings_hub_privacy, tile(R.drawable.ds_ic_privacy, DsTileColor.GREEN))
             )
         )

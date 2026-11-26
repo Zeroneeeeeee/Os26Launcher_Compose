@@ -4,6 +4,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import gambi.global.os26launcher.data.apps.AppGroupTitleProviderImpl
 import gambi.global.os26launcher.data.apps.AppLabelRepositoryImpl
 import gambi.global.os26launcher.data.apps.AppRepositoryImpl
 import gambi.global.os26launcher.data.apps.DefaultAppResolver
@@ -28,6 +29,12 @@ abstract class RepositoryModule {
     abstract fun bindTodayWidgetsRepository(
         impl: gambi.global.os26launcher.data.today.TodayWidgetsStore
     ): gambi.global.os26launcher.domain.today.TodayWidgetsRepository
+
+    // AG: tên thư mục nhóm (seed + Cài đặt → Chung). Không trạng thái, không cần scope.
+    @Binds
+    abstract fun bindAppGroupTitleProvider(
+        impl: AppGroupTitleProviderImpl
+    ): gambi.global.os26launcher.domain.category.AppGroupTitleProvider
 
     // Scope @Singleton nằm trên BackdropRepositoryImpl.
     @Binds
