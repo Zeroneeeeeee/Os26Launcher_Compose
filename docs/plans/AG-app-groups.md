@@ -3,7 +3,7 @@
 > Làm theo `docs/AGENTS.md` và `docs/Workflow.md`. Chủ dự án cho làm liền (2026-11-26) rồi build/kiểm một thể; tick Task khi chủ dự án báo ổn. Không có test tự động; kiểm tay trên Oppo PKD130. Lệnh viết cho CMD/PowerShell.
 
 **Bắt đầu:** 2026-11-26 · **Plan duyệt:** 2026-11-26 (thiết kế duyệt trong chat)
-**Trạng thái:** Đang làm Task 1–2 (phiên VM không build được)
+**Trạng thái:** Task 1–2 code xong (commit `7736655`), chờ chủ dự án build + kiểm tay; Task 3 (docs chung) làm khi chốt
 **Máy:** Oppo PKD130 · **Đổi schema Room:** không (thư mục `itemType = 1` + cột `title` đã có)
 
 **Goal:** Màn Cài đặt → Chung có mục "Gom nhóm ứng dụng" gồm 6 hàng (Google, Mạng xã hội, Trò chơi, Giải trí, Tiện ích, Ứng dụng của hãng); bấm một hàng mở bottom sheet xem trước thư mục (trang 3×3, tối đa 15 trang) rồi "Gom nhóm" để gom các app đang nằm phẳng trên Home vào thư mục, các ô còn lại dồn lên.
@@ -116,6 +116,7 @@ Task 2 Step 5 (a)–(g) + hồi quy: kéo app vào / ra thư mục được gom,
 ## Nhật ký
 | Ngày | Task | Việc đã làm | Ghi chú |
 |---|---|---|---|
+| 2026-11-26 | — | Merge `origin/master` vào `an` (`522db9e`; conflict duy nhất `PerfSwitches.kt`, giữ cả `flatSearchCards` lẫn `noIconGlass` / `noIconShader`). Chủ dự án chạy `assembleDebug :app:testDebugUnitTest`: build xanh, 108/112 test đạt; 4 test `GridMetricsTest` hỏng có từ trước (backlog B9), không liên quan AG | Chủ dự án: bỏ qua B9 |
 | 2026-11-26 | 1–2 | Review độc lập (agent): không thấy lỗi biên dịch chắc chắn; Pager không cần opt-in (BOM 2026.09.00, `HomeWidgetPicker` dùng y vậy). Sửa: loại app lõi khỏi mọi nhóm, MANUFACTURER cần app hệ thống, ẩn hàng hãng trên máy Google, tên hàng hãng không lồng chữ khi thiếu `Build.MANUFACTURER`, `apply` bắt lỗi DB (Toast thay vì crash) | Để lại (minor): thư mục gần đầy 135 thì số "Thêm N" có thể lệch số thật vì UI không đếm app con tạm không khả dụng; thư mục đầy hiện "Đã gom"; mục hiện trễ một nhịp lúc mở màn |
 | 2026-11-26 | 1–2 | Code: `AppGroupKind`, `AppGroupPlanner`; `LayoutReconciler.groupIntoFolder` + `compactAfterBulkRemoval` (dồn từng trang bằng `GridRemovePlanner`, gỡ trang vừa hết item, không đụng trang trống có sẵn); `LayoutRepository.groupIntoFolder`; `AppGroupsViewModel` (tên nhóm do màn đưa vào để đúng ngôn ngữ app); `AppGroupSheet` (`HorizontalPager` 3×3, chấm trang, Hủy / Gom nhóm / Thêm N); `GeneralSettingsScreen` thêm mục; 15 chuỗi × 9 ngôn ngữ (số đếm dùng `plurals`, đọc bằng `resources.getQuantityString` vì dự án chưa dùng `pluralStringResource`) | Chưa build. Ghi chú: màn Chung thu `LayoutRepository.pages`; nếu DB bố cục còn rỗng (chưa từng mở Home) thì lần thu đầu chạy seed như khi mở Home, cùng bản seed nên vô hại |
 | 2026-11-26 | — | Đọc `BuildDefaultLayoutUseCase`, `LayoutReconciler` (`seedIfEmpty`, `createFolder`, `addToFolder`, `reflowInTransaction`, `compactPageAfterRemoval`, `deleteEmptyPages`), `GridRemovePlanner`, `FolderPlanner`, `AppCategory*`, `GeneralSettingsScreen`, `ChangeIconSettingsScreen` / `ChangeIconSheet`, `DsBottomSheet`; thiết kế duyệt trong chat; viết plan | Chủ dự án cho làm liền |
