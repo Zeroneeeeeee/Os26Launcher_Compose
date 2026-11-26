@@ -732,4 +732,10 @@
     </plurals>
     <string name="icon_style_preview_description">ตัวอย่างสไตล์ไอคอนที่เลือก</string>
     <string name="settings_search_suggestions_description">การค้นหายอดนิยมเมื่อช่องค้นหาว่าง</string>
+    <!-- PM (2026-11-26): hộp "quyền bị chặn" (core/permission/PermissionRequester). -->
+    <string name="perm_blocked_grant">ให้สิทธิ์</string>
+    <string name="perm_blocked_location_title">ต้องใช้สิทธิ์ตำแหน่ง</string>
+    <string name="perm_blocked_location_message">สภาพอากาศใช้ตำแหน่งโดยประมาณของคุณเพื่อแสดงสภาพอากาศที่คุณอยู่ ตำแหน่งใช้เพื่อสภาพอากาศเท่านั้นและไม่ถูกติดตามตลอดเวลา คุณปฏิเสธสิทธิ์นี้แล้ว Android จึงจะไม่ถามอีก แตะให้สิทธิ์ แล้วไปที่ สิทธิ์ → ตำแหน่ง → อนุญาต</string>
+    <string name="perm_blocked_contacts_title">ต้องใช้สิทธิ์รายชื่อติดต่อ</string>
+    <string name="perm_blocked_contacts_message">การค้นหาอ่านรายชื่อติดต่อเพื่อให้คุณค้นหาคนตามชื่อ แล้วโทรหรือส่งข้อความได้รวดเร็ว รายชื่อติดต่อถูกอ่านในโทรศัพท์เครื่องนี้เท่านั้นและไม่ถูกส่งไปที่ใด คุณปฏิเสธสิทธิ์นี้แล้ว Android จึงจะไม่ถามอีก แตะให้สิทธิ์ แล้วไปที่ สิทธิ์ → รายชื่อติดต่อ → อนุญาต</string>
 </resources>

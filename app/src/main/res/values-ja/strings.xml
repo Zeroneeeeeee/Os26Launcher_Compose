@@ -732,4 +732,10 @@
     </plurals>
     <string name="icon_style_preview_description">選択中のアイコンスタイルのプレビュー</string>
     <string name="settings_search_suggestions_description">検索欄が空のときに話題の検索を表示</string>
+    <!-- PM (2026-11-26): hộp "quyền bị chặn" (core/permission/PermissionRequester). -->
+    <string name="perm_blocked_grant">許可する</string>
+    <string name="perm_blocked_location_title">位置情報の許可が必要です</string>
+    <string name="perm_blocked_location_message">天気は、現在地の天気を表示するためにおおよその位置情報を使います。位置情報は天気にのみ使われ、継続的に追跡されることはありません。この許可が拒否されているため、Android は再度確認しません。「許可する」をタップし、[権限] → [位置情報] → [許可] を選んでください。</string>
+    <string name="perm_blocked_contacts_title">連絡先の許可が必要です</string>
+    <string name="perm_blocked_contacts_message">検索では、名前で相手を探してすばやく電話やメッセージができるよう連絡先を読み取ります。連絡先はこの端末内でのみ読み取られ、外部に送信されることはありません。この許可が拒否されているため、Android は再度確認しません。「許可する」をタップし、[権限] → [連絡先] → [許可] を選んでください。</string>
 </resources>

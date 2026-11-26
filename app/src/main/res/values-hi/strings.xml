@@ -737,4 +737,10 @@
     </plurals>
     <string name="icon_style_preview_description">चुनी गई आइकन शैली का पूर्वावलोकन</string>
     <string name="settings_search_suggestions_description">खोज फ़ील्ड खाली होने पर ट्रेंडिंग खोजें</string>
+    <!-- PM (2026-11-26): hộp "quyền bị chặn" (core/permission/PermissionRequester). -->
+    <string name="perm_blocked_grant">अनुमति दें</string>
+    <string name="perm_blocked_location_title">जगह की अनुमति चाहिए</string>
+    <string name="perm_blocked_location_message">मौसम आपकी अनुमानित जगह का उपयोग करके वहीं का मौसम दिखाता है जहाँ आप हैं। जगह का उपयोग सिर्फ़ मौसम के लिए होता है और लगातार ट्रैक नहीं किया जाता। आपने यह अनुमति नहीं दी, इसलिए Android दोबारा नहीं पूछेगा। अनुमति दें पर टैप करें, फिर अनुमतियाँ → जगह → अनुमति दें चुनें।</string>
+    <string name="perm_blocked_contacts_title">संपर्कों की अनुमति चाहिए</string>
+    <string name="perm_blocked_contacts_message">खोज आपके संपर्क पढ़ती है ताकि आप नाम से लोगों को ढूँढकर जल्दी कॉल या मैसेज कर सकें। संपर्क सिर्फ़ इसी फ़ोन पर पढ़े जाते हैं और कहीं नहीं भेजे जाते। आपने यह अनुमति नहीं दी, इसलिए Android दोबारा नहीं पूछेगा। अनुमति दें पर टैप करें, फिर अनुमतियाँ → संपर्क → अनुमति दें चुनें।</string>
 </resources>

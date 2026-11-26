@@ -732,4 +732,10 @@
     </plurals>
     <string name="icon_style_preview_description">선택한 아이콘 스타일 미리보기</string>
     <string name="settings_search_suggestions_description">검색창이 비어 있을 때 인기 검색어 표시</string>
+    <!-- PM (2026-11-26): hộp "quyền bị chặn" (core/permission/PermissionRequester). -->
+    <string name="perm_blocked_grant">권한 허용</string>
+    <string name="perm_blocked_location_title">위치 권한이 필요합니다</string>
+    <string name="perm_blocked_location_message">날씨는 현재 위치의 날씨를 보여 주기 위해 대략적인 위치를 사용합니다. 위치는 날씨에만 쓰이며 계속 추적되지 않습니다. 이 권한을 거부하셔서 Android가 다시 묻지 않습니다. 권한 허용을 누른 뒤 권한 → 위치 → 허용을 선택하세요.</string>
+    <string name="perm_blocked_contacts_title">연락처 권한이 필요합니다</string>
+    <string name="perm_blocked_contacts_message">검색은 이름으로 사람을 찾고 빠르게 전화하거나 메시지를 보낼 수 있도록 연락처를 읽습니다. 연락처는 이 휴대전화에서만 읽으며 어디로도 보내지 않습니다. 이 권한을 거부하셔서 Android가 다시 묻지 않습니다. 권한 허용을 누른 뒤 권한 → 연락처 → 허용을 선택하세요.</string>
 </resources>

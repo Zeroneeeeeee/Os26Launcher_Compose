@@ -742,4 +742,10 @@
     </plurals>
     <string name="icon_style_preview_description">Prévia do estilo de ícone selecionado</string>
     <string name="settings_search_suggestions_description">Pesquisas em alta quando o campo de pesquisa está vazio</string>
+    <!-- PM (2026-11-26): hộp "quyền bị chặn" (core/permission/PermissionRequester). -->
+    <string name="perm_blocked_grant">Conceder permissão</string>
+    <string name="perm_blocked_location_title">Permissão de localização necessária</string>
+    <string name="perm_blocked_location_message">O clima usa sua localização aproximada para mostrar o clima onde você está. Ela é usada só para o clima e não é acompanhada continuamente. Você negou esta permissão, então o Android não vai perguntar de novo. Toque em Conceder permissão e depois em Permissões → Localização → Permitir.</string>
+    <string name="perm_blocked_contacts_title">Permissão de contatos necessária</string>
+    <string name="perm_blocked_contacts_message">A pesquisa lê seus contatos para você encontrar pessoas pelo nome e ligar ou enviar mensagem rapidamente. Os contatos são lidos só neste celular e nunca são enviados. Você negou esta permissão, então o Android não vai perguntar de novo. Toque em Conceder permissão e depois em Permissões → Contatos → Permitir.</string>
 </resources>

@@ -742,4 +742,10 @@
     </plurals>
     <string name="icon_style_preview_description">Vista previa del estilo de icono seleccionado</string>
     <string name="settings_search_suggestions_description">Búsquedas populares cuando el campo de búsqueda está vacío</string>
+    <!-- PM (2026-11-26): hộp "quyền bị chặn" (core/permission/PermissionRequester). -->
+    <string name="perm_blocked_grant">Dar permiso</string>
+    <string name="perm_blocked_location_title">Se necesita el permiso de ubicación</string>
+    <string name="perm_blocked_location_message">El tiempo usa tu ubicación aproximada para mostrar el tiempo donde estás. Solo se usa para el tiempo y no se sigue de forma continua. Has rechazado este permiso, así que Android no volverá a preguntar. Toca Dar permiso y luego Permisos → Ubicación → Permitir.</string>
+    <string name="perm_blocked_contacts_title">Se necesita el permiso de contactos</string>
+    <string name="perm_blocked_contacts_message">La búsqueda lee tus contactos para que encuentres personas por nombre y las llames o les escribas rápido. Los contactos solo se leen en este teléfono y nunca se envían a ningún sitio. Has rechazado este permiso, así que Android no volverá a preguntar. Toca Dar permiso y luego Permisos → Contactos → Permitir.</string>
 </resources>

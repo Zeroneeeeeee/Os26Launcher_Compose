@@ -731,4 +731,10 @@
     </plurals>
     <string name="icon_style_preview_description">Xem trước kiểu biểu tượng đang chọn</string>
     <string name="settings_search_suggestions_description">Tìm kiếm thịnh hành khi ô tìm kiếm trống</string>
+    <!-- PM (2026-11-26): hộp "quyền bị chặn" (core/permission/PermissionRequester). -->
+    <string name="perm_blocked_grant">Cấp quyền</string>
+    <string name="perm_blocked_location_title">Cần quyền vị trí</string>
+    <string name="perm_blocked_location_message">Thời tiết dùng vị trí gần đúng của bạn để hiện thời tiết nơi bạn đang ở. Vị trí chỉ dùng cho thời tiết, không theo dõi liên tục. Bạn đã từ chối quyền này nên Android không hỏi lại nữa. Bấm Cấp quyền, rồi vào Quyền → Vị trí → Cho phép.</string>
+    <string name="perm_blocked_contacts_title">Cần quyền danh bạ</string>
+    <string name="perm_blocked_contacts_message">Tìm kiếm đọc danh bạ để bạn tìm người theo tên và gọi, nhắn tin nhanh. Danh bạ chỉ được đọc trên máy này, không gửi đi đâu. Bạn đã từ chối quyền này nên Android không hỏi lại nữa. Bấm Cấp quyền, rồi vào Quyền → Danh bạ → Cho phép.</string>
 </resources>
