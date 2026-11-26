@@ -125,6 +125,7 @@ class GlassTuningActivity : AppCompatActivity() {
         // giữ nguyên đủ 4 thanh như trước. Giá trị của thanh bị ẩn vẫn lưu nguyên (Đặt lại vẫn đưa cả bốn về mặc định).
         val sdk = Build.VERSION.SDK_INT
         rows = listOfNotNull(
+            SettingsRow.Footer("footer_glass_look_android13", getString(R.string.gt_note_android13)),
             SettingsRow.Header("header_glass_look", R.string.gt_header),
             if (sdk >= Build.VERSION_CODES.TIRAMISU) {
                 SettingsRow.Slider(SettingsRow.ID_GLASS_LOOK_REFRACTION, R.string.gt_refraction, look.refraction, R.string.gt_refraction_desc)
@@ -134,7 +135,6 @@ class GlassTuningActivity : AppCompatActivity() {
                 SettingsRow.Slider(SettingsRow.ID_GLASS_LOOK_BLUR, R.string.gt_blur, look.blur, R.string.gt_blur_desc)
             } else null,
             SettingsRow.Slider(SettingsRow.ID_GLASS_LOOK_CORNER, R.string.gt_corner, look.corner, R.string.gt_corner_desc),
-            SettingsRow.Footer("footer_glass_look_android13", getString(R.string.gt_note_android13)),
             SettingsRow.Header("header_glass_look_reset", R.string.gt_reset_header),
             SettingsRow.Value(SettingsRow.ID_GLASS_LOOK_RESET, R.string.gt_reset, "", enabled = look != GlassLook.DEFAULT)
         )
