@@ -78,6 +78,12 @@ import gambi.global.os26launcher.core.glass.compose.rememberGlassLook
 import gambi.global.os26launcher.core.glass.compose.rememberLayerSnapshot
 import gambi.global.os26launcher.core.glass.compose.LocalDsBackdrop
 import gambi.global.os26launcher.core.glass.compose.LocalDsFrostedBackdrop
+import gambi.global.os26launcher.core.glass.compose.IconGlassHost
+import gambi.global.os26launcher.core.glass.compose.LocalIconGlassHost
+import gambi.global.os26launcher.core.glass.compose.iconGlassOrigin
+import gambi.global.os26launcher.core.glass.compose.LocalIconGlassWallpaper
+import gambi.global.os26launcher.core.glass.compose.iconGlassWallpaperOrigin
+import gambi.global.os26launcher.core.glass.compose.rememberIconGlassWallpaper
 import gambi.global.os26launcher.core.glass.compose.rememberFrostedBackdrop
 import gambi.global.os26launcher.core.ui.GridMetrics
 import gambi.global.os26launcher.domain.model.AppItem
@@ -243,12 +249,20 @@ internal fun HomeScreen(
     // 2026-11-23: menu nhấn giữ cũng lấy mẫu lớp Home (thấy icon phía sau nhoè qua menu, như iOS 26), không chỉ ảnh nền.
     // SW Task 3: Home (trang, pill, dock) đang trượt so với ảnh nền theo Today / Thư viện → kính dock vẽ sống (ảnh chụp sai chỗ khi đang trượt).
     val dockGlassLive by remember { derivedStateOf { libraryProgress() > 0f || todayProgress() > 0f } }
+    // LI: kính sau icon kiểu Kính ở dock chụp lại khi dock đứng yên trên nền (ngoài edit mode, Home không trượt theo Today / Thư viện).
+    val editModeNow by rememberUpdatedState(state.editMode)
+    val dockIconGlassHost = remember { IconGlassHost(derivedStateOf { !editModeNow && !dockGlassLive }) }
+    // LI: bản mờ của ảnh nền cho kính tự vẽ (shader) sau icon kiểu Kính: kính sống, trôi theo nền khi lướt trang.
+    val iconGlassWallpaper = rememberIconGlassWallpaper(frosted, state.backdrop)
     // 2026-11-25: menu "Sửa" của edit mode cũng lấy mẫu lớp Home (thấy app bị menu đè phía sau).
+    // 2026-11-25: item đang kéo / đang bay về chỗ cũng lấy mẫu lớp Home (thấy app / widget bị nó đè phía sau), không chỉ ảnh nền.
+    val dragFloating = drag.session != null || drag.settlingItem != null
     val folderLayerOn = state.openFolderId != null || folderProgress.value > 0f || state.iconMenu != null || menuProgress.value > 0f ||
-        (editMenuOpen && state.editMode)
+        (editMenuOpen && state.editMode) || dragFloating
     // PG4: công tắc đo (chỉ bản `perf`, `PerfSwitches`): bỏ nền của kính thật / lớp nền mờ tĩnh để so số đo.
     val glassBackdrop = if (PerfSwitches.noRealGlass) null else backdrop
-    SideEffect { drag.glassBackdrop = glassBackdrop } // ảnh nổi kéo-thả (tầng Activity) lấy mẫu cùng nền kính với lưới
+    // Ảnh nổi kéo-thả vẽ ở tầng Activity (ngoài lớp Home nên không tự lấy mẫu chính nó); ô nguồn đang ẩn (alpha 0) nên không hiện trong lớp.
+    SideEffect { drag.glassBackdrop = if (PerfSwitches.noRealGlass) null else if (dragFloating) homeBackdrop else backdrop }
     val frostedBackdrop = if (PerfSwitches.noFrosted) null else frosted.backdropOrNull
     // PG3 Task 2 Step 3 (Q3): dưới API 31 kính thật không chạy, nên bảng thư mục lấy mẫu ẢNH CHỤP lớp Home (chụp một lần lúc mở, làm mờ ngoài
     // main thread bằng bộ đệm riêng) để vẫn thấy icon phía sau; ảnh chụp chưa xong thì dùng lớp nền mờ của ảnh nền. Máy ≥ 31 không chụp.
@@ -373,13 +387,18 @@ internal fun HomeScreen(
                 }
                 .then(if (folderLayerOn) Modifier.layerBackdrop(homeBackdrop) else Modifier)
         ) {
-            FrostedWallpaperLayer(frosted, state.backdrop, Modifier.fillMaxSize()) // PG3: không vẽ gì ra màn, chỉ ghi lớp nền mờ
+            // PG3: không vẽ gì ra màn, chỉ ghi lớp nền mờ. LI: cũng là gốc toạ độ của bản mờ cho kính tự vẽ sau icon kiểu Kính.
+            FrostedWallpaperLayer(frosted, state.backdrop, Modifier.fillMaxSize().iconGlassWallpaperOrigin(iconGlassWallpaper))
             if (legacyGlass) FrostedWallpaperLayer(folderFrosted, folderSnapshot, Modifier.fillMaxSize(), cache = folderBlurCache)
             Wallpaper(state.backdrop, Modifier.fillMaxSize().layerBackdrop(backdrop))
             // PG4 G3 (đo 2026-11-23, `tools/perf/measure-home.ps1`, bản `perf`): kính thật của dock / widget KHÔNG tắt khi lướt trang (comment cũ ở
             // đây ghi đã tắt nhưng code chưa từng tắt). Oppo PKD130: đủ kính Janky 0,9–1,3 %, p95 12–13 ms, so với bỏ kính 0,5 %, p95 10–12 ms
             // (trong ngưỡng). Số "87 % khung giật" cũ là bản debug: bản debug cùng kịch bản đo 36 %, p95 106 ms. Đánh giá hiệu năng trên bản `perf`.
-            CompositionLocalProvider(LocalDsBackdrop provides glassBackdrop, LocalDsFrostedBackdrop provides frostedBackdrop) {
+            CompositionLocalProvider(
+                LocalDsBackdrop provides glassBackdrop,
+                LocalDsFrostedBackdrop provides frostedBackdrop,
+                LocalIconGlassWallpaper provides iconGlassWallpaper
+            ) {
                 // TL1 Task 5 (như SystemBarsController.applySystemBarInsets): đỉnh lưới chừa sẵn chỗ cho hộp chạm của các pill edit mode, để lưới
                 // không dịch khi vào edit mode: đỉnh = max(thanh trạng thái, editToolbarClearance). Cạnh dưới = inset dưới.
                 val bars = WindowInsets.systemBarsIgnoringVisibility
@@ -464,11 +483,26 @@ internal fun HomeScreen(
                         // khung (pha draw ×2, khung > 33 ms nhiều hơn). Trang ngoài màn KHÔNG vẽ: `onScreen` là derivedStateOf nên đọc trong pha vẽ chỉ
                         // vẽ lại khi trang vào / ra màn. Công tắc đo `noOffscreenSkip` (bản `perf`) vẽ như trước.
                         val skipOffscreen = !PerfSwitches.noOffscreenSkip
-                        CompositionLocalProvider(LocalDsBackdrop provides if (onScreen) backdrop else null) {
+                        // LI: kính sau icon kiểu Kính chỉ vẽ sống (rồi chụp) khi trang đứng yên giữa màn, ngoài edit mode, Home không trượt theo
+                        // Today / Thư viện; còn lại vẽ ảnh đã chụp (đo: kính sống khi vuốt trang Janky 80 %).
+                        val iconGlassHost = remember(index) {
+                            IconGlassHost(
+                                settled = derivedStateOf {
+                                    pagerState.currentPage == index && !pagerState.isScrollInProgress &&
+                                        abs(pagerState.currentPageOffsetFraction) < SETTLED_FRACTION && !editModeNow && !dockGlassLive
+                                },
+                                // LI: lúc lướt trang, lớp kính của trang vẽ thay tấm từng ô (edit mode giữ tấm từng ô: rung theo icon).
+                                moving = derivedStateOf {
+                                    !editModeNow && (pagerState.isScrollInProgress || abs(pagerState.currentPageOffsetFraction) >= SETTLED_FRACTION)
+                                }
+                            )
+                        }
+                        SideEffect { iconGlassHost.cacheKey = state.backdrop }
+                        CompositionLocalProvider(LocalDsBackdrop provides if (onScreen) backdrop else null, LocalIconGlassHost provides iconGlassHost) {
                             if (page != null && cells != null) {
                                 HomeGridPage(
                                     page, cells, icons, edit, onAppClick,
-                                    Modifier.fillMaxSize().drawWithContent { if (onScreen || !skipOffscreen) drawContent() }
+                                    Modifier.fillMaxSize().iconGlassOrigin(iconGlassHost).drawWithContent { if (onScreen || !skipOffscreen) drawContent() }
                                 )
                             }
                         }
@@ -500,6 +534,8 @@ internal fun HomeScreen(
                     // X nên icon dock thẳng cột với icon lưới bên trên; lề dock = X/2 để bộ ba lề (lưới-icon, dock-icon, dock-màn) liền mạch theo
                     // đúng tỉ lệ nửa khe.
                     val dockMargin = with(density) { ((cells?.iconSpacingX ?: 0) / 2f).toDp() }
+                    SideEffect { dockIconGlassHost.cacheKey = state.backdrop }
+                    CompositionLocalProvider(LocalIconGlassHost provides dockIconGlassHost) {
                     HomeDock(
                         dock = state.dock,
                         cells = cells,
@@ -513,7 +549,9 @@ internal fun HomeScreen(
                             .weight(DOCK_WEIGHT)
                             .padding(horizontal = dockMargin)
                             .onGloballyPositioned { coords.dock = it; syncRects() }
+                            .iconGlassOrigin(dockIconGlassHost)
                     )
+                    }
                     // Lề đáy NGOÀI phần trọng số: LinearLayout của activity_home.xml chia trọng số sau khi trừ margin, nên pager và dock cao đúng như View.
                     Spacer(Modifier.height(dockMargin))
                 }
