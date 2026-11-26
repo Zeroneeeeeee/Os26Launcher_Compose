@@ -4,7 +4,7 @@
 > Android SDK: commit chỉ được rà bằng đọc code). Không có test tự động.
 
 **Bắt đầu:** 2026-11-26 · **Plan duyệt:** 2026-11-26 (chốt trong chat)
-**Trạng thái:** Đang làm
+**Trạng thái:** Code xong 2026-11-26, chờ chủ dự án build + kiểm
 **Bằng chứng:** video `Screen_recording_20261126_153649.mp4` (máy Android 11, nhãn tắt), ảnh cắt ở `tools/perf/out/vid/`.
 
 **Goal:** Icon trong thư mục cỡ ổn định và nằm giữa ô dù bật/tắt nhãn; kéo app ra khỏi thư mục thì ảnh kéo co dần về cỡ icon Home; bắt đầu kéo không còn icon nổi của menu sót lại; Android dưới 12 thì Home phía sau bảng thư mục cũng mờ.
@@ -87,7 +87,7 @@
 
 ### Task 5: Docs
 
-- [ ] `lessons/` (bài học bước trang/cắt khung, ảnh nổi menu), `BACKLOG.md` (B12, B16, B17, B18 → Đã xong khi chủ dự án kiểm), `README.md`. Commit `docs: FX folder polish`.
+- [x] `lessons/` (bài học bước trang/cắt khung, ảnh nổi menu), `BACKLOG.md` (B12, B16, B17, B18 → Đã xong khi chủ dự án kiểm), `README.md`. Commit `docs: FX folder polish`.
 
 ## Kịch bản kiểm (chủ dự án, sau khi build)
 
@@ -105,3 +105,5 @@
 | 2026-11-26 | 2 | `shrinkToHomeIcon()` ở nhánh rời bảng (bỏ qua khi đích lò xo không đổi); `fitScale(s, rect)` cho mọi `settle` của dock, lưới, thả trong thư mục, bay về | Rà bằng đọc code, chưa build |
 | 2026-11-26 | 3 | `HomeIconMenu(hideIcon)` = `dragFloating` của HomeScreen (phiên kéo hoặc ảnh đang bay về) | Ruling: dùng `dragFloating` thay `drag.session != null` để cú kéo rất ngắn (thả khi menu còn đang đóng) không hiện lại icon nổi. Chưa build |
 | 2026-11-26 | 4 | Dưới API 31: Box toàn màn `drawPlainBackdrop(folderFrosted)` + tối `FOLDER_DIM`, alpha `folderProgress`, ngay dưới `HomeFolderPanel` | Rà bằng đọc code (chữ ký `drawPlainBackdrop` đối chiếu `DsFrosted.dsFrosted`), chưa build |
+| 2026-11-26 | 5 | Bài học ở `lessons/icons-and-app-list.md`, `drag-and-layout.md`, `glass.md`; README, BACKLOG (B12, B16–B18 chờ kiểm) | |
+| 2026-11-26 | Rà cuối | Tự rà toàn nhánh (không có reviewer riêng: chủ dự án không yêu cầu subagent) bằng đọc diff `7bb531f..HEAD` + grep tham chiếu đã xóa | Cần chủ dự án build: Claude không biên dịch được trong VM |

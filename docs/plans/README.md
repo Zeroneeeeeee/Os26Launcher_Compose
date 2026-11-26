@@ -12,7 +12,7 @@
 
 | Plan | Nội dung | Trạng thái |
 |---|---|---|
-| [FX](FX-folder-polish.md) | Bảng thư mục: icon giữ cỡ có nhãn + nằm giữa ô, ảnh kéo co về cỡ Home, hết dư ảnh menu, nền mờ dưới Android 12 (B12, B16, B17, B18) | Đang làm |
+| [FX](FX-folder-polish.md) | Bảng thư mục: icon giữ cỡ có nhãn + nằm giữa ô, ảnh kéo co về cỡ Home, hết dư ảnh menu, nền mờ dưới Android 12 (B12, B16, B17, B18) | Code xong 2026-11-26, chờ kiểm |
 | [TR](TR-remove-theme-presets.md) | Bỏ màn "Màn hình chính mặc định" + preset theme + cờ nổi 3D; Onboarding 0.2 chọn kiểu icon (B19) | Code xong 2026-11-26, chờ kiểm |
 | [AG](AG-app-groups.md) | Bố cục lần đầu gom sẵn thư mục theo nhóm; Cài đặt → Chung "Gom nhóm ứng dụng" (6 nhóm, sheet xem trước, dồn trang) | Xong 2026-11-26 |
 | [WS](WS-widget-swap.md) | Kéo widget đè lên widget khác thì đổi chỗ (anh dvha) | Xong 2026-11-25 |
