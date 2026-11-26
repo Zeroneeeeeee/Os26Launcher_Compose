@@ -98,19 +98,21 @@ internal fun HomeIconMenu(
             .fillMaxSize()
             .clickable(interactionSource = interaction, indication = null, onClick = onDismiss)
     ) {
-        // Icon nổi tại chỗ icon thật.
+        // Icon nổi tại chỗ icon thật. FX R3: cỡ theo chính khung neo (icon Home, dock hay ô thư mục đều là khung icon thật), không lấy cỡ
+        // icon Home cho mọi nơi (trước đó icon nổi trong thư mục nhỏ hơn ô, B18).
         val a = m.anchor
+        val sizePx = (a.right - a.left).takeIf { it > 0 } ?: iconSizePx
         shownApp?.let { item ->
-            rememberHomeIcon(icons, item, iconSizePx)?.let { bmp ->
+            rememberHomeIcon(icons, item, sizePx)?.let { bmp ->
                 Image(
                     bmp,
                     contentDescription = null,
                     modifier = Modifier
                         .graphicsLayer {
-                            translationX = (a.left + a.right) / 2f - iconSizePx / 2f
-                            translationY = (a.top + a.bottom) / 2f - iconSizePx / 2f
+                            translationX = (a.left + a.right) / 2f - sizePx / 2f
+                            translationY = (a.top + a.bottom) / 2f - sizePx / 2f
                         }
-                        .size(with(density) { iconSizePx.toDp() })
+                        .size(with(density) { sizePx.toDp() })
                 )
             }
         }

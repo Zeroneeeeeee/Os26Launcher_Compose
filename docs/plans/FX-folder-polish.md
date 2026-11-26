@@ -63,10 +63,10 @@
 ### Task 1: Cỡ và vị trí icon trong bảng (B12, B18)
 
 **Files:** `HomeFolderPanel.kt`, `HomeIconMenu.kt`.
-- [ ] Step 1: `cells` của bảng = `GridMetrics(3, 3, showLabels = true).measure(side, side, density)`; người dùng tắt nhãn (hoặc nhãn tự ẩn) thì `copy(showLabels = false, innerGapPx = 0, paddingTop = paddingTop + (cellHeight − iconSize) / 2)` (R1).
-- [ ] Step 2: `pageStride = panelSide`: vị trí ô, đích cuộn, `folderSwipe(pageWidth)`, vị trí chấm trang, `FolderPanelGeometry(pageWidth = pageStride)` (R2).
-- [ ] Step 3: `HomeIconMenu` vẽ icon nổi theo cỡ của `anchor` (R3).
-- [ ] Step 4: Rà Review Focus 1–2 bằng đọc code. Commit `fix: folder icons keep labeled size and stay centered`.
+- [x] Step 1: `cells` của bảng = `GridMetrics(3, 3, showLabels = true).measure(side, side, density)`; người dùng tắt nhãn (hoặc nhãn tự ẩn) thì `copy(showLabels = false, innerGapPx = 0, paddingTop = paddingTop + (cellHeight − iconSize) / 2)` (R1).
+- [x] Step 2: `pageStride = panelSide`: vị trí ô, đích cuộn, `folderSwipe(pageWidth)`, vị trí chấm trang, `FolderPanelGeometry(pageWidth = pageStride)` (R2).
+- [x] Step 3: `HomeIconMenu` vẽ icon nổi theo cỡ của `anchor` (R3).
+- [x] Step 4: Rà Review Focus 1–2 bằng đọc code. Commit `fix: folder icons keep labeled size and stay centered`.
 
 ### Task 2: Ảnh kéo co về cỡ Home khi rời bảng
 
@@ -101,3 +101,4 @@
 
 | Ngày | Task | Việc | Ghi chú |
 |---|---|---|---|
+| 2026-11-26 | 1 | `folderCells` (lưới có nhãn, tắt nhãn thì đẩy `paddingTop` nửa phần ô thừa); `pageStride = panelSide` cho vị trí ô, cuộn, vuốt, chấm, `FolderPanelGeometry.pageWidth`; icon nổi của menu theo cỡ khung neo | Rà bằng đọc code, chưa build |

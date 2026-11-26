@@ -82,7 +82,9 @@ import kotlin.math.roundToInt
  * rồi đóng thư mục. Edit mode: rung + dấu "−" → [onRemoveApp].
  *
  * Hình học như `FolderPanelView.onMeasure`: cạnh lưới = min(trần, bề ngang − 2 × lề − 2 × đệm, chiều cao − 2 × (tiêu đề + khe) − 2 × đệm);
- * khung = lưới + đệm hai bên; lưới 3 × 3 tự đo bằng `GridMetrics(3, 3, showLabels)` (icon của bảng, không lấy cỡ icon Home).
+ * khung = lưới + đệm hai bên; lưới 3 × 3 tự đo bằng `GridMetrics(3, 3)` (icon của bảng, không lấy cỡ icon Home).
+ * FX (2026-11-26, chủ dự án): icon luôn giữ cỡ của lưới CÓ nhãn (~64dp), tắt nhãn thì icon nằm giữa ô ([folderCells]); trước đó tắt nhãn
+ * thì icon chiếm cả chỗ nhãn (~92dp, to hơn icon Home) và dồn lên đỉnh ô (B12, B18).
  *
  * FM-2 — nhiều trang (tới 15 trang × 9 = 135 app): các trang đặt cạnh nhau theo chiều ngang trong CÙNG khung, cuộn bằng độ dời và bám trang
  * ([SNAP_MS] theo tốc độ chuyển cảnh, giảm tốc [SNAP_DECELERATE]); khung đứng yên nên kính và hoạt ảnh mở/đóng giữ nguyên. Vẽ cắt theo khung;
@@ -149,9 +151,9 @@ internal fun HomeFolderPanel(
     val maxByHeight = (rootHeight - 2 * (titleHeight + titleGap) - 2 * padding).toInt()
     val side = max(0, min(maxSide, min(maxByWidth, maxByHeight)))
     val panelSide = side + 2 * padding
-    val cells = remember(side, showLabels, density.density) {
-        GridMetrics(FolderPanelGeometry.COLUMNS, FolderPanelGeometry.COLUMNS, showLabels).measure(side, side, density.density)
-    }
+    // FX R2: trang i của bảng nằm ở i × CẠNH KHUNG (không phải cạnh lưới), nên trang kế bắt đầu ngoài khung, không ló vào đệm phải (B12).
+    val pageStride = panelSide
+    val cells = remember(side, showLabels, density.density) { folderCells(side, showLabels, density.density) }
     if (cells == null) {
         SideEffect { drag.folderPanel = null }
         return
@@ -160,7 +162,7 @@ internal fun HomeFolderPanel(
     val top = (rootHeight - panelSide) / 2f
     val panelRect = Rect(left, top, left + panelSide, top + panelSide)
     val gridOrigin = Offset(left + padding, top + padding)
-    val geometry = FolderPanelGeometry(f.itemId, panelRect, gridOrigin, side.toFloat(), cells, f.childIds, f.previewApps)
+    val geometry = FolderPanelGeometry(f.itemId, panelRect, gridOrigin, pageStride.toFloat(), cells, f.childIds, f.previewApps)
     val pageCount = geometry.pageCount
     SideEffect {
         drag.folderPanel = if (folder != null) geometry else null
@@ -168,13 +170,13 @@ internal fun HomeFolderPanel(
         if (drag.folderPage > pageCount - 1) drag.folderPage = pageCount - 1
     }
 
-    // FM-2: độ cuộn (px, trang i ở i × side). Bám trang đích khi trang đổi (thả tay, lật mép khi kéo, bớt trang); vuốt tay thì theo ngón.
+    // FM-2: độ cuộn (px, trang i ở i × pageStride). Bám trang đích khi trang đổi (thả tay, lật mép khi kéo, bớt trang); vuốt tay thì theo ngón.
     val scroll = remember { Animatable(0f) }
     var swiping by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    LaunchedEffect(drag.folderPage, side, f.itemId) {
+    LaunchedEffect(drag.folderPage, pageStride, f.itemId) {
         if (swiping) return@LaunchedEffect
-        val target = drag.folderPage * side.toFloat()
+        val target = drag.folderPage * pageStride.toFloat()
         if (scroll.value == target) return@LaunchedEffect
         if (TransitionMotion.isInstant || progress.value < OPEN_EPS) {
             scroll.snapTo(target)
@@ -227,7 +229,7 @@ internal fun HomeFolderPanel(
                         Modifier
                     } else {
                         Modifier.folderSwipe(
-                            pageWidth = side.toFloat(),
+                            pageWidth = pageStride.toFloat(),
                             pageCount = pageCount,
                             scroll = { scroll.value },
                             currentPage = { drag.folderPage },
@@ -236,7 +238,7 @@ internal fun HomeFolderPanel(
                             onSettle = { page ->
                                 drag.folderPage = page
                                 scope.launch {
-                                    scroll.animateTo(page * side.toFloat(), tween(TransitionMotion.duration(SNAP_MS).toInt(), easing = SnapDecelerate))
+                                    scroll.animateTo(page * pageStride.toFloat(), tween(TransitionMotion.duration(SNAP_MS).toInt(), easing = SnapDecelerate))
                                 }
                             }
                         )
@@ -261,7 +263,7 @@ internal fun HomeFolderPanel(
                 if (abs(slotPage - page) > 1 && !drag.isHidden(childId)) return@forEach // chỉ trang đích và hai trang kề
                 key(childId) {
                     val within = slot % FolderPlanner.PAGE_SIZE
-                    val x = padding + slotPage * side + cells.paddingLeft + (within % FolderPanelGeometry.COLUMNS) * (cells.cellWidth + cells.gutterX)
+                    val x = padding + slotPage * pageStride + cells.paddingLeft + (within % FolderPanelGeometry.COLUMNS) * (cells.cellWidth + cells.gutterX)
                     val y = padding + cells.paddingTop + (within / FolderPanelGeometry.COLUMNS) * (cells.cellHeight + cells.gutterY)
                     val target = IntOffset(x, y)
                     lastPos[childId] = target
@@ -308,9 +310,25 @@ internal fun HomeFolderPanel(
                     )
                 }
             }
-            if (pageCount > 1) FolderPageDots(pageCount, { scroll.value / side.coerceAtLeast(1) }, padding, side)
+            if (pageCount > 1) FolderPageDots(pageCount, { scroll.value / pageStride.coerceAtLeast(1) }, padding, side)
         }
     }
+}
+
+/**
+ * FX R1 — lưới 3 × 3 của bảng cạnh [side]: luôn đo như CÓ nhãn (cỡ icon không đổi khi bật/tắt nhãn). Người dùng tắt nhãn (hoặc nhãn tự ẩn vì
+ * ô quá nhỏ) thì bỏ nhãn và đẩy lề trên xuống nửa phần ô thừa, để icon nằm giữa ô theo chiều dọc. Hit-test (`slotAt`, `slotIconRect`) đọc cùng
+ * [GridMetrics.Cells] nên tự khớp.
+ */
+private fun folderCells(side: Int, showLabels: Boolean, density: Float): GridMetrics.Cells? {
+    val labeled = GridMetrics(FolderPanelGeometry.COLUMNS, FolderPanelGeometry.COLUMNS, showLabels = true).measure(side, side, density)
+        ?: return null
+    if (showLabels && labeled.showLabels) return labeled
+    return labeled.copy(
+        showLabels = false,
+        innerGapPx = 0,
+        paddingTop = labeled.paddingTop + ((labeled.cellHeight - labeled.iconSize) / 2).coerceAtLeast(0)
+    )
 }
 
 /**
