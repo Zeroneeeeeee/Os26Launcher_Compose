@@ -50,7 +50,7 @@ import javax.inject.Inject
  *
  * Mở từ Cài đặt của launcher, từ nút cài đặt trên panel, hoặc từ một ô thiếu quyền (extra [EXTRA_PERMISSION]: cuộn tới đúng hàng;
  * [EXTRA_RECORDER]: mở luôn hộp chọn app ghi màn hình). Phần lớn quyền không có callback hệ thống, nên đọc lại ở [onResume] và báo
- * service ([ControlCenterService.refresh]).
+ * service ([ControlCenterService.refresh]). Thiếu quyền thì hiện hộp thoại xin quyền ([promptMissingPermission]).
  */
 @AndroidEntryPoint
 class ControlCenterSettingsActivity : AppCompatActivity() {
@@ -75,6 +75,15 @@ class ControlCenterSettingsActivity : AppCompatActivity() {
     private var focusPending: ControlPermission? = null
     private var recorderPending = false
     private var dialog: DsDialogHandle? = null
+
+    /** Hộp thoại xin quyền đang mở (tách khỏi [dialog] để không đóng nhầm hộp chọn nền / app ghi màn hình). */
+    private var permissionDialog: DsDialogHandle? = null
+
+    /** Quyền đã hỏi trong lần vào màn này: mỗi quyền hỏi tối đa một lần, quay lại từ màn hệ thống mà chưa cấp thì không hỏi lại. */
+    private val askedPermissions = HashSet<ControlPermission>()
+
+    /** Người dùng bấm "Để sau" (hoặc Back): thôi hỏi các quyền còn lại trong lần vào màn này. */
+    private var permissionPromptDeclined = false
 
     // JS1: trạng thái Compose của khung.
     private var rows by mutableStateOf<List<SettingsRow>>(emptyList())
@@ -104,6 +113,12 @@ class ControlCenterSettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false) // JS1: nền aurora tràn dưới thanh hệ thống (DsScreen lo inset)
         readExtras(intent)
+        savedInstanceState?.let { state ->
+            permissionPromptDeclined = state.getBoolean(STATE_PROMPT_DECLINED)
+            state.getStringArrayList(STATE_ASKED)?.forEach { name ->
+                ControlPermission.entries.firstOrNull { it.name == name }?.let(askedPermissions::add)
+            }
+        }
 
         val actions = SettingsListActions(
             onValueClicked = ::onValueClicked,
@@ -155,12 +170,45 @@ class ControlCenterSettingsActivity : AppCompatActivity() {
         super.onResume()
         render()
         ControlCenterService.refresh(this) // người dùng có thể vừa cấp quyền vẽ đè ở màn hệ thống
+        promptMissingPermission()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(STATE_PROMPT_DECLINED, permissionPromptDeclined)
+        outState.putStringArrayList(STATE_ASKED, ArrayList(askedPermissions.map { it.name }))
     }
 
     override fun onDestroy() {
         dialog?.dismiss()
         dialog = null
+        permissionDialog?.setOnDismissListener(null)
+        permissionDialog?.dismiss()
+        permissionDialog = null
         super.onDestroy()
+    }
+
+    /**
+     * Vào màn (và mỗi lần quay lại từ màn hệ thống / hộp xin quyền runtime) mà còn thiếu quyền thì hỏi lần lượt từng quyền, quyền bắt buộc
+     * trước rồi tới quyền tùy chọn: giải thích lý do, "Cấp quyền" gọi [requestPermission], "Để sau" thôi hỏi tới khi vào lại màn. Không chen
+     * ngang khi đang mở hộp chọn nền / app ghi màn hình.
+     */
+    private fun promptMissingPermission() {
+        if (permissionPromptDeclined || permissionDialog?.isShowing == true || recorderPending || dialog?.isShowing == true) return
+        val permission = permissions.applicable()
+            .filter { it !in askedPermissions && !permissions.isGranted(it) }
+            .minByOrNull { if (it.required) 0 else 1 } ?: return
+        askedPermissions += permission
+        permissionDialog = SettingsDialogs.confirm(
+            activity = this,
+            title = getString(permission.titleRes()),
+            message = getString(permission.reasonRes()),
+            positive = getString(R.string.cc_perm_grant),
+            onPositive = { requestPermission(permission) },
+            negative = getString(R.string.cc_perm_later),
+            onNegative = { permissionPromptDeclined = true },
+            onCancel = { permissionPromptDeclined = true }
+        ).also { handle -> handle.setOnDismissListener { if (permissionDialog === handle) permissionDialog = null } }
     }
 
     private fun readExtras(intent: Intent?) {
@@ -240,6 +288,11 @@ class ControlCenterSettingsActivity : AppCompatActivity() {
 
     private fun onPermissionClicked(row: SettingsRow.Value) {
         val permission = permissions.applicable().firstOrNull { rowId(it) == row.id } ?: return
+        requestPermission(permission)
+    }
+
+    /** Bluetooth (API 31+) xin quyền runtime; còn lại mở màn hệ thống. */
+    private fun requestPermission(permission: ControlPermission) {
         if (permission == ControlPermission.BLUETOOTH_CONNECT && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
             !permissions.isGranted(permission)
         ) {
@@ -252,7 +305,8 @@ class ControlCenterSettingsActivity : AppCompatActivity() {
     /** RE mục 5.4 (`BackgroundActivity`): ảnh nền của launcher, ảnh tự chọn, hoặc không ảnh. */
     private fun showBackgroundDialog() {
         val c = config ?: return
-        val modes = BackgroundMode.entries
+        // 2026-11-26: tạm ẩn "Không ảnh" (máy không hỗ trợ blur xuyên cửa sổ thì nền không mờ). Mở lại: dùng BackgroundMode.entries.
+        val modes = BackgroundMode.entries.filter { it != BackgroundMode.NONE }
         dialog?.dismiss()
         dialog = SettingsDialogs.singleChoice(
             this, getString(R.string.cc_background), modes.map { getString(it.labelRes()) }, modes.indexOf(c.background)
@@ -300,6 +354,16 @@ class ControlCenterSettingsActivity : AppCompatActivity() {
         ControlPermission.BLUETOOTH_CONNECT -> R.string.cc_perm_bluetooth
     }
 
+    /** Lý do cần quyền, cho hộp thoại xin quyền ([promptMissingPermission]). */
+    private fun ControlPermission.reasonRes(): Int = when (this) {
+        ControlPermission.OVERLAY -> R.string.cc_perm_reason_overlay
+        ControlPermission.NOTIFICATION_LISTENER -> R.string.cc_perm_reason_listener
+        ControlPermission.BATTERY_OPTIMIZATION -> R.string.cc_perm_reason_battery
+        ControlPermission.WRITE_SETTINGS -> R.string.cc_perm_reason_write_settings
+        ControlPermission.DND_ACCESS -> R.string.cc_perm_reason_dnd
+        ControlPermission.BLUETOOTH_CONNECT -> R.string.cc_perm_reason_bluetooth
+    }
+
     companion object {
         private const val ID_ENABLED = "cc_enabled"
         private const val ID_TILES = "cc_tiles"
@@ -311,6 +375,8 @@ class ControlCenterSettingsActivity : AppCompatActivity() {
         private const val ID_RECORDER = "cc_recorder"
         private const val EXTRA_PERMISSION = "gambi.global.os26launcher.controlcenter.PERMISSION"
         private const val EXTRA_RECORDER = "gambi.global.os26launcher.controlcenter.RECORDER"
+        private const val STATE_PROMPT_DECLINED = "cc_perm_prompt_declined"
+        private const val STATE_ASKED = "cc_perm_asked"
 
         private fun rowId(p: ControlPermission) = "cc_perm_${p.name.lowercase()}"
 

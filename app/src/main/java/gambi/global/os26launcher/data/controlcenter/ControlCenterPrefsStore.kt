@@ -12,6 +12,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import gambi.global.os26launcher.domain.controlcenter.ControlCenterPrefsRepository
+import gambi.global.os26launcher.domain.model.controlcenter.BackgroundMode
 import gambi.global.os26launcher.domain.model.controlcenter.ControlCenterConfig
 import gambi.global.os26launcher.domain.model.controlcenter.CustomTile
 import gambi.global.os26launcher.domain.model.controlcenter.CustomTileType
@@ -58,7 +59,8 @@ class ControlCenterPrefsStore @Inject constructor(
                 offsetFraction = (p[EDGE_OFFSET] ?: de.offsetFraction).coerceIn(0f, EdgeConfig.MAX_OFFSET),
                 color = p[EDGE_COLOR] ?: de.color
             ),
-            background = enumOr(p[BACKGROUND], d.background),
+            // 2026-11-26: NONE đang tạm ẩn khỏi Cài đặt; ai đã lưu NONE thì dùng ảnh nền launcher. Bỏ dòng map này khi mở lại.
+            background = enumOr(p[BACKGROUND], d.background).let { if (it == BackgroundMode.NONE) BackgroundMode.WALLPAPER else it },
             blurBackground = p[BLUR] ?: d.blurBackground,
             vibrateOnOpen = p[VIBRATE] ?: d.vibrateOnOpen,
             tiles = p[TILES]?.let(::decodeTiles) ?: d.tiles,

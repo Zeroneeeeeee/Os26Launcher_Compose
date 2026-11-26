@@ -295,6 +295,14 @@
     <string name="cc_perm_granted">Diberikan</string>
     <string name="cc_perm_missing">Belum diberikan</string>
     <string name="cc_perm_open_failed">Perangkat ini tidak dapat membuka layar izin</string>
+    <string name="cc_perm_grant">Izinkan</string>
+    <string name="cc_perm_later">Nanti</string>
+    <string name="cc_perm_reason_overlay">Pusat Kontrol menampilkan tepi pemicu dan panel di atas aplikasi lain. Aktifkan Tampilkan di atas aplikasi lain untuk menggunakannya.</string>
+    <string name="cc_perm_reason_listener">Pusat Kontrol memerlukan Akses notifikasi agar tetap berjalan di latar belakang dan menampilkan kontrol media.</string>
+    <string name="cc_perm_reason_battery">Izinkan penggunaan baterai tanpa batasan agar sistem tidak menghentikan Pusat Kontrol di latar belakang.</string>
+    <string name="cc_perm_reason_write_settings">Pusat Kontrol memerlukan izin Ubah setelan sistem untuk mengubah kecerahan dan putar otomatis.</string>
+    <string name="cc_perm_reason_dnd">Pusat Kontrol memerlukan Akses Jangan Ganggu untuk menyalakan dan mematikan Jangan Ganggu.</string>
+    <string name="cc_perm_reason_bluetooth">Pusat Kontrol memerlukan izin Perangkat di sekitar untuk menyalakan dan mematikan Bluetooth.</string>
     <string name="cc_tile_airplane">Mode pesawat</string>
     <string name="cc_tile_cellular">Data seluler</string>
     <string name="cc_tile_wifi">Wi-Fi</string>

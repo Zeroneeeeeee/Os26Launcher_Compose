@@ -326,6 +326,14 @@
     <string name="cc_perm_granted">Granted</string>
     <string name="cc_perm_missing">Not granted</string>
     <string name="cc_perm_open_failed">This device can\'t open the permission screen</string>
+    <string name="cc_perm_grant">Grant</string>
+    <string name="cc_perm_later">Later</string>
+    <string name="cc_perm_reason_overlay">Control Center draws the edge handle and the panel on top of other apps. Allow Display over other apps to use it.</string>
+    <string name="cc_perm_reason_listener">Control Center needs Notification access to keep running in the background and to show media controls.</string>
+    <string name="cc_perm_reason_battery">Allow unrestricted battery use so the system doesn\'t stop Control Center in the background.</string>
+    <string name="cc_perm_reason_write_settings">Control Center needs Modify system settings to change brightness and auto-rotate.</string>
+    <string name="cc_perm_reason_dnd">Control Center needs Do Not Disturb access to turn Do Not Disturb on and off.</string>
+    <string name="cc_perm_reason_bluetooth">Control Center needs the Nearby devices permission to turn Bluetooth on and off.</string>
     <string name="cc_tile_airplane">Airplane mode</string>
     <string name="cc_tile_cellular">Mobile data</string>
     <string name="cc_tile_wifi">Wi-Fi</string>

@@ -295,6 +295,14 @@
     <string name="cc_perm_granted">許可済み</string>
     <string name="cc_perm_missing">未許可</string>
     <string name="cc_perm_open_failed">この端末では権限の画面を開けません</string>
+    <string name="cc_perm_grant">許可する</string>
+    <string name="cc_perm_later">あとで</string>
+    <string name="cc_perm_reason_overlay">コントロールセンターは端のハンドルとパネルを他のアプリの上に表示します。使うには「他のアプリの上に重ねて表示」を許可してください。</string>
+    <string name="cc_perm_reason_listener">コントロールセンターがバックグラウンドで動作し、メディアの操作を表示するには「通知へのアクセス」が必要です。</string>
+    <string name="cc_perm_reason_battery">システムがバックグラウンドでコントロールセンターを停止しないよう、バッテリーの制限なしを許可してください。</string>
+    <string name="cc_perm_reason_write_settings">明るさや自動回転を変更するには「システム設定の変更」が必要です。</string>
+    <string name="cc_perm_reason_dnd">サイレントモードをオン/オフするには「サイレントモードへのアクセス」が必要です。</string>
+    <string name="cc_perm_reason_bluetooth">Bluetoothをオン/オフするには「付近のデバイス」の権限が必要です。</string>
     <string name="cc_tile_airplane">機内モード</string>
     <string name="cc_tile_cellular">モバイルデータ</string>
     <string name="cc_tile_wifi">Wi-Fi</string>
