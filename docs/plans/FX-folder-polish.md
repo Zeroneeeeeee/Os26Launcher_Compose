@@ -83,7 +83,7 @@
 ### Task 4: Nền mờ sau bảng thư mục dưới Android 12 (B16)
 
 **Files:** `HomeScreen.kt`.
-- [ ] Step 1: Dưới API 31, ngay trước `HomeFolderPanel`: Box toàn màn `graphicsLayer { alpha = folderProgress }` + `drawPlainBackdrop(folderFrosted, RectangleShape, FrostedNoEffects, onDrawSurface = tối FOLDER_DIM)` khi `folderFrosted.backdropOrNull != null` (R6). Commit `fix: blur home behind folder panel below Android 12`.
+- [x] Step 1: Dưới API 31, ngay trước `HomeFolderPanel`: Box toàn màn `graphicsLayer { alpha = folderProgress }` + `drawPlainBackdrop(folderFrosted, RectangleShape, FrostedNoEffects, onDrawSurface = tối FOLDER_DIM)` khi `folderFrosted.backdropOrNull != null` (R6). Commit `fix: blur home behind folder panel below Android 12`.
 
 ### Task 5: Docs
 
@@ -104,3 +104,4 @@
 | 2026-11-26 | 1 | `folderCells` (lưới có nhãn, tắt nhãn thì đẩy `paddingTop` nửa phần ô thừa); `pageStride = panelSide` cho vị trí ô, cuộn, vuốt, chấm, `FolderPanelGeometry.pageWidth`; icon nổi của menu theo cỡ khung neo | Rà bằng đọc code, chưa build |
 | 2026-11-26 | 2 | `shrinkToHomeIcon()` ở nhánh rời bảng (bỏ qua khi đích lò xo không đổi); `fitScale(s, rect)` cho mọi `settle` của dock, lưới, thả trong thư mục, bay về | Rà bằng đọc code, chưa build |
 | 2026-11-26 | 3 | `HomeIconMenu(hideIcon)` = `dragFloating` của HomeScreen (phiên kéo hoặc ảnh đang bay về) | Ruling: dùng `dragFloating` thay `drag.session != null` để cú kéo rất ngắn (thả khi menu còn đang đóng) không hiện lại icon nổi. Chưa build |
+| 2026-11-26 | 4 | Dưới API 31: Box toàn màn `drawPlainBackdrop(folderFrosted)` + tối `FOLDER_DIM`, alpha `folderProgress`, ngay dưới `HomeFolderPanel` | Rà bằng đọc code (chữ ký `drawPlainBackdrop` đối chiếu `DsFrosted.dsFrosted`), chưa build |

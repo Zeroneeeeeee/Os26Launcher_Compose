@@ -108,6 +108,9 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.milliseconds
+import com.kyant.backdrop.drawPlainBackdrop
+import androidx.compose.ui.graphics.RectangleShape
+import gambi.global.os26launcher.core.glass.compose.FrostedNoEffects
 
 /**
  * JH1 Task 2 — Home Compose: ảnh nền, các trang lưới, pill, dock. Bố cục như `activity_home.xml`: cột dọc trong vùng trừ thanh hệ thống
@@ -598,6 +601,24 @@ internal fun HomeScreen(
                     },
                     onDismiss = { editMenuOpen = false }
                 )
+            }
+            // FX R6 (B16, chủ dự án 2026-11-26, máy Android 11): dưới API 31 `Modifier.blur` của lớp Home không chạy, Home sau bảng thư mục chỉ
+            // tối. Phủ toàn màn lát cắt ảnh chụp lớp Home đã mờ (`folderFrosted`, cùng nguồn với kính bảng) + tối FOLDER_DIM, hiện dần theo
+            // folderProgress. Ảnh chụp chưa xong (2 khung đầu khi mở) thì chỉ còn lớp tối của lớp Home như trước.
+            if (legacyGlass && folderProgress.value > 0f) {
+                folderFrosted.backdropOrNull?.let { shot ->
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .graphicsLayer { alpha = folderProgress.value }
+                            .drawPlainBackdrop(
+                                backdrop = shot,
+                                shape = { RectangleShape },
+                                effects = FrostedNoEffects,
+                                onDrawSurface = { drawRect(Color.Black.copy(alpha = FOLDER_DIM)) }
+                            )
+                    )
+                }
             }
             // JH3b: menu nhấn giữ và bảng thư mục, trên Home đã làm mờ; ảnh nổi khi kéo vẫn ở trên cùng.
             if (cells != null) {
