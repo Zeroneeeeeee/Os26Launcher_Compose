@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -54,6 +52,23 @@ import gambi.global.os26launcher.ui.settings.compose.SettingsList
 import gambi.global.os26launcher.ui.settings.compose.SettingsListActions
 import kotlinx.coroutines.launch
 import android.os.Build
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.rememberSplineBasedDecay
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.util.VelocityTracker
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
+import kotlinx.coroutines.coroutineScope
+import kotlin.math.roundToInt
 
 /**
  * GT: màn "Tinh chỉnh kính" (mở từ hàng cùng tên trong Cài đặt). Khung xem trước chạy theo ngón tay khi kéo; giá trị chỉ được GHI khi
@@ -144,24 +159,79 @@ class GlassTuningActivity : AppCompatActivity() {
 /**
  * GT + JS1: khung xem trước bo 20, cao `glass_preview_height`: ảnh nền (hoặc aurora khi chưa có) ghi làm lớp backdrop riêng, trên đó
  * thẻ 150 × 88 (vai widget), ô thư mục 72, pill tìm kiếm 132 × 36 và thanh dock cao 72, đều là kính `CARD` đọc [look].
+ *
+ * 2026-11-25 (chủ dự án): ảnh nền phủ khung kiểu center crop (tỉ lệ phủ kín, mở đầu ở giữa ảnh) và kéo được (có quán tính) trong phạm vi
+ * phần ảnh bị cắt, để xem kính khúc xạ / mờ khi nền chạy phía sau. Vị trí chỉ đọc trong pha vẽ: kéo không dựng lại khung.
  */
 @Composable
 private fun GlassPreview(bitmap: Bitmap?, look: State<GlassLook>) {
     val layer = rememberLayerBackdrop()
     val description = stringResource(R.string.gt_preview)
+    val image = remember(bitmap) { bitmap?.asImageBitmap() }
+    var frame by remember { mutableStateOf(IntSize.Zero) }
+    // Cỡ ảnh sau khi phủ khung (center crop) và vị trí góc trên trái của ảnh trong khung, giới hạn [frame − ảnh, 0].
+    val scaled = remember(image, frame) {
+        if (image == null || frame == IntSize.Zero) Size.Zero
+        else {
+            val s = maxOf(frame.width / image.width.toFloat(), frame.height / image.height.toFloat())
+            Size(image.width * s, image.height * s)
+        }
+    }
+    val pan = remember { Animatable(Offset.Zero, Offset.VectorConverter) }
+    LaunchedEffect(scaled) {
+        if (scaled == Size.Zero) return@LaunchedEffect
+        val lower = Offset(frame.width - scaled.width, frame.height - scaled.height)
+        pan.updateBounds(lower, Offset.Zero)
+        pan.snapTo(lower / 2f) // mở đầu ở giữa ảnh, như ContentScale.Crop
+    }
+    val decay = rememberSplineBasedDecay<Offset>()
     Box(
         Modifier
             .padding(horizontal = dimensionResource(R.dimen.settings_group_margin))
             .fillMaxWidth()
             .height(dimensionResource(R.dimen.glass_preview_height))
             .clip(RoundedCornerShape(20.dp))
+            .onSizeChanged { frame = it }
             .semantics { contentDescription = description }
-    ) {
-        Box(Modifier.fillMaxSize().layerBackdrop(layer).dsAurora()) {
-            if (bitmap != null) {
-                Image(bitmap.asImageBitmap(), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+            .pointerInput(scaled) {
+                if (scaled == Size.Zero) return@pointerInput
+                val tracker = VelocityTracker()
+                coroutineScope {
+                    detectDragGestures(
+                        onDragStart = {
+                            tracker.resetTracking()
+                            launch { pan.stop() }
+                        },
+                        onDrag = { change, amount ->
+                            change.consume()
+                            tracker.addPosition(change.uptimeMillis, change.position)
+                            launch { pan.snapTo(pan.value + amount) }
+                        },
+                        onDragEnd = {
+                            val v = tracker.calculateVelocity()
+                            launch { pan.animateDecay(Offset(v.x, v.y), decay) }
+                        }
+                    )
+                }
             }
-        }
+    ) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .layerBackdrop(layer)
+                .dsAurora()
+                .drawBehind {
+                    if (image != null && scaled != Size.Zero) {
+                        val p = pan.value
+                        drawImage(
+                            image,
+                            dstOffset = IntOffset(p.x.roundToInt(), p.y.roundToInt()),
+                            dstSize = IntSize(scaled.width.roundToInt(), scaled.height.roundToInt()),
+                            filterQuality = FilterQuality.Medium
+                        )
+                    }
+                }
+        )
         CompositionLocalProvider(LocalGlassLookOverride provides look) {
             val card = DsCorner.Role(DsCornerRole.CARD)
             Box(Modifier.padding(16.dp).size(150.dp, 88.dp).align(Alignment.TopStart).dsGlass(DsSurface.CARD, card, layer))

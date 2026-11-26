@@ -179,8 +179,9 @@ class IconLoader @Inject constructor(
         val badgePart = if (dataSource.isWorkUser(key.userSerial)) "|badge1" else ""
         // CF Step 7: chỉ nối khi bật, nên file cache đĩa cũ (không nổi) vẫn dùng được
         val bevelPart = if (style.bevel) "|bevel" else ""
-        // 2026-11-23: bo góc icon chỉ nối khi khác mặc định, nên file cache đĩa cũ vẫn dùng được
-        val cornerPart = if (style.corner == GlassLook.DEFAULT.corner) "" else "|corner=${style.corner}"
+        // 2026-11-23: bo góc icon chỉ nối khi khác hình gốc (NEUTRAL_CORNER, không phải DEFAULT: mặc định đổi thì file cũ phải tách), nên file
+        // cache đĩa cũ vẫn dùng được
+        val cornerPart = if (style.corner == GlassLook.NEUTRAL_CORNER) "" else "|corner=${style.corner}"
         val raw =
             "${key.className}|${key.userSerial}|$sizePx|${style.style.name}|${style.tint.name}|$sourceDir$packPart$badgePart$bevelPart$cornerPart"
         return "${key.packageName}__${IconDiskCache.shortHash(raw)}.png"

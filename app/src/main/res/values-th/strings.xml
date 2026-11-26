@@ -686,6 +686,10 @@
     <string name="today_widget_remove_message">วิดเจ็ตจะถูกลบออกจากหน้าวันนี้ คุณเพิ่มกลับได้ด้วยปุ่ม +</string>
 
     <!-- Dong bo tu REF HEAD -->
+    <string name="wallpaper_preset_ios27_1">ทอง</string>
+    <string name="wallpaper_preset_ios27_2">เที่ยงคืน</string>
+    <string name="wallpaper_preset_ios27_3">ฟ้าคราม</string>
+    <string name="wallpaper_preset_ios27_4">ชมพูกุหลาบ</string>
     <string name="wallpaper_preset_lake">ทะเลสาบ</string>
     <string name="wallpaper_preset_blue_wave">คลื่นสีน้ำเงิน</string>
     <string name="wallpaper_preset_red">สีแดง</string>

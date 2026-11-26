@@ -686,6 +686,10 @@
     <string name="today_widget_remove_message">Widget akan dihapus dari Hari Ini. Anda dapat menambahkannya lagi dengan tombol +.</string>
 
     <!-- Dong bo tu REF HEAD -->
+    <string name="wallpaper_preset_ios27_1">Emas</string>
+    <string name="wallpaper_preset_ios27_2">Tengah malam</string>
+    <string name="wallpaper_preset_ios27_3">Biru langit</string>
+    <string name="wallpaper_preset_ios27_4">Mawar</string>
     <string name="wallpaper_preset_lake">Danau</string>
     <string name="wallpaper_preset_blue_wave">Gelombang biru</string>
     <string name="wallpaper_preset_red">Merah</string>

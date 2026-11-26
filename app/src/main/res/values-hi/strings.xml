@@ -687,6 +687,10 @@
     <string name="today_widget_remove_message">विजेट आज के दृश्य से हटा दिया जाएगा। आप इसे + बटन से फिर से जोड़ सकते हैं।</string>
 
     <!-- Dong bo tu REF HEAD -->
+    <string name="wallpaper_preset_ios27_1">सुनहरा</string>
+    <string name="wallpaper_preset_ios27_2">आधी रात</string>
+    <string name="wallpaper_preset_ios27_3">आसमानी नीला</string>
+    <string name="wallpaper_preset_ios27_4">गुलाबी</string>
     <string name="wallpaper_preset_lake">झील</string>
     <string name="wallpaper_preset_blue_wave">नीली लहर</string>
     <string name="wallpaper_preset_red">लाल</string>

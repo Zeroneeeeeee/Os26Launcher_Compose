@@ -71,7 +71,7 @@ object GlassTuning {
     }
 
     // ----- Kính Compose Backdrop (JD Task 2) -----
-    // Ở GlassLook.DEFAULT (refraction 0, gloss 50, blur 50) trả đúng số JC đã kiểm: blur 16 dp, lens 12/24 dp, viền sáng mặc định của
+    // Ở refraction 0, gloss 50, blur 50 (GlassLook.DEFAULT trước 2026-11-25) trả đúng số JC đã kiểm: blur 16 dp, lens 12/24 dp, viền sáng mặc định của
     // thư viện (Highlight.Default, alpha 1).
 
     /** Backdrop: bán kính `blur` (dp). 0 -> 0, 50 -> 16, 100 -> 32. */

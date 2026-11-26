@@ -30,8 +30,8 @@ class IconCache @Inject constructor() {
                 (if (style.pack.isEmpty()) "" else "^${style.pack}") +
                 // CF Step 7: cờ nổi chỉ nối khi bật; tắt thì khóa y hệt trước
                 (if (style.bevel) "+bevel" else "") +
-                // 2026-11-23: bo góc icon chỉ nối khi khác mặc định; mặc định thì khóa y hệt trước
-                (if (style.corner == GlassLook.DEFAULT.corner) "" else "%${style.corner}")
+                // 2026-11-23: bo góc icon chỉ nối khi khác hình gốc (NEUTRAL_CORNER); hình gốc thì khóa y hệt trước
+                (if (style.corner == GlassLook.NEUTRAL_CORNER) "" else "%${style.corner}")
 
     fun get(key: ComponentKey, stamp: String, sizePx: Int, style: IconStyleKey): Bitmap? =
         cache.get(cacheKey(key, stamp, sizePx, style))
