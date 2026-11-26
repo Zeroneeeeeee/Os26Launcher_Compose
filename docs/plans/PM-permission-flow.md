@@ -73,9 +73,9 @@ của Spotlight), `ui/settings/LocationSettingsScreen.kt`, `LocationSettingsView
 
 ### Task 3: Mọi chỗ xin Vị trí / Danh bạ dùng chung (Y3–Y5)
 
-- [ ] Step 1: `LocationSettingsScreen` (hàng quyền, "Cập nhật vị trí") dùng `PermissionRequester` (R4).
-- [ ] Step 2: Danh bạ: `HomeActivity.requestContacts` (hàng mời của Spotlight) và `SearchSettingsScreen` (công tắc Danh bạ) dùng `PermissionRequester`; báo `onContactsPermissionResult(granted, permanentlyDenied = isBlocked())`.
-- [ ] Step 3: Rà: grep `ACTION_APPLICATION_DETAILS_SETTINGS` / `RequestPermission()` cho Vị trí và Danh bạ chỉ còn trong `core/permission`. Commit `feat: blocked dialog for location and contacts everywhere`.
+- [x] Step 1: `LocationSettingsScreen` (hàng quyền, "Cập nhật vị trí") dùng `PermissionRequester` (R4).
+- [x] Step 2: Danh bạ: `HomeActivity.requestContacts` (hàng mời của Spotlight) và `SearchSettingsScreen` (công tắc Danh bạ) dùng `PermissionRequester`; báo `onContactsPermissionResult(granted, permanentlyDenied = isBlocked())`.
+- [x] Step 3: Rà: grep `ACTION_APPLICATION_DETAILS_SETTINGS` / `RequestPermission()` cho Vị trí và Danh bạ chỉ còn trong `core/permission`. Commit `feat: blocked dialog for location and contacts everywhere`.
 
 ### Task 4: Docs
 
@@ -91,3 +91,4 @@ Xem báo cáo cuối lô (TR + FX + PM) trong chat.
 |---|---|---|---|
 | 2026-11-26 | 1 | `DsAlertDialog(dismissOnClickOutside)`; `core/permission/PermissionRequester.kt` (`PermissionKind`, `PermissionDenials`, `PermissionRequester`, `showPermissionBlockedDialog`, `openAppDetailsSettings`); 5 chuỗi × 9; `config-schema.md` mục 2 | XML parse được, chưa build |
 | 2026-11-26 | 2 | `UpdateAutoPlaceUseCase` (tách từ `LocationSettingsViewModel`); `HomeActivity`: widget thời tiết xin quyền khi dùng Vị trí hiện tại + Tự động + chưa có quyền, cấp xong tự cập nhật; Danh bạ của Spotlight dùng `PermissionRequester` (làm sớm cùng commit vì chung chỗ khai báo trong HomeActivity) | Ruling: gộp phần Danh bạ của HomeActivity (Task 3 Step 2) vào commit này — cùng khối khai báo, tách ra thì commit giữa không biên dịch được. Chưa build |
+| 2026-11-26 | 3 | `LocationSettingsScreen` (hàng quyền, Cập nhật vị trí) và `SearchSettingsScreen` (công tắc Danh bạ) dùng `PermissionRequester`; bỏ Toast từ chối (R4) và chuỗi `wx_loc_denied`, `wx_loc_denied_settings` × 9 (không còn dùng) | Rà: `ACTION_APPLICATION_DETAILS_SETTINGS` / `RequestPermission()` cho Vị trí, Danh bạ chỉ còn ở `core/permission` (còn lại: thông báo, Bluetooth, ngoài phạm vi). Chưa build |

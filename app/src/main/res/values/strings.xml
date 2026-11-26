@@ -537,8 +537,6 @@
     <string name="wx_loc_city_unset">Not chosen</string>
     <string name="wx_loc_pick_city">Choose city</string>
     <string name="wx_loc_unavailable">Couldn\'t get your location. Turn on location services or choose a city manually.</string>
-    <string name="wx_loc_denied">Location permission not granted. You can still choose a city manually.</string>
-    <string name="wx_loc_denied_settings">Location permission is blocked. Grant it in the app settings.</string>
     <string name="wx_loc_privacy">Only approximate location is used, fetched once each time: when you tap Update location, or (Automatic mode with permission) at most once every 2 hours while a weather widget showing Current location is visible, and it only changes when you move more than 5 km. Nothing runs in the background and nothing is tracked continuously. Choose manually mode needs no permission and never reads your location.</string>
     <string name="wx_sheet_for_widget">This widget shows:</string>
     <string name="wx_sheet_current_named">Current location: %1$s</string>

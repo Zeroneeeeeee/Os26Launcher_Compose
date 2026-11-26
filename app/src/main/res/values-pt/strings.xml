@@ -500,8 +500,6 @@
     <string name="wx_loc_city_unset">Não escolhida</string>
     <string name="wx_loc_pick_city">Escolher cidade</string>
     <string name="wx_loc_unavailable">Não foi possível obter sua localização. Ative os serviços de localização ou escolha uma cidade manualmente.</string>
-    <string name="wx_loc_denied">Permissão de localização não concedida. Você ainda pode escolher uma cidade manualmente.</string>
-    <string name="wx_loc_denied_settings">A permissão de localização está bloqueada. Conceda nas configurações do app.</string>
     <string name="wx_loc_privacy">Só é usada a localização aproximada, obtida uma vez a cada vez: quando você toca em Atualizar localização ou (modo Automático com permissão) no máximo a cada 2 horas enquanto um widget de clima com Localização atual está visível, e ela só muda se você se deslocar mais de 5 km. Nada roda em segundo plano nem há rastreamento contínuo. O modo Escolher manualmente não precisa de permissão e nunca lê sua localização.</string>
     <string name="wx_sheet_for_widget">Este widget mostra:</string>
     <string name="wx_sheet_current_named">Localização atual: %1$s</string>

@@ -494,8 +494,6 @@
     <string name="wx_loc_city_unset">Belum dipilih</string>
     <string name="wx_loc_pick_city">Pilih kota</string>
     <string name="wx_loc_unavailable">Tidak dapat mendapatkan lokasi Anda. Aktifkan layanan lokasi atau pilih kota secara manual.</string>
-    <string name="wx_loc_denied">Izin lokasi belum diberikan. Anda tetap dapat memilih kota secara manual.</string>
-    <string name="wx_loc_denied_settings">Izin lokasi diblokir. Berikan izin di setelan aplikasi.</string>
     <string name="wx_loc_privacy">Hanya lokasi perkiraan yang dipakai, diambil sekali setiap kali: saat Anda mengetuk Perbarui lokasi, atau (mode Otomatis dengan izin) paling sering setiap 2 jam saat widget cuaca dengan Lokasi saat ini terlihat, dan lokasi hanya berubah jika Anda berpindah lebih dari 5 km. Tidak ada yang berjalan di latar belakang dan tidak ada pelacakan terus-menerus. Mode Pilih manual tidak perlu izin dan tidak pernah membaca lokasi Anda.</string>
     <string name="wx_sheet_for_widget">Widget ini menampilkan:</string>
     <string name="wx_sheet_current_named">Lokasi saat ini: %1$s</string>

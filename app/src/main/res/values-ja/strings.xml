@@ -494,8 +494,6 @@
     <string name="wx_loc_city_unset">未選択</string>
     <string name="wx_loc_pick_city">都市を選択</string>
     <string name="wx_loc_unavailable">現在地を取得できませんでした。位置情報サービスをオンにするか、都市を手動で選んでください。</string>
-    <string name="wx_loc_denied">位置情報の権限がありません。都市を手動で選ぶこともできます。</string>
-    <string name="wx_loc_denied_settings">位置情報の権限がブロックされています。アプリの設定で許可してください。</string>
     <string name="wx_loc_privacy">おおよその位置情報のみを使い、その都度 1 回だけ取得します: 「位置を更新」をタップしたとき、または(自動モードで権限がある場合)現在地を使う天気ウィジェットが表示されている間に最大 2 時間に 1 回です。位置は 5 km 以上移動したときだけ変わります。バックグラウンドでは動作せず、継続的な追跡もしません。手動で選択するモードは権限が不要で、位置情報を読み取りません。</string>
     <string name="wx_sheet_for_widget">このウィジェットの表示:</string>
     <string name="wx_sheet_current_named">現在地: %1$s</string>
