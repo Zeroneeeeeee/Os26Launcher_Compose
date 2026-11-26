@@ -614,8 +614,8 @@
     <string name="onboarding_go_settings">सेटिंग में जाएं</string>
     <string name="onboarding_welcome_title">आपके फ़ोन के लिए लिक्विड ग्लास का रूप</string>
     <string name="onboarding_welcome_subtitle">पारदर्शी आइकॉन, जीवंत वॉलपेपर और स्मूद इफ़ेक्ट — शुरू करने के लिए बस कुछ कदम।</string>
-    <string name="onboarding_theme_title">स्टाइल चुनें</string>
-    <string name="onboarding_theme_subtitle">आप इसे सेटिंग में कभी भी बदल सकते हैं।</string>
+    <string name="onboarding_icon_style_title">आइकन शैली चुनें</string>
+    <string name="onboarding_icon_style_subtitle">आप इसे सेटिंग में कभी भी बदल सकते हैं।</string>
     <string name="onboarding_theme_liquid_glass_27">Liquid Glass 27</string>
     <string name="onboarding_theme_liquid_glass_27_desc">पारदर्शी, अपवर्तक</string>
     <string name="onboarding_theme_classic_26">Classic 26</string>
@@ -633,7 +633,6 @@
     <string name="onboarding_default_step2">सिस्टम डायलॉग में %1$s चुनें</string>
     <string name="onboarding_done_title">सब तैयार है!</string>
     <string name="onboarding_done_subtitle">अपना नया रूप देखें और सेटिंग में कभी भी और बदलाव करें।</string>
-    <string name="onboarding_done_theme">स्टाइल</string>
     <string name="onboarding_done_wallpaper">वॉलपेपर</string>
     <string name="onboarding_done_home">होम स्क्रीन</string>
     <string name="onboarding_done_home_set">डिफ़ॉल्ट बनाया गया</string>

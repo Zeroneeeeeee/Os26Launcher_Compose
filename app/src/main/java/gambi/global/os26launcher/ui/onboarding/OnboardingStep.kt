@@ -15,7 +15,7 @@ enum class OnboardingStep(
     val showSkip: Boolean
 ) {
     WELCOME(R.string.onboarding_start, null, showBack = false, showSkip = true),
-    THEME(R.string.onboarding_continue, null, showBack = true, showSkip = true),
+    ICON_STYLE(R.string.onboarding_continue, null, showBack = true, showSkip = true),
     WALLPAPER(R.string.onboarding_continue, null, showBack = true, showSkip = true),
     DEFAULT_LAUNCHER(R.string.onboarding_set_default, R.string.onboarding_later, showBack = true, showSkip = true),
 

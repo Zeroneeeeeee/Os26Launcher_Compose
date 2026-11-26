@@ -64,12 +64,12 @@
 - Produces: `object IconStyleSamples { fun pick(apps: List<AppItem>): List<AppItem> }` (4 app mẫu, chuyển nguyên từ `IconStylePreviewViewModel.pickSamples`); `IconStyleChoicesViewModel.start(iconPx: Int)`, `val previews: StateFlow<Map<IconStyle, List<Bitmap>>>`; `IconStyleChoices.list: List<IconStyle>` (Mặc định, Kính, Tô màu, 3D, Trong suốt).
 - `OnboardingStep.ICON_STYLE` thay `THEME` (cùng vị trí). `OnboardingViewModel.iconStyle: StateFlow<IconStyle>`, `chooseIconStyle(IconStyle)`; nút "Tiếp tục" ở bước này ghi `appearance.update { it.copy(iconStyle = …) }`.
 
-- [ ] **Step 1:** `IconStyleSamples` + `IconStylePreviewViewModel` gọi nó (không đổi hành vi).
-- [ ] **Step 2:** `IconStyleChoicesViewModel` (Hilt): app hiện (`ObserveVisibleAppsUseCase`) → 4 mẫu → mỗi kiểu một `IconStyleKey(style, tint đang lưu, pack đang lưu, corner = glassLook.corner)` → `iconWithStyle`. Dựng lại khi danh sách mẫu/gói/bo góc đổi.
-- [ ] **Step 3:** `OnboardingViewModel`: bỏ `ApplyThemeUseCase`, `KEY_THEME`; thêm `KEY_ICON_STYLE`; khởi tạo bằng kiểu đang lưu (R2); ghi khi "Tiếp tục".
-- [ ] **Step 4:** `OnboardingScreen`: `IconStylePage` (tiêu đề `onboarding_icon_style_title`, phụ đề `onboarding_icon_style_subtitle`, lưới 2 cột thẻ kính: 4 icon + tên kiểu `settings_icon_style_*`, viền chọn như ô hình nền); hàng tóm tắt 0.5 = `settings_icon_style` + tên kiểu.
-- [ ] **Step 5:** Chuỗi: thêm `onboarding_icon_style_title` × 9; đổi tên `onboarding_theme_subtitle` → `onboarding_icon_style_subtitle` (giữ bản dịch); bỏ `onboarding_theme_title`, `onboarding_done_theme`.
-- [ ] **Step 6:** Rà: grep `OnboardingStep.THEME`, `chooseTheme`, `ui.theme` = 0. Commit `feat: onboarding icon style step replaces theme step`.
+- [x] **Step 1:** `IconStyleSamples` + `IconStylePreviewViewModel` gọi nó (không đổi hành vi).
+- [x] **Step 2:** `IconStyleChoicesViewModel` (Hilt): app hiện (`ObserveVisibleAppsUseCase`) → 4 mẫu → mỗi kiểu một `IconStyleKey(style, tint đang lưu, pack đang lưu, corner = glassLook.corner)` → `iconWithStyle`. Dựng lại khi danh sách mẫu/gói/bo góc đổi.
+- [x] **Step 3:** `OnboardingViewModel`: bỏ `ApplyThemeUseCase`, `KEY_THEME`; thêm `KEY_ICON_STYLE`; khởi tạo bằng kiểu đang lưu (R2); ghi khi "Tiếp tục".
+- [x] **Step 4:** `OnboardingScreen`: `IconStylePage` (tiêu đề `onboarding_icon_style_title`, phụ đề `onboarding_icon_style_subtitle`, lưới 2 cột thẻ kính: 4 icon + tên kiểu `settings_icon_style_*`, viền chọn như ô hình nền); hàng tóm tắt 0.5 = `settings_icon_style` + tên kiểu.
+- [x] **Step 5:** Chuỗi: thêm `onboarding_icon_style_title` × 9; đổi tên `onboarding_theme_subtitle` → `onboarding_icon_style_subtitle` (giữ bản dịch); bỏ `onboarding_theme_title`, `onboarding_done_theme`.
+- [x] **Step 6:** Rà: grep `OnboardingStep.THEME`, `chooseTheme`, `ui.theme` = 0. Commit `feat: onboarding icon style step replaces theme step`.
 
 ### Task 2: Bỏ màn theme, preset, cờ nổi 3D
 
@@ -97,3 +97,4 @@
 
 | Ngày | Task | Việc | Ghi chú |
 |---|---|---|---|
+| 2026-11-26 | 1 | Bước `ICON_STYLE` thay `THEME`: `IconStyleChoicesViewModel` vẽ 4 icon mẫu cho 5 kiểu, `IconStyleSamples` dùng chung với xem trước Cài đặt, `IconStyle.labelRes()` dùng chung; chuỗi `onboarding_icon_style_title` × 9 | Rà bằng grep, chưa build |
