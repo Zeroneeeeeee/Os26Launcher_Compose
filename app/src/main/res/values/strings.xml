@@ -126,6 +126,12 @@
     <string name="home_add_widget">Widgets</string>
     <string name="widget_picker_title">Add widget</string>
     <string name="widget_name_clock">Clock</string>
+    <!-- BW: widget Pin -->
+    <string name="widget_battery_name">Batteries</string>
+    <string name="wp_battery_small_title">Battery</string>
+    <string name="wp_battery_small_desc">Shows this phone\'s battery level and charging status.</string>
+    <string name="widget_battery_description">Battery, %1$d%%</string>
+    <string name="widget_battery_description_charging">Battery, %1$d%%, charging</string>
     <string name="widget_name_calendar">Calendar</string>
     <string name="widget_size_label">%1$d×%2$d</string>
     <string name="widget_remove_title">Remove widget?</string>

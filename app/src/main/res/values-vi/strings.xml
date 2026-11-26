@@ -124,6 +124,12 @@
     <string name="home_add_widget">Tiện ích</string>
     <string name="widget_picker_title">Thêm tiện ích</string>
     <string name="widget_name_clock">Đồng hồ</string>
+    <!-- BW: widget Pin -->
+    <string name="widget_battery_name">Pin</string>
+    <string name="wp_battery_small_title">Pin</string>
+    <string name="wp_battery_small_desc">Hiển thị mức pin và trạng thái sạc của máy.</string>
+    <string name="widget_battery_description">Pin, %1$d%%</string>
+    <string name="widget_battery_description_charging">Pin, %1$d%%, đang sạc</string>
     <string name="widget_name_calendar">Lịch</string>
     <string name="widget_size_label">%1$d×%2$d</string>
     <string name="widget_remove_title">Xóa tiện ích?</string>

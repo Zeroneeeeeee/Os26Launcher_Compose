@@ -842,6 +842,7 @@ class HomeViewModel @Inject constructor(
             WidgetKind.WEATHER -> true // G3e: bấm widget thời tiết mở bảng Thời tiết, HomePagerController chặn trước khi tới đây
             WidgetKind.PHOTO -> true // G3b (ngoại lệ điều phối cho phép, 1 dòng): HomePagerController mở PhotoWidgetActivity trước khi tới đây
             WidgetKind.RECENTS -> true // WF: bấm ô app trong widget tự mở app; thẻ không có hành động riêng
+            WidgetKind.BATTERY -> true // BW: HomeActivity mở màn dùng pin trước khi tới đây
         }
         if (!opened) _events.trySend(HomeEvent.MenuActionFailed)
     }

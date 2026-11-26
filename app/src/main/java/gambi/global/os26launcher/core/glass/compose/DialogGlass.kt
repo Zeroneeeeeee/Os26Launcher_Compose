@@ -20,8 +20,11 @@ import gambi.global.os26launcher.core.glass.GlassTuning
 /**
  * 2026-11-23 (chủ dự án: "các dialog chưa có nền liquid") — kính cho hộp thoại nằm ở CỬA SỔ RIÊNG (`Dialog`). Kính Backdrop không lấy mẫu
  * được cửa sổ Home (khác cửa sổ, khác toạ độ), nên dùng blur nền cửa sổ của hệ thống (`Window.setBackgroundBlurRadius`, API 31+): hệ thống
- * làm mờ phần màn hình phía sau đúng vùng cửa sổ, bo theo hình của nền cửa sổ ([GradientDrawable] bo [cornerPx]). Cửa sổ hộp thoại của Compose
- * với `usePlatformDefaultWidth = false` ôm vừa nội dung, nên vùng mờ trùng thẻ.
+ * làm mờ phần màn hình phía sau đúng vùng cửa sổ, bo theo hình của nền cửa sổ ([GradientDrawable] bo [cornerPx]).
+ *
+ * DW (2026-11-25, đọc mã nguồn `DecorView`): vùng mờ là CẢ cửa sổ — lớp mờ nằm dưới nền gốc trong cùng `LayerDrawable`, nền chỉ cho bán kính bo
+ * góc (`getOutline`), thu nền bằng `InsetDrawable` không thu được vùng mờ. Nên cửa sổ phải ôm vừa thẻ: hộp thoại dùng hàm này phải để
+ * `usePlatformDefaultWidth = true` (với `false`, Compose cho cửa sổ rộng hết màn → khung mờ lớn hơn thẻ) và không vẽ thẻ to hơn cửa sổ.
  *
  * Đọc thông số kính: độ mờ ("Độ mờ", sàn [MIN_BLUR_DP] để chữ đọc được), độ bóng (tint qua [GlassTuning.tint]), bo góc do caller truyền
  * (đã nhân "Bo góc"). Máy không có blur xuyên cửa sổ (API < 31, tiết kiệm pin, ROM tắt) thì nền đặc [opaqueColor] như trước.

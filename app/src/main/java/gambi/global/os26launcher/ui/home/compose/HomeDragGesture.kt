@@ -48,6 +48,15 @@ fun Modifier.homeGestures(
             val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
             if (drag.session != null) drag.cancel() // phiên cũ còn sót (DOWN mới) → huỷ
             val hit = drag.hitTest(down.position)
+            // PW (chủ dự án 2026-11-25, như app mẫu): menu nhấn giữ đang mở thì cử chỉ MỚI thuộc về menu, không về lưới. Cha này xét ở pass Initial
+            // nên thấy cả chạm trên lớp phủ của menu: trước đây nhấn giữ icon khác (kể cả icon nằm dưới thẻ menu) mở menu mới. Giờ bỏ qua hết để
+            // lớp phủ tự xử lý (chạm ngoài = đóng menu, chạm trong = hàng của menu); ngoại lệ (giữ như iOS): nhấn giữ lại CHÍNH icon đang có menu
+            // → "Sửa Màn hình chính" (nhánh `onMenuEditHome` bên dưới), giữ rồi kéo tiếp thì kéo icon đó.
+            drag.menuOwner?.let { owner ->
+                val onOwner = hit is HomeHit.Item && hit.item is DragItem.App && hit.container <= 0L &&
+                    owner.first == hit.item.itemId && owner.second == hit.container
+                if (!onOwner) return@awaitEachGesture
+            }
             val slop = viewConfiguration.touchSlop
             var moved = false
             var lifted = false

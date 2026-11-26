@@ -125,6 +125,12 @@
     <string name="home_add_widget">Widget</string>
     <string name="widget_picker_title">Tambahkan widget</string>
     <string name="widget_name_clock">Jam</string>
+    <!-- BW: widget Pin -->
+    <string name="widget_battery_name">Baterai</string>
+    <string name="wp_battery_small_title">Baterai</string>
+    <string name="wp_battery_small_desc">Menampilkan level baterai dan status pengisian daya ponsel.</string>
+    <string name="widget_battery_description">Baterai, %1$d%%</string>
+    <string name="widget_battery_description_charging">Baterai, %1$d%%, sedang mengisi daya</string>
     <string name="widget_name_calendar">Kalender</string>
     <string name="widget_size_label">%1$d×%2$d</string>
     <string name="widget_remove_title">Hapus widget?</string>

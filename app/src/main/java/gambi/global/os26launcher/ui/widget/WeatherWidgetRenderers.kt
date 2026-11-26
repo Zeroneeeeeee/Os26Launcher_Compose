@@ -1,12 +1,9 @@
 package gambi.global.os26launcher.ui.widget
 
 import android.content.Context
-import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.Typeface
 import android.text.TextPaint
-import androidx.core.content.res.ResourcesCompat
 import android.text.format.DateFormat
 import gambi.global.os26launcher.R
 import gambi.global.os26launcher.domain.model.weather.WeatherCondition
@@ -43,10 +40,11 @@ internal class WeatherRenderer(
     private val primary = context.getColor(R.color.widget_text)
     private val secondary = context.getColor(R.color.widget_text_dim)
 
-    private val fontLight = font(R.font.be_vietnam_pro_light)
-    private val fontRegular = font(R.font.be_vietnam_pro_regular)
-    private val fontSemibold = font(R.font.be_vietnam_pro_semibold)
-    private val fontBold = font(R.font.be_vietnam_pro_bold)
+    // PW (2026-11-25): Inter thay Be Vietnam Pro (gần SF của iOS): tên thành phố Semibold như iOS, nhiệt độ lớn Display Light.
+    private val fontLight = WidgetFont.DISPLAY_LIGHT
+    private val fontRegular = WidgetFont.TEXT_REGULAR
+    private val fontSemibold = WidgetFont.TEXT_SEMIBOLD
+    private val fontBold = WidgetFont.TEXT_SEMIBOLD
 
     /** WU: đơn vị người dùng chọn, đọc lại ở mỗi [prepare] (kể cả bản xem trước). */
     private var unit = TemperatureUnit.DEFAULT
@@ -438,17 +436,8 @@ internal class WeatherRenderer(
         context.getString(R.string.settings_weather_preview_degree, unit.display(tempC))
 
     /** Bóng mềm như nhãn icon (`newWidgetTextPaint`): nền kính trong nên chữ phải đọc được trên mọi ảnh nền. */
-    private fun textPaint(color: Int, typeface: Typeface?, align: Paint.Align): TextPaint =
-        newWidgetTextPaint(context, color).apply {
-            textAlign = align
-            if (typeface != null) this.typeface = typeface
-        }
-
-    private fun font(res: Int): Typeface? = try {
-        ResourcesCompat.getFont(context, res)
-    } catch (e: Resources.NotFoundException) {
-        null // rơi về font mặc định
-    }
+    private fun textPaint(color: Int, font: WidgetFont, align: Paint.Align): TextPaint =
+        newWidgetTextPaint(context, color, font, tabular = true).apply { textAlign = align }
 
     private companion object {
         const val HOURS = 4

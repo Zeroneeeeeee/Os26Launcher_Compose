@@ -30,7 +30,7 @@ internal class PhotoWidgetRenderer(
 ) : WidgetRenderer {
     private val white = context.getColor(R.color.widget_text)
     private val dim = context.getColor(R.color.widget_text_dim)
-    private val titlePaint: TextPaint = newWidgetTextPaint(context, white, bold = true)
+    private val titlePaint: TextPaint = newWidgetTextPaint(context, white, WidgetFont.TEXT_SEMIBOLD)
     private val iconPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = dim
         style = Paint.Style.STROKE
