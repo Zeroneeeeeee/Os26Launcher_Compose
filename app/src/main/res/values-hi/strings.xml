@@ -529,6 +529,7 @@
     <string name="gt_blur_desc">ग्लास के पीछे का बैकग्राउंड कितना धुंधला हो।</string>
     <string name="gt_corner">कोनों की गोलाई</string>
     <string name="gt_corner_desc">50 = जैसा है, 0 = चौकोर। ऐप आइकॉन का आकार भी बदलता है।</string>
+    <string name="gt_note_android13">ध्यान दें: ग्लास इफ़ेक्ट केवल Android 13 और उसके बाद के वर्शन पर लागू होते हैं।</string>
     <string name="gt_reset">डिफ़ॉल्ट पर रीसेट करें</string>
 
     <!-- WN: thông báo thời tiết (tiền tố wn_) -->

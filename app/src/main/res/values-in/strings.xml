@@ -526,6 +526,7 @@
     <string name="gt_blur_desc">Seberapa buram latar di belakang kaca.</string>
     <string name="gt_corner">Sudut membulat</string>
     <string name="gt_corner_desc">50 = tidak berubah, 0 = persegi. Juga mengubah bentuk ikon aplikasi.</string>
+    <string name="gt_note_android13">Catatan: efek kaca hanya berlaku untuk Android 13 ke atas.</string>
     <string name="gt_reset">Setel ulang ke default</string>
 
     <!-- WN: thông báo thời tiết (tiền tố wn_) -->

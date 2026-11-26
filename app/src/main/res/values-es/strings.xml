@@ -532,6 +532,7 @@
     <string name="gt_blur_desc">Cuánto se desenfoca el fondo detrás del cristal.</string>
     <string name="gt_corner">Radio de esquinas</string>
     <string name="gt_corner_desc">50 = sin cambios, 0 = cuadrado. También cambia la forma de los iconos de apps.</string>
+    <string name="gt_note_android13">Nota: los efectos de cristal solo se aplican en Android 13 o posterior.</string>
     <string name="gt_reset">Restablecer valores</string>
 
     <!-- WN: thông báo thời tiết (tiền tố wn_) -->

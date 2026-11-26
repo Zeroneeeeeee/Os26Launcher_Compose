@@ -526,6 +526,7 @@
     <string name="gt_blur_desc">유리 뒤 배경이 흐려지는 정도입니다.</string>
     <string name="gt_corner">모서리 둥글기</string>
     <string name="gt_corner_desc">50 = 그대로, 0 = 사각형. 앱 아이콘 모양도 바뀝니다.</string>
+    <string name="gt_note_android13">참고: 유리 효과는 Android 13 이상에서만 적용됩니다.</string>
     <string name="gt_reset">기본값으로 재설정</string>
 
     <!-- WN: thông báo thời tiết (tiền tố wn_) -->

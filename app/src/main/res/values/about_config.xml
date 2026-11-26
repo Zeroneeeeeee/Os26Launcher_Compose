@@ -12,7 +12,7 @@
 -->
 <resources>
     <!-- 6.3: privacy policy page, opened in the browser. -->
-    <string name="about_privacy_url" translatable="false">https://example.com/PLACEHOLDER-privacy-policy</string>
+    <string name="about_privacy_url" translatable="false">https://nguyetdev-7b7b7.web.app/policy.html</string>
 
     <!-- 6.2: developer name and apps. App 0 is the featured one. -->
     <string name="about_developer_name" translatable="false">[PLACEHOLDER Tên nhà phát triển]</string>

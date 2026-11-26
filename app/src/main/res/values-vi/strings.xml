@@ -525,6 +525,7 @@
     <string name="gt_blur_desc">Độ nhòe của nền phía sau kính.</string>
     <string name="gt_corner">Bo góc</string>
     <string name="gt_corner_desc">50 = giữ nguyên, 0 = vuông. Đổi cả hình icon ứng dụng.</string>
+    <string name="gt_note_android13">Lưu ý: hiệu ứng kính chỉ áp dụng cho Android 13 trở lên.</string>
     <string name="gt_reset">Đặt lại mặc định</string>
 
     <!-- WN: thông báo thời tiết (tiền tố wn_) -->

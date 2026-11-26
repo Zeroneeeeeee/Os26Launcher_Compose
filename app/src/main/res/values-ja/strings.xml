@@ -526,6 +526,7 @@
     <string name="gt_blur_desc">ガラスの後ろの背景のぼかし具合です。</string>
     <string name="gt_corner">角の丸み</string>
     <string name="gt_corner_desc">50 = そのまま、0 = 四角。アプリのアイコンの形も変わります。</string>
+    <string name="gt_note_android13">注意: ガラス効果は Android 13 以降でのみ適用されます。</string>
     <string name="gt_reset">デフォルトに戻す</string>
 
     <!-- WN: thông báo thời tiết (tiền tố wn_) -->
