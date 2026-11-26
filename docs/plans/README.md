@@ -12,7 +12,7 @@
 
 | Plan | Nội dung | Trạng thái |
 |---|---|---|
-| [BW](BW-battery-widget.md) | Widget Pin tự vẽ kiểu iOS | Chờ duyệt Q1–Q6 |
+| [BW](BW-battery-widget.md) | Widget Pin tự vẽ kiểu iOS | Xong 2026-11-26 |
 | [DW](DW-dialog-window-glass.md) | Hộp thoại hết khung mờ thừa (cửa sổ ôm vừa thẻ); nút "+" / "Xong" của Today dạng kính | Xong 2026-11-25 |
 | [PW](PW-menu-block-widget-square-font.md) | Menu nhấn giữ chặn chạm (B1), widget tự vẽ vuông kiểu iOS, font Inter cho widget, tắt nhãn giữ vị trí hàng | Xong 2026-11-25 |
 | [DC](DC-docs-sync.md) | Đồng bộ tài liệu chung, mục lục, backlog | Xong 2026-11-25 |
