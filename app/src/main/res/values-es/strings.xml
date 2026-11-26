@@ -183,6 +183,10 @@
     <string name="search_extras_header_recent">Recientes</string>
     <string name="search_extras_header_frequent">Sugerencias</string>
     <string name="search_extras_header_trending">Búsquedas populares</string>
+    <string name="search_section_shortcuts">Accesos directos</string>
+    <string name="search_section_contacts">Contactos</string>
+    <string name="search_section_settings">Ajustes</string>
+    <string name="search_section_web">Sugerencias de búsqueda</string>
 
     <!-- M8d Task 4 -->
     <string name="search_extras_shortcut_description">%1$s, acceso directo de %2$s</string>

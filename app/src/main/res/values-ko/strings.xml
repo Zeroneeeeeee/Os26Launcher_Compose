@@ -183,6 +183,10 @@
     <string name="search_extras_header_recent">최근</string>
     <string name="search_extras_header_frequent">추천</string>
     <string name="search_extras_header_trending">인기 검색어</string>
+    <string name="search_section_shortcuts">바로가기</string>
+    <string name="search_section_contacts">연락처</string>
+    <string name="search_section_settings">설정</string>
+    <string name="search_section_web">검색 제안</string>
 
     <!-- M8d Task 4 -->
     <string name="search_extras_shortcut_description">%1$s, %2$s의 바로가기</string>

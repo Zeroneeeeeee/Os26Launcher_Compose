@@ -183,6 +183,10 @@
     <string name="search_extras_header_recent">Recentes</string>
     <string name="search_extras_header_frequent">Sugestões</string>
     <string name="search_extras_header_trending">Pesquisas em alta</string>
+    <string name="search_section_shortcuts">Atalhos</string>
+    <string name="search_section_contacts">Contatos</string>
+    <string name="search_section_settings">Configurações</string>
+    <string name="search_section_web">Sugestões de pesquisa</string>
 
     <!-- M8d Task 4 -->
     <string name="search_extras_shortcut_description">%1$s, atalho de %2$s</string>

@@ -209,6 +209,10 @@
     <string name="search_extras_header_recent">Recent</string>
     <string name="search_extras_header_frequent">Suggestions</string>
     <string name="search_extras_header_trending">Trending searches</string>
+    <string name="search_section_shortcuts">Shortcuts</string>
+    <string name="search_section_contacts">Contacts</string>
+    <string name="search_section_settings">Settings</string>
+    <string name="search_section_web">Search suggestions</string>
 
     <!-- M8d Task 4 -->
     <string name="search_extras_shortcut_description">%1$s, shortcut of %2$s</string>

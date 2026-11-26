@@ -182,6 +182,10 @@
     <string name="search_extras_header_recent">Gần đây</string>
     <string name="search_extras_header_frequent">Gợi ý</string>
     <string name="search_extras_header_trending">Tìm kiếm thịnh hành</string>
+    <string name="search_section_shortcuts">Lối tắt</string>
+    <string name="search_section_contacts">Danh bạ</string>
+    <string name="search_section_settings">Cài đặt</string>
+    <string name="search_section_web">Đề xuất tìm kiếm</string>
 
     <!-- M8d Task 4 -->
     <string name="search_extras_shortcut_description">%1$s, lối tắt của %2$s</string>

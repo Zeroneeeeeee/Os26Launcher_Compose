@@ -32,6 +32,12 @@ object PerfSwitches {
     /** SW: vẽ cả trang dựng sẵn đang nằm ngoài màn (như trước Task 3b), để so số đo. */
     const val NO_OFFSCREEN_SKIP = "noOffscreenSkip"
 
+    /**
+     * SP: Spotlight lúc gõ vẽ các thẻ dưới hàng app (lối tắt, danh bạ, Cài đặt, đề xuất) nền phẳng, không kính thật (phương án B), để so
+     * số đo. Mặc định là A (kính thật): chủ dự án chọn A 2026-11-26 dù đo Oppo PKD130 A Janky 7,5 %, P95 25 ms so với B 0,04 %, 10,7 ms.
+     */
+    const val FLAT_SEARCH_CARDS = "flatSearchCards"
+
     private val flags: Set<String> by lazy { if (BuildConfig.PERF_SWITCHES) read() else emptySet() }
 
     val noRealGlass: Boolean get() = NO_REAL_GLASS in flags
@@ -40,6 +46,7 @@ object PerfSwitches {
     val noGlassCache: Boolean get() = NO_GLASS_CACHE in flags
     val noPrebuild: Boolean get() = NO_PREBUILD in flags
     val noOffscreenSkip: Boolean get() = NO_OFFSCREEN_SKIP in flags
+    val flatSearchCards: Boolean get() = FLAT_SEARCH_CARDS in flags
 
     private fun read(): Set<String> = try {
         val process = ProcessBuilder("getprop", PROP).redirectErrorStream(true).start()

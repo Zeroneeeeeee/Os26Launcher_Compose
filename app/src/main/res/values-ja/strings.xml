@@ -183,6 +183,10 @@
     <string name="search_extras_header_recent">最近</string>
     <string name="search_extras_header_frequent">おすすめ</string>
     <string name="search_extras_header_trending">人気の検索</string>
+    <string name="search_section_shortcuts">ショートカット</string>
+    <string name="search_section_contacts">連絡先</string>
+    <string name="search_section_settings">設定</string>
+    <string name="search_section_web">検索候補</string>
 
     <!-- M8d Task 4 -->
     <string name="search_extras_shortcut_description">%1$s、%2$s のショートカット</string>

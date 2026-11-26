@@ -183,6 +183,10 @@
     <string name="search_extras_header_recent">Terbaru</string>
     <string name="search_extras_header_frequent">Saran</string>
     <string name="search_extras_header_trending">Pencarian populer</string>
+    <string name="search_section_shortcuts">Pintasan</string>
+    <string name="search_section_contacts">Kontak</string>
+    <string name="search_section_settings">Setelan</string>
+    <string name="search_section_web">Saran penelusuran</string>
 
     <!-- M8d Task 4 -->
     <string name="search_extras_shortcut_description">%1$s, pintasan dari %2$s</string>

@@ -34,6 +34,10 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.interaction.DragInteraction
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
@@ -100,6 +104,8 @@ import gambi.global.os26launcher.core.designsystem.compose.dsPressHighlight
 import gambi.global.os26launcher.core.glass.compose.dsGlass
 import com.kyant.backdrop.Backdrop
 import gambi.global.os26launcher.core.ui.TransitionMotion
+import gambi.global.os26launcher.core.perf.HomePerfLog
+import gambi.global.os26launcher.core.perf.PerfSwitches
 import gambi.global.os26launcher.domain.config.TransitionStyle
 import gambi.global.os26launcher.domain.model.ScreenRect
 import gambi.global.os26launcher.domain.search.SearchCapacity
@@ -126,8 +132,10 @@ internal class SearchActions(
 /**
  * JS2 — lớp tìm kiếm bằng Compose (thay `SearchOverlayView` + `SearchResultAdapter` + `SpotlightCardDecoration`, JH3a thêm bằng
  * `addContentView`). Vẽ trên cùng của Home (trên App Library). Hai chế độ như bản View:
- * - Spotlight: kết quả phía trên, hàng ô nhập + "Hủy" ở cuối ngay trên bàn phím; ô trống = "Gần đây" (lưới trần) + thẻ thịnh hành; lúc gõ = thẻ
- *   app + thẻ gợi ý web; không cuộn (ViewModel giới hạn số hàng theo [SearchActions.onCapacityChanged]); vuốt lên quá 300 px = đóng.
+ * - Spotlight: kết quả phía trên, hàng ô nhập + "Hủy" ở cuối ngay trên bàn phím; ô trống = "Gần đây" (lưới trần) + thẻ thịnh hành, không
+ *   cuộn (ViewModel giới hạn số hàng theo [SearchActions.onCapacityChanged]); lúc gõ (SP) = hàng app + các section Lối tắt / Danh bạ /
+ *   Cài đặt / Đề xuất tìm kiếm, mỗi section một thẻ, cuộn được (kéo thì hạ bàn phím). Vuốt lên quá 300 px = đóng, trừ khi đang gõ mà
+ *   danh sách cuộn được (để kéo cuộn không đóng lớp).
  * - Library: ô nhập ở đầu, danh sách hàng cuộn được (cuộn thì ẩn bàn phím).
  *
  * Nền: Home phía sau đã nhoè (Activity đọc [onProgress]; API < 31 vẽ ảnh nền mờ [fallbackBackdrop]) + lớp tối `search_scrim` × 0,4. Chạm nền KHÔNG
@@ -157,6 +165,9 @@ internal fun SearchOverlay(
 
     val s = shown
     val spotlight = s.mode == SearchMode.SPOTLIGHT
+    // SP: cuộn của Spotlight lúc gõ; nâng lên đây để cử chỉ vuốt-lên-đóng biết danh sách có cuộn được không.
+    val spotlightScroll = rememberScrollState()
+    val typingNow by rememberUpdatedState(s.query.isNotBlank())
     val currentDismiss by rememberUpdatedState(actions.onDismiss)
     val dismissPx = 300f
     Box(
@@ -178,7 +189,9 @@ internal fun SearchOverlay(
             .pointerInput(spotlight) {
                 awaitEachGesture {
                     val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
-                    var tracking = spotlight
+                    // SP: đang gõ mà danh sách cuộn được thì kéo lên là cuộn, không đóng (đóng bằng Hủy / Back / Home).
+                    val scrollable = spotlightScroll.canScrollForward || spotlightScroll.canScrollBackward
+                    var tracking = spotlight && !(typingNow && scrollable)
                     while (true) {
                         val event = awaitPointerEvent(PointerEventPass.Initial)
                         val change = event.changes.firstOrNull { it.id == down.id } ?: break
@@ -187,6 +200,7 @@ internal fun SearchOverlay(
                             tracking = false
                             // Như SearchDismissGesture trả true: nuốt sự kiện kích hoạt để ô/hàng đang nhấn hủy cú bấm, không mở app lúc đang đóng.
                             change.consume()
+                            HomePerfLog.spotlightSwipeDismissed() // SP: script đo biết lớp đã đóng giữa chừng
                             currentDismiss()
                         }
                     }
@@ -207,13 +221,20 @@ internal fun SearchOverlay(
         }
         Box(Modifier.fillMaxSize().background(colorResource(R.color.search_scrim).copy(alpha = 0.8f * DIM_WITH_BLUR)))
         // Truyền isOpen THẬT (không phải của [shown], vốn luôn là true): đóng thì ẩn bàn phím ngay, mở lại giữa lúc mờ dần thì đặt lại ô nhập.
-        SearchContent(s, state.isOpen, spotlight, actions, backdrop)
+        SearchContent(s, state.isOpen, spotlight, actions, backdrop, spotlightScroll)
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SearchContent(state: SearchUiState, isOpen: Boolean, spotlight: Boolean, actions: SearchActions, backdrop: Backdrop?) {
+private fun SearchContent(
+    state: SearchUiState,
+    isOpen: Boolean,
+    spotlight: Boolean,
+    actions: SearchActions,
+    backdrop: Backdrop?,
+    spotlightScroll: ScrollState
+) {
     val keyboard = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     val focus = remember { FocusRequester() }
@@ -262,25 +283,21 @@ private fun SearchContent(state: SearchUiState, isOpen: Boolean, spotlight: Bool
         val headerH = with(density) { dimensionResource(R.dimen.search_si_header_height).roundToPx() }
         val cellH = with(density) { dimensionResource(R.dimen.search_si_grid_cell_height).roundToPx() }
         val webH = with(density) { dimensionResource(R.dimen.search_si_web_row_height).roundToPx() }
-        val cardGapPx = with(density) { CARD_GAP.roundToPx() }
         val listTopPx = with(density) { LIST_TOP.roundToPx() }
         // Cùng điều kiện với bản View (chữ trong ô nhập): chỉ khoảng trắng vẫn là ô trống.
         val typing = field.text.isNotBlank()
+        // SP: chỉ ô trống còn tính sức chứa (không cuộn); lúc gõ danh sách cuộn, số kết quả do SpotlightLayoutBuilder giới hạn.
         LaunchedEffect(listHeight, typing, state.recentCollapsed) {
-            if (totalH <= 0 || fieldRowH <= 0) return@LaunchedEffect
-            val capacity = if (!typing) {
-                SearchCapacity.calculateEmptyCapacity(
-                    listHeight, listTopPx, headerH, cellH, webH, COLUMNS,
-                    recentRows = if (state.recentCollapsed) 1 else SearchCapacity.EMPTY_RECENT_ROWS
-                )
-            } else {
-                SearchCapacity.calculateTypingCapacity(listHeight, cardGapPx, cellH, webH, cardGapPx, COLUMNS)
-            }
+            if (totalH <= 0 || fieldRowH <= 0 || typing) return@LaunchedEffect
+            val capacity = SearchCapacity.calculateEmptyCapacity(
+                listHeight, listTopPx, headerH, cellH, webH, COLUMNS,
+                recentRows = if (state.recentCollapsed) 1 else SearchCapacity.EMPTY_RECENT_ROWS
+            )
             actions.onCapacityChanged(COLUMNS, capacity.appRows, capacity.webRows)
         }
         Column(Modifier.fillMaxSize().onSizeChanged { totalH = it.height }.windowInsetsPadding(bars).windowInsetsPadding(bottomInsets)) {
             Box(Modifier.weight(1f).fillMaxWidth()) {
-                SpotlightResults(state, actions, backdrop)
+                SpotlightResults(state, actions, backdrop, spotlightScroll)
             }
             Box(Modifier.onSizeChanged { fieldRowH = it.height }) { fieldRow() }
             Spacer(Modifier.height(dimensionResource(R.dimen.search_field_margin_top)))
@@ -389,12 +406,12 @@ private fun StatusMessage(state: SearchUiState, modifier: Modifier): Boolean {
 // ---------------------------------------------------------------------------------------------------------------------------------
 // Spotlight
 
-/** Một đoạn liền nhau của kết quả Spotlight: tiêu đề, khối ô app, hoặc khối hàng web. */
+/** Một đoạn liền nhau của kết quả Spotlight: tiêu đề, khối ô app, khối hàng web, hoặc (SP) khối hàng lối tắt / danh bạ / Cài đặt. */
 private sealed interface Segment {
     data class Header(val header: SearchResult.Header) : Segment
     data class Apps(val apps: List<SearchResult>) : Segment
     data class Web(val rows: List<SearchResult.WebSuggestion>) : Segment
-    data class Other(val result: SearchResult) : Segment
+    data class Rows(val rows: List<SearchResult>) : Segment
 }
 
 private fun segments(results: List<SearchResult>): List<Segment> {
@@ -405,33 +422,63 @@ private fun segments(results: List<SearchResult>): List<Segment> {
             is SearchResult.Header -> out += Segment.Header(r)
             is SearchResult.App -> if (last is Segment.Apps) out[out.lastIndex] = Segment.Apps(last.apps + r) else out += Segment.Apps(listOf(r))
             is SearchResult.WebSuggestion -> if (last is Segment.Web) out[out.lastIndex] = Segment.Web(last.rows + r) else out += Segment.Web(listOf(r))
-            else -> out += Segment.Other(r)
+            else -> if (last is Segment.Rows) out[out.lastIndex] = Segment.Rows(last.rows + r) else out += Segment.Rows(listOf(r))
         }
     }
     return out
 }
 
 @Composable
-private fun SpotlightResults(state: SearchUiState, actions: SearchActions, backdrop: Backdrop?) {
+private fun SpotlightResults(state: SearchUiState, actions: SearchActions, backdrop: Backdrop?, scroll: ScrollState) {
     val typing = state.query.isNotBlank()
-    // Sức chứa (số hàng) tính ở SearchContent theo chiều cao cả lớp + đích bàn phím.
+    // Ô trống: sức chứa (số hàng) tính ở SearchContent theo chiều cao cả lớp + đích bàn phím. Lúc gõ (SP): cuộn được.
     val side = dimensionResource(R.dimen.search_field_margin_horizontal)
+    // SP Task 3 (đo Oppo PKD130 2026-11-26): kính thật cả 5 thẻ (A) Janky 7,5 % so với 0,04 % khi thẻ dưới nền phẳng (B); chủ dự án
+    // vẫn chọn A. Công tắc đo `flatSearchCards` (bản perf) ép thẻ dưới hàng app về nền phẳng để so lại.
+    val lowerBackdrop = if (typing && PerfSwitches.flatSearchCards) null else backdrop
+    if (typing) {
+        val keyboard = LocalSoftwareKeyboardController.current
+        // Đổi truy vấn: về đầu danh sách. Kết quả tới sau (gợi ý web) không kéo vị trí cuộn.
+        LaunchedEffect(state.query) { scroll.scrollTo(0) }
+        // Chỉ cú kéo của người dùng hạ bàn phím (scrollTo ở trên không phát DragInteraction).
+        LaunchedEffect(scroll) {
+            scroll.interactionSource.interactions.collect { if (it is DragInteraction.Start) keyboard?.hide() }
+        }
+        if (HomePerfLog.enabled) {
+            LaunchedEffect(scroll) {
+                try {
+                    snapshotFlow { scroll.isScrollInProgress }.collect { HomePerfLog.spotlightScrolling = it }
+                } finally {
+                    HomePerfLog.spotlightScrolling = false
+                }
+            }
+        }
+    }
     Box(Modifier.fillMaxSize()) {
         if (StatusMessage(state, Modifier)) return@Box
         val segs = remember(state.results) { segments(state.results) }
-        Column(Modifier.fillMaxWidth().padding(start = side, end = side, top = if (typing) CARD_GAP else LIST_TOP)) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .then(if (typing) Modifier.verticalScroll(scroll) else Modifier)
+                .padding(start = side, end = side, top = if (typing) CARD_GAP else LIST_TOP)
+        ) {
             segs.forEachIndexed { i, seg ->
                 val prev = segs.getOrNull(i - 1)
                 if (prev != null && prev !is Segment.Header && seg !is Segment.Header) Spacer(Modifier.height(CARD_GAP))
                 when (seg) {
                     is Segment.Header -> HeaderRow(seg.header, inset = HEADER_SPOTLIGHT_INSET, onToggle = actions.onHeaderToggle)
-                    is Segment.Apps -> Card(enabled = typing, backdrop) { AppGrid(seg.apps, actions) }
-                    is Segment.Web -> Card(enabled = true, backdrop) {
+                    // SP Task 5 (chủ dự án 2026-11-26): lưới "Gần đây" ở ô trống cũng bọc thẻ kính như hàng app lúc gõ.
+                    is Segment.Apps -> Card(enabled = true, backdrop) { AppGrid(seg.apps, actions) }
+                    is Segment.Web -> Card(enabled = true, lowerBackdrop) {
                         seg.rows.forEachIndexed { j, r -> WebRow(r, actions, divider = j < seg.rows.lastIndex) }
                     }
-                    is Segment.Other -> ResultRow(seg.result, actions)
+                    is Segment.Rows -> Card(enabled = true, lowerBackdrop) {
+                        seg.rows.forEach { r -> ResultRow(r, actions) }
+                    }
                 }
             }
+            if (typing) Spacer(Modifier.height(CARD_GAP)) // thẻ cuối không dính sát ô nhập khi cuộn hết
         }
     }
 }
@@ -440,6 +487,8 @@ private fun SpotlightResults(state: SearchUiState, actions: SearchActions, backd
  * Thẻ kết quả kiểu iOS (bo 16); [enabled] = false: không vẽ thẻ (lưới "Gần đây" ở ô trống để trần).
  * 2026-11-23 (chủ dự án): thẻ là liquid glass thật (CARD lấy mẫu [backdrop] = lớp Home chưa nhoè, sàn mờ như ô nhập), bo theo "Bo góc";
  * không có lớp nền thì về màu phẳng `search_card_bg` như cũ. Spotlight có tối đa hai thẻ nên chi phí kính nhỏ.
+ * SP (2026-11-26): lúc gõ có tới 5 thẻ kính thật và cuộn được (phương án A, chủ dự án chọn dù số đo Oppo xấu hơn B); công tắc đo
+ * `flatSearchCards` truyền backdrop = null cho thẻ dưới. Từ SP Task 5 lưới "Gần đây" ở ô trống cũng nằm trong thẻ kính (enabled luôn true).
  */
 @Composable
 private fun Card(enabled: Boolean, backdrop: Backdrop?, content: @Composable () -> Unit) {
@@ -472,16 +521,17 @@ private fun AppGrid(apps: List<SearchResult>, actions: SearchActions) {
 private fun GridCell(app: SearchResult.App, actions: SearchActions) {
     val sizePx = with(LocalDensity.current) { dimensionResource(R.dimen.search_result_icon_size).roundToPx() }
     val icon = rememberResultIcon(app, sizePx, actions.loadIcon, app.item.versionStamp)
-    var rect by remember { mutableStateOf<ScreenRect?>(null) }
+    // SP: giữ toạ độ (không phải State), chỉ tính ô màn hình lúc bấm: trong danh sách cuộn, onGloballyPositioned chạy mỗi khung.
+    val coords = remember { IconCoords() }
     Column(
         Modifier
             .fillMaxWidth()
             .height(dimensionResource(R.dimen.search_si_grid_cell_height))
-            .clickable(interactionSource = null, indication = null, role = Role.Button) { actions.onTapped(app, rect) }
+            .clickable(interactionSource = null, indication = null, role = Role.Button) { actions.onTapped(app, coords.rect()) }
             .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(Modifier.size(60.dp).onGloballyPositioned { rect = it.screenRect() }) {
+        Box(Modifier.size(60.dp).onGloballyPositioned { coords.value = it }) {
             if (icon != null) Image(icon, null, modifier = Modifier.fillMaxSize())
         }
         BasicText(
@@ -544,6 +594,10 @@ private fun HeaderRow(header: SearchResult.Header, inset: androidx.compose.ui.un
             SearchResult.Section.RECENT -> R.string.search_extras_header_recent
             SearchResult.Section.FREQUENT -> R.string.search_extras_header_frequent
             SearchResult.Section.TRENDING -> R.string.search_extras_header_trending
+            SearchResult.Section.SHORTCUTS -> R.string.search_section_shortcuts
+            SearchResult.Section.CONTACTS -> R.string.search_section_contacts
+            SearchResult.Section.SETTINGS -> R.string.search_section_settings
+            SearchResult.Section.WEB -> R.string.search_section_web
         }
     )
     Row(
@@ -618,7 +672,8 @@ private fun ResultRow(result: SearchResult, actions: SearchActions) {
         else -> null
     }
     val icon = if (fixedIcon == null) rememberResultIcon(result, sizePx, actions.loadIcon, stamp) else null
-    var rect by remember { mutableStateOf<ScreenRect?>(null) }
+    // SP: giữ toạ độ (không phải State), chỉ tính ô màn hình lúc bấm: trong danh sách cuộn, onGloballyPositioned chạy mỗi khung.
+    val coords = remember { IconCoords() }
     val label = when (result) {
         is SearchResult.App -> result.item.label
         is SearchResult.Setting -> result.entry.label
@@ -648,12 +703,12 @@ private fun ResultRow(result: SearchResult, actions: SearchActions) {
             .fillMaxWidth()
             .heightIn(min = dimensionResource(R.dimen.search_result_row_height))
             .then(if (description != null) Modifier.semantics(mergeDescendants = true) { contentDescription = description } else Modifier)
-            .clickable(interaction, indication = null, role = Role.Button) { actions.onTapped(result, rect) }
+            .clickable(interaction, indication = null, role = Role.Button) { actions.onTapped(result, coords.rect()) }
             .dsPressHighlight(interaction)
             .padding(horizontal = dimensionResource(R.dimen.search_field_margin_horizontal), vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(Modifier.size(dimensionResource(R.dimen.search_result_icon_size)).onGloballyPositioned { rect = it.screenRect() }) {
+        Box(Modifier.size(dimensionResource(R.dimen.search_result_icon_size)).onGloballyPositioned { coords.value = it }) {
             if (fixedIcon != null) Image(painterResource(fixedIcon), null, modifier = Modifier.fillMaxSize())
             else if (icon != null) Image(icon, null, modifier = Modifier.fillMaxSize())
         }
@@ -699,6 +754,12 @@ private fun rememberResultIcon(result: SearchResult, sizePx: Int, loader: suspen
         value = loader(result, sizePx)?.asImageBitmap()
     }
     return bitmap
+}
+
+/** SP: toạ độ icon kết quả, cập nhật không qua snapshot; [rect] null khi icon đã rời cây (bấm ngay lúc dựng lại). */
+private class IconCoords {
+    var value: androidx.compose.ui.layout.LayoutCoordinates? = null
+    fun rect(): ScreenRect? = value?.takeIf { it.isAttached }?.screenRect()
 }
 
 private fun androidx.compose.ui.layout.LayoutCoordinates.screenRect(): ScreenRect {
