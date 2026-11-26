@@ -41,6 +41,19 @@ class IconLoader @Inject constructor(
         return loadStyled(key, sizePx, style)
     }
 
+    /**
+     * HW: chỉ tra cache RAM, đồng bộ (gọi được trên main thread, lúc dựng khung): đúng bitmap [load] sẽ trả nếu nó đã nằm trong RAM, ngược lại
+     * null. Không đọc đĩa, không vẽ, không chờ kiểu / CSDL icon riêng: chưa biết chắc thì null (caller nạp như cũ), không bao giờ đoán.
+     */
+    fun peek(key: ComponentKey, sizePx: Int): Bitmap? {
+        if (sizePx <= 0) return null
+        val style = styleSource.config.value ?: return null
+        val customName = customIcons.peekName(key) ?: return null
+        // Có icon riêng: chỉ khóa của icon riêng là đúng (không rơi về icon hệ thống: có thể sai hình nếu file icon riêng vẫn còn).
+        if (customName.isNotEmpty()) return cache.get(key, CUSTOM_STAMP_PREFIX + customName, sizePx, style)
+        return cache.get(key, dataSource.sourceDirOf(key).orEmpty(), sizePx, style)
+    }
+
     /** P3-4: icon hệ thống theo kiểu đang chọn, BỎ QUA icon riêng (ô "icon cũ" trong sheet đổi icon). */
     suspend fun loadSystem(key: ComponentKey, sizePx: Int): Bitmap? {
         if (sizePx <= 0) return null

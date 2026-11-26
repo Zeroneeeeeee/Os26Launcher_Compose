@@ -604,6 +604,7 @@
 
     <!-- OB: Onboarding 0.1–0.5 (chữ theo Figma 302:3673) -->
     <string name="onboarding_start">Mulai</string>
+    <string name="home_hello">Halo</string> <!-- HH: màn chào khi mở Home từ "Trải nghiệm" -->
     <string name="onboarding_continue">Lanjutkan</string>
     <string name="onboarding_set_default">Jadikan default</string>
     <string name="onboarding_later">Nanti</string>

@@ -9,7 +9,10 @@ import android.content.Intent
  * một task thường (Back đóng, về Cài đặt).
  */
 object HomeEntry {
+    /** HH: `HomeActivity` phủ màn "Xin chào" (`HomeHello`) tới khi Home hiện đủ. */
+    const val EXTRA_HELLO = "gambi.global.os26launcher.extra.HELLO"
+
     fun open(context: Context) {
-        context.startActivity(Intent(context, HomeActivity::class.java))
+        context.startActivity(Intent(context, HomeActivity::class.java).putExtra(EXTRA_HELLO, true))
     }
 }

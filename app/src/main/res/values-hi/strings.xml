@@ -608,6 +608,7 @@
 
     <!-- OB: Onboarding 0.1–0.5 (chữ theo Figma 302:3673) -->
     <string name="onboarding_start">शुरू करें</string>
+    <string name="home_hello">नमस्ते</string> <!-- HH: màn chào khi mở Home từ "Trải nghiệm" -->
     <string name="onboarding_continue">जारी रखें</string>
     <string name="onboarding_set_default">डिफ़ॉल्ट बनाएं</string>
     <string name="onboarding_later">बाद में</string>

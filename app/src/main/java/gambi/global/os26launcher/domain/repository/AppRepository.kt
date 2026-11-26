@@ -32,6 +32,9 @@ interface AppRepository {
      */
     suspend fun icon(key: ComponentKey, sizePx: Int): Bitmap?
 
+    /** HW: [icon] nếu nó đã nằm trong cache RAM, ngược lại null. Đồng bộ, gọi được trên main thread (Home tra lúc dựng khung đầu). */
+    fun peekIcon(key: ComponentKey, sizePx: Int): Bitmap? = null
+
     /** P3-3: icon vẽ theo kiểu [style] chỉ định, không qua cache (khung xem trước Bộ biểu tượng). */
     suspend fun iconWithStyle(key: ComponentKey, sizePx: Int, style: IconStyleKey): Bitmap?
 

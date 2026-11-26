@@ -91,6 +91,7 @@ import gambi.global.os26launcher.domain.model.HomePage
 import gambi.global.os26launcher.domain.model.PageId
 import gambi.global.os26launcher.domain.model.ScreenRect
 import gambi.global.os26launcher.ui.home.GridStatus
+import gambi.global.os26launcher.ui.home.BackdropStatus
 import gambi.global.os26launcher.ui.home.HomeUiState
 import gambi.global.os26launcher.ui.home.PageMotion
 import kotlinx.coroutines.delay
@@ -98,6 +99,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.coroutineScope
+import gambi.global.os26launcher.domain.model.DockApp
+import gambi.global.os26launcher.domain.layout.FolderPlanner
 import kotlinx.coroutines.withTimeoutOrNull
 import gambi.global.os26launcher.domain.model.WidgetKind
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -158,6 +163,15 @@ internal fun HomeScreen(
     isNavBarHidden: () -> Boolean = { false },
     /** LD Task 4: trạng thái kéo-thả cho Activity (kéo app từ Library sang; ảnh nổi vẽ ở Activity, trên lớp Library). */
     onDragState: (HomeDragState) -> Unit = {},
+    /** HW: icon (khóa, cỡ px) của màn đầu (trang hiện + dock) lúc Home vừa dựng, để Cài đặt nạp sẵn vào RAM cho lần mở sau. */
+    onFirstScreenIcons: (List<Pair<ComponentKey, Int>>) -> Unit = {},
+    /** HH: gọi một lần khi lớp Home đã hiện đủ (icon màn đầu xong, ảnh nền đã nạp xong / không có), để màn "Xin chào" mờ đi. */
+    onHomeShown: () -> Unit = {},
+    /**
+     * HH: Home dựng dưới màn chào (che kín, nét viết chạy trên RenderThread): dựng sẵn mọi trang NGAY từ đầu, không tăng dần theo HW. Đo A17
+     * bản debug 2026-11-26: tăng dần thì các khung dựng trang (356–806 ms) rơi đúng lúc màn chào mờ đi.
+     */
+    prebuildAllAtStart: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val backdrop = rememberLayerBackdrop()
@@ -189,7 +203,7 @@ internal fun HomeScreen(
     }
     val pagerState = rememberPagerState { pages.size }
     // HW: số trang dựng sẵn mỗi bên tăng dần sau khi Home hiện (xem [prebuiltPages], [PREBUILD_STAGE_START_MS]).
-    var prebuildCap by remember { mutableIntStateOf(1) }
+    var prebuildCap by remember { mutableIntStateOf(if (prebuildAllAtStart) PREBUILD_ALL_MAX else 1) }
     val hasPages by rememberUpdatedState(pages.isNotEmpty())
     LaunchedEffect(Unit) {
         snapshotFlow { hasPages }.first { it } // đếm từ lúc có lưới để vẽ, không từ lúc dựng khung rỗng
@@ -199,6 +213,38 @@ internal fun HomeScreen(
             delay(PREBUILD_STAGE_STEP_MS)
         }
     }
+    // HW: Home vừa dựng thì lớp Home (lưới, pill, dock) ẩn tới khi đủ icon màn đầu (trang hiện + dock, cả icon nhỏ trong thư mục) rồi hiện MỘT
+    // lần, không hiện từng icon một. Icon đã có trong RAM (mở lại Home, Cài đặt đã nạp sẵn: HomeWarmup) thì hiện ngay từ khung có lưới.
+    // Chậm quá [ICON_REVEAL_MAX_MS] (vd lần đầu cài, chưa có cache đĩa) thì hiện luôn, icon còn thiếu tự tới như trước. Chỉ một lần mỗi lần dựng.
+    var iconsRevealed by remember { mutableStateOf(false) }
+    val latestState by rememberUpdatedState(state)
+    val latestCells by rememberUpdatedState(cells)
+    val latestPages by rememberUpdatedState(pages)
+    val latestOnFirstScreenIcons by rememberUpdatedState(onFirstScreenIcons)
+    LaunchedEffect(Unit) {
+        val need = withTimeoutOrNull(ICON_REVEAL_WAIT_GRID_MS) {
+            snapshotFlow {
+                val c = latestCells
+                if (c == null || latestState.gridStatus == GridStatus.Loading) null
+                else firstScreenIcons(latestPages.getOrNull(pagerState.currentPage), latestState.dock, c.iconSize)
+            }.filterNotNull().first()
+        }
+        if (need != null) {
+            latestOnFirstScreenIcons(need.map { (app, px) -> app.key to px })
+            withTimeoutOrNull(ICON_REVEAL_MAX_MS) {
+                coroutineScope { need.forEach { (app, px) -> launch { icons.load(app, px) } } }
+            }
+        }
+        iconsRevealed = true
+    }
+    // Khung có lưới mà mọi icon màn đầu đã sẵn (tra đồng bộ) thì hiện luôn trong chính khung đó, không chờ coroutine trên.
+    val iconsReadyNow = !iconsRevealed && cells != null && state.gridStatus != GridStatus.Loading &&
+        firstScreenIcons(pages.getOrNull(pagerState.currentPage), state.dock, cells.iconSize).all { (app, px) -> icons.cached(app, px) != null }
+    val showHomeLayer = iconsRevealed || iconsReadyNow
+    // HH: Home "đủ" = lớp Home đã hiện + ảnh nền không còn đang nạp.
+    val homeShownNow = showHomeLayer && state.backdropStatus != BackdropStatus.Loading
+    val latestOnHomeShown by rememberUpdatedState(onHomeShown)
+    LaunchedEffect(homeShownNow) { if (homeShownNow) latestOnHomeShown() }
     val drag = remember { HomeDragState(scope, density.density) }
     LaunchedEffect(drag) { onDragState(drag) }
     var editMenuOpen by remember { mutableStateOf(false) } // P2-9e: menu "Sửa" của thanh edit mode
@@ -440,7 +486,7 @@ internal fun HomeScreen(
                             val p = libraryProgress()
                             val t = todayProgress()
                             translationX = size.width * (t - p)
-                            alpha = if (p >= 1f || t >= 1f) 0f else 1f
+                            alpha = if (!showHomeLayer || p >= 1f || t >= 1f) 0f else 1f // HW: showHomeLayer, xem iconsRevealed
                         }
                         .onGloballyPositioned { coords.inner = it; syncRects() }
                         .windowInsetsPadding(bars.only(barsSides))
@@ -675,6 +721,35 @@ private const val PREBUILD_ALL_MAX = 5
  * [PREBUILD_STAGE_STEP_MS] một trang mỗi bên, tới [prebuiltPages]. Đo A17 2026-11-26: dựng cả 5 trang ngay khung đầu là các khung 140–180 ms
  * (bản `perf`), 1,2–2 s (bản debug) lúc Home vừa hiện. Vuốt sớm hơn thì pager tự dựng trang cần như khi nhiều trang.
  */
+/**
+ * HW: icon (app, cỡ px) Home vẽ ở màn đầu: app và icon nhỏ trong thư mục ([FolderPlanner.PAGE_SIZE] app đầu, cỡ [folderMiniPx]) của [page] và
+ * dock. Cùng cỡ với lúc vẽ (dock dùng `cells.copy(showLabels = false)`, cùng iconSize với lưới) để trúng đúng khóa cache. Widget không có icon.
+ */
+internal fun firstScreenIcons(page: HomePage?, dock: List<DockApp>, iconPx: Int): List<Pair<AppItem, Int>> {
+    if (iconPx <= 0) return emptyList()
+    val miniPx = folderMiniPx(iconPx)
+    val out = ArrayList<Pair<AppItem, Int>>()
+    fun addFolder(folder: PlacedFolder) = folder.previewApps.take(FolderPlanner.PAGE_SIZE).forEach { out.add(it to miniPx) }
+    page?.items?.forEach { item ->
+        when (item) {
+            is PlacedApp -> out.add(item.app to iconPx)
+            is PlacedFolder -> addFolder(item)
+            else -> Unit
+        }
+    }
+    dock.forEach { d ->
+        d.app?.let { out.add(it to iconPx) }
+        d.folder?.let(::addFolder)
+    }
+    return out
+}
+
+/** HW: chờ lưới sẵn (bố cục + cỡ ô) tối đa chừng này trước khi thôi chờ icon và hiện lớp Home như cũ. */
+private const val ICON_REVEAL_WAIT_GRID_MS = 3000L
+
+/** HW: chờ icon màn đầu tối đa chừng này (tính từ lúc lưới sẵn); cache đĩa trúng thì xong sớm hơn nhiều. */
+private const val ICON_REVEAL_MAX_MS = 700L
+
 private const val PREBUILD_STAGE_START_MS = 1200L
 private const val PREBUILD_STAGE_STEP_MS = 250L
 private const val SETTLED_FRACTION = 0.01f // PG1 G1: lệch dưới 1 % bề rộng trang coi như đã đứng ở trang
