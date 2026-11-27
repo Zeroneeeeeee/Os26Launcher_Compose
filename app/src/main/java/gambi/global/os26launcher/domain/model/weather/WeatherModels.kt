@@ -143,4 +143,7 @@ object WeatherPolicy {
 
     /** WR: dữ liệu bị đánh dấu "cũ" khi quá chu kỳ + chừng này (1 ngày → 25 giờ), để không bị đánh dấu đúng lúc vừa đến hạn làm mới. */
     const val STALE_GRACE_MS = 1 * HOUR_MS
+
+    /** WR (review): thông báo thời tiết tự tải lại khi lần thành công gần nhất cũ hơn chừng này (12 mốc = 36 giờ chỉ đủ "cả ngày mai" khi cache ≤ 2 giờ). */
+    const val NOTIFY_MAX_AGE_MS = 2 * HOUR_MS
 }

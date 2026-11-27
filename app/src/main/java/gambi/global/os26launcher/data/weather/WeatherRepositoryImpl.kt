@@ -32,6 +32,7 @@ import kotlin.math.abs
 import gambi.global.os26launcher.domain.model.weather.WeatherRefreshInterval
 import gambi.global.os26launcher.domain.weather.WeatherPreferencesRepository
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.first
 
 /**
  * G3e Task 4 + WX Task 2 — trạng thái thời tiết THEO TỪNG ĐỊA ĐIỂM cho widget và bảng. Hợp đồng chặn tần suất ở KDoc của [WeatherRepository]:
@@ -93,6 +94,14 @@ class WeatherRepositoryImpl @Inject constructor(
         }
         scope.launch {
             try {
+                // WR (review): đọc chu kỳ TRƯỚC khi mở `loaded`, để lệnh đầu (vd thông báo lúc tiến trình mới dựng) không dùng mặc định 1 ngày.
+                try {
+                    intervalMs = preferences.refreshInterval.first().millis
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    Log.w(TAG, "read refresh interval failed: ${e.javaClass.simpleName}")
+                }
                 val stored = withContext(io) { store.load() }
                 places.awaitLoaded() // địa điểm lấy từ weather_places.json (đã di trú từ G3e nếu cần)
                 mutex.withLock {
@@ -123,7 +132,10 @@ class WeatherRepositoryImpl @Inject constructor(
 
     override fun refreshNow(placeId: String) {
         if (!hasKey || placeId in _refreshing.value) return
-        if (loaded.isCompleted && !manualAllowed(placeId, System.currentTimeMillis())) return // QĐ 2: chặn 1 phút / địa điểm
+        // QĐ 2: chặn 1 phút / địa điểm. Riêng "Vị trí hiện tại" chưa có nơi (Tự động, chưa lấy được vị trí): vẫn chạy để lấy vị trí ngay (QĐ 3);
+        // lần kiểm lại trong mutex sau `updateNow()` mới quyết có gọi mạng hay không.
+        val currentWithoutPlace = placeId == WeatherPlaces.CURRENT && places.resolve(placeId) == null
+        if (loaded.isCompleted && !currentWithoutPlace && !manualAllowed(placeId, System.currentTimeMillis())) return
         _refreshing.update { it + placeId }
         scope.launch {
             try {
@@ -176,9 +188,11 @@ class WeatherRepositoryImpl @Inject constructor(
             // WN: CỐ Ý không gọi locationUpdater.maybeUpdate() như refreshIfStale(CURRENT): thông báo chạy nền, chủ dự án chốt "không vị trí nền"
             // (cũng không có ACCESS_BACKGROUND_LOCATION); nó chỉ dùng "Vị trí hiện tại" như đang lưu.
             val now = System.currentTimeMillis()
-            // Cùng quy tắc 2 giờ / 15 phút / 401 như widget. NGOẠI LỆ MỘT LẦN: mục cache thành công nhưng chưa có đủ mốc dự báo (cache của bản trước WN)
-            // thì tải một lần dù chưa đến hạn 2 giờ (2 lệnh); sau đó có 12 mốc nên không lặp. Lỗi/429 vẫn theo quy tắc thường (không ngoại lệ).
-            if (dueReason(placeId, now) != null || needsForecastOnce(placeId)) doRefresh(placeId, now)
+            // Cùng quy tắc chu kỳ / 15 phút / 401 như widget. NGOẠI LỆ MỘT LẦN: mục cache thành công nhưng chưa có đủ mốc dự báo (cache của bản trước WN)
+            // thì tải một lần dù chưa đến hạn (2 lệnh); sau đó có 12 mốc nên không lặp. Lỗi/429 vẫn theo quy tắc thường (không ngoại lệ).
+            // WR (review): 12 mốc (36 giờ) chỉ đủ "cả ngày mai" khi cache ≤ 2 giờ; chu kỳ widget giờ có thể tới 1 ngày nên thông báo tự tải lại khi
+            // lần thành công gần nhất cũ hơn [WeatherPolicy.NOTIFY_MAX_AGE_MS] (như trước WR; tối đa 2 thông báo / ngày).
+            if (dueReason(placeId, now) != null || needsForecastOnce(placeId) || staleForNotification(placeId, now)) doRefresh(placeId, now)
             cachedSnapshot(placeId)
         }
     }
@@ -189,6 +203,16 @@ class WeatherRepositoryImpl @Inject constructor(
         val entry = validEntry(placeId, place) ?: return false
         return entry.lastResult == RESULT_OK &&
             (entry.snapshot?.forecast?.size ?: 0) < WeatherNotificationConfig.MIN_FORECAST_POINTS
+    }
+
+    /** WR (review): lần thành công gần nhất của [placeId] cũ hơn [WeatherPolicy.NOTIFY_MAX_AGE_MS] (lỗi / 429 vẫn theo [dueReason]). */
+    private fun staleForNotification(placeId: String, now: Long): Boolean {
+        if (keyDead) return false
+        val place = places.resolve(placeId) ?: return false
+        val entry = validEntry(placeId, place) ?: return false
+        if (entry.lastResult != RESULT_OK) return false
+        val age = now - entry.lastAttemptAt
+        return age < 0 || age >= WeatherPolicy.NOTIFY_MAX_AGE_MS
     }
 
     /** Snapshot hợp lệ trong cache của [placeId] (đúng tọa độ), không tải gì. */
