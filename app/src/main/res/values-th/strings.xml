@@ -298,6 +298,9 @@
     <string name="cc_perm_later">ไว้ทีหลัง</string>
     <string name="cc_perm_reason_overlay">ศูนย์ควบคุมแสดงแถบขอบและแผงทับแอปอื่น เปิดสิทธิ์แสดงทับแอปอื่นเพื่อใช้งาน</string>
     <string name="cc_perm_reason_listener">ศูนย์ควบคุมต้องใช้การเข้าถึงการแจ้งเตือนเพื่อทำงานเบื้องหลังและแสดงตัวควบคุมสื่อ</string>
+    <string name="restricted_settings_title">ปลดล็อกการตั้งค่าที่ถูกจำกัด</string>
+    <string name="restricted_settings_message">Android บล็อกการเข้าถึงการแจ้งเตือน เพราะแอปติดตั้งจากไฟล์ APK\n\n1. แตะ เปิดข้อมูลแอป\n2. แตะ ⋮ (มุมขวาบน) เลือก อนุญาตการตั้งค่าที่ถูกจำกัด แล้วยืนยัน\n3. กลับมาที่นี่ หน้าการเข้าถึงการแจ้งเตือนจะเปิดอีกครั้ง ให้เปิดสิทธิ์</string>
+    <string name="restricted_settings_open">เปิดข้อมูลแอป</string>
     <string name="cc_perm_reason_battery">อนุญาตให้ใช้แบตเตอรี่แบบไม่จำกัดเพื่อไม่ให้ระบบหยุดศูนย์ควบคุมที่ทำงานเบื้องหลัง</string>
     <string name="cc_perm_reason_write_settings">ศูนย์ควบคุมต้องใช้สิทธิ์แก้ไขการตั้งค่าระบบเพื่อปรับความสว่างและการหมุนอัตโนมัติ</string>
     <string name="cc_perm_reason_dnd">ศูนย์ควบคุมต้องใช้สิทธิ์ห้ามรบกวนเพื่อเปิด/ปิดโหมดห้ามรบกวน</string>

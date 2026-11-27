@@ -301,6 +301,9 @@
     <string name="cc_perm_later">बाद में</string>
     <string name="cc_perm_reason_overlay">कंट्रोल सेंटर किनारे की पट्टी और पैनल को दूसरे ऐप के ऊपर दिखाता है। इसे इस्तेमाल करने के लिए दूसरे ऐप के ऊपर दिखाएं चालू करें।</string>
     <string name="cc_perm_reason_listener">कंट्रोल सेंटर को बैकग्राउंड में चलते रहने और मीडिया कंट्रोल दिखाने के लिए सूचना का ऐक्सेस चाहिए।</string>
+    <string name="restricted_settings_title">प्रतिबंधित सेटिंग अनलॉक करें</string>
+    <string name="restricted_settings_message">ऐप APK फ़ाइल से इंस्टॉल हुआ है, इसलिए Android ने सूचना का ऐक्सेस रोक दिया।\n\n1. ऐप की जानकारी खोलें पर टैप करें।\n2. ⋮ (ऊपर दाईं ओर) पर टैप करें, प्रतिबंधित सेटिंग की अनुमति दें चुनें और पुष्टि करें।\n3. यहां लौटें। सूचना का ऐक्सेस फिर खुलेगा, उसे चालू करें।</string>
+    <string name="restricted_settings_open">ऐप की जानकारी खोलें</string>
     <string name="cc_perm_reason_battery">बैटरी पर पाबंदी हटाएं ताकि सिस्टम बैकग्राउंड में कंट्रोल सेंटर को बंद न करे।</string>
     <string name="cc_perm_reason_write_settings">चमक और ऑटो-रोटेट बदलने के लिए कंट्रोल सेंटर को सिस्टम सेटिंग में बदलाव करने की अनुमति चाहिए।</string>
     <string name="cc_perm_reason_dnd">परेशान न करें को चालू/बंद करने के लिए कंट्रोल सेंटर को परेशान न करें का ऐक्सेस चाहिए।</string>
