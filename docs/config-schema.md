@@ -123,6 +123,7 @@ Trạng thái (không phải lựa chọn): `search_contacts_asked` (Boolean, fa
 | Trường | Khóa | Kiểu | Mặc định | Màn | Theme | Ai đọc hôm nay |
 |---|---|---|---|---|---|---|
 | `unit` | `weather_temperature_unit` | `TemperatureUnit` (CELSIUS, FAHRENHEIT) | CELSIUS | 1.4 | không | Widget, sheet, thông báo |
+| `refreshInterval` | **`weather_refresh_interval`** | `WeatherRefreshInterval` (H1, H3, H6, H9, H12, D1) | D1 (1 ngày, chủ dự án 2026-11-27) | 1.4 "Làm mới sau" | không | `WeatherRepositoryImpl` (hạn tự làm mới sau lần thành công, mốc "cũ" = chu kỳ + 1 giờ), `CurrentLocationUpdater` (khoảng tối thiểu giữa hai lần lấy vị trí im lặng). WR |
 | thông báo hằng ngày | `weather_notify_daily` | Boolean | false | 1.4 | không | Lịch thông báo |
 | thông báo ngày mai | `weather_notify_tomorrow` | Boolean | false | 1.4 | không | Lịch thông báo |
 
