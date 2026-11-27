@@ -10,14 +10,12 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
  * (khóa trước CF giữ nguyên chuỗi cũ). Thêm/đổi khóa phải sửa `docs/config-schema.md` cùng commit.
  */
 internal object AppearanceKeys {
-    val THEME_ID = stringPreferencesKey("appearance_theme_id")
     val WALLPAPER_KIND = stringPreferencesKey("appearance_wallpaper_kind")
     val WALLPAPER_COLOR = intPreferencesKey("appearance_wallpaper_color")
     val WALLPAPER_PRESET = stringPreferencesKey("appearance_wallpaper_preset") // WI
     val PICKED_IMAGE_NAME = stringPreferencesKey("appearance_picked_image_name") // P3-2
     val ICON_STYLE = stringPreferencesKey("icon_style") // G2b
     val ICON_TINT = stringPreferencesKey("icon_tint") // G2b
-    val ICON_BEVEL = booleanPreferencesKey("appearance_icon_bevel")
     val ICON_PACK = stringPreferencesKey("icon_pack") // IP
     val ICON_SHAPE = stringPreferencesKey("appearance_icon_shape")
     val ICON_CORNER = intPreferencesKey("appearance_icon_corner")

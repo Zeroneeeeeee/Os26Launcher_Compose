@@ -25,6 +25,7 @@ import gambi.global.os26launcher.domain.model.weather.WeatherPlaces
 import gambi.global.os26launcher.ui.weather.CitySearchDialog
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import gambi.global.os26launcher.domain.model.weather.WeatherRefreshInterval
 
 /**
  * WU Task 2 + WX Task 3 — màn "Thời tiết" (1.4): nhóm "Địa điểm theo dõi" (mục "Vị trí hiện tại" luôn có, tối đa 2 thành phố thêm, "+ Thêm địa điểm";
@@ -36,6 +37,8 @@ class WeatherSettingsScreen(private val ctx: SettingsScreenContext) : SettingsSc
     private val activity = ctx.activity
     private val weatherSettings = ViewModelProvider(activity)[WeatherSettingsViewModel::class.java]
     private var unit = TemperatureUnit.DEFAULT
+    private var refreshInterval = WeatherRefreshInterval.DEFAULT // WR
+    private var intervalDialog: DsDialogHandle? = null
     private var places = WeatherPlaces()
     private var removeDialog: DsDialogHandle? = null
     private val citySearch = CitySearchDialog(activity) { weatherSettings.addPlace(it) }
@@ -87,6 +90,10 @@ class WeatherSettingsScreen(private val ctx: SettingsScreenContext) : SettingsSc
         places.saved.forEach { rows.add(placeRow(it)) }
         rows.add(addRow())
         rows.add(SettingsRow.Footer(ID_PLACES_HINT, activity.getString(R.string.wx_places_hint)))
+        // WR (chủ dự án 2026-11-27): nhóm "Làm mới": chu kỳ tự làm mới (thời tiết + vị trí hiện tại).
+        rows.add(SettingsRow.Header(ID_REFRESH_HEADER, R.string.wx_refresh_header))
+        rows.add(SettingsRow.Value(ID_REFRESH_INTERVAL, R.string.wx_refresh_interval, intervalLabel(refreshInterval)))
+        rows.add(SettingsRow.Footer(ID_REFRESH_HINT, activity.getString(R.string.wx_refresh_hint)))
         addNotificationRows(rows)
         return rows
     }
@@ -158,8 +165,27 @@ class WeatherSettingsScreen(private val ctx: SettingsScreenContext) : SettingsSc
         enabled = !places.isFull
     )
 
+    /** WR: "3 giờ", "1 ngày"… */
+    private fun intervalLabel(interval: WeatherRefreshInterval): String {
+        val hours = (interval.millis / HOUR_MS).toInt()
+        return if (hours % 24 == 0) activity.getString(R.string.wx_refresh_day)
+        else activity.resources.getQuantityString(R.plurals.wx_refresh_hours, hours, hours)
+    }
+
+    private fun showIntervalDialog() {
+        if (intervalDialog != null) return
+        val options = WeatherRefreshInterval.entries
+        intervalDialog = SettingsDialogs.singleChoice(
+            activity, activity.getString(R.string.wx_refresh_interval), options.map { intervalLabel(it) }, options.indexOf(refreshInterval)
+        ) { which ->
+            val chosen = options[which]
+            if (chosen != refreshInterval) weatherSettings.onRefreshIntervalChosen(chosen)
+        }.also { d -> d.setOnDismissListener { intervalDialog = null } }
+    }
+
     override fun onValueClicked(row: SettingsRow.Value) {
         when {
+            row.id == ID_REFRESH_INTERVAL -> showIntervalDialog()
             row.id == SettingsRow.ID_WEATHER_ADD -> if (!places.isFull) citySearch.show(R.string.wx_search_add_title)
             row.id == SettingsRow.ID_WEATHER_CURRENT ->
                 if (SettingsScreens.isRegistered(SettingsScreenId.LOCATION)) ctx.open(SettingsScreenId.LOCATION) // màn 1.5 làm ở WX Task 4
@@ -221,6 +247,12 @@ class WeatherSettingsScreen(private val ctx: SettingsScreenContext) : SettingsSc
                 }
             }
             launch {
+                weatherSettings.refreshInterval.collect {
+                    refreshInterval = it
+                    ctx.rerender(false)
+                }
+            }
+            launch {
                 weatherSettings.places.collect {
                     places = it
                     ctx.rerender(false)
@@ -245,6 +277,9 @@ class WeatherSettingsScreen(private val ctx: SettingsScreenContext) : SettingsSc
     }
 
     override fun onDestroy() {
+        intervalDialog?.setOnDismissListener(null)
+        intervalDialog?.dismiss()
+        intervalDialog = null
         removeDialog?.setOnDismissListener(null)
         removeDialog?.dismiss()
         removeDialog = null
@@ -268,5 +303,9 @@ class WeatherSettingsScreen(private val ctx: SettingsScreenContext) : SettingsSc
         const val ID_PLACES_HINT = "weather_places_hint"
         const val ID_NOTIFY_HEADER = "weather_notify_header"
         const val ID_NOTIFY_HINT = "weather_notify_hint"
+        const val ID_REFRESH_HEADER = "weather_refresh_header" // WR
+        const val ID_REFRESH_INTERVAL = "weather_refresh_interval"
+        const val ID_REFRESH_HINT = "weather_refresh_hint"
+        const val HOUR_MS = 60 * 60_000L
     }
 }

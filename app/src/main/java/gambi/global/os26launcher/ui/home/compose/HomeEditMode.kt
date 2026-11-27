@@ -66,6 +66,8 @@ import gambi.global.os26launcher.core.designsystem.DsSurface
 import gambi.global.os26launcher.core.designsystem.compose.dsPressHighlight
 import gambi.global.os26launcher.core.glass.compose.dsGlass
 import kotlin.random.Random
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 
 /**
  * JH2 Task 2 — rung khi ở edit mode, như `Jiggler`: xoay ±2° tuyến tính 160 ms, lặp đảo chiều, pha ngẫu nhiên cho mỗi ô (các ô không rung
@@ -87,9 +89,26 @@ fun Modifier.homeJiggle(enabled: Boolean, scale: Float = 1f): Modifier = if (!en
  * JH2 Task 2 — dấu "−" của edit mode, như `IconCellView.drawBadge`: đường kính [MINUS_BADGE_RATIO] (0,30) × icon, tâm lùi 0,35 bán kính vào trong từ góc trên-trái
  * icon (widget: tâm ở (r/2, r/2) của thẻ), nền xám sáng có bóng, gạch ngang đậm. Vùng chạm 48 dp quanh tâm ([centerX], [centerY]: toạ
  * độ trong ô cha).
+ *
+ * B11 (chủ dự án 2026-11-26): nơi gọi luôn dựng dấu và truyền [visible] = đang ở edit mode; vào edit mode dấu phóng từ 0 (lò xo hơi nảy), ra thì
+ * thu về 0 ([BADGE_HIDE_MS]) rồi mới rời cây. Ô mới dựng khi đang ở edit mode (lướt trang, mở thư mục) hiện ngay, không phóng lại.
  */
 @Composable
-fun HomeRemoveBadge(iconSizePx: Int, centerX: Float, centerY: Float, label: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun HomeRemoveBadge(
+    iconSizePx: Int,
+    centerX: Float,
+    centerY: Float,
+    label: String,
+    modifier: Modifier = Modifier,
+    visible: Boolean = true,
+    onClick: () -> Unit
+) {
+    val scale by animateFloatAsState(
+        if (visible) 1f else 0f,
+        if (visible) spring(dampingRatio = BADGE_SPRING_DAMPING, stiffness = BADGE_SPRING_STIFFNESS) else tween(BADGE_HIDE_MS),
+        label = "removeBadge"
+    )
+    if (!visible && scale <= 0f) return
     val density = LocalDensity.current
     val hit = dimensionResource(R.dimen.icon_badge_hit_size)
     val hitPx = with(density) { hit.toPx() }
@@ -103,10 +122,17 @@ fun HomeRemoveBadge(iconSizePx: Int, centerX: Float, centerY: Float, label: Stri
             .offset { IntOffset((centerX - hitPx / 2).roundToInt(), (centerY - hitPx / 2).roundToInt()) }
             .requiredSize(hit)
             .semantics { contentDescription = label }
-            .clickable(interactionSource = interaction, indication = null, role = Role.Button, onClick = onClick),
+            .clickable(interactionSource = interaction, indication = null, role = Role.Button, enabled = visible, onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
-        Canvas(Modifier.requiredSize(with(density) { diameter.toDp() })) {
+        Canvas(
+            Modifier
+                .requiredSize(with(density) { diameter.toDp() })
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                }
+        ) {
             val r = size.minDimension / 2f
             drawIntoCanvas { canvas ->
                 val paint = Paint().apply { color = BADGE_FILL }
@@ -299,3 +325,8 @@ private const val BADGE_INSET_RATIO = 0.35f
 private val BADGE_FILL = Color(0xF2E5E5EA)
 private val BADGE_SHADOW = Color(0x40000000)
 private val BADGE_GLYPH = Color(0xFF1C1C1E)
+
+// B11: hoạt ảnh dấu "−" khi vào / ra edit mode.
+private const val BADGE_SPRING_DAMPING = 0.55f
+private const val BADGE_SPRING_STIFFNESS = 500f
+private const val BADGE_HIDE_MS = 150

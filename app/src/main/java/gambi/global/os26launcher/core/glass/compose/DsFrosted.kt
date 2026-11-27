@@ -52,6 +52,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.max
 import kotlin.math.roundToInt
+import gambi.global.os26launcher.core.glass.smoothBlurred
+import androidx.compose.runtime.SideEffect
 
 /**
  * PG3 — kính mờ TĨNH (bản Compose của kính tại chỗ `BackdropBlurDrawable` bên XML): ảnh nền đã làm mờ MỘT lần ngoài main thread (bản nhỏ của
@@ -164,26 +166,33 @@ private class FrostListener : BlurredBackdropCache.SmallListener {
 }
 
 /**
- * PG3 Task 2 Step 3 (Q3): ảnh chụp MỘT lần của [backdrop] (lớp Home: ảnh nền + lưới + dock) khi [capture] bật, giữ tới khi [keep] tắt. Dùng cho
- * bảng thư mục dưới API 31 (kính thật không chạy ở đó): chụp xong được làm mờ như ảnh nền ([FrostedWallpaperLayer] với bộ đệm riêng), nên
- * bảng vẫn thấy icon phía sau đã mờ. Chờ hai khung để lớp kịp được ghi sau khi bật; ảnh HARDWARE được chép sang ARGB_8888 ngoài main thread
- * (bộ đệm mờ cần đọc điểm ảnh). Lỗi (lớp chưa ghi, hết bộ nhớ) thì trả null: bảng dùng lớp nền mờ của ảnh nền.
+ * FX (B16 tiếp, chủ dự án 2026-11-27): ảnh chụp lớp Home dưới API 31 đã làm mờ SẴN, nhỏ ([SNAPSHOT_SCALE] = 1/8 cỡ chụp), trả về khi xong.
+ * Thay `rememberLayerSnapshot` + [FrostedWallpaperLayer] (PG3, đã bỏ): chép HARDWARE → ARGB, thu nhỏ và làm mờ trong CÙNG một lần chạy ở luồng nền (không qua
+ * [BlurredBackdropCache], không chờ thêm khung để báo bộ đệm), để ảnh mờ có icon tới kịp lúc bảng thư mục đang phóng. [radiusPx]: bán kính box
+ * blur ở cỡ 1/4 (như kính mờ tĩnh); ở cỡ 1/8 dùng một nửa. Chụp khi [capture] bật, giữ tới khi [keep] tắt; lỗi thì trả null.
+ * Chờ hai khung để lớp kịp được ghi sau khi bật. Đo Vsmart Live 4 (API 30, 2026-11-27, `tools/debug/folder-blur.ps1`): ảnh tới sau 160–200 ms,
+ * lúc hoạt ảnh mở bảng đạt ~0,9 (bảng xong ~250 ms); phần lớn là hai khung chờ (50–70 ms).
  */
 @Composable
-fun rememberLayerSnapshot(backdrop: LayerBackdrop, capture: Boolean, keep: Boolean): Bitmap? {
+fun rememberBlurredLayerSnapshot(backdrop: LayerBackdrop, capture: Boolean, keep: Boolean, radiusPx: Int): Bitmap? {
     var snapshot by remember { mutableStateOf<Bitmap?>(null) }
+    val radius = rememberUpdatedState(radiusPx)
     LaunchedEffect(backdrop, capture) {
         if (!capture) return@LaunchedEffect
         withFrameNanos {}
         withFrameNanos {}
         val shot = try {
             val image = backdrop.graphicsLayer.toImageBitmap()
+            val r = ((radius.value + 1) / 2).coerceAtLeast(1)
             withContext(Dispatchers.Default) {
-                val bitmap = image.asAndroidBitmap()
-                if (bitmap.config == Bitmap.Config.HARDWARE) bitmap.copy(Bitmap.Config.ARGB_8888, false) else bitmap
+                val full = image.asAndroidBitmap()
+                val soft = if (full.config == Bitmap.Config.HARDWARE) full.copy(Bitmap.Config.ARGB_8888, false) else full
+                val w = (soft.width / SNAPSHOT_SCALE).coerceAtLeast(1)
+                val h = (soft.height / SNAPSHOT_SCALE).coerceAtLeast(1)
+                smoothBlurred(soft, w, h, r).also { if (soft !== full) soft.recycle() }
             }
         } catch (e: Throwable) {
-            Log.w(TAG, "layer snapshot failed", e)
+            Log.w(TAG, "blurred layer snapshot failed", e)
             null
         }
         if (shot != null) snapshot = shot
@@ -191,6 +200,20 @@ fun rememberLayerSnapshot(backdrop: LayerBackdrop, capture: Boolean, keep: Boole
     LaunchedEffect(keep) { if (!keep) snapshot = null }
     return snapshot
 }
+
+/**
+ * FX: ghi ảnh chụp đã mờ [small] ([rememberBlurredLayerSnapshot]) vào lớp [frosted] (tạo bằng `rememberFrostedBackdrop(small)`), phủ toàn
+ * [modifier]. Không vẽ gì ra màn. Gán bản mờ ngay sau lần dựng (SideEffect), không chờ thêm khung.
+ */
+@Composable
+fun FrostedSnapshotLayer(frosted: FrostedBackdrop, small: Bitmap?, modifier: Modifier = Modifier) {
+    val image = remember(small) { small?.asImageBitmap() }
+    SideEffect { frosted.small.value = image }
+    Box(modifier.drawBehind { frosted.small.value }.layerBackdrop(frosted.layer))
+}
+
+/** Ảnh chụp sau bảng thư mục thu về 1/8 cạnh trước khi làm mờ (chủ dự án chọn hướng A, 2026-11-27). */
+private const val SNAPSHOT_SCALE = 8
 
 /**
  * PG3 Task 2 — bề mặt kính mờ tĩnh hình [shape] (ô thư mục, pill), màu theo vai trò [role] (`GlassStyle.forRole`, độ bóng theo thông số kính):

@@ -3,7 +3,6 @@ package gambi.global.os26launcher.ui.settings
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import gambi.global.os26launcher.core.designsystem.DsTileColor
-import gambi.global.os26launcher.domain.config.ThemeId
 import gambi.global.os26launcher.domain.model.AppItem
 import gambi.global.os26launcher.core.wallpaper.WallpaperPreset
 
@@ -90,12 +89,11 @@ sealed interface SettingsRow {
     ) : SettingsRow
 
     /**
-     * RS Task 2: card "Launcher hiện tại" đầu trang chủ (Figma 302:1522). [themeId] null = chưa chọn theme (ẩn ảnh, tên "Tùy chỉnh").
+     * RS Task 2: card "Launcher hiện tại" đầu trang chủ (Figma 302:1522). TR (2026-11-26): không còn theme; ảnh + tên là của app.
      * Badge + nút "Đặt làm mặc định" chỉ hiện khi ![isDefault]; nút chỉ hiện khi [canRequest]. Không thuộc card nhóm nào.
      */
     data class LauncherCard(
         override val id: String,
-        val themeId: ThemeId?,
         val isDefault: Boolean,
         val canRequest: Boolean,
         /** HC: versionName cho chip "v1.0.0" của trạng thái "Đã mặc định" (ghi chú Figma 464:2648 mục 8: không có số build). */

@@ -123,7 +123,6 @@
     <!-- G2b: kiểu icon -->
     <string name="settings_icon_style">Gaya ikon</string>
     <string name="settings_icon_style_default">Default</string>
-    <string name="settings_icon_style_transparent">Transparan</string>
     <string name="settings_icon_style_tinted">Berwarna</string>
     <string name="settings_icon_style_3d">3D</string>
     <string name="settings_icon_style_glass">Kaca</string>
@@ -397,7 +396,6 @@
     <string name="settings_hub_group_transitions">Transisi</string>
     <string name="settings_hub_group_icons">Kustomisasi ikon</string>
     <string name="settings_hub_group_contact">Hubungi kami</string>
-    <string name="settings_hub_theme">Layar utama default</string>
     <string name="settings_hub_general">Umum</string>
     <string name="settings_hub_language">Bahasa</string>
     <string name="settings_hub_weather">Cuaca</string>
@@ -419,7 +417,6 @@
     <!-- RS Task 2: card "Launcher hiện tại" đầu trang chủ Cài đặt (Figma 302:1522). -->
     <string name="settings_launcher_card_current">Layar utama saat ini</string>
     <string name="settings_launcher_card_not_default">Belum dijadikan default</string>
-    <string name="settings_launcher_card_custom">Kustom</string>
     <string name="settings_launcher_card_welcome">Selamat datang</string>
     <string name="settings_launcher_card_welcome_desc">Pusat kontrol milik Anda sendiri. Sesuaikan setiap detail agar layar utama sesuai gaya Anda.</string>
     <string name="settings_launcher_card_explore">Jelajahi</string>
@@ -428,10 +425,6 @@
     <string name="hero_default_set_toast">Ditetapkan sebagai default</string>
     <!-- HC Task 3: tiêu đề màn 6.2 (Figma "Ứng dụng khác"; hàng trên trang chủ giữ settings_hub_more_apps). -->
     <string name="settings_more_apps_title">Aplikasi lainnya</string>
-    <!-- RS Task 6: màn 1.1 Màn hình chính mặc định (Figma 302:1738). -->
-    <string name="settings_theme_subtitle">Setiap peluncur mengubah layar utama, ikon, dan efek Anda.</string>
-    <string name="settings_theme_apply_default">Terapkan &amp; jadikan default</string>
-    <string name="settings_theme_apply">Terapkan</string>
     <!-- RS Task 7: card xem trước thời tiết (dữ liệu mẫu) ở màn 1.4. -->
     <string name="settings_weather_preview_degree">%1$d°</string>
     <string name="settings_weather_preview_high_low">T %1$s · R %2$s</string>
@@ -444,7 +437,6 @@
     <!-- WI: tên 5 hình nền cài sẵn (ảnh thử, xem plan WI) ở 0.3 và 2.2; nút ngắn của hộp hỏi đặt mặc định khi về Home. -->
     <string name="default_prompt_set">Atur sekarang</string>
     <!-- RS Task 8: giờ minh họa trên ô ảnh nền (Figma 2.2). -->
-    <string name="settings_theme_note">Dialog sistem akan terbuka agar Anda dapat memilih aplikasi layar utama.</string>
     <string name="settings_hub_version">Versi %1$s</string>
     <!-- AB: nhóm Liên hệ (tiền tố about_) -->
     <string name="about_rate_title">Bagaimana pendapat Anda tentang aplikasi ini?</string>
@@ -513,9 +505,7 @@
     <string name="wx_loc_city_unset">Belum dipilih</string>
     <string name="wx_loc_pick_city">Pilih kota</string>
     <string name="wx_loc_unavailable">Tidak dapat mendapatkan lokasi Anda. Aktifkan layanan lokasi atau pilih kota secara manual.</string>
-    <string name="wx_loc_denied">Izin lokasi belum diberikan. Anda tetap dapat memilih kota secara manual.</string>
-    <string name="wx_loc_denied_settings">Izin lokasi diblokir. Berikan izin di setelan aplikasi.</string>
-    <string name="wx_loc_privacy">Hanya lokasi perkiraan yang dipakai, diambil sekali setiap kali: saat Anda mengetuk Perbarui lokasi, atau (mode Otomatis dengan izin) paling sering setiap 2 jam saat widget cuaca dengan Lokasi saat ini terlihat, dan lokasi hanya berubah jika Anda berpindah lebih dari 5 km. Tidak ada yang berjalan di latar belakang dan tidak ada pelacakan terus-menerus. Mode Pilih manual tidak perlu izin dan tidak pernah membaca lokasi Anda.</string>
+    <string name="wx_loc_privacy">Hanya lokasi perkiraan yang dipakai, diambil sekali setiap kali: saat Anda mengetuk Perbarui lokasi atau tombol muat ulang di widget, atau (mode Otomatis dengan izin) paling sering sekali per interval “Muat ulang setiap” (Setelan → Cuaca) saat widget cuaca dengan Lokasi saat ini terlihat, dan lokasi hanya berubah jika Anda berpindah lebih dari 5 km. Tidak ada yang berjalan di latar belakang dan tidak ada pelacakan terus-menerus. Mode Pilih manual tidak perlu izin dan tidak pernah membaca lokasi Anda.</string>
     <string name="wx_sheet_for_widget">Widget ini menampilkan:</string>
     <string name="wx_sheet_current_named">Lokasi saat ini: %1$s</string>
     <string name="wx_sheet_current_unset">Lokasi saat ini (tidak diketahui)</string>
@@ -622,16 +612,8 @@
     <string name="onboarding_go_settings">Ke Setelan</string>
     <string name="onboarding_welcome_title">Tampilan kaca cair untuk ponsel Anda</string>
     <string name="onboarding_welcome_subtitle">Ikon transparan, wallpaper hidup, dan efek halus — hanya beberapa langkah untuk memulai.</string>
-    <string name="onboarding_theme_title">Pilih gaya</string>
-    <string name="onboarding_theme_subtitle">Anda dapat mengubahnya kapan saja di Setelan.</string>
-    <string name="onboarding_theme_liquid_glass_27">Liquid Glass 27</string>
-    <string name="onboarding_theme_liquid_glass_27_desc">Transparan, membiaskan</string>
-    <string name="onboarding_theme_classic_26">Classic 26</string>
-    <string name="onboarding_theme_classic_26_desc">Hangat, ikon warna lembut</string>
-    <string name="onboarding_theme_minimal">Minimal</string>
-    <string name="onboarding_theme_minimal_desc">Sederhana, garis tipis</string>
-    <string name="onboarding_theme_dark_pro">Dark Pro</string>
-    <string name="onboarding_theme_dark_pro_desc">Latar gelap, ikon bulat</string>
+    <string name="onboarding_icon_style_title">Pilih gaya ikon</string>
+    <string name="onboarding_icon_style_subtitle">Anda dapat mengubahnya kapan saja di Setelan.</string>
     <string name="onboarding_badge_new">BARU</string>
     <string name="onboarding_wallpaper_title">Pilih wallpaper</string>
     <string name="onboarding_wallpaper_subtitle">Wallpaper yang bagus membuat efek kaca lebih menonjol.</string>
@@ -641,7 +623,6 @@
     <string name="onboarding_default_step2">Pilih %1$s di dialog sistem</string>
     <string name="onboarding_done_title">Semua sudah siap!</string>
     <string name="onboarding_done_subtitle">Jelajahi tampilan baru Anda dan sesuaikan kapan saja di Setelan.</string>
-    <string name="onboarding_done_theme">Gaya</string>
     <string name="onboarding_done_wallpaper">Wallpaper</string>
     <string name="onboarding_done_home">Layar utama</string>
     <string name="onboarding_done_home_set">Dijadikan default</string>
@@ -761,4 +742,19 @@
     </plurals>
     <string name="icon_style_preview_description">Pratinjau gaya ikon yang dipilih</string>
     <string name="settings_search_suggestions_description">Penelusuran populer saat kolom penelusuran kosong</string>
+    <!-- PM (2026-11-26): hộp "quyền bị chặn" (core/permission/PermissionRequester). -->
+    <string name="perm_blocked_grant">Beri izin</string>
+    <string name="perm_blocked_location_title">Izin lokasi diperlukan</string>
+    <string name="perm_blocked_location_message">Cuaca memakai perkiraan lokasi Anda untuk menampilkan cuaca di tempat Anda. Lokasi hanya dipakai untuk cuaca dan tidak dilacak terus-menerus. Anda telah menolak izin ini, jadi Android tidak akan bertanya lagi. Ketuk Beri izin, lalu Izin → Lokasi → Izinkan.</string>
+    <string name="perm_blocked_contacts_title">Izin kontak diperlukan</string>
+    <string name="perm_blocked_contacts_message">Penelusuran membaca kontak agar Anda bisa mencari orang berdasarkan nama lalu menelepon atau mengirim pesan dengan cepat. Kontak hanya dibaca di ponsel ini dan tidak pernah dikirim ke mana pun. Anda telah menolak izin ini, jadi Android tidak akan bertanya lagi. Ketuk Beri izin, lalu Izin → Kontak → Izinkan.</string>
+    <!-- WR (2026-11-27): chu kỳ "Làm mới sau" (Cài đặt → Thời tiết) và nút làm mới trên widget. -->
+    <string name="wx_refresh_header">Muat ulang</string>
+    <string name="wx_refresh_interval">Muat ulang setiap</string>
+    <plurals name="wx_refresh_hours">
+        <item quantity="other">%d jam</item>
+    </plurals>
+    <string name="wx_refresh_day">1 hari</string>
+    <string name="wx_refresh_hint">Widget cuaca dimuat ulang sesuai interval ini saat terlihat, dan Lokasi saat ini juga diperiksa dengan interval yang sama. Ketuk ikon muat ulang di widget untuk memuat sekarang.</string>
+    <string name="wx_refresh_button">Muat ulang cuaca</string>
 </resources>

@@ -4,7 +4,9 @@ import gambi.global.os26launcher.domain.model.weather.GeoPlace
 import gambi.global.os26launcher.domain.model.weather.WeatherSnapshot
 
 /**
- * G3e — nguồn dữ liệu thời tiết. Bản hiện thực duy nhất ở nhánh này: OpenWeatherMap ([gambi.global.os26launcher.data.weather.OpenWeatherMapProvider]).
+ * G3e — nguồn dữ liệu thời tiết. WM: bản đang dùng là [gambi.global.os26launcher.data.weather.FallbackWeatherProvider] — OpenWeatherMap
+ * ([gambi.global.os26launcher.data.weather.OpenWeatherMapProvider]) chính, Open-Meteo ([gambi.global.os26launcher.data.weather.OpenMeteoProvider])
+ * dự phòng khi OWM lỗi.
  * Muốn đổi sang proxy/backend: viết bản hiện thực mới và đổi một dòng ở `WeatherModule`; widget và repository không đổi.
  *
  * Mọi hàm là suspend, chạy được trên luồng bất kỳ (bản hiện thực tự chuyển sang IO), và báo lỗi bằng

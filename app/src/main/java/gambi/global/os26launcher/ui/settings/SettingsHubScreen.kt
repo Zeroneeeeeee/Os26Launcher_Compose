@@ -41,12 +41,6 @@ object SettingsHubLayout {
     val groups: List<HubGroup> = listOf(
         HubGroup(
             "general", R.string.settings_hub_group_general, listOf(
-                HubEntry( // RS Task 6: màn 1.1 là Activity riêng (lưới thẻ + nút cố định), không qua khung danh sách
-                    "hub_theme",
-                    R.string.settings_hub_theme,
-                    HubTarget.External(ThemeSettingsActivity::class.java),
-                    tile(R.drawable.ds_ic_home, DsTileColor.BLUE)
-                ),
                 // HF: nhãn hàng "Chung" như Figma 302:1492 (dùng chung string tên nhóm); màn 1.2 vẫn dùng settings_hub_general
                 screen(SettingsScreenId.GENERAL, R.string.settings_hub_group_general, tile(R.drawable.ds_ic_general, DsTileColor.SLATE)),
                 screen(SettingsScreenId.LANGUAGE, R.string.settings_hub_language, tile(R.drawable.ds_ic_language, DsTileColor.SKY)),
@@ -168,7 +162,6 @@ class SettingsHubScreen(private val ctx: SettingsScreenContext) : SettingsScreen
         rows.add(
             SettingsRow.LauncherCard(
                 SettingsRow.ID_DEFAULT_LAUNCHER,
-                themeId = state.themeId,
                 isDefault = state.isDefaultLauncher,
                 canRequest = state.canRequestDefault,
                 versionName = BuildConfig.VERSION_NAME

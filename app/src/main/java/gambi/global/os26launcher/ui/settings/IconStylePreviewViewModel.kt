@@ -64,13 +64,12 @@ class IconStylePreviewViewModel @Inject constructor(
         val style: IconStyle,
         val tint: IconTint,
         val pack: String?,
-        val bevel: Boolean,
         val corner: Int
     )
 
     private val selection = combine(
-        appearance.config.map { StyleParts(it.iconStyle, it.iconTint, it.iconPack, it.iconBevel, it.glassLook.corner) }.distinctUntilChanged(),
-        observeVisibleApps().filter { it.isNotEmpty() }.map(::pickSamples).distinctUntilChanged()
+        appearance.config.map { StyleParts(it.iconStyle, it.iconTint, it.iconPack, it.glassLook.corner) }.distinctUntilChanged(),
+        observeVisibleApps().filter { it.isNotEmpty() }.map(IconStyleSamples::pick).distinctUntilChanged()
     ) { style, samples -> Selection(style, samples) }
 
     /**
@@ -102,32 +101,11 @@ class IconStylePreviewViewModel @Inject constructor(
     private suspend fun render(sel: Selection): List<Bitmap> {
         val s = sel.config
         val packKey = s.pack?.let { withContext(io) { iconPacks.keyOf(it) } }.orEmpty()
-        val key = IconStyleKey(s.style, s.tint, packKey, IconStyleKey.bevelFor(s.style, s.bevel), s.corner)
+        val key = IconStyleKey(s.style, s.tint, packKey, corner = s.corner)
         return sel.samples.mapNotNull { appRepository.iconWithStyle(it.key, iconSizePx, key) }
-    }
-
-    /**
-     * 4 app mẫu: Thời tiết, Máy ảnh, Cài đặt, Lịch (khớp theo tên gói, như app phổ thông trên máy), thiếu thì bù app hệ thống rồi app bất
-     * kỳ. Mỗi gói một lần.
-     */
-    private fun pickSamples(apps: List<AppItem>): List<AppItem> {
-        val out = ArrayList<AppItem>(SAMPLE_COUNT)
-        for (hint in SAMPLE_HINTS) {
-            apps.firstOrNull { a -> a.key.packageName.contains(hint, ignoreCase = true) && out.none { it.key.packageName == a.key.packageName } }
-                ?.let(out::add)
-        }
-        for (a in apps.filter { it.isSystem } + apps) {
-            if (out.size >= SAMPLE_COUNT) break
-            if (out.none { it.key.packageName == a.key.packageName }) out.add(a)
-        }
-        return out.take(SAMPLE_COUNT)
     }
 
     private companion object {
         const val TAG = "IconStylePreviewVM"
-        const val SAMPLE_COUNT = 4
-
-        /** Đoạn tên gói của app mẫu theo thứ tự ưu tiên (chủ dự án: icon thời tiết hoặc app phổ thông). */
-        val SAMPLE_HINTS = listOf("weather", "camera", "android.settings", "calendar")
     }
 }

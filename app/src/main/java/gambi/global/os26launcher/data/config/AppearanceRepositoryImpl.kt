@@ -7,7 +7,6 @@ import androidx.datastore.preferences.core.edit
 import gambi.global.os26launcher.domain.config.AppearanceConfig
 import gambi.global.os26launcher.domain.config.AppearanceRepository
 import gambi.global.os26launcher.domain.config.SurfaceTone
-import gambi.global.os26launcher.domain.config.ThemeId
 import gambi.global.os26launcher.domain.config.enumFromName
 import gambi.global.os26launcher.domain.model.GlassCustom
 import gambi.global.os26launcher.domain.model.GlassElement
@@ -42,7 +41,6 @@ class AppearanceRepositoryImpl @Inject constructor(
         val d = AppearanceConfig()
         val dl = GlassLook.DEFAULT
         return AppearanceConfig(
-            themeId = p[K.THEME_ID]?.let { name -> ThemeId.entries.firstOrNull { it.name == name } },
             wallpaperKind = enumFromName(p[K.WALLPAPER_KIND], d.wallpaperKind),
             wallpaperColor = p[K.WALLPAPER_COLOR] ?: d.wallpaperColor,
             wallpaperPreset = p[K.WALLPAPER_PRESET]?.takeIf { it.isNotBlank() }, // WI
@@ -50,7 +48,6 @@ class AppearanceRepositoryImpl @Inject constructor(
             // Không valueOf: tên lạ (bản cũ đổi tên) rơi về mặc định thay vì crash cả Flow.
             iconStyle = IconStyle.fromName(p[K.ICON_STYLE]),
             iconTint = IconTint.fromName(p[K.ICON_TINT]),
-            iconBevel = p[K.ICON_BEVEL] ?: d.iconBevel,
             iconPack = p[K.ICON_PACK]?.takeIf { it.isNotBlank() },
             iconShape = enumFromName(p[K.ICON_SHAPE], d.iconShape),
             iconCorner = p.percent(K.ICON_CORNER, d.iconCorner),
@@ -78,14 +75,12 @@ class AppearanceRepositoryImpl @Inject constructor(
     }
 
     private fun MutablePreferences.write(old: AppearanceConfig, new: AppearanceConfig) {
-        putNullableEnumIfChanged(K.THEME_ID, old.themeId, new.themeId)
         putEnumIfChanged(K.WALLPAPER_KIND, old.wallpaperKind, new.wallpaperKind)
         putIfChanged(K.WALLPAPER_COLOR, old.wallpaperColor, new.wallpaperColor)
         putNullableIfChanged(K.WALLPAPER_PRESET, old.wallpaperPreset, new.wallpaperPreset) // WI
         putNullableIfChanged(K.PICKED_IMAGE_NAME, old.pickedImageName, new.pickedImageName) // P3-2
         putEnumIfChanged(K.ICON_STYLE, old.iconStyle, new.iconStyle)
         putEnumIfChanged(K.ICON_TINT, old.iconTint, new.iconTint)
-        putIfChanged(K.ICON_BEVEL, old.iconBevel, new.iconBevel)
         putNullableIfChanged(K.ICON_PACK, old.iconPack, new.iconPack)
         putEnumIfChanged(K.ICON_SHAPE, old.iconShape, new.iconShape)
         putIfChanged(K.ICON_CORNER, old.iconCorner, new.iconCorner)

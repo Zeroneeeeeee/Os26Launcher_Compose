@@ -11,11 +11,7 @@
 | B6 | Thẻ xác nhận xóa trên máy dưới Android 12: nền là kính mờ tĩnh (`dsGlass(frosted = …)`) thay cho nền tối trong suốt | Lỗi hiển thị | Thấp | `PD-picker-menus-dialogs.md` (ngoài phạm vi), ảnh Live 4 | Theo quyết định "dưới API 31 chỉ mờ tĩnh" |
 | B7 | Kiểm TalkBack (K1 mục 5c) | Kiểm | — | `PG4-home-perf-and-device-checks.md` | Chủ dự án bỏ qua 2026-11-23 |
 | B8 | Nhãn tên dưới widget tự vẽ như iOS (dùng phần đáy để trống của thẻ vuông) | Tính năng | — | `PW-menu-block-widget-square-font.md` (ngoài phạm vi), FL Q9 | |
-| B9 | `GridMetricsTest` hỏng 4/112 test (default sizing, dock cap, measure at density one, cellAt): test viết từ `2615d5d`, chưa cập nhật theo `5d96e78` của anh Nam (icon scale 1, nhãn 12,5 sp, `ROW_GUTTER_SCALE = 0.5` nên `gutterY` 8 → 4, hàng thấp hơn); code đúng thiết kế, cần sửa số trong test | Test | Thấp | `.\gradlew.bat :app:testDebugUnitTest` (chủ dự án chạy 2026-11-26, sau merge `016c6d0`) | Chủ dự án 2026-11-26: bỏ qua, để anh Nam sửa; `master` cũng hỏng đúng 4 test này |
-| B14 | Ghép hình nền cài sẵn với theme cho đúng chủ đề (đã thêm ảnh mới `wp_ios27_1..4`; ảnh xem trước theme `onb_theme_*` và nền màu của preset vẫn theo bản cũ; áp theme hiện không đổi nền, quyết định WI 2026-11-18) | Tính năng | — | Chủ dự án 2026-11-26 | Thay B10. Chủ dự án 2026-11-26 chốt ghép: Liquid Glass 27 → `wp_ios27_3`; Classic 26 → `wp_ios27_1`; Minimal → `wp_sunset`; Dark Pro → `wp_ios27_2` (lụa xám tối) (chủ dự án sửa lần cuối 14:56). Chọn theme thì đổi nền theo + làm lại ảnh xem trước `onb_theme_*` (đề xuất (c), chưa xác nhận) |
-| B15 | Cài đặt → Vị trí: "Cập nhật vị trí" hiện "Vị trí hiện tại" thay vì tên nơi. Nguyên nhân (đọc code): `LocationSettingsViewModel.updateAutoPlace` lấy được tọa độ nhưng `reverse` (OpenWeatherMap `geo/1.0/reverse`) lỗi / rỗng thì LƯU chữ dự phòng `wx_places_current` làm tên nơi; cập nhật im lặng (`CurrentLocationUpdater`) chỉ đổi tên khi đi xa > 5 km nên chữ dự phòng bị kẹt | Lỗi | — | Chủ dự án 2026-11-26, ảnh `screenshot.png` (Samsung) | Chủ dự án xác nhận: máy đó cài bản build từ GitHub, repo không có `OWM_API_KEY` (khóa chỉ ở `local.properties`, gitignore) nên `reverse` luôn lỗi `NO_KEY`; tái hiện được bằng cách comment `OWM_API_KEY` trong `local.properties` (chủ dự án, 14:56). Từ 2026-11-26 khóa đã ghi thẳng trong `buildTypes` nên bản clone từ GitHub có khóa, nhưng lỗi vẫn còn khi mạng lỗi hoặc OWM trả 429. Hướng sửa: không lưu chữ dự phòng (đánh dấu chưa có tên), cập nhật im lặng thử lại `reverse` khi chưa có tên dù chưa đi xa; thiếu khóa thì báo rõ |
-| B11 | Nút "−" (ẩn / xóa app) ở edit mode: hoạt ảnh phóng to khi vào, thu nhỏ khi ra edit mode | Tính năng | — | Chủ dự án 2026-11-26 | |
-| B12 | Ẩn nhãn ("Hiện tên" tắt) thì icon trong thư mục vẽ lệch | Lỗi hiển thị | — | Chủ dự án 2026-11-26, ảnh `screenshot.png` ở gốc dự án | |
+| B9 | `GridMetricsTest` hỏng 4/112 test (default sizing, dock cap, measure at density one, cellAt): test do Claude viết ở JH1 Task 1 (2026-11-19, ngoại lệ "không test" chủ dự án cho phép, `AGENTS.md`); `git blame` ghi dvha vì `2615d5d` "Initial commit" (2026-11-23) là lần chép code sang repo Compose, lịch sử repo XML không có file này; chưa cập nhật theo `5d96e78` của anh Nam (icon scale 1, nhãn 12,5 sp, `ROW_GUTTER_SCALE = 0.5` nên `gutterY` 8 → 4, hàng thấp hơn); code đúng thiết kế, cần sửa số trong test | Test | Thấp | `.\gradlew.bat :app:testDebugUnitTest` (chủ dự án chạy 2026-11-26, sau merge `016c6d0`) | Chủ dự án 2026-11-26: bỏ qua, để anh Nam sửa; `master` cũng hỏng đúng 4 test này |
 | B13 | Widget của app khác lấy kích cỡ sai | Lỗi | — | Chủ dự án 2026-11-26 | Chưa có ảnh / log; chủ dự án cho xem khi cần |
 
 ## Chờ anh dvha (tick khi merge lên `master`)
@@ -30,12 +26,14 @@
 
 | # | Việc | Lý do | Nguồn |
 |---|---|---|---|
+| B15 | Cài đặt → Vị trí: "Cập nhật vị trí" lưu chữ "Vị trí hiện tại" khi `reverse` (OWM `geo/1.0/reverse`) lỗi, cập nhật im lặng chỉ đổi tên khi đi xa > 5 km | Chủ dự án 2026-11-26: bỏ khỏi việc cần làm; khóa đã ghi thẳng trong `buildTypes` nên chỉ còn khi mạng lỗi / 429. Cần thì đổi cách gọi (proxy, thử lại `reverse` khi chưa có tên) | Chủ dự án 2026-11-26, `LocationSettingsViewModel.updateAutoPlace`, `CurrentLocationUpdater` |
 | H1 | Home nhiều trang (> 5) còn khựng lúc dựng trang mới (baseline profile, trang nhẹ hơn khi dựng) | Chủ dự án kiểm Oppo thấy ổn (2026-11-25); làm khi mượn được máy lag để xác nhận nguyên nhân (anh Nam báo còn lag) | `SW-home-swipe-smoothness.md` Task 4 |
 
 ## Đã bỏ
 
 | Việc | Quyết định |
 |---|---|
+| B14: ghép hình nền cài sẵn với preset theme (`wp_ios27_1..3`, `wp_sunset`) | Chủ dự án 2026-11-26: bỏ, vì B19 bỏ luôn màn chọn preset theme |
 | B10: kính cho widget Today ngoài 4 widget đầu | Chủ dự án 2026-11-26: giữ nguyên (`GLASS_BUDGET = 4` tính theo thứ tự danh sách, xóa / kéo widget thì widget kế lên có kính) |
 | Kính mờ tĩnh kiểu XML cho mọi bề mặt còn lại dưới API 31 | Chủ dự án 2026-11-25: dưới API 31 chỉ mờ tĩnh cho qua, tập trung API 31+ (`AGENTS.md`) |
 
@@ -43,6 +41,16 @@
 
 | Việc | Plan |
 |---|---|
+| B23: Thời tiết: Open-Meteo (bản miễn phí) làm nguồn dự phòng khi OWM lỗi; giữ bộ icon, không ghi nguồn trên giao diện (chủ dự án kiểm 2026-11-27) | `WM-weather-fallback.md` |
+| B22: Widget thời tiết: nút làm mới (icon xoay vòng siêu nhỏ, góc dưới phải); Cài đặt → Thời tiết thêm "Làm mới sau" 1h / 3h / 6h / 9h / 12h / 1 ngày, mặc định 1 ngày (chủ dự án kiểm 2026-11-27) | `WR-weather-refresh.md` |
+| B21: Hộp "Đặt làm màn hình chính" (`DefaultLauncherPromptController`) hiện chồng lên hộp "Cấp quyền" (PM) (chủ dự án kiểm 2026-11-27) | `WR-weather-refresh.md` |
+| B20: Widget thời tiết chưa có quyền vị trí: bấm thì xin quyền (cấp xong tự cập nhật vị trí, không mở bảng); quyền Vị trí / Danh bạ bị chặn thì hộp "Đóng / Cấp quyền" nói rõ lý do, ở mọi chỗ xin quyền (chủ dự án kiểm 2026-11-27) | `PM-permission-flow.md` |
+| B19: Bỏ màn "Màn hình chính mặc định" (Cài đặt → hàng `settings_hub_theme` → `ThemeSettingsActivity`, chọn preset Liquid Glass 27 / Classic 26 / Minimal / Dark Pro) cùng logic preset; bước THEME của Onboarding đổi thành chọn kiểu icon (G2b, chủ dự án chốt 2026-11-26) (chủ dự án kiểm 2026-11-27) | `TR-remove-theme-presets.md` |
+| B11: Nút "−" (ẩn / xóa app) ở edit mode: hoạt ảnh phóng to khi vào, thu nhỏ khi ra edit mode (chủ dự án kiểm 2026-11-27) | `WR-weather-refresh.md` |
+| B12: Ẩn nhãn ("Hiện tên" tắt) thì icon trong thư mục vẽ lệch (chủ dự án kiểm 2026-11-27) | `FX-folder-polish.md` |
+| B16: Mở thư mục: Home phía sau bảng không mờ (chỉ trong bảng mờ) (chủ dự án kiểm 2026-11-27) | `FX-folder-polish.md` |
+| B17: Bắt đầu kéo app (từ menu nhấn giữ) còn dư ảnh icon ở chỗ cũ (chủ dự án kiểm 2026-11-27) | `FX-folder-polish.md` |
+| B18: Icon trong thư mục to hơn icon ngoài Home (chủ dự án kiểm 2026-11-27) | `FX-folder-polish.md` |
 | B3: bố cục lần đầu gom sẵn thư mục theo nhóm (thay bước Onboarding, chủ dự án bỏ) + mục "Gom nhóm ứng dụng" trong Cài đặt → Chung | `AG-app-groups.md` |
 | WS: kéo widget đè lên widget khác thì đổi chỗ (anh dvha, kiểm A17 2026-11-25) | `WS-widget-swap.md` |
 | B2: Thư viện chỉ tìm app; Spotlight lúc gõ chia section cuộn được (Lối tắt, Danh bạ, Cài đặt, Đề xuất), mọi section thẻ kính thật; "Gần đây" ở ô trống trong thẻ kính; thanh tìm kiếm Today kính thật (chủ dự án đã kiểm) | `SP-spotlight-sections.md` |

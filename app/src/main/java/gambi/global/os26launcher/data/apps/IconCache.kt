@@ -28,8 +28,6 @@ class IconCache @Inject constructor() {
         "${key.packageName}/${key.className}#${key.userSerial}!$stamp@$sizePx~${style.style.name}.${style.tint.name}" +
                 // IP: gói biểu tượng cũng nằm trong khóa; rỗng thì khóa giữ y hệt trước IP
                 (if (style.pack.isEmpty()) "" else "^${style.pack}") +
-                // CF Step 7: cờ nổi chỉ nối khi bật; tắt thì khóa y hệt trước
-                (if (style.bevel) "+bevel" else "") +
                 // 2026-11-23: bo góc icon chỉ nối khi khác hình gốc (NEUTRAL_CORNER); hình gốc thì khóa y hệt trước
                 (if (style.corner == GlassLook.NEUTRAL_CORNER) "" else "%${style.corner}")
 

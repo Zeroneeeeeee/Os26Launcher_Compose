@@ -83,14 +83,6 @@ class IconSetSettingsScreen(private val ctx: SettingsScreenContext) : SettingsSc
         iconStyleDialog = null
     }
 
-    private fun IconStyle.labelRes(): Int = when (this) {
-        IconStyle.DEFAULT -> R.string.settings_icon_style_default
-        IconStyle.TRANSPARENT -> R.string.settings_icon_style_transparent // CF: chỉ theme MINIMAL ghi
-        IconStyle.TINTED -> R.string.settings_icon_style_tinted
-        IconStyle.THREE_D -> R.string.settings_icon_style_3d
-        IconStyle.GLASS -> R.string.settings_icon_style_glass
-    }
-
     private fun IconTint.labelRes(): Int = when (this) {
         IconTint.BLUE -> R.string.settings_icon_tint_blue
         IconTint.PINK -> R.string.settings_icon_tint_pink
@@ -101,7 +93,7 @@ class IconSetSettingsScreen(private val ctx: SettingsScreenContext) : SettingsSc
 
     private fun showIconStyleDialog() {
         if (iconStyleDialog != null) return
-        val options = IconStyle.entries - IconStyle.TRANSPARENT // CF: Figma 2.3 không có lựa chọn này, chỉ theme ghi
+        val options = IconStyle.entries // 2026-11-26 (chủ dự án): kiểu Trong suốt đã bỏ (icon lỗi, lẫn vào nền)
         val labels = options.map { activity.getString(it.labelRes()) }
         val current = viewModel.uiState.value.iconStyle
         iconStyleDialog = SettingsDialogs.singleChoice(

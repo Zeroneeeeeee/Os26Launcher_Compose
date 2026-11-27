@@ -1,9 +1,7 @@
 package gambi.global.os26launcher.ui.home
 
-import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.app.ActivityManager
 import android.content.pm.PackageManager
@@ -35,7 +33,6 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
@@ -54,7 +51,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.Lifecycle
@@ -124,6 +120,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 import androidx.core.graphics.drawable.toDrawable
+import gambi.global.os26launcher.core.permission.PermissionKind
+import gambi.global.os26launcher.core.permission.PermissionRequester
+import gambi.global.os26launcher.domain.usecase.UpdateAutoPlaceUseCase
+import gambi.global.os26launcher.domain.weather.WeatherPlacesRepository
+import gambi.global.os26launcher.domain.model.weather.LocationMode
+import gambi.global.os26launcher.domain.model.weather.WeatherPlaces
+import gambi.global.os26launcher.domain.weather.WeatherRepository
 
 /**
  * JH1 — CHỈ BẢN DEBUG. Home Compose chạy song song Home View (JH1 D1): cùng `HomeViewModel` thật, cùng ảnh nền, trang, dock. Không phải
@@ -169,6 +172,21 @@ class HomeActivity : AppCompatActivity() {
 
     @Inject
     lateinit var getHiddenOnlyPackages: GetHiddenOnlyPackagesUseCase // P3-7
+
+    @Inject
+    lateinit var weatherPlaces: WeatherPlacesRepository // PM: widget thời tiết có cần quyền vị trí không
+
+    @Inject
+    lateinit var updateAutoPlace: UpdateAutoPlaceUseCase // PM: cấp quyền xong thì tự cập nhật vị trí
+
+    @Inject
+    lateinit var weatherRepository: WeatherRepository // WR: nút làm mới trên widget thời tiết
+    private val onWeatherRefresh: (Long) -> Unit = { onWeatherRefreshTapped(it) } // WR: một tham chiếu cố định để gỡ đúng ở onDestroy
+
+    // PM (2026-11-26): xin quyền theo luật chung (hộp hệ thống, hoặc hộp "Cấp quyền" khi bị chặn). Dựng lúc dựng Activity (trước STARTED).
+    // B21: mở hộp quyền / trang ứng dụng là rời Home; lần resume ngay sau đó không hỏi "Đặt làm màn hình chính".
+    private val locationPermission = PermissionRequester(this, PermissionKind.LOCATION) { defaultPrompt.skipNextResume() }
+    private val contactsPermission = PermissionRequester(this, PermissionKind.CONTACTS) { defaultPrompt.skipNextResume() }
 
     private lateinit var hostedWidgets: HostedWidgetViews
     private lateinit var appWidgetFlow: AppWidgetFlowController
@@ -230,12 +248,6 @@ class HomeActivity : AppCompatActivity() {
         )
     }
 
-    // G3a (như SearchOverlayController): xin quyền Danh bạ từ lớp tìm kiếm.
-    private val contactsPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        val permanent = !granted && !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CONTACTS)
-        searchViewModel.onContactsPermissionResult(granted, permanent)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_Os26Launcher)
         super.onCreate(savedInstanceState)
@@ -251,6 +263,7 @@ class HomeActivity : AppCompatActivity() {
         )
         hostedWidgets = HostedWidgetViews(this, appWidgetHost)
         weatherSheet = WeatherSheetController(this) // G3e: dựng ở onCreate (xin quyền vị trí đăng ký trước STARTED)
+        WeatherWidgetHub.onRefreshTapped = onWeatherRefresh // WR R3
         // G3c Task 6: dựng ở onCreate (ActivityResultLauncher trước STARTED); ghi hàng do ViewModel lo.
         appWidgetFlow = AppWidgetFlowController(
             this, appWidgetHost, appWidgetFlowState, appWidgetRepository,
@@ -556,22 +569,54 @@ class HomeActivity : AppCompatActivity() {
         when (event) {
             is SearchEvent.LaunchFailed -> Toast.makeText(this, getString(R.string.app_launch_failed, event.label), Toast.LENGTH_LONG).show()
             SearchEvent.ContactActionFailed -> Toast.makeText(this, R.string.search_contacts_action_failed, Toast.LENGTH_LONG).show()
-            is SearchEvent.RequestContactsPermission -> requestContacts(event.askedBefore)
+            is SearchEvent.RequestContactsPermission -> requestContacts()
             is SearchEvent.LaunchWebSearch -> WebSearchLauncher.launchWebSearch(this, event.query)
         }
     }
 
-    private fun requestContacts(askedBefore: Boolean) {
-        val permanentlyDenied = askedBefore && !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CONTACTS)
-        if (!permanentlyDenied) {
-            contactsPermission.launch(Manifest.permission.READ_CONTACTS)
+    /**
+     * G3a → PM (2026-11-26): hàng mời "Hiện danh bạ" của Spotlight. Quyền bị chặn thì hộp "Cấp quyền" (không mở thẳng Cài đặt như trước);
+     * hàng mời đổi sang chữ "mở Cài đặt" theo [PermissionRequester.isBlocked].
+     */
+    private fun requestContacts() {
+        contactsPermission.request { granted ->
+            searchViewModel.onContactsPermissionResult(granted, permanentlyDenied = contactsPermission.isBlocked())
+        }
+    }
+
+    /**
+     * PM (Y1, Y2, R2): widget thời tiết đang dùng "Vị trí hiện tại", chế độ Tự động, chưa có quyền vị trí: bấm thì xin quyền thay cho bảng chọn
+     * địa điểm. Thành phố cố định hoặc chế độ Thủ công không cần quyền nên mở bảng như cũ.
+     */
+    private fun weatherNeedsLocationPermission(itemId: Long): Boolean =
+        !locationPermission.isGranted() &&
+            weatherPlaces.places.value.mode == LocationMode.AUTO &&
+            weatherPlaces.widgetPlaceId(itemId) == WeatherPlaces.CURRENT
+
+    /**
+     * WR (QĐ 3): nút làm mới trên widget thời tiết [itemId]. Widget cần quyền vị trí mà chưa có (như khi bấm widget, PM R2) → luồng xin quyền, cấp
+     * xong thì lấy vị trí; còn lại → `refreshNow` cho địa điểm của widget (repository tự chặn 1 phút và tự lấy lại vị trí hiện tại nếu cần).
+     */
+    private fun onWeatherRefreshTapped(itemId: Long) {
+        if (weatherNeedsLocationPermission(itemId)) {
+            locationPermission.request { granted -> if (granted) updateCurrentLocation() }
             return
         }
-        searchViewModel.onContactsPermissionResult(granted = false, permanentlyDenied = true)
-        try {
-            startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", packageName, null)))
-        } catch (e: ActivityNotFoundException) {
-            handleSearchEvent(SearchEvent.ContactActionFailed)
+        weatherRepository.refreshNow(weatherPlaces.widgetPlaceId(itemId))
+    }
+
+    /** PM (Y2): vừa được cấp quyền từ widget thời tiết: lấy vị trí một lần và ghi làm vị trí tự động (không mở bảng). */
+    private fun updateCurrentLocation() {
+        lifecycleScope.launch {
+            val ok = try {
+                updateAutoPlace(getString(R.string.wx_places_current))
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w("HomeActivity", "update location failed: ${e.javaClass.simpleName}") // không log vị trí
+                false
+            }
+            if (!ok) Toast.makeText(this@HomeActivity, R.string.wx_loc_unavailable, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -677,6 +722,9 @@ class HomeActivity : AppCompatActivity() {
         hostedWidgets.clear()
         widgetPicker.closeIfOpen()
         weatherSheet.onDestroy()
+        if (WeatherWidgetHub.onRefreshTapped == onWeatherRefresh) WeatherWidgetHub.onRefreshTapped = null // WR: Home mới có thể đã gán của nó
+        locationPermission.dismissDialog() // PM
+        contactsPermission.dismissDialog()
         defaultPrompt.onDestroy()
         dismissRemoveDialog()
         super.onDestroy()
@@ -954,7 +1002,11 @@ class HomeActivity : AppCompatActivity() {
         when (kind) {
             WidgetKind.WEATHER -> {
                 WeatherWidgetHub.tappedWidgetId = itemId
-                weatherSheet.show()
+                if (weatherNeedsLocationPermission(itemId)) {
+                    locationPermission.request { granted -> if (granted) updateCurrentLocation() }
+                } else {
+                    weatherSheet.show()
+                }
             }
             WidgetKind.PHOTO -> startActivity(PhotoWidgetActivity.intent(this, itemId))
             WidgetKind.BATTERY -> if (!openBatteryUsage()) Toast.makeText(this, R.string.menu_action_failed, Toast.LENGTH_SHORT).show()

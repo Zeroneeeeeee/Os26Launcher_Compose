@@ -74,7 +74,12 @@ internal fun HomeIconMenu(
     backdrop: Backdrop?,
     onAction: (IconMenuAction) -> Unit,
     onShortcut: (AppShortcutItem) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    /**
+     * FX R4 (B17): đang có ảnh kéo nổi (phiên kéo hoặc đang bay về chỗ) thì KHÔNG vẽ icon nổi của menu. Icon nổi không mờ theo [progress] nên
+     * trước đây còn đứng tại chỗ cũ suốt hoạt ảnh đóng menu, cạnh ảnh kéo (dư ảnh). Đóng menu bình thường thì vẫn vẽ (che icon thật đang tối).
+     */
+    hideIcon: Boolean = false
 ) {
     // Giữ menu cuối cùng để chạy hoạt ảnh đóng sau khi VM đã đặt iconMenu = null.
     var shown by remember { mutableStateOf(menu) }
@@ -98,19 +103,21 @@ internal fun HomeIconMenu(
             .fillMaxSize()
             .clickable(interactionSource = interaction, indication = null, onClick = onDismiss)
     ) {
-        // Icon nổi tại chỗ icon thật.
+        // Icon nổi tại chỗ icon thật. FX R3: cỡ theo chính khung neo (icon Home, dock hay ô thư mục đều là khung icon thật), không lấy cỡ
+        // icon Home cho mọi nơi (trước đó icon nổi trong thư mục nhỏ hơn ô, B18).
         val a = m.anchor
-        shownApp?.let { item ->
-            rememberHomeIcon(icons, item, iconSizePx)?.let { bmp ->
+        val sizePx = (a.right - a.left).takeIf { it > 0 } ?: iconSizePx
+        if (!hideIcon) shownApp?.let { item ->
+            rememberHomeIcon(icons, item, sizePx)?.let { bmp ->
                 Image(
                     bmp,
                     contentDescription = null,
                     modifier = Modifier
                         .graphicsLayer {
-                            translationX = (a.left + a.right) / 2f - iconSizePx / 2f
-                            translationY = (a.top + a.bottom) / 2f - iconSizePx / 2f
+                            translationX = (a.left + a.right) / 2f - sizePx / 2f
+                            translationY = (a.top + a.bottom) / 2f - sizePx / 2f
                         }
-                        .size(with(density) { iconSizePx.toDp() })
+                        .size(with(density) { sizePx.toDp() })
                 )
             }
         }

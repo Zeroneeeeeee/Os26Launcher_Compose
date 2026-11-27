@@ -7,7 +7,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import gambi.global.os26launcher.BuildConfig
 import gambi.global.os26launcher.data.weather.CoarseLocationSourceImpl
-import gambi.global.os26launcher.data.weather.OpenWeatherMapProvider
 import gambi.global.os26launcher.data.weather.notify.AlarmWeatherNotificationScheduler
 import gambi.global.os26launcher.domain.weather.WeatherNotificationScheduler
 import gambi.global.os26launcher.data.weather.WeatherPlacesRepositoryImpl
@@ -20,13 +19,18 @@ import gambi.global.os26launcher.domain.weather.WeatherPreferencesRepository
 import gambi.global.os26launcher.domain.weather.WeatherProvider
 import gambi.global.os26launcher.domain.weather.WeatherRepository
 import javax.inject.Singleton
+import gambi.global.os26launcher.data.weather.OpenMeteoConfig
+import gambi.global.os26launcher.data.weather.FallbackWeatherProvider
 
-/** G3e — nối nguồn thời tiết. Đổi sang proxy/backend: đổi `baseUrl`/khóa ở đây hoặc bind một [WeatherProvider] khác. */
+/**
+ * G3e — nối nguồn thời tiết. Đổi sang proxy/backend: đổi `baseUrl`/khóa ở đây hoặc bind một [WeatherProvider] khác.
+ * WM: nguồn đang bind là [FallbackWeatherProvider] (OWM chính, Open-Meteo dự phòng).
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class WeatherModule {
     @Binds
-    abstract fun bindWeatherProvider(impl: OpenWeatherMapProvider): WeatherProvider
+    abstract fun bindWeatherProvider(impl: FallbackWeatherProvider): WeatherProvider
 
     // Scope @Singleton nằm trên WeatherRepositoryImpl.
     @Binds
@@ -55,6 +59,15 @@ abstract class WeatherModule {
             WeatherProviderConfig(
                 baseUrl = "https://api.openweathermap.org",
                 apiKey = BuildConfig.OWM_API_KEY
+            )
+
+        /** WM: nguồn dự phòng Open-Meteo (cấu hình ở `buildTypes`). */
+        @Provides
+        @Singleton
+        fun provideOpenMeteoConfig(): OpenMeteoConfig =
+            OpenMeteoConfig(
+                baseUrl = BuildConfig.OPEN_METEO_BASE_URL,
+                apiKey = BuildConfig.OPEN_METEO_API_KEY
             )
     }
 }

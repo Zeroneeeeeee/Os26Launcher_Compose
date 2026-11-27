@@ -17,7 +17,7 @@ internal object OwmParser {
      * "cả ngày mai" khi cache có thể cũ tới 2 giờ; cao/thấp và dải giờ của widget không đổi (chỉ dùng 8 và 4 mốc đầu).
      */
     const val FORECAST_COUNT = 12
-    private const val HIGH_LOW_STEPS = 8
+    const val HIGH_LOW_STEPS = 8 // WM: OpenMeteoParser dùng chung
 
     /** Số mốc dải 4x2. */
     const val HOURLY_STEPS = 4

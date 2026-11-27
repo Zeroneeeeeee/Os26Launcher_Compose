@@ -37,6 +37,24 @@ import gambi.global.os26launcher.ui.widget.WidgetRenderers
 import gambi.global.os26launcher.ui.widget.WidgetTicker
 import java.time.ZonedDateTime
 import java.util.Locale
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.dp
+import gambi.global.os26launcher.R
+import gambi.global.os26launcher.ui.widget.WeatherWidgetHub
 
 /**
  * JH1 Task 3 — widget tự vẽ (đồng hồ, lịch, thời tiết, ảnh) trên Home Compose. Nội dung do CHÍNH `WidgetRenderer` của Home View vẽ lên canvas
@@ -131,8 +149,55 @@ private fun RendererWidgetCell(widget: PlacedWidget, onClick: (() -> Unit)?) {
                     drawIntoCanvas { renderer.draw(it.nativeCanvas) }
                 }
         )
+        // WR (chủ dự án 2026-11-27): nút làm mới siêu nhỏ góc dưới phải; không có ở edit mode / ảnh kéo ([onClick] null).
+        if (widget.kind == WidgetKind.WEATHER && onClick != null) WeatherRefreshButton(widget.itemId, Modifier.align(Alignment.BottomEnd))
     }
 }
+
+/**
+ * WR — nút làm mới của widget thời tiết: icon [REFRESH_ICON_DP] trong vùng chạm [REFRESH_TOUCH_DP] (QĐ 5), đè lên thẻ nên chạm vào đây không mở bảng.
+ * Bấm: xoay ít nhất một vòng (kể cả khi đang bị chặn 1 phút), rồi xoay tiếp chừng nào địa điểm của widget còn trong
+ * [WeatherWidgetHub.refreshing]; việc làm mới do Home quyết ([WeatherWidgetHub.onRefreshTapped]).
+ */
+@Composable
+private fun WeatherRefreshButton(itemId: Long, modifier: Modifier) {
+    val refreshing by WeatherWidgetHub.refreshing.collectAsState()
+    val busy = WeatherWidgetHub.placeIdOf(itemId) in refreshing
+    val latestBusy by rememberUpdatedState(busy)
+    val rotation = remember { Animatable(0f) }
+    var spinning by remember { mutableStateOf(false) }
+    LaunchedEffect(busy) { if (busy) spinning = true }
+    LaunchedEffect(spinning) {
+        if (!spinning) return@LaunchedEffect
+        do {
+            rotation.animateTo(rotation.value + 360f, tween(REFRESH_SPIN_MS, easing = LinearEasing))
+        } while (latestBusy)
+        rotation.snapTo(0f)
+        spinning = false
+    }
+    val label = stringResource(R.string.wx_refresh_button)
+    Box(
+        modifier
+            .size(REFRESH_TOUCH_DP.dp)
+            .semantics { contentDescription = label }
+            .clickable(interactionSource = null, indication = null, role = Role.Button) {
+                spinning = true
+                WeatherWidgetHub.onRefreshTapped?.invoke(itemId)
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painterResource(R.drawable.ic_widget_refresh),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(colorResource(R.color.widget_text_dim)),
+            modifier = Modifier.size(REFRESH_ICON_DP.dp).graphicsLayer { rotationZ = rotation.value }
+        )
+    }
+}
+
+private const val REFRESH_ICON_DP = 12
+private const val REFRESH_TOUCH_DP = 32
+private const val REFRESH_SPIN_MS = 700
 
 /** Bán kính thẻ widget: `min(rộng, cao) × 0.12` (`IconCellView.WIDGET_CORNER_RATIO`, companion private). */
 internal fun widgetRadius(width: Dp, height: Dp): Dp = min(width, height) * WIDGET_CORNER_RATIO

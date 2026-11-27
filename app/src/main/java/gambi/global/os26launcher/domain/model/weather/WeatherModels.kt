@@ -35,6 +35,22 @@ enum class WeatherCondition {
             803, 804 -> CLOUDY
             else -> UNKNOWN
         }
+
+        /**
+         * WM — ánh xạ mã thời tiết WMO của Open-Meteo (https://open-meteo.com/en/docs, bảng "WMO Weather interpretation codes"), cùng độ mịn với
+         * [fromOwmId]: 0 quang, 1-2 ít mây, 3 nhiều mây, 45/48 sương, mưa phùn / mưa / mưa rào (kể cả đóng băng) là mưa, tuyết / mưa tuyết là tuyết,
+         * 95-99 giông. Mã lạ -> [UNKNOWN].
+         */
+        fun fromWmoCode(code: Int): WeatherCondition = when (code) {
+            0 -> CLEAR
+            1, 2 -> PARTLY_CLOUDY
+            3 -> CLOUDY
+            45, 48 -> FOG
+            in 51..57, in 61..67, in 80..82 -> RAIN
+            in 71..77, 85, 86 -> SNOW
+            in 95..99 -> THUNDERSTORM
+            else -> UNKNOWN
+        }
     }
 }
 
@@ -82,7 +98,7 @@ sealed interface WeatherState {
     /** Có vị trí, chưa có dữ liệu nào (không cache). */
     data object Loading : WeatherState
 
-    /** Có dữ liệu. [stale] = cache cũ hơn [WeatherPolicy.STALE_AFTER_MS] hoặc lần thử gần nhất lỗi ([lastError] != null). */
+    /** Có dữ liệu. [stale] = cache cũ hơn chu kỳ làm mới + [WeatherPolicy.STALE_GRACE_MS] hoặc lần thử gần nhất lỗi ([lastError] != null). */
     data class Ready(
         val snapshot: WeatherSnapshot,
         val stale: Boolean,
@@ -94,16 +110,40 @@ sealed interface WeatherState {
 }
 
 /**
- * Hằng chính sách làm mới (D2 của G3e, đổi ở WX theo chủ dự án 2026-11-13). CHỈNH TAY. Áp cho TỪNG địa điểm.
- * Không còn làm mới thủ công (hệ quả của "tối đa 2 giờ một lần"): không có `MANUAL_REFRESH_MIN_MS`.
+ * WR (chủ dự án 2026-11-27) — chu kỳ "Làm mới sau" ở Cài đặt → Thời tiết: sau một lần thành công, lần tự làm mới kế sớm nhất của TỪNG địa điểm, và
+ * khoảng tối thiểu giữa hai lần cập nhật vị trí im lặng. Lưu bằng `name` (thêm giá trị mới ở CUỐI). Thay hằng 2 giờ của WX.
+ */
+enum class WeatherRefreshInterval(val millis: Long) {
+    H1(1 * HOUR_MS), H3(3 * HOUR_MS), H6(6 * HOUR_MS), H9(9 * HOUR_MS), H12(12 * HOUR_MS), D1(24 * HOUR_MS);
+
+    companion object {
+        /** Chủ dự án chốt 2026-11-27: mặc định 1 ngày. */
+        val DEFAULT = D1
+
+        /** Tên lạ hoặc null → [DEFAULT], không crash Flow. */
+        fun fromName(name: String?): WeatherRefreshInterval = entries.firstOrNull { it.name == name } ?: DEFAULT
+    }
+}
+
+private const val HOUR_MS = 60 * 60_000L
+
+/**
+ * Hằng chính sách làm mới (D2 của G3e, đổi ở WX 2026-11-13, WR 2026-11-27). CHỈNH TAY. Áp cho TỪNG địa điểm. Chu kỳ sau một lần thành công là
+ * lựa chọn của người dùng ([WeatherRefreshInterval]); các hằng dưới đây là phần cố định.
  */
 object WeatherPolicy {
-    /** Sau một lần thành công (và sau 429): lần kế sớm nhất. */
-    const val REFRESH_INTERVAL_MS = 2 * 60 * 60_000L
+    /** WR R1: sau 429 (vượt hạn mức OWM) thử lại sớm nhất sau 2 giờ, không theo chu kỳ (chu kỳ 1 ngày thì chờ quá lâu). */
+    const val RATE_LIMIT_RETRY_MS = 2 * HOUR_MS
 
-    /** Sau lỗi mạng / máy chủ / dữ liệu: lần thử lại sớm nhất (chủ dự án chốt 15 phút; đặt bằng [REFRESH_INTERVAL_MS] nếu muốn tuyệt đối 2 giờ). */
+    /** Sau lỗi mạng / máy chủ / dữ liệu: lần thử lại sớm nhất (chủ dự án chốt 15 phút). */
     const val RETRY_AFTER_ERROR_MS = 15 * 60_000L
 
-    /** Dữ liệu cũ hơn mức này mới bị đánh dấu "cũ"; phải lớn hơn [REFRESH_INTERVAL_MS] kẻo dữ liệu bình thường cũng bị đánh dấu đúng lúc đến hạn làm mới. */
-    const val STALE_AFTER_MS = 4 * 60 * 60_000L
+    /** WR: làm mới tay (nút trên widget) tối đa một lần mỗi chừng này cho một địa điểm (mỗi lần 2 lệnh OWM; gói Free 60 lệnh/phút). */
+    const val MANUAL_COOLDOWN_MS = 60_000L
+
+    /** WR: dữ liệu bị đánh dấu "cũ" khi quá chu kỳ + chừng này (1 ngày → 25 giờ), để không bị đánh dấu đúng lúc vừa đến hạn làm mới. */
+    const val STALE_GRACE_MS = 1 * HOUR_MS
+
+    /** WR (review): thông báo thời tiết tự tải lại khi lần thành công gần nhất cũ hơn chừng này (12 mốc = 36 giờ chỉ đủ "cả ngày mai" khi cache ≤ 2 giờ). */
+    const val NOTIFY_MAX_AGE_MS = 2 * HOUR_MS
 }

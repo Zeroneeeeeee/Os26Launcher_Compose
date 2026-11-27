@@ -41,11 +41,19 @@ android {
         // tạo khóa mới ở home.openweathermap.org/api_keys, thay ở đây rồi ra bản mới (bản cũ mất thời tiết tới khi cập nhật).
         val owmBundledKey = "4b04da77dc2de007ab93e37101023e7f"
         val owmKeyField = "\"" + owmApiKeyOverride.ifEmpty { owmBundledKey }.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+        // WM (anh lead 2026-11-27): Open-Meteo làm nguồn dự phòng khi OWM lỗi. Khóa rỗng = gói miễn phí (api.open-meteo.com).
+        // Mua gói thương mại: đổi 2 dòng dưới thành "https://customer-api.open-meteo.com" và khóa của gói.
+        val openMeteoBaseUrlField = "\"https://api.open-meteo.com\""
+        val openMeteoKeyField = "\"\""
         debug {
             buildConfigField("String", "OWM_API_KEY", owmKeyField)
+            buildConfigField("String", "OPEN_METEO_BASE_URL", openMeteoBaseUrlField)
+            buildConfigField("String", "OPEN_METEO_API_KEY", openMeteoKeyField)
         }
         release {
             buildConfigField("String", "OWM_API_KEY", owmKeyField)
+            buildConfigField("String", "OPEN_METEO_BASE_URL", openMeteoBaseUrlField)
+            buildConfigField("String", "OPEN_METEO_API_KEY", openMeteoKeyField)
             // RB: R8 bat (AGP 9.3.3: optimization.enable = code shrinking + resource shrinking + optimize, dung R8).
             // Keep rule nam o src/main/keepRules/rules.keep; baseline profile o src/main/baseline-prof.txt.
             optimization {
@@ -64,6 +72,8 @@ android {
             matchingFallbacks += listOf("release")
             buildConfigField("boolean", "PERF_SWITCHES", "true")
             buildConfigField("String", "OWM_API_KEY", owmKeyField)
+            buildConfigField("String", "OPEN_METEO_BASE_URL", openMeteoBaseUrlField)
+            buildConfigField("String", "OPEN_METEO_API_KEY", openMeteoKeyField)
         }
     }
     compileOptions {

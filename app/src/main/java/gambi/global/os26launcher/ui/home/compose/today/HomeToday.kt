@@ -547,9 +547,9 @@ private fun TodayWidgetContent(
         val placed = remember(widget) { PlacedWidget(widget.id, GridPosition(0, 0, widget.spanX, widget.spanY), kind) }
         HomeWidgetCell(placed, onClick = if (editing || actions == null) null else ({ actions.onWidgetClick(kind, widget.id) }))
     }
-    if (editing && actions != null) {
+    if (actions != null) { // B11: luôn dựng, ẩn/hiện có hoạt ảnh theo edit mode của Today
         val r = cells.iconSize * MINUS_BADGE_RATIO / 2f // tâm dấu ở (r/2, r/2) của thẻ, như widget trên lưới Home
-        HomeRemoveBadge(cells.iconSize, r / 2f, r / 2f, stringResource(R.string.widget_remove_title)) { actions.onRemove(widget.id) }
+        HomeRemoveBadge(cells.iconSize, r / 2f, r / 2f, stringResource(R.string.widget_remove_title), visible = editing) { actions.onRemove(widget.id) }
     }
 }
 

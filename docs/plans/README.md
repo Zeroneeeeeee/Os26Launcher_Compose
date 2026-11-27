@@ -12,6 +12,11 @@
 
 | Plan | Nội dung | Trạng thái |
 |---|---|---|
+| [WM](WM-weather-fallback.md) | Open-Meteo làm nguồn dự phòng khi OWM lỗi, cấu hình ở `buildTypes` (B23) | Xong 2026-11-27 |
+| [WR](WR-weather-refresh.md) | Widget thời tiết: nút làm mới + "Làm mới sau" 1 giờ … 1 ngày (B22); hộp "Đặt làm màn hình chính" không chồng hộp quyền (B21); dấu "−" phóng / thu khi vào / ra edit mode (B11) | Xong 2026-11-27 |
+| [PM](PM-permission-flow.md) | Widget thời tiết xin quyền vị trí tại chỗ; hộp "Cấp quyền" khi quyền Vị trí / Danh bạ bị chặn, dùng chung mọi chỗ (B20) | Xong 2026-11-27 |
+| [FX](FX-folder-polish.md) | Bảng thư mục: icon giữ cỡ có nhãn + nằm giữa ô, ảnh kéo co về cỡ Home, hết dư ảnh menu, nền mờ dưới Android 12 (B12, B16, B17, B18) | Xong 2026-11-27 |
+| [TR](TR-remove-theme-presets.md) | Bỏ màn "Màn hình chính mặc định" + preset theme + cờ nổi 3D; Onboarding 0.2 chọn kiểu icon (B19) | Xong 2026-11-27 |
 | [AG](AG-app-groups.md) | Bố cục lần đầu gom sẵn thư mục theo nhóm; Cài đặt → Chung "Gom nhóm ứng dụng" (6 nhóm, sheet xem trước, dồn trang) | Xong 2026-11-26 |
 | [WS](WS-widget-swap.md) | Kéo widget đè lên widget khác thì đổi chỗ (anh dvha) | Xong 2026-11-25 |
 | [SP](SP-spotlight-sections.md) | Thư viện chỉ tìm app; Spotlight lúc gõ chia section kính cuộn được; "Gần đây" và thanh tìm kiếm Today bằng kính | Xong 2026-11-26 |

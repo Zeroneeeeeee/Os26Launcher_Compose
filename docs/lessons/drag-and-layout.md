@@ -265,3 +265,12 @@ Mỗi mục giữ nguyên ngày, nhãn nguồn (đo được / đọc code / đ�
 - **(2026-11-23, đọc code) Cử chỉ sống lâu hơn bảng thì bảng không được rời composition giữa chừng.** Đang kéo: bảng chỉ mờ về alpha 0; gỡ bảng là coroutine cử chỉ bị huỷ, `finally` gọi `drag.cancel()`.
 - **(2026-11-23, kiểm tay) `graphicsLayer { alpha = 0f }` vẫn nhận chạm.** Ngón thứ hai chạm lớp mờ (`clickable { close() }`) của bảng đã mờ → đóng bảng → phiên kéo bị huỷ → widget mất. Sửa: khi đang kéo, đặt một lớp trong suốt trên cùng nuốt mọi ngón mới; ngón đang kéo đã gắn với nút của nó từ lúc nhấn xuống nên không qua lớp này.
 - **(2026-11-23, đọc code) Kéo item chưa có hàng DB: dùng lại `DragItem` có sẵn với id tạm âm, phiên mang cờ riêng để `drop` / `cancelDrop` rẽ nhánh** (thả = hàm VM riêng, không qua `onItemDropped`; huỷ = co + mờ tại chỗ vì không có ô nguồn). Nhờ vậy xem trước đẩy-dồn, chặn chồng widget, lật mép, trang tạm chạy như kéo widget có sẵn. Nút Home khi đang kéo = huỷ (chủ dự án chốt).
+
+## FX — kéo app ra khỏi thư mục, dư ảnh khi bắt đầu kéo (2026-11-26, đọc code + video)
+
+- **Ảnh kéo giữ cỡ nguồn:** `floatSize` đặt theo ô nguồn lúc nhấc; mọi `settle(..., endScale = 1f)` giữ nguyên cỡ đó nên app từ thư mục
+  (ô to) thả xuống Home vẫn to tới lúc thả rồi mới nhảy. Sửa: rời bảng thì `floatScale` co về `LIFT_SCALE × iconHome / floatSize`;
+  `settle` của app tính `endScale = rect.width / floatSize.width`. Không đổi `floatSize` giữa phiên vì `snapTo` của Animatable chạy ở
+  coroutine (đổi cỡ và bù tỉ lệ không cùng khung, giật một khung).
+- **Dư ảnh khi bắt đầu kéo từ menu nhấn giữ:** icon nổi của menu không mờ theo tiến độ đóng menu, chỉ mất khi hoạt ảnh đóng xong. Lớp phủ nào
+  có bản sao của item đang bị kéo phải ẩn bản sao ngay khi có ảnh kéo nổi (`dragFloating`).

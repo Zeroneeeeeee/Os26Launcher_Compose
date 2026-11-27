@@ -68,14 +68,12 @@ import androidx.compose.ui.unit.IntSize
 import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import gambi.global.os26launcher.R
-import gambi.global.os26launcher.core.glass.BlurredBackdropCache
 import gambi.global.os26launcher.core.perf.HomePerfLog
 import gambi.global.os26launcher.core.perf.PerfSwitches
 import gambi.global.os26launcher.core.glass.GlassTuning
 import gambi.global.os26launcher.core.glass.compose.FrostedBackdrop
 import gambi.global.os26launcher.core.glass.compose.FrostedWallpaperLayer
 import gambi.global.os26launcher.core.glass.compose.rememberGlassLook
-import gambi.global.os26launcher.core.glass.compose.rememberLayerSnapshot
 import gambi.global.os26launcher.core.glass.compose.LocalDsBackdrop
 import gambi.global.os26launcher.core.glass.compose.LocalDsFrostedBackdrop
 import gambi.global.os26launcher.core.glass.compose.IconGlassHost
@@ -113,6 +111,12 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.milliseconds
+import com.kyant.backdrop.drawPlainBackdrop
+import androidx.compose.ui.graphics.RectangleShape
+import gambi.global.os26launcher.core.glass.compose.FrostedNoEffects
+import androidx.compose.animation.core.animateFloatAsState
+import gambi.global.os26launcher.core.glass.compose.FrostedSnapshotLayer
+import gambi.global.os26launcher.core.glass.compose.rememberBlurredLayerSnapshot
 
 /**
  * JH1 Task 2 — Home Compose: ảnh nền, các trang lưới, pill, dock. Bố cục như `activity_home.xml`: cột dọc trong vùng trừ thanh hệ thống
@@ -324,12 +328,19 @@ internal fun HomeScreen(
     // PG3 Task 2 Step 3 (Q3): dưới API 31 kính thật không chạy, nên bảng thư mục lấy mẫu ẢNH CHỤP lớp Home (chụp một lần lúc mở, làm mờ ngoài
     // main thread bằng bộ đệm riêng) để vẫn thấy icon phía sau; ảnh chụp chưa xong thì dùng lớp nền mờ của ảnh nền. Máy ≥ 31 không chụp.
     val legacyGlass = Build.VERSION.SDK_INT < Build.VERSION_CODES.S
-    val folderSnapshot = rememberLayerSnapshot(homeBackdrop, capture = legacyGlass && state.openFolderId != null, keep = legacyGlass && folderLayerOn)
-    val folderFrosted = rememberFrostedBackdrop(folderSnapshot)
-    val folderBlurCache = remember { BlurredBackdropCache() }
+    // FX (B16 tiếp, chủ dự án 2026-11-27, hướng A): chụp + thu 1/8 + làm mờ trong một lần chạy nền, để ảnh mờ có icon tới kịp lúc bảng đang phóng.
     val folderLook by rememberGlassLook()
-    SideEffect { folderBlurCache.blurRadiusPx = maxOf(GlassTuning.blurRadiusPx(folderLook), FOLDER_SNAPSHOT_MIN_BLUR_PX) }
-    LaunchedEffect(folderSnapshot) { if (folderSnapshot == null) folderBlurCache.trim() } // đóng thư mục: nhả bản mờ của ảnh chụp
+    val folderShot = rememberBlurredLayerSnapshot(
+        homeBackdrop,
+        capture = legacyGlass && state.openFolderId != null,
+        keep = legacyGlass && folderLayerOn,
+        radiusPx = maxOf(GlassTuning.blurRadiusPx(folderLook), FOLDER_SNAPSHOT_MIN_BLUR_PX)
+    )
+    val folderFrosted = rememberFrostedBackdrop(folderShot)
+    // FX Task 6: ảnh chụp lớp Home đã mờ hiện dần khi tới (nền sau bảng và kính bảng dưới API 31), không đổi phắt.
+    val folderShotAlpha by animateFloatAsState(
+        if (folderFrosted.backdropOrNull != null) 1f else 0f, tween(FOLDER_SHOT_FADE_MS), label = "folderShot"
+    )
     // App của menu: tìm theo key trong trang, dock, thư mục (menu của app con trong thư mục có itemId = -1).
     val menuApp = state.iconMenu?.let { m -> findApp(state, m.key) }
     val openFolder = state.openFolderId?.let { id ->
@@ -446,7 +457,7 @@ internal fun HomeScreen(
         ) {
             // PG3: không vẽ gì ra màn, chỉ ghi lớp nền mờ. LI: cũng là gốc toạ độ của bản mờ cho kính tự vẽ sau icon kiểu Kính.
             FrostedWallpaperLayer(frosted, state.backdrop, Modifier.fillMaxSize().iconGlassWallpaperOrigin(iconGlassWallpaper))
-            if (legacyGlass) FrostedWallpaperLayer(folderFrosted, folderSnapshot, Modifier.fillMaxSize(), cache = folderBlurCache)
+            if (legacyGlass) FrostedSnapshotLayer(folderFrosted, folderShot, Modifier.fillMaxSize())
             Wallpaper(state.backdrop, Modifier.fillMaxSize().layerBackdrop(backdrop))
             // PG4 G3 (đo 2026-11-23, `tools/perf/measure-home.ps1`, bản `perf`): kính thật của dock / widget KHÔNG tắt khi lướt trang (comment cũ ở
             // đây ghi đã tắt nhưng code chưa từng tắt). Oppo PKD130: đủ kính Janky 0,9–1,3 %, p95 12–13 ms, so với bỏ kính 0,5 %, p95 10–12 ms
@@ -645,6 +656,26 @@ internal fun HomeScreen(
                     onDismiss = { editMenuOpen = false }
                 )
             }
+            // FX R6 (B16, chủ dự án 2026-11-26, máy Android 11): dưới API 31 `Modifier.blur` của lớp Home không chạy, Home sau bảng thư mục chỉ
+            // tối. FX Task 6 (chủ dự án 17:03, cách 1): phủ toàn màn, đậm dần theo folderProgress (theo hoạt ảnh phóng bảng) ngay từ khung đầu:
+            // ảnh nền đã mờ (`frostedBackdrop`, có sẵn) + tối FOLDER_DIM; ảnh chụp lớp Home đã mờ (`folderFrosted`, có icon, tới muộn sau khi mở)
+            // hiện dần trong FOLDER_SHOT_FADE_MS đè lên, không đổi phắt.
+            // FX hướng A (chủ dự án 2026-11-27): BỎ lớp ảnh nền mờ đục: nó che mất icon / widget thật tới khi ảnh chụp tới (lúc bảng đã phóng xong).
+            // Chưa có ảnh chụp thì Home thật vẫn hiện (chỉ tối); ảnh chụp đã mờ (giờ tới nhanh hơn) hiện dần đè lên.
+            if (legacyGlass && folderProgress.value > 0f) {
+                val shot = folderFrosted.backdropOrNull
+                Box(Modifier.fillMaxSize().graphicsLayer { alpha = folderProgress.value }) {
+                    if (shot != null) {
+                        Box(
+                            Modifier
+                                .fillMaxSize()
+                                .graphicsLayer { alpha = folderShotAlpha }
+                                .drawPlainBackdrop(backdrop = shot, shape = { RectangleShape }, effects = FrostedNoEffects)
+                        )
+                    }
+                    Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = FOLDER_DIM)))
+                }
+            }
             // JH3b: menu nhấn giữ và bảng thư mục, trên Home đã làm mờ; ảnh nổi khi kéo vẫn ở trên cùng.
             if (cells != null) {
                 HomeFolderPanel(
@@ -661,7 +692,9 @@ internal fun HomeScreen(
                     onRemoveApp = overlays.onRemoveFolderApp,
                     onRename = overlays.onRenameFolder,
                     onClose = overlays.closeFolder,
-                    frostedBackdrop = if (PerfSwitches.noFrosted) null else folderFrosted.backdropOrNull ?: frosted.backdropOrNull
+                    frostedBackdrop = frostedBackdrop,
+                    frostedShot = if (PerfSwitches.noFrosted) null else folderFrosted.backdropOrNull,
+                    shotAlpha = { folderShotAlpha }
                 )
             }
             HomeIconMenu(
@@ -673,7 +706,8 @@ internal fun HomeScreen(
                 backdrop = homeBackdrop,
                 onAction = overlays.onIconMenuAction,
                 onShortcut = overlays.onIconMenuShortcut,
-                onDismiss = overlays.closeIconMenu
+                onDismiss = overlays.closeIconMenu,
+                hideIcon = dragFloating // FX R4 (B17)
             )
             // RA2 → PD (2026-11-25): thẻ xác nhận xóa (dấu "−") chuyển lên HomeActivity, lớp trên cùng: ở đây nó nằm dưới `homeGestures` (pass
             // Initial) của Box gốc nên chạm ngoài thẻ vẫn tới lưới (thoát edit mode, nhấn giữ icon).
@@ -794,6 +828,7 @@ private const val OVERLAY_DIM = 0.25f // P2-2: tối dần theo tiến độ men
 // HomeFolderPanel để trong bảng mờ ngang ngoài, chỉ sáng hơn (bảng lấy mẫu lớp Home chưa tối).
 private const val FOLDER_BLUR_DP = 18f // chủ dự án chốt sau khi thử 24/12/8/4 dp (2026-11-23)
 private const val FOLDER_DIM = 0.15f
+private const val FOLDER_SHOT_FADE_MS = 150 // FX Task 6
 
 /**
  * Toạ độ các khối của lớp Home trượt (Library/Today). [outer] đứng TRƯỚC graphicsLayer (chưa dịch), [inner] đứng SAU (cùng gốc, trong lớp):

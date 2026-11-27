@@ -260,14 +260,16 @@ private fun HomeGridItem(
                 if (privacyHidden) return // P3-7: ẩn tạm, giữ chỗ
                 HomeAppWidgetCell(item)
             }
-            if (edit.editMode) {
+            run { // B11: luôn dựng, ẩn/hiện có hoạt ảnh theo edit mode
                 val r = cells.iconSize * MINUS_BADGE_RATIO / 2f
                 // PW: dấu "−" bám góc trên trái của THẺ (thẻ widget tự vẽ có thể hẹp hơn vùng ô, căn giữa ngang — [widgetCardFrame]).
                 val left = if (item is PlacedWidget) {
                     val p = item.position
                     widgetCardFrame(spanPx(p.spanX, cells.cellWidth, cells.gutterX), spanPx(p.spanY, cells.cellHeight, cells.gutterY), p.spanX, cells.gutterX).left
                 } else 0
-                HomeRemoveBadge(cells.iconSize, left + r / 2f, r / 2f, stringResource(R.string.widget_remove_title)) { edit.onRemoveWidget(item.itemId) }
+                HomeRemoveBadge(cells.iconSize, left + r / 2f, r / 2f, stringResource(R.string.widget_remove_title), visible = edit.editMode) {
+                    edit.onRemoveWidget(item.itemId)
+                }
             }
         }
     }
@@ -355,10 +357,13 @@ internal fun HomeAppCell(
             if (cells.showLabels) HomeLabel(app.label, cells)
         }
         if (badges != null) HomeNotificationBadge(badges.countFor(listOf(app.key)), badges.style, cells.cellWidth, cells.iconSize, Modifier.matchParentSize())
-        if (editMode && onRemove != null) {
+        if (onRemove != null) { // B11: luôn dựng khi có hành động gỡ, ẩn/hiện có hoạt ảnh theo edit mode
             val iconLeft = (cells.cellWidth - cells.iconSize) / 2f
             val c = badgeCenterForIcon(iconLeft, 0f, cells.iconSize)
-            HomeRemoveBadge(cells.iconSize, c.x, c.y, stringResource(R.string.remove_app_title, app.label), Modifier.align(Alignment.TopStart), onRemove)
+            HomeRemoveBadge(
+                cells.iconSize, c.x, c.y, stringResource(R.string.remove_app_title, app.label), Modifier.align(Alignment.TopStart),
+                visible = editMode, onClick = onRemove
+            )
         }
     }
 }

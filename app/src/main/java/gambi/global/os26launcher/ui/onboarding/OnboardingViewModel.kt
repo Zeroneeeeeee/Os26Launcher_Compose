@@ -9,12 +9,11 @@ import gambi.global.os26launcher.core.coroutines.ApplicationScope
 import gambi.global.os26launcher.core.wallpaper.WallpaperPresets
 import gambi.global.os26launcher.domain.config.AppStateRepository
 import gambi.global.os26launcher.domain.config.AppearanceRepository
-import gambi.global.os26launcher.domain.config.ThemeId
 import gambi.global.os26launcher.domain.config.WallpaperKind
+import gambi.global.os26launcher.domain.model.IconStyle
 import gambi.global.os26launcher.domain.model.WallpaperTarget
 import gambi.global.os26launcher.domain.repository.BackdropRepository
 import gambi.global.os26launcher.domain.repository.DefaultLauncherRepository
-import gambi.global.os26launcher.domain.usecase.ApplyThemeUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -37,7 +36,6 @@ class OnboardingViewModel @Inject constructor(
     private val saved: SavedStateHandle,
     private val appearance: AppearanceRepository,
     private val appState: AppStateRepository,
-    private val applyTheme: ApplyThemeUseCase,
     private val defaultLauncher: DefaultLauncherRepository,
     private val backdrop: BackdropRepository, // P2-4: áp ảnh 0.3 làm hình nền màn hình chính của hệ thống
     @ApplicationScope private val appScope: CoroutineScope
@@ -50,12 +48,13 @@ class OnboardingViewModel @Inject constructor(
     )
     val step: StateFlow<OnboardingStep> = _step.asStateFlow()
 
-    private val _theme = MutableStateFlow(
-        saved.get<String>(KEY_THEME)?.let { name -> ThemeId.entries.firstOrNull { it.name == name } } ?: ThemeId.LIQUID_GLASS_27
+    // TR (2026-11-26): bước 0.2 chọn kiểu icon (thay chọn theme). Chưa có lựa chọn đã lưu thì tạm Mặc định, rồi [init] đặt kiểu đang lưu (R2).
+    private val _iconStyle = MutableStateFlow(
+        saved.get<String>(KEY_ICON_STYLE)?.let { name -> IconStyle.entries.firstOrNull { it.name == name } } ?: IconStyle.DEFAULT
     )
 
-    /** Theme đang chọn ở 0.2 (chưa chắc đã ghi). */
-    val theme: StateFlow<ThemeId> = _theme.asStateFlow()
+    /** Kiểu icon đang chọn ở 0.2 (chưa chắc đã ghi). */
+    val iconStyle: StateFlow<IconStyle> = _iconStyle.asStateFlow()
 
     private val _swatch = MutableStateFlow(saved.get<Int>(KEY_SWATCH) ?: WallpaperPresets.indexOf(WallpaperPresets.DEFAULT_ID).coerceAtLeast(0)) // WI: mặc định wp_ios27_1
 
@@ -69,13 +68,12 @@ class OnboardingViewModel @Inject constructor(
     val events: Flow<OnboardingEvent> = _events.receiveAsFlow()
 
     init {
-        // Lần đầu (chưa có lựa chọn đã lưu): chọn sẵn theme đang áp nếu có (không thì Liquid Glass 27), và ô màu khớp màu nền đang áp
+        // Lần đầu (chưa có lựa chọn đã lưu): chọn sẵn kiểu icon đang lưu (máy mới: Mặc định, TR R2), và ô hình nền khớp nền đang áp
         // (mở thẳng 0.5 ở Onboarding mới: hàng tóm tắt đúng với những gì đã chọn ở bản trước).
-        if (!saved.contains(KEY_THEME)) viewModelScope.launch {
+        if (!saved.contains(KEY_ICON_STYLE)) viewModelScope.launch {
             val config = runCatching { appearance.config.first() }.getOrNull() ?: return@launch
-            if (saved.contains(KEY_THEME)) return@launch
-            val current = config.themeId ?: return@launch
-            chooseTheme(current)
+            if (saved.contains(KEY_ICON_STYLE)) return@launch
+            chooseIconStyle(config.iconStyle)
             if (!saved.contains(KEY_SWATCH) && config.wallpaperKind == WallpaperKind.PRESET) {
                 val index = WallpaperPresets.indexOf(config.wallpaperPreset) // WI
                 if (index >= 0) chooseSwatch(index)
@@ -83,9 +81,9 @@ class OnboardingViewModel @Inject constructor(
         }
     }
 
-    fun chooseTheme(id: ThemeId) {
-        _theme.value = id
-        saved[KEY_THEME] = id.name
+    fun chooseIconStyle(style: IconStyle) {
+        _iconStyle.value = style
+        saved[KEY_ICON_STYLE] = style.name
     }
 
     fun chooseSwatch(index: Int) {
@@ -100,7 +98,11 @@ class OnboardingViewModel @Inject constructor(
         if (busy) return
         when (_step.value) {
             OnboardingStep.WELCOME -> go(nextOf(OnboardingStep.WELCOME))
-            OnboardingStep.THEME -> writeThenNext { applyTheme(_theme.value) }
+            // TR: chỉ ghi kiểu icon; màu tô, gói icon giữ nguyên (như chọn kiểu trong Cài đặt → Bộ biểu tượng).
+            OnboardingStep.ICON_STYLE -> writeThenNext {
+                val style = _iconStyle.value
+                appearance.update { it.copy(iconStyle = style) }
+            }
             OnboardingStep.WALLPAPER -> writeThenNext {
                 // WI: ghi ảnh cài sẵn đang chọn (chỉ số lạ coi như ảnh đầu).
                 val preset = WallpaperPresets.list.getOrNull(_swatch.value) ?: WallpaperPresets.list.first()
@@ -144,8 +146,8 @@ class OnboardingViewModel @Inject constructor(
     }
 
     private fun nextOf(step: OnboardingStep): OnboardingStep = when (step) {
-        OnboardingStep.WELCOME -> OnboardingStep.THEME
-        OnboardingStep.THEME -> OnboardingStep.WALLPAPER
+        OnboardingStep.WELCOME -> OnboardingStep.ICON_STYLE
+        OnboardingStep.ICON_STYLE -> OnboardingStep.WALLPAPER
         OnboardingStep.WALLPAPER ->
             if (defaultLauncher.isDefaultLauncher()) OnboardingStep.DONE else OnboardingStep.DEFAULT_LAUNCHER
         OnboardingStep.DEFAULT_LAUNCHER, OnboardingStep.DONE -> OnboardingStep.DONE
@@ -153,8 +155,8 @@ class OnboardingViewModel @Inject constructor(
 
     private fun previousOf(step: OnboardingStep): OnboardingStep? = when (step) {
         OnboardingStep.WELCOME -> null
-        OnboardingStep.THEME -> OnboardingStep.WELCOME
-        OnboardingStep.WALLPAPER -> OnboardingStep.THEME
+        OnboardingStep.ICON_STYLE -> OnboardingStep.WELCOME
+        OnboardingStep.WALLPAPER -> OnboardingStep.ICON_STYLE
         OnboardingStep.DEFAULT_LAUNCHER -> OnboardingStep.WALLPAPER
         OnboardingStep.DONE ->
             if (defaultLauncher.isDefaultLauncher()) OnboardingStep.WALLPAPER else OnboardingStep.DEFAULT_LAUNCHER
@@ -212,7 +214,7 @@ class OnboardingViewModel @Inject constructor(
     private companion object {
         const val TAG = "OB"
         const val KEY_STEP = "step"
-        const val KEY_THEME = "theme"
+        const val KEY_ICON_STYLE = "icon_style"
         const val KEY_SWATCH = "swatch"
     }
 }

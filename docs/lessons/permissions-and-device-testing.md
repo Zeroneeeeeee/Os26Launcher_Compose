@@ -163,3 +163,13 @@ Mỗi mục giữ nguyên ngày, nhãn nguồn (đo được / đọc code / đ�
 - Màn xác thực của hệ thống ở API 26–29 là Activity khác: màn gọi bị `onStop`. Khóa lại ở `onStop` phải bỏ qua lúc đang xác thực (`inProgress`), nếu không xác thực xong lại bị khóa ngay.
 - Có hộp với `DEVICE_CREDENTIAL` thì không được đặt nút phủ định (thư viện ném lỗi).
 - Máy không có khóa màn hình (`KeyguardManager.isDeviceSecure() == false`): không khóa được; app này cho vào thẳng và ẩn công tắc, giữ lựa chọn để đặt lại khóa máy là có hiệu lực.
+
+## PM — biết khi nào quyền "bị chặn" (2026-11-26, đọc tài liệu Android + code cũ, chưa đo trên máy)
+
+- Android không có API "người dùng đã chặn quyền". Từ Android 11, từ chối hai lần là hệ thống tự trả "từ chối" mà không hiện hộp; chạm ra ngoài hộp
+  KHÔNG tính là từ chối. `shouldShowRequestPermissionRationale` = true sau lần từ chối đầu, = false cả khi chưa hỏi lần nào lẫn khi đã bị chặn.
+- Cách dùng (plan PM, `core/permission/PermissionRequester`): sau kết quả từ chối, nếu rationale trước HOẶC sau là true thì ghi cờ "đã từ chối rõ
+  ràng" (SharedPreferences `permission_denials`). Lần bấm sau: cờ bật + rationale false = bị chặn → hộp "Cấp quyền" của app (mở Thông tin ứng
+  dụng). Cấp quyền thì xóa cờ. Nhờ vậy lần chạm ra ngoài đầu tiên không bị nhầm thành "bị chặn", và lần từ chối thứ hai không bật hộp riêng ngay.
+- Cách cũ (`contactsAsked` ghi TRƯỚC khi hỏi + "rationale trước và sau đều false") nhầm lần chạm ra ngoài đầu tiên thành bị chặn.
+- Mọi chỗ xin Vị trí / Danh bạ phải đi qua `PermissionRequester` (không tự `registerForActivityResult` + mở Cài đặt).
