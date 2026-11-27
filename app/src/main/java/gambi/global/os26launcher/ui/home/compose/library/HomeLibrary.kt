@@ -506,9 +506,9 @@ private fun Modifier.libraryHit(app: AppItem, state: HomeLibraryState, inGroup: 
 /** LD Task 2 — dấu "−" ở góc trên-trái icon cạnh [iconPx] (icon nằm ở góc trên-trái của cha), chỉ ở chế độ sửa; bấm = hỏi gỡ cài đặt. */
 @Composable
 private fun LibraryRemoveBadge(app: AppItem, iconPx: Int, state: HomeLibraryState, modifier: Modifier = Modifier) {
-    if (!state.editing) return
     val c = badgeCenterForIcon(0f, 0f, iconPx)
-    HomeRemoveBadge(iconPx, c.x, c.y, stringResource(R.string.remove_app_title, app.label), modifier) { state.onRemoveApp(app) }
+    // B11: luôn dựng, ẩn/hiện có hoạt ảnh theo chế độ sửa.
+    HomeRemoveBadge(iconPx, c.x, c.y, stringResource(R.string.remove_app_title, app.label), modifier, visible = state.editing) { state.onRemoveApp(app) }
 }
 
 /** Góc thứ tư: tối đa 4 icon mini 2 × 2; bấm = mở màn nhóm. TalkBack đọc tên nhóm. */
