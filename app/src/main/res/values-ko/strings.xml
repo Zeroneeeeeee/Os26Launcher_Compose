@@ -748,6 +748,8 @@
     <string name="perm_blocked_location_message">날씨는 현재 위치의 날씨를 보여 주기 위해 대략적인 위치를 사용합니다. 위치는 날씨에만 쓰이며 계속 추적되지 않습니다. 이 권한을 거부하셔서 Android가 다시 묻지 않습니다. 권한 허용을 누른 뒤 권한 → 위치 → 허용을 선택하세요.</string>
     <string name="perm_blocked_contacts_title">연락처 권한이 필요합니다</string>
     <string name="perm_blocked_contacts_message">검색은 이름으로 사람을 찾고 빠르게 전화하거나 메시지를 보낼 수 있도록 연락처를 읽습니다. 연락처는 이 휴대전화에서만 읽으며 어디로도 보내지 않습니다. 이 권한을 거부하셔서 Android가 다시 묻지 않습니다. 권한 허용을 누른 뒤 권한 → 연락처 → 허용을 선택하세요.</string>
+    <string name="perm_blocked_notifications_title">알림 권한 필요</string>
+    <string name="perm_blocked_notifications_message">날씨는 아침 예보와 내일 날씨 알림을 보냅니다. 이 권한을 거부하셔서 Android가 다시 묻지 않습니다. 권한 허용을 누른 뒤 알림 → 허용을 선택하세요.</string>
     <!-- WR (2026-11-27): chu kỳ "Làm mới sau" (Cài đặt → Thời tiết) và nút làm mới trên widget. -->
     <string name="wx_refresh_header">새로고침</string>
     <string name="wx_refresh_interval">새로고침 간격</string>

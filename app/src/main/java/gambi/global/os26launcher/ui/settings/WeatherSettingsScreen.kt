@@ -5,13 +5,13 @@ import android.app.NotificationManager
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import gambi.global.os26launcher.core.designsystem.compose.DsDialogHandle
-import androidx.core.app.ActivityCompat
+import gambi.global.os26launcher.core.permission.PermissionKind
+import gambi.global.os26launcher.core.permission.PermissionRequester
+import gambi.global.os26launcher.core.permission.openAppDetailsSettings
 import androidx.core.content.ContextCompat
 import gambi.global.os26launcher.domain.model.weather.WeatherNotificationKind
 import gambi.global.os26launcher.domain.model.weather.WeatherNotificationSettings
@@ -45,25 +45,13 @@ class WeatherSettingsScreen(private val ctx: SettingsScreenContext) : SettingsSc
 
     // WN: hai công tắc thông báo + luồng xin quyền POST_NOTIFICATIONS (API 33+). Launcher đăng ký lúc dựng, theo thứ tự cố định (công thức G2d).
     private var notifications = WeatherNotificationSettings()
-    private var pendingKind: WeatherNotificationKind? = null
 
-    private val notificationPermissionLauncher =
-        activity.registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            val kind = pendingKind
-            pendingKind = null
-            when {
-                granted -> if (kind != null) weatherSettings.setNotification(kind, true)
+    // PG (2026-11-27): luật xin quyền chung (PermissionRequester): hộp hệ thống, bị chặn thì hộp "Cấp quyền". Công tắc chỉ bật khi đã cấp.
+    private val notificationPermission = PermissionRequester(activity, PermissionKind.NOTIFICATIONS)
 
-                // Không hiện hộp xin nữa (từ chối "không hỏi lại", hoặc đã từ chối trước đó): chỉ còn cài đặt ứng dụng.
-                !ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.POST_NOTIFICATIONS) -> {
-                    Toast.makeText(activity, R.string.wn_toast_blocked, Toast.LENGTH_LONG).show()
-                    openNotificationSettings()
-                }
-
-                else -> Toast.makeText(activity, R.string.wn_toast_denied, Toast.LENGTH_LONG).show()
-            }
-            ctx.rerender(true) // công tắc chỉ đổi theo dữ liệu thật
-        }
+    /** PG: công tắc đang chờ người dùng cấp quyền / bật thông báo ở màn hệ thống; quay lại mà đã đủ thì [onResume] ghi bật. */
+    private var awaitingKind: WeatherNotificationKind? = null
+    private var notifyOffDialog: DsDialogHandle? = null
 
     override val titleRes: Int = R.string.settings_hub_weather
 
@@ -126,19 +114,30 @@ class WeatherSettingsScreen(private val ctx: SettingsScreenContext) : SettingsSc
     private fun notificationsAllowed(): Boolean =
         activity.getSystemService(NotificationManager::class.java).areNotificationsEnabled()
 
-    private fun openNotificationSettings() {
+    /** false = máy không mở được màn nào. */
+    private fun openNotificationSettings(): Boolean {
         try {
             activity.startActivity(
                 Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, activity.packageName)
             )
+            return true
         } catch (e: ActivityNotFoundException) {
             // ROM không có màn này: thử cài đặt ứng dụng
-            try {
-                activity.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", activity.packageName, null)))
-            } catch (e2: ActivityNotFoundException) {
-                // bỏ qua
-            }
+            return openAppDetailsSettings(activity)
         }
+    }
+
+    /** PG: đã có quyền (hoặc máy < API 33) mà thông báo của app bị tắt ở hệ thống: hộp xin bật, "Cấp quyền" mở màn thông báo của app. */
+    private fun showNotificationsOffDialog(kind: WeatherNotificationKind) {
+        if (notifyOffDialog != null) return
+        notifyOffDialog = SettingsDialogs.confirm(
+            activity,
+            activity.getString(R.string.perm_blocked_notifications_title),
+            activity.getString(R.string.wn_toast_blocked),
+            activity.getString(R.string.perm_blocked_grant),
+            onPositive = { if (openNotificationSettings()) awaitingKind = kind },
+            negative = activity.getString(R.string.ds_close)
+        ).also { d -> d.setOnDismissListener { notifyOffDialog = null } }
     }
 
     private fun currentRow(): SettingsRow.Value {
@@ -217,19 +216,32 @@ class WeatherSettingsScreen(private val ctx: SettingsScreenContext) : SettingsSc
             ContextCompat.checkSelfPermission(activity, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         when {
             needsPermission -> {
-                pendingKind = kind
-                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 ctx.rerender(true)
+                notificationPermission.request(onOpenSettings = { awaitingKind = kind }) { granted ->
+                    if (granted) enableIfAllowed(kind)
+                    ctx.rerender(true) // công tắc chỉ đổi theo dữ liệu thật
+                }
             }
 
             !notificationsAllowed() -> {
-                Toast.makeText(activity, R.string.wn_toast_blocked, Toast.LENGTH_LONG).show()
-                openNotificationSettings()
                 ctx.rerender(true)
+                showNotificationsOffDialog(kind)
             }
 
             else -> weatherSettings.setNotification(kind, true)
         }
+    }
+
+    /** PG: có quyền rồi vẫn cần thông báo của app không bị tắt ở hệ thống; bị tắt thì xin bật (hộp), chưa ghi gì. */
+    private fun enableIfAllowed(kind: WeatherNotificationKind) {
+        if (notificationsAllowed()) weatherSettings.setNotification(kind, true) else showNotificationsOffDialog(kind)
+    }
+
+    override fun onResume() {
+        val kind = awaitingKind ?: return
+        awaitingKind = null
+        if (notificationsAllowed()) weatherSettings.setNotification(kind, true) // PG: vừa cấp ở màn hệ thống
+        activity.window.decorView.post { ctx.rerender(true) }
     }
 
     override suspend fun observe() {
@@ -284,6 +296,10 @@ class WeatherSettingsScreen(private val ctx: SettingsScreenContext) : SettingsSc
         removeDialog?.dismiss()
         removeDialog = null
         citySearch.dismiss()
+        notifyOffDialog?.setOnDismissListener(null)
+        notifyOffDialog?.dismiss()
+        notifyOffDialog = null
+        notificationPermission.dismissDialog()
     }
 
     private fun showRemoveDialog(placeId: String, place: GeoPlace) {

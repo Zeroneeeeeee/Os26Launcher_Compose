@@ -460,20 +460,26 @@ internal fun BadgeStyleOptions(selected: Int, onChoose: (Int) -> Unit) {
     @Composable
     fun SampleTile() {
         Box(
-            Modifier.offset(x = 6.dp, y = 10.dp).size(52.dp).clip(RoundedCornerShape(15.dp)).drawBehind { drawDrawable(tile) }.padding(10.5.dp)
+            Modifier.size(52.dp).clip(RoundedCornerShape(15.dp)).drawBehind { drawDrawable(tile) }.padding(10.5.dp)
         ) {
-            Image(painterResource(R.drawable.ds_ic_download), null, colorFilter = ColorFilter.tint(colorResource(DsTileColor.GREEN.glyph)))
+            // fillMaxSize: icon 24dp phải lấp vùng 31dp và đúng tâm ô; để cỡ gốc thì Box xếp nó ở góc trên trái (lệch 3.5dp).
+            Image(
+                painterResource(R.drawable.ds_ic_download), null,
+                modifier = Modifier.fillMaxSize(),
+                colorFilter = ColorFilter.tint(colorResource(DsTileColor.GREEN.glyph))
+            )
         }
     }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         StyleOption(selected == 0, stringResource(R.string.badges_style_number), { onChoose(0) }, Modifier.weight(1f)) {
-            Box(Modifier.size(width = 70.dp, height = 66.dp)) {
+            // Khung chỉ bằng ô mẫu để ô mẫu đúng tâm thẻ; huy hiệu tràn ra góc trên phải bằng offset (không chiếm chỗ bố cục).
+            Box(Modifier.size(52.dp)) {
                 SampleTile()
                 BasicText(
                     stringResource(R.string.badges_sample_count),
                     style = DsTextStyles.badge.copy(color = edge),
                     modifier = Modifier
-                        .offset(x = 44.dp)
+                        .offset(x = 38.dp, y = (-10).dp)
                         .heightIn(min = 22.dp)
                         .widthIn(min = 22.dp)
                         .clip(RoundedCornerShape(11.dp))
@@ -484,11 +490,11 @@ internal fun BadgeStyleOptions(selected: Int, onChoose: (Int) -> Unit) {
             }
         }
         StyleOption(selected == 1, stringResource(R.string.badges_style_dot), { onChoose(1) }, Modifier.weight(1f)) {
-            Box(Modifier.size(width = 70.dp, height = 66.dp)) {
+            Box(Modifier.size(52.dp)) {
                 SampleTile()
                 Box(
                     Modifier
-                        .offset(x = 50.dp, y = 4.dp)
+                        .offset(x = 44.dp, y = (-6).dp)
                         .size(14.dp)
                         .clip(CircleShape)
                         .drawBehind { drawRect(danger) }

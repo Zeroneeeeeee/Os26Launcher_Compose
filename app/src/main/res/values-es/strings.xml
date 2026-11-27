@@ -758,6 +758,8 @@
     <string name="perm_blocked_location_message">El tiempo usa tu ubicación aproximada para mostrar el tiempo donde estás. Solo se usa para el tiempo y no se sigue de forma continua. Has rechazado este permiso, así que Android no volverá a preguntar. Toca Dar permiso y luego Permisos → Ubicación → Permitir.</string>
     <string name="perm_blocked_contacts_title">Se necesita el permiso de contactos</string>
     <string name="perm_blocked_contacts_message">La búsqueda lee tus contactos para que encuentres personas por nombre y las llames o les escribas rápido. Los contactos solo se leen en este teléfono y nunca se envían a ningún sitio. Has rechazado este permiso, así que Android no volverá a preguntar. Toca Dar permiso y luego Permisos → Contactos → Permitir.</string>
+    <string name="perm_blocked_notifications_title">Se necesita permiso de notificaciones</string>
+    <string name="perm_blocked_notifications_message">El tiempo te envía el pronóstico de la mañana y un aviso del tiempo de mañana. Has rechazado este permiso, así que Android no volverá a preguntar. Toca Dar permiso y luego Notificaciones → Permitir.</string>
     <!-- WR (2026-11-27): chu kỳ "Làm mới sau" (Cài đặt → Thời tiết) và nút làm mới trên widget. -->
     <string name="wx_refresh_header">Actualización</string>
     <string name="wx_refresh_interval">Actualizar cada</string>

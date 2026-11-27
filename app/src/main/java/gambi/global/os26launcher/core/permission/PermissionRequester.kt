@@ -29,7 +29,13 @@ enum class PermissionKind(
     @StringRes val message: Int
 ) {
     LOCATION(Manifest.permission.ACCESS_COARSE_LOCATION, "location", R.string.perm_blocked_location_title, R.string.perm_blocked_location_message),
-    CONTACTS(Manifest.permission.READ_CONTACTS, "contacts", R.string.perm_blocked_contacts_title, R.string.perm_blocked_contacts_message)
+    CONTACTS(Manifest.permission.READ_CONTACTS, "contacts", R.string.perm_blocked_contacts_title, R.string.perm_blocked_contacts_message),
+
+    /** PG (2026-11-27): thông báo thời tiết. Quyền runtime chỉ từ API 33; máy thấp hơn đừng xin qua lớp này (checkSelfPermission luôn từ chối). */
+    NOTIFICATIONS(
+        Manifest.permission.POST_NOTIFICATIONS, "notifications",
+        R.string.perm_blocked_notifications_title, R.string.perm_blocked_notifications_message
+    )
 }
 
 /**

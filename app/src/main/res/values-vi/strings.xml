@@ -747,6 +747,8 @@
     <string name="perm_blocked_location_message">Thời tiết dùng vị trí gần đúng của bạn để hiện thời tiết nơi bạn đang ở. Vị trí chỉ dùng cho thời tiết, không theo dõi liên tục. Bạn đã từ chối quyền này nên Android không hỏi lại nữa. Bấm Cấp quyền, rồi vào Quyền → Vị trí → Cho phép.</string>
     <string name="perm_blocked_contacts_title">Cần quyền danh bạ</string>
     <string name="perm_blocked_contacts_message">Tìm kiếm đọc danh bạ để bạn tìm người theo tên và gọi, nhắn tin nhanh. Danh bạ chỉ được đọc trên máy này, không gửi đi đâu. Bạn đã từ chối quyền này nên Android không hỏi lại nữa. Bấm Cấp quyền, rồi vào Quyền → Danh bạ → Cho phép.</string>
+    <string name="perm_blocked_notifications_title">Cần quyền thông báo</string>
+    <string name="perm_blocked_notifications_message">Thời tiết gửi bản tin buổi sáng và nhắc trước thời tiết ngày mai. Bạn đã từ chối quyền này nên Android không hỏi lại nữa. Bấm Cấp quyền, rồi vào Thông báo → Cho phép.</string>
     <!-- WR (2026-11-27): chu kỳ "Làm mới sau" (Cài đặt → Thời tiết) và nút làm mới trên widget. -->
     <string name="wx_refresh_header">Làm mới</string>
     <string name="wx_refresh_interval">Làm mới sau</string>

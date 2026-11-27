@@ -22,7 +22,7 @@ Bố cục màn hình chính (trang, ô, thư mục, widget) không phải confi
 | DataStore `launcher_settings` | `files/datastore/launcher_settings.preferences_pb` | Mọi cài đặt dạng giá trị (mục 3) | Có |
 | DataStore `control_center` | `files/datastore/control_center.preferences_pb` | Trung tâm điều khiển (mục 4) | Có |
 | DataStore `today_widgets` | `files/datastore/today_widgets.preferences_pb` | Danh sách widget của Today View (mục 4b, TV-3) | Có |
-| SharedPreferences `permission_denials` | `shared_prefs/permission_denials.xml` | PM (2026-11-26): cờ Boolean `location`, `contacts` = người dùng đã từ chối rõ ràng quyền đó (để biết khi nào Android không hỏi nữa và hiện hộp "Cấp quyền"). Đọc đồng bộ lúc bấm nên không dùng DataStore. Cấp quyền thì xóa cờ. Chỉ `core/permission/PermissionRequester` đọc/ghi | Có |
+| SharedPreferences `permission_denials` | `shared_prefs/permission_denials.xml` | PM (2026-11-26): cờ Boolean `location`, `contacts`, `notifications` (PG 2026-11-27, API 33+) = người dùng đã từ chối rõ ràng quyền đó (để biết khi nào Android không hỏi nữa và hiện hộp "Cấp quyền"). Đọc đồng bộ lúc bấm nên không dùng DataStore. Cấp quyền thì xóa cờ. Chỉ `core/permission/PermissionRequester` đọc/ghi | Có |
 | Room `launcher.db`, bảng `app_overrides` | `databases/launcher.db` | Tùy chỉnh theo app: ẩn, tên, icon (mục 5) | Có |
 | File `backdrop_image` | `files/backdrop_image` | Ảnh nền người dùng chọn (dùng khi `appearance_wallpaper_kind` = PHOTO, hoặc AUTO và file có) | Có |
 | File `control_center_background.jpg` | `files/` | Ảnh nền riêng của Trung tâm điều khiển | Có |

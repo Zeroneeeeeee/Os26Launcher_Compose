@@ -73,6 +73,7 @@ class SearchSettingsScreen(private val ctx: SettingsScreenContext) : SettingsScr
             SettingsRow.ID_HT_SEARCH_PILL -> homeToggles.setSearchPill(checked)
         }
         when (row.id) { // PB D2: bật là hỏi ngay
+            // PG (2026-11-27): chỉ ghi bật khi đã đủ điều kiện; không cấp thì pref về tắt (không âm thầm bật lại khi sau này được cấp ở chỗ khác).
             SettingsRow.ID_SEARCH_SHORTCUTS -> {
                 searchSettings.setShortcuts(checked)
                 if (checked && !ctx.viewModel.isDefaultLauncher()) {
@@ -81,11 +82,13 @@ class SearchSettingsScreen(private val ctx: SettingsScreenContext) : SettingsScr
                 }
             }
             SettingsRow.ID_SEARCH_CONTACTS -> {
-                val ask = checked && !contactsGranted
-                searchSettings.setContacts(checked, asked = ask)
-                if (ask) {
+                if (!checked || contactsGranted) {
+                    searchSettings.setContacts(checked)
+                } else {
                     contactsPermission.request(onOpenSettings = { awaitingContactsSettings = true }) { granted ->
                         contactsGranted = granted
+                        // Bị chặn: kết quả false đến ngay khi hiện hộp "Cấp quyền"; cấp ở Thông tin ứng dụng thì onResume ghi bật.
+                        searchSettings.setContacts(granted, asked = true)
                         ctx.rerender(true)
                     }
                 }
@@ -109,9 +112,11 @@ class SearchSettingsScreen(private val ctx: SettingsScreenContext) : SettingsScr
         ) == PackageManager.PERMISSION_GRANTED
         if (awaitingDefault || awaitingContactsSettings) {
             val stillNotDefault = awaitingDefault && !ctx.viewModel.isDefaultLauncher()
+            if (awaitingContactsSettings && contactsGranted) searchSettings.setContacts(true, asked = true) // PG: vừa cấp ở Thông tin ứng dụng
             awaitingDefault = false
             awaitingContactsSettings = false
             if (stillNotDefault) {
+                searchSettings.setShortcuts(false) // PG: không đặt làm launcher mặc định thì Lối tắt không bật
                 Toast.makeText(activity, R.string.settings_search_shortcuts_need_default, Toast.LENGTH_LONG).show()
             }
             // Khung dựng lại ngay sau onResume nhưng không ép bind: hoãn một nhịp để công tắc đã lật về đúng trạng thái thật.
