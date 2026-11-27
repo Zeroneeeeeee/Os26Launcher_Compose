@@ -61,9 +61,9 @@ bản bọc. `WeatherRepositoryImpl`, widget, bảng, thông báo không đổi.
 - [x] `WeatherCondition.fromWmoCode(code)` (P7). Commit `feat: Open-Meteo weather provider`.
 
 ### Task 2: Bản bọc dự phòng
-- [ ] `FallbackWeatherProvider(primary: OpenWeatherMapProvider, backup: OpenMeteoProvider)`: `fetch` thử OWM, lỗi thuộc P1 → Open-Meteo; Open-Meteo cũng
+- [x] `FallbackWeatherProvider(primary: OpenWeatherMapProvider, backup: OpenMeteoProvider)`: `fetch` thử OWM, lỗi thuộc P1 → Open-Meteo; Open-Meteo cũng
       lỗi → ném lỗi của OWM (widget hiện lỗi như hiện nay). Bám theo P2 (`@Volatile` mốc thời gian + cờ 401). `search` / `reverse` gọi thẳng OWM.
-- [ ] `WeatherModule`: bind `FallbackWeatherProvider`; cung cấp `OpenMeteoConfig` từ `BuildConfig`. Log P6. Commit `feat: fall back to Open-Meteo when OWM fails`.
+- [x] `WeatherModule`: bind `FallbackWeatherProvider`; cung cấp `OpenMeteoConfig` từ `BuildConfig`. Log P6. Commit `feat: fall back to Open-Meteo when OWM fails`.
 
 ### Task 3: Docs
 - [ ] `Launcher-Features.md`, `lessons/widgets.md` (mục WM), `BACKLOG.md` (B23 chờ kiểm), `plans/README.md`. Commit `docs: WM weather fallback`.
@@ -81,3 +81,4 @@ bản bọc. `WeatherRepositoryImpl`, widget, bảng, thông báo không đổi.
 | Ngày | Task | Việc | Ghi chú |
 |---|---|---|---|
 | 2026-11-27 | 1 | `OpenMeteoProvider` + `OpenMeteoConfig` (`fetch` 1 lệnh; `search` rỗng, `reverse` null); `OpenMeteoParser` (mốc giờ kế tiếp, mỗi 3 giờ, 12 mốc); `WeatherCondition.fromWmoCode` (thêm 97 vào giông theo bảng WMO); `OPEN_METEO_BASE_URL` / `OPEN_METEO_API_KEY` × 3 build type; `WeatherModule.provideOpenMeteoConfig`; `OwmParser.HIGH_LOW_STEPS` bỏ `private` | Chưa build. Ruling: mốc đầu từ chỉ số 1 (giờ hiện tại đã qua một phần, OWM trả mốc tương lai) |
+| 2026-11-27 | 2 | `FallbackWeatherProvider` (@Singleton): OWM → Open-Meteo khi 429 / 401 / 5xx / parse; bám 30 phút sau 429, tới hết tiến trình sau 401; cả hai lỗi thì ném lỗi OWM, riêng OWM 401 thì ném lỗi Open-Meteo; `search` / `reverse` chỉ OWM; log `WeatherFallback`. `WeatherModule` bind bản bọc | Chưa build. Ruling: OWM 401 + Open-Meteo lỗi → ném lỗi Open-Meteo, vì repository gặp 401 thì `keyDead` dừng hẳn cả nguồn dự phòng |
