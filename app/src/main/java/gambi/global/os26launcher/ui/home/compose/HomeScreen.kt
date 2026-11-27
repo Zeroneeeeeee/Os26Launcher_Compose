@@ -103,6 +103,7 @@ import gambi.global.os26launcher.domain.model.DockApp
 import gambi.global.os26launcher.domain.layout.FolderPlanner
 import kotlinx.coroutines.withTimeoutOrNull
 import gambi.global.os26launcher.domain.model.WidgetKind
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
@@ -281,11 +282,17 @@ internal fun HomeScreen(
             }
         }
     }
+    // SM (2026-11-27, TECNO KM5n): trang hiện tại / đang cuộn chép ra ngoài bằng snapshotFlow, KHÔNG đọc trong composition của HomeScreen:
+    // đọc ở đây làm cả HomeScreen (và mọi trang đã dựng) dựng lại lúc bắt đầu / dừng mỗi cú vuốt (khung đầu cú vuốt anim 18–25 ms).
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage to pagerState.isScrollInProgress }.collect { (page, scrolling) ->
+            pagerInfo.currentPage = page
+            pagerInfo.scrolling = scrolling
+            HomePerfLog.scrolling = scrolling // SW Task 1: ngữ cảnh cho log khung chậm
+            HomePerfLog.currentPage = page
+        }
+    }
     SideEffect {
-        pagerInfo.currentPage = pagerState.currentPage
-        pagerInfo.scrolling = pagerState.isScrollInProgress
-        HomePerfLog.scrolling = pagerState.isScrollInProgress // SW Task 1: ngữ cảnh cho log khung chậm
-        HomePerfLog.currentPage = pagerState.currentPage
         pagerInfo.realPageCount = state.pages.size
         drag.actions = actions
         drag.pagerState = pagerState
@@ -299,8 +306,15 @@ internal fun HomeScreen(
         drag.pillVisible = showSearch || showDots
         if (!state.editMode || drag.session != null) drag.toolbarRects.clear()
     }
-    val edit = HomeEditContext(state.editMode, drag, onRemoveApp, onRemoveWidget, badges, onOpenFolder = overlays.openFolder, onWidgetClick = onWidgetClick,
-        hiddenWidgetPackages = hiddenWidgetPackages)
+    // SM: giữ cùng một HomeEditContext khi đầu vào không đổi. Tạo mới mỗi lần HomeScreen dựng lại thì mọi trang đã dựng (HomeGridPage nhận `edit`)
+    // không bỏ qua được và dựng lại cả 24 ô.
+    val newEdit = {
+        HomeEditContext(state.editMode, drag, onRemoveApp, onRemoveWidget, badges, onOpenFolder = overlays.openFolder, onWidgetClick = onWidgetClick,
+            hiddenWidgetPackages = hiddenWidgetPackages)
+    }
+    val edit = if (PerfSwitches.noScrollFix) newEdit() else {
+        remember(state.editMode, drag, onRemoveApp, onRemoveWidget, badges, overlays.openFolder, onWidgetClick, hiddenWidgetPackages) { newEdit() }
+    }
     var rootSize by remember { mutableStateOf(IntSize.Zero) }
     val menuProgress = remember { Animatable(0f) }
     val folderProgress = remember { Animatable(0f) }
@@ -401,16 +415,23 @@ internal fun HomeScreen(
     }
     // Pill sang chấm khi lướt, ở edit mode hay đang kéo; về ô tìm kiếm sau 600 ms đứng yên (HomePagerController 338-348).
     // P2-11: ngón tay đang trên pill dạng chấm cũng giữ dạng chấm.
+    // SM: `busy` tính trong snapshotFlow và `pillActive` chỉ HomeSearchPill đọc (truyền lambda), để bắt đầu / dừng cuộn không dựng lại HomeScreen.
     var pillTouching by remember { mutableStateOf(false) }
-    val busy = pillTouching || pagerState.isScrollInProgress || state.editMode || drag.session != null
     var pillActive by remember { mutableStateOf(false) }
-    LaunchedEffect(busy) {
-        if (busy) {
-            pillActive = true
-        } else {
-            delay(PILL_IDLE_MS.milliseconds)
-            pillActive = false
+    LaunchedEffect(pagerState, drag) {
+        snapshotFlow { pillTouching || pagerState.isScrollInProgress || editModeNow || drag.session != null }.collectLatest { busy ->
+            if (busy) {
+                pillActive = true
+            } else {
+                delay(PILL_IDLE_MS.milliseconds)
+                pillActive = false
+            }
         }
+    }
+    // SM: công tắc đo `noScrollFix` (bản `perf`): đọc lại như trước SM để so số đo.
+    if (PerfSwitches.noScrollFix) {
+        pagerState.isScrollInProgress
+        pillActive
     }
 
     Box(
@@ -580,7 +601,7 @@ internal fun HomeScreen(
                     HomeSearchPill(
                         pageCount = pages.size,
                         position = { pagerState.currentPage + pagerState.currentPageOffsetFraction },
-                        active = pillActive,
+                        active = { pillActive },
                         showSearch = showSearch,
                         showDots = showDots,
                         onSearchClick = onSearchClick,
