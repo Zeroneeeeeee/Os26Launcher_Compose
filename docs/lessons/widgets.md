@@ -100,3 +100,9 @@ Mỗi mục giữ nguyên ngày, nhãn nguồn (đo được / đọc code / đ�
 - (WR, 2026-11-27, **đọc code**, chờ kiểm máy) Làm mới tay vẫn đi qua `mutex` và hợp đồng `lastAttemptAt` như làm mới tự động, chỉ khác điều kiện tới hạn (1 lần/phút mỗi địa điểm). Bấm trong lúc chờ thì icon vẫn xoay một vòng cho có phản hồi, không gọi mạng.
 - (WR / B21, 2026-11-27, **đọc code**, chờ kiểm máy) Hộp xin quyền của hệ thống và trang thông tin ứng dụng là Activity khác: quay lại thì Home `onResume`. Việc gì chạy "mỗi lần resume" (hộp "Đặt làm màn hình chính") phải được báo bỏ qua lần resume đó ngay TRƯỚC khi mở màn hệ thống (`PermissionRequester(onSystemUi)`), và không hiện khi `dsDialogs.hasOpen`.
 - (WR / B11, 2026-11-27, **đọc code**, chờ kiểm máy) Muốn một phần tử Compose có hoạt ảnh lúc ẩn thì không bọc nó trong `if (điều kiện)`: luôn gọi, truyền `visible`, tự rời cây khi giá trị hoạt ảnh về 0. `animateFloatAsState` lấy đích làm giá trị đầu nên ô dựng mới khi đã ở edit mode hiện ngay, không phóng lại.
+
+## WM — Open-Meteo dự phòng cho OWM (2026-11-27). Plan: [../plans/WM-weather-fallback.md](../plans/WM-weather-fallback.md)
+
+- (WM, 2026-11-27, **đọc tài liệu**, chờ kiểm máy) Open-Meteo `forecast_hours` đếm từ giờ HIỆN TẠI (đã qua một phần), còn `data/2.5/forecast` của OWM trả mốc tương lai: muốn hai nguồn cùng nghĩa thì bỏ mốc 0, lấy mỗi 3 giờ một mốc. Với `timeformat=unixtime`, `hourly.time` là giây UTC; múi giờ lấy ở `utc_offset_seconds`.
+- (WM, 2026-11-27, **đọc code**, chờ kiểm máy) Bản bọc dự phòng không được để lỗi "chết vĩnh viễn" của nguồn chính (401) lọt lên repository khi nguồn phụ chỉ lỗi tạm: repository gặp 401 thì dừng mọi lần làm mới tới khi khởi động lại, kéo chết luôn nguồn phụ. Khi nguồn chính 401 và nguồn phụ cũng lỗi, ném lỗi của nguồn phụ.
+- (WM, 2026-11-27, **đọc code**) Thử nguồn dự phòng không cần code: đặt `OWM_API_KEY=sai` trong `local.properties` (ghi đè khóa có sẵn) → OWM trả 401 → Logcat tag `WeatherFallback`.
