@@ -9,8 +9,7 @@ import gambi.global.os26launcher.domain.config.BadgeStyle
 import gambi.global.os26launcher.domain.config.HomeScreenConfig
 import gambi.global.os26launcher.domain.model.AppItem
 import gambi.global.os26launcher.domain.model.ComponentKey
-import gambi.global.os26launcher.domain.model.controlcenter.ControlPermission
-import gambi.global.os26launcher.ui.controlcenter.SystemIntents
+import gambi.global.os26launcher.ui.controlcenter.NotificationListenerFlow
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -28,6 +27,7 @@ class BadgesSettingsScreen(private val ctx: SettingsScreenContext) : SettingsScr
     private var config = HomeScreenConfig()
     private var apps: List<AppItem> = emptyList()
     private var granted = viewModel.isListenerGranted()
+    private val listenerFlow = NotificationListenerFlow(activity, viewModel::isListenerGranted)
 
     override val titleRes: Int = R.string.settings_hub_badges
 
@@ -76,8 +76,7 @@ class BadgesSettingsScreen(private val ctx: SettingsScreenContext) : SettingsScr
         viewModel.setStyle(if (index == STYLE_DOT) BadgeStyle.DOT else BadgeStyle.NUMBER)
 
     override fun onPermissionCardClicked(row: SettingsRow.PermissionCard) {
-        val intents = SystemIntents.forPermission(activity, ControlPermission.NOTIFICATION_LISTENER)
-        if (!SystemIntents.startFirst(activity, intents, newTask = false)) {
+        if (!listenerFlow.open()) {
             Toast.makeText(activity, R.string.badges_perm_open_failed, Toast.LENGTH_LONG).show()
         }
     }
@@ -86,7 +85,10 @@ class BadgesSettingsScreen(private val ctx: SettingsScreenContext) : SettingsScr
 
     override fun onResume() {
         granted = viewModel.isListenerGranted() // người dùng có thể vừa cấp/thu hồi ở Cài đặt hệ thống
+        listenerFlow.onResume() // RST: máy chặn "Cài đặt bị hạn chế" thì hướng dẫn mở khóa
     }
+
+    override fun onDestroy() = listenerFlow.onDestroy()
 
     override suspend fun observe() {
         coroutineScope {

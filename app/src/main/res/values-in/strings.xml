@@ -299,6 +299,9 @@
     <string name="cc_perm_later">Nanti</string>
     <string name="cc_perm_reason_overlay">Pusat Kontrol menampilkan tepi pemicu dan panel di atas aplikasi lain. Aktifkan Tampilkan di atas aplikasi lain untuk menggunakannya.</string>
     <string name="cc_perm_reason_listener">Pusat Kontrol memerlukan Akses notifikasi agar tetap berjalan di latar belakang dan menampilkan kontrol media.</string>
+    <string name="restricted_settings_title">Buka setelan terbatas</string>
+    <string name="restricted_settings_message">Android memblokir Akses notifikasi karena aplikasi dipasang dari file APK.\n\n1. Ketuk Buka info aplikasi.\n2. Ketuk ⋮ (kanan atas), pilih Izinkan setelan terbatas, lalu konfirmasi.\n3. Kembali ke sini. Akses notifikasi akan terbuka lagi, aktifkan.</string>
+    <string name="restricted_settings_open">Buka info aplikasi</string>
     <string name="cc_perm_reason_battery">Izinkan penggunaan baterai tanpa batasan agar sistem tidak menghentikan Pusat Kontrol di latar belakang.</string>
     <string name="cc_perm_reason_write_settings">Pusat Kontrol memerlukan izin Ubah setelan sistem untuk mengubah kecerahan dan putar otomatis.</string>
     <string name="cc_perm_reason_dnd">Pusat Kontrol memerlukan Akses Jangan Ganggu untuk menyalakan dan mematikan Jangan Ganggu.</string>

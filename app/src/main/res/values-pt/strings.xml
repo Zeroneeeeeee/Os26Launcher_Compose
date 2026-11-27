@@ -305,6 +305,9 @@
     <string name="cc_perm_later">Mais tarde</string>
     <string name="cc_perm_reason_overlay">A Central de controle mostra a borda e o painel sobre outros apps. Ative Sobrepor a outros apps para usá-la.</string>
     <string name="cc_perm_reason_listener">A Central de controle precisa do Acesso às notificações para continuar ativa em segundo plano e mostrar os controles de mídia.</string>
+    <string name="restricted_settings_title">Desbloquear configurações restritas</string>
+    <string name="restricted_settings_message">O Android bloqueou o Acesso às notificações porque o app foi instalado de um arquivo APK.\n\n1. Toque em Abrir info. do app.\n2. Toque em ⋮ (canto superior direito), escolha Permitir configurações restritas e confirme.\n3. Volte aqui. O Acesso às notificações abrirá de novo; ative-o.</string>
+    <string name="restricted_settings_open">Abrir info. do app</string>
     <string name="cc_perm_reason_battery">Permita o uso de bateria sem restrições para que o sistema não pare a Central de controle em segundo plano.</string>
     <string name="cc_perm_reason_write_settings">A Central de controle precisa de Modificar configurações do sistema para mudar o brilho e a rotação automática.</string>
     <string name="cc_perm_reason_dnd">A Central de controle precisa do Acesso ao Não perturbe para ativar e desativar o Não perturbe.</string>

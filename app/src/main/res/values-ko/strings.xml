@@ -299,6 +299,9 @@
     <string name="cc_perm_later">나중에</string>
     <string name="cc_perm_reason_overlay">제어 센터는 가장자리 핸들과 패널을 다른 앱 위에 표시합니다. 사용하려면 다른 앱 위에 표시를 허용하세요.</string>
     <string name="cc_perm_reason_listener">제어 센터가 백그라운드에서 계속 실행되고 미디어 컨트롤을 표시하려면 알림 접근이 필요합니다.</string>
+    <string name="restricted_settings_title">제한된 설정 해제</string>
+    <string name="restricted_settings_message">앱이 APK 파일로 설치되어 Android가 알림 접근을 차단했습니다.\n\n1. 앱 정보 열기를 탭하세요.\n2. 오른쪽 위 ⋮를 탭하고 제한된 설정 허용을 선택한 뒤 확인하세요.\n3. 여기로 돌아오면 알림 접근 화면이 다시 열립니다. 켜 주세요.</string>
+    <string name="restricted_settings_open">앱 정보 열기</string>
     <string name="cc_perm_reason_battery">시스템이 백그라운드에서 제어 센터를 중지하지 않도록 배터리 제한 없음을 허용하세요.</string>
     <string name="cc_perm_reason_write_settings">밝기와 자동 회전을 변경하려면 제어 센터에 시스템 설정 수정 권한이 필요합니다.</string>
     <string name="cc_perm_reason_dnd">방해 금지 모드를 켜고 끄려면 제어 센터에 방해 금지 접근 권한이 필요합니다.</string>

@@ -124,7 +124,7 @@ fun FrostedWallpaperImage(source: Bitmap?, modifier: Modifier = Modifier, cache:
  * xin hai cỡ khác nhau sẽ làm nó dựng lại qua lại mãi. Bản nhỏ phủ toàn bộ bitmap gốc nên vẽ vào vùng cỡ nào cũng đúng hình học ([drawFrosted]).
  */
 @Composable
-private fun rememberSmallBlur(source: Bitmap?, size: IntSize, cache: BlurredBackdropCache?): ImageBitmap? {
+internal fun rememberSmallBlur(source: Bitmap?, size: IntSize, cache: BlurredBackdropCache?): ImageBitmap? {
     val env = GlassEnvironment.from(LocalContext.current)
     val view = LocalView.current
     val blurCache = cache ?: env.blurCache
