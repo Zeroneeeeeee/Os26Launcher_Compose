@@ -68,14 +68,12 @@ import androidx.compose.ui.unit.IntSize
 import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import gambi.global.os26launcher.R
-import gambi.global.os26launcher.core.glass.BlurredBackdropCache
 import gambi.global.os26launcher.core.perf.HomePerfLog
 import gambi.global.os26launcher.core.perf.PerfSwitches
 import gambi.global.os26launcher.core.glass.GlassTuning
 import gambi.global.os26launcher.core.glass.compose.FrostedBackdrop
 import gambi.global.os26launcher.core.glass.compose.FrostedWallpaperLayer
 import gambi.global.os26launcher.core.glass.compose.rememberGlassLook
-import gambi.global.os26launcher.core.glass.compose.rememberLayerSnapshot
 import gambi.global.os26launcher.core.glass.compose.LocalDsBackdrop
 import gambi.global.os26launcher.core.glass.compose.LocalDsFrostedBackdrop
 import gambi.global.os26launcher.core.glass.compose.IconGlassHost
@@ -117,6 +115,9 @@ import com.kyant.backdrop.drawPlainBackdrop
 import androidx.compose.ui.graphics.RectangleShape
 import gambi.global.os26launcher.core.glass.compose.FrostedNoEffects
 import androidx.compose.animation.core.animateFloatAsState
+import gambi.global.os26launcher.core.glass.compose.FolderBlurTrace
+import gambi.global.os26launcher.core.glass.compose.FrostedSnapshotLayer
+import gambi.global.os26launcher.core.glass.compose.rememberBlurredLayerSnapshot
 
 /**
  * JH1 Task 2 — Home Compose: ảnh nền, các trang lưới, pill, dock. Bố cục như `activity_home.xml`: cột dọc trong vùng trừ thanh hệ thống
@@ -328,12 +329,24 @@ internal fun HomeScreen(
     // PG3 Task 2 Step 3 (Q3): dưới API 31 kính thật không chạy, nên bảng thư mục lấy mẫu ẢNH CHỤP lớp Home (chụp một lần lúc mở, làm mờ ngoài
     // main thread bằng bộ đệm riêng) để vẫn thấy icon phía sau; ảnh chụp chưa xong thì dùng lớp nền mờ của ảnh nền. Máy ≥ 31 không chụp.
     val legacyGlass = Build.VERSION.SDK_INT < Build.VERSION_CODES.S
-    val folderSnapshot = rememberLayerSnapshot(homeBackdrop, capture = legacyGlass && state.openFolderId != null, keep = legacyGlass && folderLayerOn)
-    val folderFrosted = rememberFrostedBackdrop(folderSnapshot)
-    val folderBlurCache = remember { BlurredBackdropCache() }
+    // FX (B16 tiếp, chủ dự án 2026-11-27, hướng A): chụp + thu 1/8 + làm mờ trong một lần chạy nền, để ảnh mờ có icon tới kịp lúc bảng đang phóng.
     val folderLook by rememberGlassLook()
-    SideEffect { folderBlurCache.blurRadiusPx = maxOf(GlassTuning.blurRadiusPx(folderLook), FOLDER_SNAPSHOT_MIN_BLUR_PX) }
-    LaunchedEffect(folderSnapshot) { if (folderSnapshot == null) folderBlurCache.trim() } // đóng thư mục: nhả bản mờ của ảnh chụp
+    val folderShot = rememberBlurredLayerSnapshot(
+        homeBackdrop,
+        capture = legacyGlass && state.openFolderId != null,
+        keep = legacyGlass && folderLayerOn,
+        radiusPx = maxOf(GlassTuning.blurRadiusPx(folderLook), FOLDER_SNAPSHOT_MIN_BLUR_PX)
+    )
+    val folderFrosted = rememberFrostedBackdrop(folderShot)
+    // FX đo tạm (FolderBlurTrace): lúc ảnh mờ có icon tới và lúc bảng phóng gần hết, để so với nhau.
+    val folderShotReady = folderFrosted.backdropOrNull != null
+    LaunchedEffect(folderShotReady) { if (folderShotReady) FolderBlurTrace.log("shown progress=${"%.2f".format(folderProgress.value)}") }
+    LaunchedEffect(state.openFolderId) {
+        if (legacyGlass && state.openFolderId != null) {
+            snapshotFlow { folderProgress.value }.first { it >= 0.98f }
+            FolderBlurTrace.log("panel full")
+        }
+    }
     // FX Task 6: ảnh chụp lớp Home đã mờ hiện dần khi tới (nền sau bảng và kính bảng dưới API 31), không đổi phắt.
     val folderShotAlpha by animateFloatAsState(
         if (folderFrosted.backdropOrNull != null) 1f else 0f, tween(FOLDER_SHOT_FADE_MS), label = "folderShot"
@@ -454,7 +467,7 @@ internal fun HomeScreen(
         ) {
             // PG3: không vẽ gì ra màn, chỉ ghi lớp nền mờ. LI: cũng là gốc toạ độ của bản mờ cho kính tự vẽ sau icon kiểu Kính.
             FrostedWallpaperLayer(frosted, state.backdrop, Modifier.fillMaxSize().iconGlassWallpaperOrigin(iconGlassWallpaper))
-            if (legacyGlass) FrostedWallpaperLayer(folderFrosted, folderSnapshot, Modifier.fillMaxSize(), cache = folderBlurCache)
+            if (legacyGlass) FrostedSnapshotLayer(folderFrosted, folderShot, Modifier.fillMaxSize())
             Wallpaper(state.backdrop, Modifier.fillMaxSize().layerBackdrop(backdrop))
             // PG4 G3 (đo 2026-11-23, `tools/perf/measure-home.ps1`, bản `perf`): kính thật của dock / widget KHÔNG tắt khi lướt trang (comment cũ ở
             // đây ghi đã tắt nhưng code chưa từng tắt). Oppo PKD130: đủ kính Janky 0,9–1,3 %, p95 12–13 ms, so với bỏ kính 0,5 %, p95 10–12 ms
@@ -657,12 +670,11 @@ internal fun HomeScreen(
             // tối. FX Task 6 (chủ dự án 17:03, cách 1): phủ toàn màn, đậm dần theo folderProgress (theo hoạt ảnh phóng bảng) ngay từ khung đầu:
             // ảnh nền đã mờ (`frostedBackdrop`, có sẵn) + tối FOLDER_DIM; ảnh chụp lớp Home đã mờ (`folderFrosted`, có icon, tới muộn sau khi mở)
             // hiện dần trong FOLDER_SHOT_FADE_MS đè lên, không đổi phắt.
+            // FX hướng A (chủ dự án 2026-11-27): BỎ lớp ảnh nền mờ đục: nó che mất icon / widget thật tới khi ảnh chụp tới (lúc bảng đã phóng xong).
+            // Chưa có ảnh chụp thì Home thật vẫn hiện (chỉ tối); ảnh chụp đã mờ (giờ tới nhanh hơn) hiện dần đè lên.
             if (legacyGlass && folderProgress.value > 0f) {
                 val shot = folderFrosted.backdropOrNull
                 Box(Modifier.fillMaxSize().graphicsLayer { alpha = folderProgress.value }) {
-                    frostedBackdrop?.let { wallpaper ->
-                        Box(Modifier.fillMaxSize().drawPlainBackdrop(backdrop = wallpaper, shape = { RectangleShape }, effects = FrostedNoEffects))
-                    }
                     if (shot != null) {
                         Box(
                             Modifier

@@ -52,6 +52,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.max
 import kotlin.math.roundToInt
+import gambi.global.os26launcher.core.glass.smoothBlurred
+import androidx.compose.runtime.SideEffect
+import android.os.SystemClock
 
 /**
  * PG3 — kính mờ TĨNH (bản Compose của kính tại chỗ `BackdropBlurDrawable` bên XML): ảnh nền đã làm mờ MỘT lần ngoài main thread (bản nhỏ của
@@ -191,6 +194,79 @@ fun rememberLayerSnapshot(backdrop: LayerBackdrop, capture: Boolean, keep: Boole
     LaunchedEffect(keep) { if (!keep) snapshot = null }
     return snapshot
 }
+
+/**
+ * FX (B16 tiếp, chủ dự án 2026-11-27): ảnh chụp lớp Home dưới API 31 đã làm mờ SẴN, nhỏ ([SNAPSHOT_SCALE] = 1/8 cỡ chụp), trả về khi xong.
+ * Khác [rememberLayerSnapshot] + [FrostedWallpaperLayer]: chép HARDWARE → ARGB, thu nhỏ và làm mờ trong CÙNG một lần chạy ở luồng nền (không qua
+ * [BlurredBackdropCache], không chờ thêm khung để báo bộ đệm), để ảnh mờ có icon tới kịp lúc bảng thư mục đang phóng. [radiusPx]: bán kính box
+ * blur ở cỡ 1/4 (như kính mờ tĩnh); ở cỡ 1/8 dùng một nửa. Chụp khi [capture] bật, giữ tới khi [keep] tắt; lỗi thì trả null.
+ */
+@Composable
+fun rememberBlurredLayerSnapshot(backdrop: LayerBackdrop, capture: Boolean, keep: Boolean, radiusPx: Int): Bitmap? {
+    var snapshot by remember { mutableStateOf<Bitmap?>(null) }
+    val radius = rememberUpdatedState(radiusPx)
+    LaunchedEffect(backdrop, capture) {
+        if (!capture) return@LaunchedEffect
+        FolderBlurTrace.start()
+        withFrameNanos {}
+        withFrameNanos {}
+        FolderBlurTrace.log("frames")
+        val shot = try {
+            val image = backdrop.graphicsLayer.toImageBitmap()
+            FolderBlurTrace.log("readback ${image.width}x${image.height}")
+            val r = ((radius.value + 1) / 2).coerceAtLeast(1)
+            withContext(Dispatchers.Default) {
+                val full = image.asAndroidBitmap()
+                val soft = if (full.config == Bitmap.Config.HARDWARE) full.copy(Bitmap.Config.ARGB_8888, false) else full
+                FolderBlurTrace.log("copy ${full.config}")
+                val w = (soft.width / SNAPSHOT_SCALE).coerceAtLeast(1)
+                val h = (soft.height / SNAPSHOT_SCALE).coerceAtLeast(1)
+                smoothBlurred(soft, w, h, r).also {
+                    if (soft !== full) soft.recycle()
+                    FolderBlurTrace.log("blur ${w}x$h r=$r")
+                }
+            }
+        } catch (e: Throwable) {
+            Log.w(TAG, "blurred layer snapshot failed", e)
+            null
+        }
+        if (shot != null) snapshot = shot
+    }
+    LaunchedEffect(keep) { if (!keep) snapshot = null }
+    return snapshot
+}
+
+/**
+ * FX: ghi ảnh chụp đã mờ [small] ([rememberBlurredLayerSnapshot]) vào lớp [frosted] (tạo bằng `rememberFrostedBackdrop(small)`), phủ toàn
+ * [modifier]. Không vẽ gì ra màn. Gán bản mờ ngay sau lần dựng (SideEffect), không chờ thêm khung.
+ */
+@Composable
+fun FrostedSnapshotLayer(frosted: FrostedBackdrop, small: Bitmap?, modifier: Modifier = Modifier) {
+    val image = remember(small) { small?.asImageBitmap() }
+    SideEffect { frosted.small.value = image }
+    Box(modifier.drawBehind { frosted.small.value }.layerBackdrop(frosted.layer))
+}
+
+/** FX — log ĐO TẠM (tag `FolderBlur`) mốc thời gian ảnh mờ sau bảng thư mục dưới API 31; mốc tính từ lúc bắt đầu chụp. Gỡ khi chốt. */
+object FolderBlurTrace {
+    @Volatile
+    private var t0 = 0L
+
+    fun start() {
+        t0 = SystemClock.uptimeMillis()
+        Log.i(TRACE_TAG, "open")
+    }
+
+    fun log(step: String) {
+        if (t0 == 0L) return
+        Log.i(TRACE_TAG, "+${SystemClock.uptimeMillis() - t0}ms $step")
+    }
+}
+
+private const val TRACE_TAG = "FolderBlur"
+
+/** Ảnh chụp sau bảng thư mục thu về 1/8 cạnh trước khi làm mờ (chủ dự án chọn hướng A, 2026-11-27). */
+private const val SNAPSHOT_SCALE = 8
 
 /**
  * PG3 Task 2 — bề mặt kính mờ tĩnh hình [shape] (ô thư mục, pill), màu theo vai trò [role] (`GlassStyle.forRole`, độ bóng theo thông số kính):
