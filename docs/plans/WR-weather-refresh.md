@@ -62,7 +62,7 @@ widget nằm trong `HomeWidgetCell` (Compose, đè lên thẻ vẽ Canvas), gọ
 - [x] `config-schema.md`. Commit `feat: configurable weather refresh interval and manual refresh`.
 
 ### Task 2: Cài đặt → Thời tiết "Làm mới sau"
-- [ ] Nhóm "Làm mới": hàng "Làm mới sau" (hộp chọn một), chú thích; chuỗi × 9 (plurals giờ); sửa `wx_loc_privacy` × 9. Commit `feat: weather refresh interval setting`.
+- [x] Nhóm "Làm mới": hàng "Làm mới sau" (hộp chọn một), chú thích; chuỗi × 9 (plurals giờ); sửa `wx_loc_privacy` × 9. Commit `feat: weather refresh interval setting`.
 
 ### Task 3: Nút làm mới trên widget
 - [ ] `ic_widget_refresh.xml`; `HomeWidgetCell` (WEATHER, không edit): icon 12dp / vùng chạm 32dp góc dưới phải thẻ, xoay khi `refreshing` hoặc ít nhất một vòng mỗi lần bấm.
@@ -82,3 +82,4 @@ widget nằm trong `HomeWidgetCell` (Compose, đè lên thẻ vẽ Canvas), gọ
 | Ngày | Task | Việc | Ghi chú |
 |---|---|---|---|
 | 2026-11-27 | 1 | `WeatherRefreshInterval` + khóa `weather_refresh_interval`; `WeatherPolicy` (bỏ `REFRESH_INTERVAL_MS`, `STALE_AFTER_MS`; thêm `RATE_LIMIT_RETRY_MS`, `MANUAL_COOLDOWN_MS`, `STALE_GRACE_MS`); `WeatherRepositoryImpl` đọc chu kỳ, `refreshNow`, `refreshing`; `CurrentLocationUpdater.maybeUpdate(intervalMs)`, `updateNow()`; `config-schema.md` | Chưa build |
+| 2026-11-27 | 2 | Cài đặt → Thời tiết: nhóm "Làm mới" (hàng "Làm mới sau" mở hộp chọn một, chú thích), chuỗi `wx_refresh_*` × 9 (plurals giờ), `wx_loc_privacy` × 9 nói theo chu kỳ + nút làm mới | XML parse được. Chưa build |

@@ -501,7 +501,7 @@
     <string name="wx_loc_city_unset">Chưa chọn</string>
     <string name="wx_loc_pick_city">Chọn thành phố</string>
     <string name="wx_loc_unavailable">Không lấy được vị trí. Hãy bật dịch vụ vị trí của máy hoặc chọn thành phố thủ công.</string>
-    <string name="wx_loc_privacy">Chỉ dùng vị trí gần đúng, lấy một lần mỗi lần: khi bạn bấm Cập nhật vị trí, hoặc (chế độ Tự động đã cấp quyền) tối đa mỗi 2 giờ một lần lúc tiện ích thời tiết dùng Vị trí hiện tại đang hiện, và chỉ đổi khi bạn đi xa hơn 5 km. Không chạy nền, không theo dõi liên tục. Chế độ Chọn thủ công không cần quyền và không lấy vị trí.</string>
+    <string name="wx_loc_privacy">Chỉ dùng vị trí gần đúng, lấy một lần mỗi lần: khi bạn bấm Cập nhật vị trí hoặc nút làm mới trên tiện ích, hoặc (chế độ Tự động đã cấp quyền) tối đa một lần mỗi chu kỳ “Làm mới sau” (Cài đặt → Thời tiết) lúc tiện ích thời tiết dùng Vị trí hiện tại đang hiện, và chỉ đổi khi bạn đi xa hơn 5 km. Không chạy nền, không theo dõi liên tục. Chế độ Chọn thủ công không cần quyền và không lấy vị trí.</string>
     <string name="wx_sheet_for_widget">Tiện ích này hiển thị:</string>
     <string name="wx_sheet_current_named">Vị trí hiện tại: %1$s</string>
     <string name="wx_sheet_current_unset">Vị trí hiện tại (chưa xác định)</string>
@@ -744,4 +744,13 @@
     <string name="perm_blocked_location_message">Thời tiết dùng vị trí gần đúng của bạn để hiện thời tiết nơi bạn đang ở. Vị trí chỉ dùng cho thời tiết, không theo dõi liên tục. Bạn đã từ chối quyền này nên Android không hỏi lại nữa. Bấm Cấp quyền, rồi vào Quyền → Vị trí → Cho phép.</string>
     <string name="perm_blocked_contacts_title">Cần quyền danh bạ</string>
     <string name="perm_blocked_contacts_message">Tìm kiếm đọc danh bạ để bạn tìm người theo tên và gọi, nhắn tin nhanh. Danh bạ chỉ được đọc trên máy này, không gửi đi đâu. Bạn đã từ chối quyền này nên Android không hỏi lại nữa. Bấm Cấp quyền, rồi vào Quyền → Danh bạ → Cho phép.</string>
+    <!-- WR (2026-11-27): chu kỳ "Làm mới sau" (Cài đặt → Thời tiết) và nút làm mới trên widget. -->
+    <string name="wx_refresh_header">Làm mới</string>
+    <string name="wx_refresh_interval">Làm mới sau</string>
+    <plurals name="wx_refresh_hours">
+        <item quantity="other">%d giờ</item>
+    </plurals>
+    <string name="wx_refresh_day">1 ngày</string>
+    <string name="wx_refresh_hint">Tiện ích thời tiết tự tải lại theo chu kỳ này khi đang hiện; Vị trí hiện tại cũng được kiểm tra theo chu kỳ này. Bấm biểu tượng làm mới trên tiện ích để tải ngay.</string>
+    <string name="wx_refresh_button">Làm mới thời tiết</string>
 </resources>

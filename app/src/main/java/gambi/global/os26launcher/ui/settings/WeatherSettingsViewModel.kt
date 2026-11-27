@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import gambi.global.os26launcher.domain.model.weather.WeatherRefreshInterval
 
 /**
  * WU Task 2 + WX Task 3 — trạng thái màn Cài đặt → Thời tiết (mẫu `SearchSettingsViewModel`): đơn vị nhiệt độ (WU) và danh sách địa điểm theo dõi (WX).
@@ -72,6 +73,26 @@ class WeatherSettingsViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(5_000),
         TemperatureUnit.DEFAULT
     )
+
+    /** WR: chu kỳ "Làm mới sau" (mặc định 1 ngày tới khi đọc xong). */
+    val refreshInterval: StateFlow<WeatherRefreshInterval> = preferences.refreshInterval.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
+        WeatherRefreshInterval.DEFAULT
+    )
+
+    fun onRefreshIntervalChosen(chosen: WeatherRefreshInterval) {
+        viewModelScope.launch {
+            try {
+                preferences.setRefreshInterval(chosen)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e(TAG, "refresh interval save failed: ${e.javaClass.simpleName}")
+                _failures.trySend(R.string.settings_save_failed)
+            }
+        }
+    }
 
     /** Danh sách địa điểm (mặc định rỗng tới khi đọc xong file). */
     val places: StateFlow<WeatherPlaces> = placesRepository.places

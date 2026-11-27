@@ -502,7 +502,7 @@
     <string name="wx_loc_city_unset">未選択</string>
     <string name="wx_loc_pick_city">都市を選択</string>
     <string name="wx_loc_unavailable">現在地を取得できませんでした。位置情報サービスをオンにするか、都市を手動で選んでください。</string>
-    <string name="wx_loc_privacy">おおよその位置情報のみを使い、その都度 1 回だけ取得します: 「位置を更新」をタップしたとき、または(自動モードで権限がある場合)現在地を使う天気ウィジェットが表示されている間に最大 2 時間に 1 回です。位置は 5 km 以上移動したときだけ変わります。バックグラウンドでは動作せず、継続的な追跡もしません。手動で選択するモードは権限が不要で、位置情報を読み取りません。</string>
+    <string name="wx_loc_privacy">おおよその位置情報のみを使い、その都度 1 回だけ取得します: 「位置を更新」またはウィジェットの更新ボタンをタップしたとき、または(自動モードで権限がある場合)現在地を使う天気ウィジェットが表示されている間に「更新間隔」(設定 → 天気)ごとに最大 1 回です。位置は 5 km 以上移動したときだけ変わります。バックグラウンドでは動作せず、継続的な追跡もしません。手動で選択するモードは権限が不要で、位置情報を読み取りません。</string>
     <string name="wx_sheet_for_widget">このウィジェットの表示:</string>
     <string name="wx_sheet_current_named">現在地: %1$s</string>
     <string name="wx_sheet_current_unset">現在地(不明)</string>
@@ -745,4 +745,13 @@
     <string name="perm_blocked_location_message">天気は、現在地の天気を表示するためにおおよその位置情報を使います。位置情報は天気にのみ使われ、継続的に追跡されることはありません。この許可が拒否されているため、Android は再度確認しません。「許可する」をタップし、[権限] → [位置情報] → [許可] を選んでください。</string>
     <string name="perm_blocked_contacts_title">連絡先の許可が必要です</string>
     <string name="perm_blocked_contacts_message">検索では、名前で相手を探してすばやく電話やメッセージができるよう連絡先を読み取ります。連絡先はこの端末内でのみ読み取られ、外部に送信されることはありません。この許可が拒否されているため、Android は再度確認しません。「許可する」をタップし、[権限] → [連絡先] → [許可] を選んでください。</string>
+    <!-- WR (2026-11-27): chu kỳ "Làm mới sau" (Cài đặt → Thời tiết) và nút làm mới trên widget. -->
+    <string name="wx_refresh_header">更新</string>
+    <string name="wx_refresh_interval">更新間隔</string>
+    <plurals name="wx_refresh_hours">
+        <item quantity="other">%d 時間</item>
+    </plurals>
+    <string name="wx_refresh_day">1 日</string>
+    <string name="wx_refresh_hint">天気ウィジェットは表示中にこの間隔で再読み込みし、現在地も同じ間隔で確認します。ウィジェットの更新アイコンをタップすると今すぐ再読み込みします。</string>
+    <string name="wx_refresh_button">天気を更新</string>
 </resources>
