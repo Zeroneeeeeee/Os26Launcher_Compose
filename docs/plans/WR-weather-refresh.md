@@ -4,7 +4,7 @@
 > commit chỉ được rà bằng đọc code. Không có test tự động.
 
 **Bắt đầu:** 2026-11-27 · **Plan duyệt:** 2026-11-27 (chốt trong chat: "theo đề xuất")
-**Trạng thái:** Code xong 2026-11-27 (Task 1–6), chờ chủ dự án build + kiểm
+**Trạng thái:** Xong 2026-11-27 (chủ dự án build + kiểm happy case 10:39)
 
 **Goal:** Widget thời tiết có nút làm mới nhỏ (icon xoay vòng, góc dưới phải); Cài đặt → Thời tiết có "Làm mới sau" 1 giờ / 3 giờ / 6 giờ / 9 giờ /
 12 giờ / 1 ngày (mặc định 1 ngày) thay cho hằng 2 giờ. Kèm sửa B21 (hộp "Đặt làm màn hình chính" chồng lên hộp xin quyền) và B11 (dấu "−" phóng to /

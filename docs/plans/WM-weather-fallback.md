@@ -3,7 +3,7 @@
 > Làm theo `docs/AGENTS.md`. Mỗi Task một commit. VM không có Android SDK: commit chỉ được rà bằng đọc code. Không có test tự động.
 
 **Bắt đầu:** 2026-11-27 · **Plan duyệt:** 2026-11-27 09:52 (chủ dự án: "vậy là được rồi … làm luôn"; duyệt cả P1–P7)
-**Trạng thái:** Code xong 2026-11-27 (Task 1–3), chờ chủ dự án build + kiểm
+**Trạng thái:** Xong 2026-11-27 (chủ dự án build + kiểm happy case 10:39)
 
 **Goal:** Khi OpenWeatherMap (OWM) không trả được dữ liệu (429 hết hạn mức, 401 khóa bị khóa, lỗi máy chủ), app lấy thời tiết từ Open-Meteo để widget,
 bảng và thông báo vẫn có số liệu. Bộ icon giữ nguyên (nhóm `WeatherCondition` hiện có), chỉ thay nguồn số liệu.

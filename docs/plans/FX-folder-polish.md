@@ -4,7 +4,7 @@
 > Android SDK: commit chỉ được rà bằng đọc code). Không có test tự động.
 
 **Bắt đầu:** 2026-11-26 · **Plan duyệt:** 2026-11-26 (chốt trong chat)
-**Trạng thái:** Code xong 2026-11-26, chờ chủ dự án build + kiểm
+**Trạng thái:** Xong 2026-11-27 (chủ dự án build + kiểm happy case 10:39)
 **Bằng chứng:** video `Screen_recording_20261126_153649.mp4` (máy Android 11, nhãn tắt), ảnh cắt ở `tools/perf/out/vid/`.
 
 **Goal:** Icon trong thư mục cỡ ổn định và nằm giữa ô dù bật/tắt nhãn; kéo app ra khỏi thư mục thì ảnh kéo co dần về cỡ icon Home; bắt đầu kéo không còn icon nổi của menu sót lại; Android dưới 12 thì Home phía sau bảng thư mục cũng mờ.
