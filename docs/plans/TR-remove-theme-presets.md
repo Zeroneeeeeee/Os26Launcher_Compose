@@ -4,7 +4,7 @@
 > Android SDK nên Claude không build được: mọi commit chỉ được rà bằng đọc code). Không có test tự động (không chạm planner/domain có test).
 
 **Bắt đầu:** 2026-11-26 · **Plan duyệt:** 2026-11-26 (chốt trong chat)
-**Trạng thái:** Code xong 2026-11-26, chờ chủ dự án build + kiểm
+**Trạng thái:** Xong 2026-11-27 (chủ dự án build + kiểm happy case 10:39)
 **Đổi schema Room:** không · **Đổi khóa DataStore:** bỏ `appearance_theme_id`, `appearance_icon_bevel` (giá trị cũ trong máy bị bỏ qua)
 
 **Goal:** Bỏ màn chọn 4 preset theme (Liquid Glass 27 / Classic 26 / Minimal / Dark Pro) và mọi logic preset; bước THEME của Onboarding đổi thành chọn kiểu icon (G2b).

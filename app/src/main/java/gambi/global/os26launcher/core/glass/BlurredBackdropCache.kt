@@ -202,89 +202,91 @@ class BlurredBackdropCache {
 
     private fun build(source: Bitmap, w: Int, h: Int, radius: Int): Bitmap = smoothBlurred(source, w, h, radius)
 
-    /**
-     * Thu (hoặc phóng, khi bitmap nhỏ hơn đích) [source] về [w] x [h]: các bước chia đôi (trung bình thật) khi thu, rồi box blur 3 lượt
-     * bán kính [radius] (GT; 0 = không mờ thêm).
-     * FX8: ảnh có alpha được nhân alpha vào RGB (như ImageView vẽ lên nền đen của home_root) trước khi mờ.
-     */
-    private fun smoothBlurred(source: Bitmap, w: Int, h: Int, radius: Int): Bitmap {
-        var cur = source
-        while (cur.width / 2 >= w && cur.height / 2 >= h) {
-            val half = cur.scale(cur.width / 2, cur.height / 2)
-            if (cur !== source) cur.recycle()
-            cur = half
-        }
-        val sized = if (cur.width != w || cur.height != h) cur.scale(w, h) else cur
-        if (cur !== source && cur !== sized) cur.recycle()
-        // `scale` trả cùng bitmap khi cỡ không đổi và bitmap nguồn không sửa được: luôn làm việc trên bản sao ARGB_8888 sửa được.
-        val out =
-            if (sized.isMutable && sized !== source && sized.config == Bitmap.Config.ARGB_8888) {
-                sized
-            } else {
-                sized.copy(Bitmap.Config.ARGB_8888, true)
-                    .also { if (sized !== source) sized.recycle() }
-            }
-        if (radius <= 0) return out
-        val px = IntArray(w * h)
-        out.getPixels(px, 0, w, 0, 0, w, h)
-        if (source.hasAlpha()) premultiplyOverBlack(px)
-        val tmp = IntArray(w * h)
-        repeat(BLUR_PASSES) {
-            boxBlur(px, tmp, w, h, radius, horizontal = true)
-            boxBlur(tmp, px, w, h, radius, horizontal = false)
-        }
-        out.setPixels(px, 0, w, 0, 0, w, h)
-        return out
-    }
-
-    /** FX8: `getPixels` trả màu KHÔNG premultiply; ImageView vẽ lên nền đen nên màu hiển thị là RGB·α/255. */
-    private fun premultiplyOverBlack(px: IntArray) {
-        for (i in px.indices) {
-            val c = px[i]
-            val a = c ushr 24
-            if (a == 0xFF) continue
-            val r = ((c shr 16) and 0xFF) * a / 255
-            val g = ((c shr 8) and 0xFF) * a / 255
-            val b = (c and 0xFF) * a / 255
-            px[i] = (0xFF shl 24) or (r shl 16) or (g shl 8) or b
-        }
-    }
-
-    /** Box blur một chiều, bán kính [r], biên kẹp; ảnh nền đục nên alpha giữ 0xFF. */
-    private fun boxBlur(src: IntArray, dst: IntArray, w: Int, h: Int, r: Int, horizontal: Boolean) {
-        val lines = if (horizontal) h else w
-        val len = if (horizontal) w else h
-        val window = 2 * r + 1
-        for (line in 0 until lines) {
-            val base = if (horizontal) line * w else line
-            val step = if (horizontal) 1 else w
-            var sr = 0
-            var sg = 0
-            var sb = 0
-            for (j in -r..r) {
-                val c = src[base + j.coerceIn(0, len - 1) * step]
-                sr += (c shr 16) and 0xFF
-                sg += (c shr 8) and 0xFF
-                sb += c and 0xFF
-            }
-            for (i in 0 until len) {
-                dst[base + i * step] =
-                    (0xFF shl 24) or ((sr / window) shl 16) or ((sg / window) shl 8) or (sb / window)
-                val add = src[base + min(i + r + 1, len - 1) * step]
-                val sub = src[base + max(i - r, 0) * step]
-                sr += ((add shr 16) and 0xFF) - ((sub shr 16) and 0xFF)
-                sg += ((add shr 8) and 0xFF) - ((sub shr 8) and 0xFF)
-                sb += (add and 0xFF) - (sub and 0xFF)
-            }
-        }
-    }
-
     companion object {
         /** Bán kính trước GT; `GlassTuning.blurRadiusPx` trả đúng số này ở độ mờ mặc định. */
         const val DEFAULT_BLUR_RADIUS_PX = 2
         private const val TAG = "BlurredBackdropCache"
         private const val SMALL_FACTOR = 0.25f
         private const val MAX_SMALL_SIDE = 640
-        private const val BLUR_PASSES = 3
     }
 }
+
+/**
+ * FX (2026-11-27): hàm cấp file (không dùng trạng thái của cache) để ảnh chụp lớp Home sau bảng thư mục làm mờ thẳng trên luồng nền, không qua cache.
+ * Thu (hoặc phóng, khi bitmap nhỏ hơn đích) [source] về [w] x [h]: các bước chia đôi (trung bình thật) khi thu, rồi box blur 3 lượt
+ * bán kính [radius] (GT; 0 = không mờ thêm).
+ * FX8: ảnh có alpha được nhân alpha vào RGB (như ImageView vẽ lên nền đen của home_root) trước khi mờ.
+ */
+internal fun smoothBlurred(source: Bitmap, w: Int, h: Int, radius: Int): Bitmap {
+    var cur = source
+    while (cur.width / 2 >= w && cur.height / 2 >= h) {
+        val half = cur.scale(cur.width / 2, cur.height / 2)
+        if (cur !== source) cur.recycle()
+        cur = half
+    }
+    val sized = if (cur.width != w || cur.height != h) cur.scale(w, h) else cur
+    if (cur !== source && cur !== sized) cur.recycle()
+    // `scale` trả cùng bitmap khi cỡ không đổi và bitmap nguồn không sửa được: luôn làm việc trên bản sao ARGB_8888 sửa được.
+    val out =
+        if (sized.isMutable && sized !== source && sized.config == Bitmap.Config.ARGB_8888) {
+            sized
+        } else {
+            sized.copy(Bitmap.Config.ARGB_8888, true)
+                .also { if (sized !== source) sized.recycle() }
+        }
+    if (radius <= 0) return out
+    val px = IntArray(w * h)
+    out.getPixels(px, 0, w, 0, 0, w, h)
+    if (source.hasAlpha()) premultiplyOverBlack(px)
+    val tmp = IntArray(w * h)
+    repeat(BLUR_PASSES) {
+        boxBlur(px, tmp, w, h, radius, horizontal = true)
+        boxBlur(tmp, px, w, h, radius, horizontal = false)
+    }
+    out.setPixels(px, 0, w, 0, 0, w, h)
+    return out
+}
+
+/** FX8: `getPixels` trả màu KHÔNG premultiply; ImageView vẽ lên nền đen nên màu hiển thị là RGB·α/255. */
+private fun premultiplyOverBlack(px: IntArray) {
+    for (i in px.indices) {
+        val c = px[i]
+        val a = c ushr 24
+        if (a == 0xFF) continue
+        val r = ((c shr 16) and 0xFF) * a / 255
+        val g = ((c shr 8) and 0xFF) * a / 255
+        val b = (c and 0xFF) * a / 255
+        px[i] = (0xFF shl 24) or (r shl 16) or (g shl 8) or b
+    }
+}
+
+/** Box blur một chiều, bán kính [r], biên kẹp; ảnh nền đục nên alpha giữ 0xFF. */
+private fun boxBlur(src: IntArray, dst: IntArray, w: Int, h: Int, r: Int, horizontal: Boolean) {
+    val lines = if (horizontal) h else w
+    val len = if (horizontal) w else h
+    val window = 2 * r + 1
+    for (line in 0 until lines) {
+        val base = if (horizontal) line * w else line
+        val step = if (horizontal) 1 else w
+        var sr = 0
+        var sg = 0
+        var sb = 0
+        for (j in -r..r) {
+            val c = src[base + j.coerceIn(0, len - 1) * step]
+            sr += (c shr 16) and 0xFF
+            sg += (c shr 8) and 0xFF
+            sb += c and 0xFF
+        }
+        for (i in 0 until len) {
+            dst[base + i * step] =
+                (0xFF shl 24) or ((sr / window) shl 16) or ((sg / window) shl 8) or (sb / window)
+            val add = src[base + min(i + r + 1, len - 1) * step]
+            val sub = src[base + max(i - r, 0) * step]
+            sr += ((add shr 16) and 0xFF) - ((sub shr 16) and 0xFF)
+            sg += ((add shr 8) and 0xFF) - ((sub shr 8) and 0xFF)
+            sb += (add and 0xFF) - (sub and 0xFF)
+        }
+    }
+}
+
+private const val BLUR_PASSES = 3

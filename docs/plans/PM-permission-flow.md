@@ -4,7 +4,7 @@
 > Android SDK: commit chỉ được rà bằng đọc code. Không có test tự động.
 
 **Bắt đầu:** 2026-11-26 · **Plan duyệt:** 2026-11-26 (yêu cầu chi tiết trong chat)
-**Trạng thái:** Code xong 2026-11-26, chờ chủ dự án build + kiểm
+**Trạng thái:** Xong 2026-11-27 (chủ dự án build + kiểm happy case 10:39)
 
 **Goal:** Bấm widget thời tiết khi chưa có quyền vị trí thì hiện hộp xin quyền của hệ thống (không mở bảng); cấp xong tự cập nhật vị trí. Quyền Vị trí
 hoặc Danh bạ đã bị từ chối tới mức Android không hỏi nữa thì ở MỌI chỗ xin quyền hiện một hộp xác nhận riêng ("Đóng" / "Cấp quyền") nói rõ lý do,
