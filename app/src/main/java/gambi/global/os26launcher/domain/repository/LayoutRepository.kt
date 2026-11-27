@@ -57,6 +57,16 @@ interface LayoutRepository {
     ): Long?
 
     /**
+     * TA — ghi widget app đã cấp id và gắn xong ([appWidgetId]) vào cuối Today View (4 × 2 nếu [wide], không thì 2 × 2). Ném nếu không ghi được (người gọi
+     * phải giải phóng [appWidgetId]). Đi qua đây (không gọi thẳng kho Today) để cùng khóa với lượt quét id mồ côi.
+     */
+    suspend fun addTodayAppWidget(
+        provider: gambi.global.os26launcher.domain.model.AppWidgetRef,
+        appWidgetId: Int,
+        wide: Boolean
+    )
+
+    /**
      * G2c Task 13 — tạo widget [kind] cỡ [spanX] x [spanY] đúng chỗ người dùng thả: neo [cell] của trang [targetPageId] (`PageId.NEW` = trang
      * tạm ở cuối). Khác [addWidget]: icon bị phủ ĐƯỢC đẩy (đúng luật kéo widget có sẵn, `GridInsertPlanner`), tạo hàng và dời icon trong CÙNG
      * một transaction. false (không ghi gì) nếu chồng widget khác hoặc cỡ không hợp lệ.

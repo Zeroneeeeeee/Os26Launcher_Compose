@@ -25,6 +25,8 @@ import gambi.global.os26launcher.core.glass.compose.dsGlass
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import gambi.global.os26launcher.core.perf.PerfSwitches
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -80,7 +82,7 @@ import kotlin.math.roundToInt
 fun HomeSearchPill(
     pageCount: Int,
     position: () -> Float,
-    active: Boolean,
+    active: () -> Boolean,
     showSearch: Boolean,
     showDots: Boolean,
     onSearchClick: () -> Unit,
@@ -89,17 +91,24 @@ fun HomeSearchPill(
     onDotsTouch: (Boolean) -> Unit = {},
     onDotsInteractive: (Boolean) -> Unit = {}
 ) {
+    // SM (2026-11-27): [active] là lambda, đọc ở đây để bật / tắt dạng chấm chỉ dựng lại pill, không dựng lại HomeScreen.
+    val isActive = active()
     val target = when {
-        showSearch && showDots -> if (active) 1f else 0f
+        showSearch && showDots -> if (isActive) 1f else 0f
         !showSearch && showDots -> 1f
         else -> 0f
     }
     val progress by animateFloatAsState(target, tween(MORPH_MS, easing = Decelerate), label = "pillMorph")
-    val clickable = showSearch && !active
+    val clickable = showSearch && !isActive
     val interaction = remember { MutableInteractionSource() }
     val searchLabel = stringResource(R.string.search_pill_label)
+    // SM: chỉ đọc số trang đã làm tròn (derivedStateOf): đọc thẳng [position] trong composition làm pill dựng lại MỖI khung khi vuốt trang.
+    val latestPosition by rememberUpdatedState(position)
+    val shownPage by remember { derivedStateOf { latestPosition().roundToInt() } }
+    if (PerfSwitches.noScrollFix) position() // SM: công tắc đo, đọc mỗi khung như trước
+
     val pageDescription = if (pageCount > 0) {
-        stringResource(R.string.search_pill_page_description, position().roundToInt().coerceIn(0, pageCount - 1) + 1, pageCount)
+        stringResource(R.string.search_pill_page_description, shownPage.coerceIn(0, pageCount - 1) + 1, pageCount)
     } else {
         searchLabel
     }

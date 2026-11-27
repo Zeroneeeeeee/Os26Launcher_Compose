@@ -215,6 +215,12 @@ class LayoutRepositoryImpl @Inject constructor(
         preferredPageId: Long?
     ): Long? = reconciler.addAppWidget(provider, appWidgetId, spanX, spanY, preferredPageId)
 
+    override suspend fun addTodayAppWidget(
+        provider: gambi.global.os26launcher.domain.model.AppWidgetRef,
+        appWidgetId: Int,
+        wide: Boolean
+    ) = reconciler.addTodayAppWidget(provider, appWidgetId, wide)
+
     override suspend fun addWidgetAt(
         kind: WidgetKind,
         spanX: Int,

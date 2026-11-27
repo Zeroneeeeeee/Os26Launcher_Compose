@@ -72,9 +72,23 @@ class LayoutReconciler @Inject constructor(
     private val appWidgets: AppWidgetRepository, // G3c: giải phóng id widget app sau khi xóa hàng, quét id mồ côi
     private val appState: AppStateRepository, // TV: cờ `today_seeded`
     private val groupTitles: AppGroupTitleProvider, // AG mở lại: tên thư mục gom sẵn của bố cục lần đầu
+    private val todayWidgets: TodayWidgetsRepository, // TA: id host của widget app trên Today không có hàng trong DB, quét mồ côi phải giữ
     @IoDispatcher private val io: CoroutineDispatcher
 ) {
     private val mutex = Mutex()
+
+    /**
+     * TA — id host của các widget app đang nằm trên Today View (lưu ở DataStore riêng, không có hàng `launcher_items`). null = đọc không được: nơi gọi
+     * KHÔNG được quét / xóa host lúc đó (quét thiếu tập này là xóa mất widget của Today).
+     */
+    private suspend fun todayAppWidgetIds(): Set<Int>? = try {
+        todayWidgets.widgets.first().mapNotNullTo(HashSet()) { it.appWidgetId }
+    } catch (e: kotlinx.coroutines.CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Log.w(TAG, "read today widgets failed ${e.javaClass.name}")
+        null
+    }
 
     /**
      * M8a Task 2: cỡ lưới hiện hành (cài đặt). Gọi NGAY SAU KHI lấy [mutex] và TRƯỚC `db.withTransaction`, để không giữ
@@ -97,7 +111,15 @@ class LayoutReconciler @Inject constructor(
         mutex.withLock {
             val grid = currentGrid()
             // G3c L9: DB không có hàng nào (máy mới, hoặc xóa dữ liệu: đo được trên Live 4 là `pm clear` KHÔNG xóa id của host) thì mọi id host giữ là mồ côi.
-            if (itemDao.count() == 0) appWidgets.resetHost()
+            // TA: Today còn widget app (DB rỗng vì người dùng ẩn hết app, M7) thì chỉ quét, giữ id của Today; đọc Today lỗi thì không đụng host.
+            if (itemDao.count() == 0) {
+                val today = todayAppWidgetIds()
+                when {
+                    today == null -> Unit
+                    today.isEmpty() -> appWidgets.resetHost()
+                    else -> appWidgets.sweep(today)
+                }
+            }
             db.withTransaction {
                 if (itemDao.count() > 0) return@withTransaction
 
@@ -370,11 +392,14 @@ class LayoutReconciler @Inject constructor(
             }
             appWidgets.release(releasedWidgetIds)
             // G3c L8: lưới an toàn: id host giữ mà không hàng nào (còn trong DB) dùng thì giải phóng (crash giữa chừng, xóa dữ liệu, luồng thêm bị giết).
-            appWidgets.sweep(
-                itemDao.getAll().mapNotNullTo(HashSet()) {
-                    if (it.itemType == LauncherItemEntity.ITEM_TYPE_WIDGET) it.appWidgetId else null
-                }
-            )
+            // TA: cộng id của widget app trên Today (không có hàng DB); đọc Today lỗi thì bỏ lượt quét này.
+            todayAppWidgetIds()?.let { today ->
+                appWidgets.sweep(
+                    itemDao.getAll().mapNotNullTo(HashSet(today)) {
+                        if (it.itemType == LauncherItemEntity.ITEM_TYPE_WIDGET) it.appWidgetId else null
+                    }
+                )
+            }
         }
     }
 
@@ -1239,6 +1264,14 @@ class LayoutReconciler @Inject constructor(
                 appWidgetId = appWidgetId
             )
         }
+
+    /**
+     * TA — ghi widget app đã gắn xong ([appWidgetId]) vào cuối Today View. Chạy trong [mutex] như lượt quét mồ côi của [catchUp]: lượt quét hoặc chạy
+     * hẳn trước (id còn "đang trong luồng" nên được giữ) hoặc hẳn sau (id đã nằm trong kho Today), không có khe giữa ghi kho và `clearInFlight`.
+     */
+    suspend fun addTodayAppWidget(provider: AppWidgetRef, appWidgetId: Int, wide: Boolean) {
+        mutex.withLock { todayWidgets.addAppWidget(appWidgetId, provider, wide) }
+    }
 
     /** Thân chung của [addWidget] và [addAppWidget]: [allowed] = loại/cỡ hợp lệ; [entity] dựng hàng cho trang [pageId] ô ([x], [y]). */
     private suspend fun addFirstFit(

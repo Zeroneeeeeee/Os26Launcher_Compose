@@ -97,10 +97,12 @@ import gambi.global.os26launcher.core.glass.compose.dsGlass
 import gambi.global.os26launcher.core.ui.GridMetrics
 import gambi.global.os26launcher.domain.model.AppItem
 import gambi.global.os26launcher.domain.model.GridPosition
+import gambi.global.os26launcher.domain.model.PlacedAppWidget
 import gambi.global.os26launcher.domain.model.PlacedWidget
 import gambi.global.os26launcher.domain.model.ScreenRect
 import gambi.global.os26launcher.domain.model.WidgetKind
 import gambi.global.os26launcher.domain.today.TodayWidget
+import gambi.global.os26launcher.ui.home.compose.HomeAppWidgetCell
 import gambi.global.os26launcher.ui.home.compose.HomeIcons
 import gambi.global.os26launcher.ui.home.compose.HomeRemoveBadge
 import gambi.global.os26launcher.ui.home.compose.HomeWidgetCell
@@ -278,6 +280,23 @@ internal fun todaySlots(list: List<TodayWidget>, c: GridMetrics.Cells, top: Int,
  */
 private fun blockHeight(c: GridMetrics.Cells): Int = 2 * c.cellWidth + c.gutterX
 
+/**
+ * Ô BỐ CỤC của Today từ ô gốc [cells] (lưới 4 cột): giữ tổng bề rộng khối 4 cột, khe ngang = lề 2 bên (2026-11-24, xem [TodayPage]).
+ * TA: bảng chọn widget dùng cùng phép này để tính cỡ dp của widget app trước khi gắn.
+ */
+internal fun todayLayoutCells(cells: GridMetrics.Cells): GridMetrics.Cells {
+    val spanW = 4 * cells.cellWidth + 3 * cells.gutterX
+    val gap = cells.paddingLeft
+    return cells.copy(cellWidth = (spanW - 3 * gap) / 4, gutterX = gap)
+}
+
+/** TA — cỡ px của một khối Today: (rộng 4 × 2, rộng 2 × 2, cao) theo ô bố cục [layoutCells] ([todayLayoutCells]). */
+internal fun todayBlockPx(layoutCells: GridMetrics.Cells): IntArray = intArrayOf(
+    4 * layoutCells.cellWidth + 3 * layoutCells.gutterX,
+    2 * layoutCells.cellWidth + layoutCells.gutterX,
+    blockHeight(layoutCells)
+)
+
 @Composable
 private fun TodayPage(
     state: HomeTodayState,
@@ -311,9 +330,7 @@ private fun TodayPage(
     // 2026-11-24 (chủ dự án): khe NGANG giữa 2 widget nửa-hàng = lề 2 bên (cells.paddingLeft), không còn là gutterX (8dp, nhỏ hơn lề) — giữ
     // TỔNG chiều rộng khối 4 cột ([spanW], neo lề trái/phải không đổi), chỉ chia lại: ô widget hiệu dụng co lại tương ứng để chỗ cho khe lớn
     // hơn. Chỉ áp cho layout NGANG (vị trí/độ rộng widget); nội dung widget (icon, nhãn…) vẫn dùng [cells] gốc.
-    val widgetGapX = cells.paddingLeft
-    val widgetCellWidth = (spanW - 3 * widgetGapX) / 4
-    val layoutCells = cells.copy(cellWidth = widgetCellWidth, gutterX = widgetGapX)
+    val layoutCells = todayLayoutCells(cells)
     val bh = blockHeight(layoutCells) // PW: theo ô bố cục (khối vuông), cùng phép với [todaySlots]
     // 2026-11-24 (chủ dự án): khe DỌC giữa 2 hàng widget cũng = lề 2 bên — cùng [widgetGapX], y hệt khe ngang.
     val widgetGapY = cells.paddingLeft
@@ -546,6 +563,17 @@ private fun TodayWidgetContent(
     } else if (kind != null) {
         val placed = remember(widget) { PlacedWidget(widget.id, GridPosition(0, 0, widget.spanX, widget.spanY), kind) }
         HomeWidgetCell(placed, onClick = if (editing || actions == null) null else ({ actions.onWidgetClick(kind, widget.id) }))
+    } else if (widget.isAppWidget) {
+        // TA: widget app khác — cùng ô với Home (thẻ kính + AppWidgetHostView của LocalHostedWidgets, một view mỗi id).
+        val placed = remember(widget) {
+            PlacedAppWidget(widget.id, GridPosition(0, 0, widget.spanX, widget.spanY), widget.appWidgetId!!, widget.provider!!)
+        }
+        HomeAppWidgetCell(placed)
+        // Chế độ sửa / bản đang rời: lớp trên cùng nhận chạm thay host view (anh em trên cùng bị chạm thì host view không nhận gì), KHÔNG tiêu thụ
+        // nên nhấn giữ để kéo (pass Initial của lưới) và cuộn dọc vẫn chạy.
+        if (editing || actions == null) {
+            Box(Modifier.fillMaxSize().pointerInput(Unit) { awaitPointerEventScope { while (true) awaitPointerEvent() } })
+        }
     }
     if (actions != null) { // B11: luôn dựng, ẩn/hiện có hoạt ảnh theo edit mode của Today
         val r = cells.iconSize * MINUS_BADGE_RATIO / 2f // tâm dấu ở (r/2, r/2) của thẻ, như widget trên lưới Home

@@ -47,6 +47,12 @@ object PerfSwitches {
     /** HW: màn Cài đặt không làm nóng ảnh nền / bản mờ của Home (`HomeWarmup`), để so số đo lúc bấm "Trải nghiệm". */
     const val NO_HOME_WARMUP = "noHomeWarmup"
 
+    /**
+     * SM: Home đọc lại trạng thái cuộn trong composition như trước SM (HomeScreen dựng lại lúc bắt đầu / dừng vuốt, HomeEditContext mới mỗi lần,
+     * pill dựng lại mỗi khung), để so số đo.
+     */
+    const val NO_SCROLL_FIX = "noScrollFix"
+
     private val flags: Set<String> by lazy { if (BuildConfig.PERF_SWITCHES) read() else emptySet() }
 
     val noRealGlass: Boolean get() = NO_REAL_GLASS in flags
@@ -59,6 +65,7 @@ object PerfSwitches {
     val noIconGlass: Boolean get() = NO_ICON_GLASS in flags
     val noIconShader: Boolean get() = NO_ICON_SHADER in flags
     val noHomeWarmup: Boolean get() = NO_HOME_WARMUP in flags
+    val noScrollFix: Boolean get() = NO_SCROLL_FIX in flags
 
     private fun read(): Set<String> = try {
         val process = ProcessBuilder("getprop", PROP).redirectErrorStream(true).start()

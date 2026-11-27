@@ -106,7 +106,8 @@ import kotlinx.coroutines.withTimeoutOrNull
  * chi tiết (bottom sheet thứ hai đè lên): pager các cỡ (hoặc các widget của app) nghiêng 3D theo độ vuốt, chấm trang, nút "Thêm tiện ích" xanh hệ
  * thống. Thêm xong thì đóng cả hai bảng.
  *
- * TV-3: [show] với `forToday = true` (viên "+" của Today): có "App gần đây", KHÔNG có widget của app khác, "Thêm" ghi vào CUỐI Today.
+ * TV-3: [show] với `forToday = true` (viên "+" của Today): có "App gần đây", "Thêm" ghi vào CUỐI Today. TA (2026-11-27): bảng của Today có cả
+ * widget của app khác; mỗi provider có trang 2 × 2 và/hoặc 4 × 2 (cỡ khối của Today) tuỳ provider cho phép, luồng gắn / cấu hình như Home.
  *
  * PG2 (F2, hướng B, chủ dự án 2026-11-23): bảng không còn là cửa sổ `Dialog` mà là lớp phủ vẽ bằng [Render] trong cây Compose của `HomeActivity`
  * (`DsBottomSheetLayer`), nên ở trang chi tiết, nhấn giữ khung xem trước của widget tự vẽ rồi kéo ([pickerCardDrag]) thì chính chuỗi chạm đó lái
@@ -253,8 +254,8 @@ internal class HomeWidgetPicker(
                         if (row.size == 1 && row[0].size.spanX < 4) Spacer(Modifier.weight(1f)) // ô 2×2 lẻ: nửa phải trống
                     }
                 }
-                // Danh sách nguồn: app có widget (A–Z, tải nền). TV-3: Today chỉ nhận widget tự vẽ (chủ dự án 2026-11-20).
-                if (!forToday && repository.isSupported) AppList(q)
+                // Danh sách nguồn: app có widget (A–Z, tải nền). TA (2026-11-27): có ở cả bảng của Today.
+                if (repository.isSupported) AppList(q)
             }
         }
     }
@@ -475,7 +476,7 @@ internal class HomeWidgetPicker(
                     Box(m) { bmp?.let { Image(it.asImageBitmap(), null, modifier = Modifier.fillMaxSize()) } }
                 }
                 val g = grid()
-                pages = app.providers.map { provider ->
+                pages = if (forToday) todayAppPages(app) else app.providers.map { provider ->
                     val size = if (g != null) AppWidgetSizePlanner.plan(provider, g).firstOrNull() else null
                     DetailPage(
                         title = { app.appLabel },
@@ -698,6 +699,70 @@ internal class HomeWidgetPicker(
             }
     }
 
+    /**
+     * TA — cỡ khối Today theo dp: lưới [AppWidgetSizePlanner.Grid] mà 2 ô ngang = khối 2 × 2, 4 ô = khối 4 × 2, 2 ô dọc = chiều cao khối (cùng phép
+     * với `TodayPage`: `todayLayoutCells` + `todayBlockPx`), và cỡ dp (rộng 4 × 2, rộng 2 × 2, cao). null khi chưa đo được lưới.
+     */
+    private class TodayGrid(val grid: AppWidgetSizePlanner.Grid, val wideDp: Int, val narrowDp: Int, val heightDp: Int)
+
+    private fun todayGrid(): TodayGrid? {
+        val state = viewModel.uiState.value
+        val density = activity.resources.displayMetrics.density
+        if (density <= 0f) return null
+        val c = GridMetrics.from(state.grid, state.showLabels).copy(columns = TODAY_COLUMNS)
+            .measure(pagerInfo.pagerWidth, pagerInfo.pagerHeight, density) ?: return null
+        val lc = gambi.global.os26launcher.ui.home.compose.today.todayLayoutCells(c)
+        val (wide, narrow, height) = gambi.global.os26launcher.ui.home.compose.today.todayBlockPx(lc).let { Triple(it[0], it[1], it[2]) }
+        if (lc.cellWidth <= 0 || height <= 0) return null
+        val gap = lc.gutterX / density
+        val grid = AppWidgetSizePlanner.Grid(lc.cellWidth / density, (height - lc.gutterX) / 2f / density, gap, gap)
+        return TodayGrid(grid, (wide / density).toInt(), (narrow / density).toInt(), (height / density).toInt())
+    }
+
+    /**
+     * TA — trang chi tiết của một app ở bảng của Today: mỗi provider một trang cho từng cỡ khối nó vừa (2 × 2 nếu có cỡ rộng ≤ 2 ô, 4 × 2 nếu có cỡ rộng
+     * ≥ 3 ô, theo [AppWidgetSizePlanner] trên lưới Today, cao tối đa 2 ô), cỡ mặc định của provider đứng trước. Không vừa cỡ nào: một trang "quá lớn".
+     */
+    private fun todayAppPages(app: AppWidgetAppEntry): List<DetailPage> {
+        val tg = todayGrid()
+        return app.providers.flatMap { provider ->
+            val sizes = if (tg != null) AppWidgetSizePlanner.plan(provider, tg.grid, maxSpanX = TODAY_COLUMNS, maxSpanY = 2) else emptyList()
+            val variants = sizes.map { it.spanX >= 3 }.distinct() // mặc định của provider đứng đầu danh sách của planner
+            if (tg == null || variants.isEmpty()) {
+                listOf(
+                    DetailPage(
+                        title = { app.appLabel },
+                        description = { stringResource(R.string.aw_too_large) },
+                        preview = { m -> AppPreview(provider, m) },
+                        previewSize = null,
+                        add = null
+                    )
+                )
+            } else variants.map { wide ->
+                val spanX = if (wide) 4 else 2
+                DetailPage(
+                    title = { app.appLabel },
+                    description = { stringResource(R.string.widget_size_label, spanX, 2) },
+                    preview = { m -> AppPreview(provider, m) },
+                    previewSize = null,
+                    add = {
+                        startAppWidget(
+                            AppWidgetAddRequest(
+                                provider = provider.ref,
+                                spanX = spanX,
+                                spanY = 2,
+                                widthDp = if (wide) tg.wideDp else tg.narrowDp,
+                                heightDp = tg.heightDp,
+                                preferredPageIndex = 0,
+                                toToday = true
+                            )
+                        )
+                    }
+                )
+            }
+        }
+    }
+
     /** Bấm "Thêm" của widget app: dựng yêu cầu (cỡ dp của khung, trang đang xem) và bắt đầu luồng thêm. Trả true nếu luồng đã bắt đầu. */
     private fun startAppWidget(entry: AppWidgetProviderEntry, size: WidgetSize): Boolean {
         val g = grid() ?: return false
@@ -764,6 +829,9 @@ internal class HomeWidgetPicker(
             Featured(WidgetKind.PHOTO, WidgetSize(4, 2)),
             Featured(WidgetKind.RECENTS, WidgetSize(4, 2))
         )
+
+        /** TA: lưới Today luôn 4 cột (như `HomeActivity.TODAY_COLUMNS`). */
+        const val TODAY_COLUMNS = 4
 
         val GAP: Dp = 6.dp // widget_picker_gap của REF
         val ROW_HEIGHT: Dp = 56.dp
