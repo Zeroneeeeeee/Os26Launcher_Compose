@@ -50,7 +50,7 @@ import javax.inject.Inject
  *
  * Mở từ Cài đặt của launcher, từ nút cài đặt trên panel, hoặc từ một ô thiếu quyền (extra [EXTRA_PERMISSION]: cuộn tới đúng hàng;
  * [EXTRA_RECORDER]: mở luôn hộp chọn app ghi màn hình). Phần lớn quyền không có callback hệ thống, nên đọc lại ở [onResume] và báo
- * service ([ControlCenterService.refresh]). Thiếu quyền thì hiện hộp thoại xin quyền ([promptMissingPermission]).
+ * service ([ControlCenterService.refresh]). Bật switch thì hỏi lần lượt các quyền còn thiếu ([onEnableChanged]); không cấp đủ quyền bắt buộc thì switch tự tắt.
  */
 @AndroidEntryPoint
 class ControlCenterSettingsActivity : AppCompatActivity() {
@@ -79,11 +79,24 @@ class ControlCenterSettingsActivity : AppCompatActivity() {
     /** Hộp thoại xin quyền đang mở (tách khỏi [dialog] để không đóng nhầm hộp chọn nền / app ghi màn hình). */
     private var permissionDialog: DsDialogHandle? = null
 
-    /** Quyền đã hỏi trong lần vào màn này: mỗi quyền hỏi tối đa một lần, quay lại từ màn hệ thống mà chưa cấp thì không hỏi lại. */
+    /** Quyền đã hỏi trong lượt bật này: mỗi quyền hỏi tối đa một lần, quay lại từ màn hệ thống mà chưa cấp thì không hỏi lại. */
     private val askedPermissions = HashSet<ControlPermission>()
 
-    /** Người dùng bấm "Để sau" (hoặc Back): thôi hỏi các quyền còn lại trong lần vào màn này. */
-    private var permissionPromptDeclined = false
+    /** Đang trong lượt hỏi quyền (bắt đầu khi người dùng bật switch); mỗi lần quay lại màn thì hỏi quyền kế tiếp. */
+    private var promptActive = false
+
+    /**
+     * Người dùng vừa bật switch nhưng còn thiếu quyền bắt buộc: switch hiện bật, pref `enabled` CHƯA ghi. Đủ quyền bắt buộc thì ghi bật;
+     * từ chối / hết quyền để hỏi mà vẫn thiếu thì bỏ, switch tự tắt.
+     */
+    private var enablePending by mutableStateOf(false)
+
+    /** RST: mở màn Truy cập thông báo; máy chặn "Cài đặt bị hạn chế" thì hướng dẫn mở khóa khi quay lại. */
+    private val listenerFlow = NotificationListenerFlow(
+        this,
+        isGranted = { permissions.isGranted(ControlPermission.NOTIFICATION_LISTENER) },
+        onGuideDeclined = ::onPromptDeclined
+    )
 
     // JS1: trạng thái Compose của khung.
     private var rows by mutableStateOf<List<SettingsRow>>(emptyList())
@@ -114,7 +127,8 @@ class ControlCenterSettingsActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false) // JS1: nền aurora tràn dưới thanh hệ thống (DsScreen lo inset)
         readExtras(intent)
         savedInstanceState?.let { state ->
-            permissionPromptDeclined = state.getBoolean(STATE_PROMPT_DECLINED)
+            promptActive = state.getBoolean(STATE_PROMPT_ACTIVE)
+            enablePending = state.getBoolean(STATE_ENABLE_PENDING)
             state.getStringArrayList(STATE_ASKED)?.forEach { name ->
                 ControlPermission.entries.firstOrNull { it.name == name }?.let(askedPermissions::add)
             }
@@ -123,13 +137,16 @@ class ControlCenterSettingsActivity : AppCompatActivity() {
         val actions = SettingsListActions(
             onValueClicked = ::onValueClicked,
             onSwitchChanged = { row, checked ->
-                lifecycleScope.launch {
-                    when (row.id) {
-                        ID_ENABLED -> prefs.setEnabled(checked)
-                        ID_BLUR -> prefs.update { it.copy(blurBackground = checked) }
-                        ID_VIBRATE -> prefs.update { it.copy(vibrateOnOpen = checked) }
+                if (row.id == ID_ENABLED) {
+                    onEnableChanged(checked)
+                } else {
+                    lifecycleScope.launch {
+                        when (row.id) {
+                            ID_BLUR -> prefs.update { it.copy(blurBackground = checked) }
+                            ID_VIBRATE -> prefs.update { it.copy(vibrateOnOpen = checked) }
+                        }
+                        ControlCenterService.refresh(this@ControlCenterSettingsActivity)
                     }
-                    ControlCenterService.refresh(this@ControlCenterSettingsActivity)
                 }
             }
         )
@@ -146,6 +163,7 @@ class ControlCenterSettingsActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 prefs.config.collect {
                     config = it
+                    syncEnabledWithPermissions()
                     render()
                     if (recorderPending) {
                         recorderPending = false
@@ -168,14 +186,17 @@ class ControlCenterSettingsActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        syncEnabledWithPermissions()
         render()
         ControlCenterService.refresh(this) // người dùng có thể vừa cấp quyền vẽ đè ở màn hệ thống
-        promptMissingPermission()
+        if (listenerFlow.onResume()) return // đang hướng dẫn mở khóa / vừa mở lại màn quyền: chưa hỏi quyền khác
+        if (promptActive) promptNextPermission()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBoolean(STATE_PROMPT_DECLINED, permissionPromptDeclined)
+        outState.putBoolean(STATE_PROMPT_ACTIVE, promptActive)
+        outState.putBoolean(STATE_ENABLE_PENDING, enablePending)
         outState.putStringArrayList(STATE_ASKED, ArrayList(askedPermissions.map { it.name }))
     }
 
@@ -185,19 +206,49 @@ class ControlCenterSettingsActivity : AppCompatActivity() {
         permissionDialog?.setOnDismissListener(null)
         permissionDialog?.dismiss()
         permissionDialog = null
+        listenerFlow.onDestroy()
         super.onDestroy()
     }
 
     /**
-     * Vào màn (và mỗi lần quay lại từ màn hệ thống / hộp xin quyền runtime) mà còn thiếu quyền thì hỏi lần lượt từng quyền, quyền bắt buộc
-     * trước rồi tới quyền tùy chọn: giải thích lý do, "Cấp quyền" gọi [requestPermission], "Để sau" thôi hỏi tới khi vào lại màn. Không chen
-     * ngang khi đang mở hộp chọn nền / app ghi màn hình.
+     * Switch "Bật Trung tâm điều khiển". Tắt: ghi tắt, dừng hỏi quyền. Bật: bắt đầu lượt hỏi quyền ([promptNextPermission]); đủ quyền bắt
+     * buộc thì ghi bật ngay, thiếu thì chờ ([enablePending]) tới khi người dùng cấp đủ.
      */
-    private fun promptMissingPermission() {
-        if (permissionPromptDeclined || permissionDialog?.isShowing == true || recorderPending || dialog?.isShowing == true) return
-        val permission = permissions.applicable()
-            .filter { it !in askedPermissions && !permissions.isGranted(it) }
-            .minByOrNull { if (it.required) 0 else 1 } ?: return
+    private fun onEnableChanged(checked: Boolean) {
+        if (!checked) {
+            stopPrompt()
+            lifecycleScope.launch {
+                prefs.setEnabled(false)
+                ControlCenterService.refresh(this@ControlCenterSettingsActivity)
+            }
+            return
+        }
+        askedPermissions.clear()
+        promptActive = true
+        if (permissions.missingRequired().isEmpty()) {
+            commitEnabled()
+        } else {
+            enablePending = true
+            render()
+        }
+        promptNextPermission()
+    }
+
+    /**
+     * Hỏi quyền kế tiếp trong lượt bật: còn chờ quyền bắt buộc thì chỉ hỏi quyền bắt buộc chưa hỏi; hỏi hết mà vẫn thiếu thì switch tự tắt.
+     * Đủ quyền bắt buộc thì ghi bật rồi hỏi tiếp quyền tùy chọn chưa cấp. "Để sau" / Back kết thúc lượt ([onPromptDeclined]). Không chen
+     * ngang khi đang mở hộp chọn nền / app ghi màn hình / hướng dẫn mở khóa.
+     */
+    private fun promptNextPermission() {
+        if (!promptActive || permissionDialog?.isShowing == true || dialog?.isShowing == true || listenerFlow.isShowingGuide) return
+        val missingRequired = permissions.missingRequired()
+        if (enablePending && missingRequired.isEmpty()) commitEnabled()
+        val candidates = if (enablePending) missingRequired else permissions.applicable().filter { !permissions.isGranted(it) }
+        val permission = candidates.firstOrNull { it !in askedPermissions }
+        if (permission == null) {
+            stopPrompt()
+            return
+        }
         askedPermissions += permission
         permissionDialog = SettingsDialogs.confirm(
             activity = this,
@@ -206,9 +257,44 @@ class ControlCenterSettingsActivity : AppCompatActivity() {
             positive = getString(R.string.cc_perm_grant),
             onPositive = { requestPermission(permission) },
             negative = getString(R.string.cc_perm_later),
-            onNegative = { permissionPromptDeclined = true },
-            onCancel = { permissionPromptDeclined = true }
+            onNegative = ::onPromptDeclined,
+            onCancel = ::onPromptDeclined
         ).also { handle -> handle.setOnDismissListener { if (permissionDialog === handle) permissionDialog = null } }
+    }
+
+    /** "Để sau" / Back ở hộp xin quyền hoặc hộp hướng dẫn mở khóa: kết thúc lượt hỏi; còn thiếu quyền bắt buộc thì switch tự tắt. */
+    private fun onPromptDeclined() {
+        stopPrompt()
+    }
+
+    /** Kết thúc lượt hỏi quyền. Còn chờ quyền bắt buộc (chưa cấp đủ) thì bỏ: switch về tắt, pref vẫn tắt. */
+    private fun stopPrompt() {
+        promptActive = false
+        permissionDialog?.setOnDismissListener(null)
+        permissionDialog?.dismiss()
+        permissionDialog = null
+        if (enablePending) {
+            enablePending = false
+            render()
+        }
+    }
+
+    private fun commitEnabled() {
+        enablePending = false
+        lifecycleScope.launch {
+            prefs.setEnabled(true)
+            ControlCenterService.refresh(this@ControlCenterSettingsActivity)
+        }
+    }
+
+    /** Đang bật mà thiếu quyền bắt buộc (vd người dùng thu hồi quyền ở màn hệ thống) thì tự tắt, để switch khớp thực tế. */
+    private fun syncEnabledWithPermissions() {
+        val c = config ?: return
+        if (!c.enabled || enablePending || permissions.missingRequired().isEmpty()) return
+        lifecycleScope.launch {
+            prefs.setEnabled(false)
+            ControlCenterService.refresh(this@ControlCenterSettingsActivity)
+        }
     }
 
     private fun readExtras(intent: Intent?) {
@@ -224,7 +310,7 @@ class ControlCenterSettingsActivity : AppCompatActivity() {
             add(SettingsRow.Header("cc_header_main", R.string.cc_title))
             add(
                 SettingsRow.Switch(
-                    ID_ENABLED, R.string.cc_enable, c.enabled,
+                    ID_ENABLED, R.string.cc_enable, c.enabled || enablePending,
                     if (missingRequired.isEmpty()) R.string.cc_enable_desc else R.string.cc_enable_needs_permissions
                 )
             )
@@ -340,8 +426,14 @@ class ControlCenterSettingsActivity : AppCompatActivity() {
     }
 
     private fun openSystemScreen(permission: ControlPermission) {
-        if (!SystemIntents.startFirst(this, SystemIntents.forPermission(this, permission), newTask = false)) {
+        val opened = if (permission == ControlPermission.NOTIFICATION_LISTENER) {
+            listenerFlow.open()
+        } else {
+            SystemIntents.startFirst(this, SystemIntents.forPermission(this, permission), newTask = false)
+        }
+        if (!opened) {
             Toast.makeText(this, R.string.cc_perm_open_failed, Toast.LENGTH_LONG).show()
+            if (promptActive) stopPrompt() // không có màn hệ thống để quay lại: dừng lượt hỏi, khỏi kẹt switch ở trạng thái chờ
         }
     }
 
@@ -354,7 +446,7 @@ class ControlCenterSettingsActivity : AppCompatActivity() {
         ControlPermission.BLUETOOTH_CONNECT -> R.string.cc_perm_bluetooth
     }
 
-    /** Lý do cần quyền, cho hộp thoại xin quyền ([promptMissingPermission]). */
+    /** Lý do cần quyền, cho hộp thoại xin quyền ([promptNextPermission]). */
     private fun ControlPermission.reasonRes(): Int = when (this) {
         ControlPermission.OVERLAY -> R.string.cc_perm_reason_overlay
         ControlPermission.NOTIFICATION_LISTENER -> R.string.cc_perm_reason_listener
@@ -375,7 +467,8 @@ class ControlCenterSettingsActivity : AppCompatActivity() {
         private const val ID_RECORDER = "cc_recorder"
         private const val EXTRA_PERMISSION = "gambi.global.os26launcher.controlcenter.PERMISSION"
         private const val EXTRA_RECORDER = "gambi.global.os26launcher.controlcenter.RECORDER"
-        private const val STATE_PROMPT_DECLINED = "cc_perm_prompt_declined"
+        private const val STATE_PROMPT_ACTIVE = "cc_perm_prompt_active"
+        private const val STATE_ENABLE_PENDING = "cc_enable_pending"
         private const val STATE_ASKED = "cc_perm_asked"
 
         private fun rowId(p: ControlPermission) = "cc_perm_${p.name.lowercase()}"

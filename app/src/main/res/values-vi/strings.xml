@@ -297,6 +297,9 @@
     <string name="cc_perm_later">Để sau</string>
     <string name="cc_perm_reason_overlay">Trung tâm điều khiển vẽ dải mép và panel đè lên ứng dụng khác. Hãy bật Hiển thị trên ứng dụng khác để dùng.</string>
     <string name="cc_perm_reason_listener">Trung tâm điều khiển cần Truy cập thông báo để chạy nền và hiện điều khiển nhạc.</string>
+    <string name="restricted_settings_title">Mở khóa cài đặt bị hạn chế</string>
+    <string name="restricted_settings_message">Android đã chặn Truy cập thông báo vì ứng dụng được cài từ file APK.\n\n1. Bấm Mở thông tin ứng dụng.\n2. Bấm ⋮ (góc trên bên phải), chọn Cho phép cài đặt bị hạn chế rồi xác nhận.\n3. Quay lại đây. Màn Truy cập thông báo sẽ tự mở, hãy bật quyền.</string>
+    <string name="restricted_settings_open">Mở thông tin ứng dụng</string>
     <string name="cc_perm_reason_battery">Cho phép không tối ưu pin để hệ thống không tắt Trung tâm điều khiển khi chạy nền.</string>
     <string name="cc_perm_reason_write_settings">Trung tâm điều khiển cần Sửa đổi cài đặt hệ thống để chỉnh độ sáng và khóa xoay.</string>
     <string name="cc_perm_reason_dnd">Trung tâm điều khiển cần Quyền Không làm phiền để bật/tắt chế độ Không làm phiền.</string>

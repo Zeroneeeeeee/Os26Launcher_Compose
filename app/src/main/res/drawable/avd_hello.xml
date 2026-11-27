@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- HH: chữ "hello" viết tay (một nét liền, tự vẽ cho app) vẽ dần bằng trimPathEnd 0 -> 1. AnimatedVectorDrawable chạy trên RenderThread
      (API 25+), nên nét viết vẫn mượt khi main thread đang bận dựng Home bên dưới màn chào (HomeHello.kt). Hệ toạ độ 440 x 200: chân chữ
-     y = 160, đỉnh chữ thường y = 110, đỉnh nét cao y ~ 25. Đổi thời lượng thì sửa cả HELLO_WRITE_MS trong HomeHello.kt. -->
+     y = 160, đỉnh chữ thường y = 110, đỉnh nét cao y ~ 25. Đổi thời lượng thì sửa @animator/hello_write và HELLO_WRITE_MS trong HomeHello.kt.
+     Kiểu ống kính mờ (như chữ thủy tinh trên nền mờ, 2026-11-27): cùng một nét chồng nhiều lớp, mọi lớp trim cùng nhịp. Vector không có
+     blur / gradient theo nét, nên khối tròn của ống = các nét đồng tâm hẹp dần, sáng dần, lệch dần lên (ánh sáng từ trên):
+     - shadow_*: bóng đổ lệch xuống, 3 lớp đen rất nhạt rộng dần giả bóng nhòe;
+     - rim: viền tối mép ngoài; body: thân kính trong mờ (thấy màu nền); core0..8: 9 nét trắng rất nhạt hẹp dần, lệch dần lên, cộng dồn
+       thành lõi sáng chuyển mịn (ít lớp hơn thì lộ vòng sọc, đo máy thật 2026-11-27);
+     - specular: vệt sáng mảnh mép trên; glint: vệt sáng mảnh mép dưới (khúc xạ).
+     Màu / độ dày / độ lệch các lớp phải giữ khớp với GlassGreeting trong HomeHello.kt (GLASS_LAYERS). -->
 <animated-vector
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt">
@@ -11,26 +18,182 @@
             android:height="200dp"
             android:viewportWidth="440"
             android:viewportHeight="200">
-            <path
-                android:name="hello"
-                android:pathData="M 20 158 C 50 148, 92 96, 102 58 C 109 30, 90 22, 84 46 C 78 74, 72 128, 68 162 C 76 132, 94 110, 110 112 C 126 114, 122 148, 126 158 C 130 170, 144 168, 156 158 C 172 146, 194 132, 189 117 C 185 104, 160 108, 160 134 C 160 160, 182 172, 206 160 C 226 148, 246 108, 250 72 C 254 42, 238 32, 232 56 C 226 86, 225 140, 232 158 C 238 172, 256 170, 268 158 C 286 140, 306 106, 310 72 C 314 42, 298 32, 292 56 C 286 86, 285 140, 292 158 C 298 172, 318 170, 332 152 C 338 132, 348 113, 366 112 C 390 110, 400 140, 386 160 C 373 176, 346 172, 346 148 C 346 126, 366 110, 382 116 C 394 120, 406 120, 422 110"
-                android:strokeColor="#FFFFFFFF"
-                android:strokeWidth="6.5"
-                android:strokeLineCap="round"
-                android:strokeLineJoin="round"
-                android:trimPathEnd="0" />
+            <group android:translateX="0" android:translateY="8">
+                <path
+                    android:name="shadow_far"
+                    android:pathData="M 20 158 C 50 148, 92 96, 102 58 C 109 30, 90 22, 84 46 C 78 74, 72 128, 68 162 C 76 132, 94 110, 110 112 C 126 114, 122 148, 126 158 C 130 170, 144 168, 156 158 C 172 146, 194 132, 189 117 C 185 104, 160 108, 160 134 C 160 160, 182 172, 206 160 C 226 148, 246 108, 250 72 C 254 42, 238 32, 232 56 C 226 86, 225 140, 232 158 C 238 172, 256 170, 268 158 C 286 140, 306 106, 310 72 C 314 42, 298 32, 292 56 C 286 86, 285 140, 292 158 C 298 172, 318 170, 332 152 C 338 132, 348 113, 366 112 C 390 110, 400 140, 386 160 C 373 176, 346 172, 346 148 C 346 126, 366 110, 382 116 C 394 120, 406 120, 422 110"
+                    android:strokeColor="#0B000000"
+                    android:strokeWidth="28"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:trimPathEnd="0" />
+            </group>
+            <group android:translateX="0" android:translateY="7">
+                <path
+                    android:name="shadow_mid"
+                    android:pathData="M 20 158 C 50 148, 92 96, 102 58 C 109 30, 90 22, 84 46 C 78 74, 72 128, 68 162 C 76 132, 94 110, 110 112 C 126 114, 122 148, 126 158 C 130 170, 144 168, 156 158 C 172 146, 194 132, 189 117 C 185 104, 160 108, 160 134 C 160 160, 182 172, 206 160 C 226 148, 246 108, 250 72 C 254 42, 238 32, 232 56 C 226 86, 225 140, 232 158 C 238 172, 256 170, 268 158 C 286 140, 306 106, 310 72 C 314 42, 298 32, 292 56 C 286 86, 285 140, 292 158 C 298 172, 318 170, 332 152 C 338 132, 348 113, 366 112 C 390 110, 400 140, 386 160 C 373 176, 346 172, 346 148 C 346 126, 366 110, 382 116 C 394 120, 406 120, 422 110"
+                    android:strokeColor="#0E000000"
+                    android:strokeWidth="24"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:trimPathEnd="0" />
+            </group>
+            <group android:translateX="0" android:translateY="6">
+                <path
+                    android:name="shadow_near"
+                    android:pathData="M 20 158 C 50 148, 92 96, 102 58 C 109 30, 90 22, 84 46 C 78 74, 72 128, 68 162 C 76 132, 94 110, 110 112 C 126 114, 122 148, 126 158 C 130 170, 144 168, 156 158 C 172 146, 194 132, 189 117 C 185 104, 160 108, 160 134 C 160 160, 182 172, 206 160 C 226 148, 246 108, 250 72 C 254 42, 238 32, 232 56 C 226 86, 225 140, 232 158 C 238 172, 256 170, 268 158 C 286 140, 306 106, 310 72 C 314 42, 298 32, 292 56 C 286 86, 285 140, 292 158 C 298 172, 318 170, 332 152 C 338 132, 348 113, 366 112 C 390 110, 400 140, 386 160 C 373 176, 346 172, 346 148 C 346 126, 366 110, 382 116 C 394 120, 406 120, 422 110"
+                    android:strokeColor="#12000000"
+                    android:strokeWidth="20"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:trimPathEnd="0" />
+            </group>
+            <group android:translateX="0" android:translateY="0.5">
+                <path
+                    android:name="rim"
+                    android:pathData="M 20 158 C 50 148, 92 96, 102 58 C 109 30, 90 22, 84 46 C 78 74, 72 128, 68 162 C 76 132, 94 110, 110 112 C 126 114, 122 148, 126 158 C 130 170, 144 168, 156 158 C 172 146, 194 132, 189 117 C 185 104, 160 108, 160 134 C 160 160, 182 172, 206 160 C 226 148, 246 108, 250 72 C 254 42, 238 32, 232 56 C 226 86, 225 140, 232 158 C 238 172, 256 170, 268 158 C 286 140, 306 106, 310 72 C 314 42, 298 32, 292 56 C 286 86, 285 140, 292 158 C 298 172, 318 170, 332 152 C 338 132, 348 113, 366 112 C 390 110, 400 140, 386 160 C 373 176, 346 172, 346 148 C 346 126, 366 110, 382 116 C 394 120, 406 120, 422 110"
+                    android:strokeColor="#2E2A2226"
+                    android:strokeWidth="21"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:trimPathEnd="0" />
+            </group>
+            <group android:translateX="0" android:translateY="0">
+                <path
+                    android:name="body"
+                    android:pathData="M 20 158 C 50 148, 92 96, 102 58 C 109 30, 90 22, 84 46 C 78 74, 72 128, 68 162 C 76 132, 94 110, 110 112 C 126 114, 122 148, 126 158 C 130 170, 144 168, 156 158 C 172 146, 194 132, 189 117 C 185 104, 160 108, 160 134 C 160 160, 182 172, 206 160 C 226 148, 246 108, 250 72 C 254 42, 238 32, 232 56 C 226 86, 225 140, 232 158 C 238 172, 256 170, 268 158 C 286 140, 306 106, 310 72 C 314 42, 298 32, 292 56 C 286 86, 285 140, 292 158 C 298 172, 318 170, 332 152 C 338 132, 348 113, 366 112 C 390 110, 400 140, 386 160 C 373 176, 346 172, 346 148 C 346 126, 366 110, 382 116 C 394 120, 406 120, 422 110"
+                    android:strokeColor="#1FCFC7C8"
+                    android:strokeWidth="20"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:trimPathEnd="0" />
+            </group>
+            <group android:translateX="-0.00" android:translateY="-0.00">
+                <path
+                    android:name="core0"
+                    android:pathData="M 20 158 C 50 148, 92 96, 102 58 C 109 30, 90 22, 84 46 C 78 74, 72 128, 68 162 C 76 132, 94 110, 110 112 C 126 114, 122 148, 126 158 C 130 170, 144 168, 156 158 C 172 146, 194 132, 189 117 C 185 104, 160 108, 160 134 C 160 160, 182 172, 206 160 C 226 148, 246 108, 250 72 C 254 42, 238 32, 232 56 C 226 86, 225 140, 232 158 C 238 172, 256 170, 268 158 C 286 140, 306 106, 310 72 C 314 42, 298 32, 292 56 C 286 86, 285 140, 292 158 C 298 172, 318 170, 332 152 C 338 132, 348 113, 366 112 C 390 110, 400 140, 386 160 C 373 176, 346 172, 346 148 C 346 126, 366 110, 382 116 C 394 120, 406 120, 422 110"
+                    android:strokeColor="#0BFFFFFF"
+                    android:strokeWidth="20"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:trimPathEnd="0" />
+            </group>
+            <group android:translateX="-0.07" android:translateY="-0.55">
+                <path
+                    android:name="core1"
+                    android:pathData="M 20 158 C 50 148, 92 96, 102 58 C 109 30, 90 22, 84 46 C 78 74, 72 128, 68 162 C 76 132, 94 110, 110 112 C 126 114, 122 148, 126 158 C 130 170, 144 168, 156 158 C 172 146, 194 132, 189 117 C 185 104, 160 108, 160 134 C 160 160, 182 172, 206 160 C 226 148, 246 108, 250 72 C 254 42, 238 32, 232 56 C 226 86, 225 140, 232 158 C 238 172, 256 170, 268 158 C 286 140, 306 106, 310 72 C 314 42, 298 32, 292 56 C 286 86, 285 140, 292 158 C 298 172, 318 170, 332 152 C 338 132, 348 113, 366 112 C 390 110, 400 140, 386 160 C 373 176, 346 172, 346 148 C 346 126, 366 110, 382 116 C 394 120, 406 120, 422 110"
+                    android:strokeColor="#0BFFFFFF"
+                    android:strokeWidth="18"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:trimPathEnd="0" />
+            </group>
+            <group android:translateX="-0.14" android:translateY="-1.10">
+                <path
+                    android:name="core2"
+                    android:pathData="M 20 158 C 50 148, 92 96, 102 58 C 109 30, 90 22, 84 46 C 78 74, 72 128, 68 162 C 76 132, 94 110, 110 112 C 126 114, 122 148, 126 158 C 130 170, 144 168, 156 158 C 172 146, 194 132, 189 117 C 185 104, 160 108, 160 134 C 160 160, 182 172, 206 160 C 226 148, 246 108, 250 72 C 254 42, 238 32, 232 56 C 226 86, 225 140, 232 158 C 238 172, 256 170, 268 158 C 286 140, 306 106, 310 72 C 314 42, 298 32, 292 56 C 286 86, 285 140, 292 158 C 298 172, 318 170, 332 152 C 338 132, 348 113, 366 112 C 390 110, 400 140, 386 160 C 373 176, 346 172, 346 148 C 346 126, 366 110, 382 116 C 394 120, 406 120, 422 110"
+                    android:strokeColor="#0BFFFFFF"
+                    android:strokeWidth="16"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:trimPathEnd="0" />
+            </group>
+            <group android:translateX="-0.21" android:translateY="-1.65">
+                <path
+                    android:name="core3"
+                    android:pathData="M 20 158 C 50 148, 92 96, 102 58 C 109 30, 90 22, 84 46 C 78 74, 72 128, 68 162 C 76 132, 94 110, 110 112 C 126 114, 122 148, 126 158 C 130 170, 144 168, 156 158 C 172 146, 194 132, 189 117 C 185 104, 160 108, 160 134 C 160 160, 182 172, 206 160 C 226 148, 246 108, 250 72 C 254 42, 238 32, 232 56 C 226 86, 225 140, 232 158 C 238 172, 256 170, 268 158 C 286 140, 306 106, 310 72 C 314 42, 298 32, 292 56 C 286 86, 285 140, 292 158 C 298 172, 318 170, 332 152 C 338 132, 348 113, 366 112 C 390 110, 400 140, 386 160 C 373 176, 346 172, 346 148 C 346 126, 366 110, 382 116 C 394 120, 406 120, 422 110"
+                    android:strokeColor="#0BFFFFFF"
+                    android:strokeWidth="14"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:trimPathEnd="0" />
+            </group>
+            <group android:translateX="-0.28" android:translateY="-2.20">
+                <path
+                    android:name="core4"
+                    android:pathData="M 20 158 C 50 148, 92 96, 102 58 C 109 30, 90 22, 84 46 C 78 74, 72 128, 68 162 C 76 132, 94 110, 110 112 C 126 114, 122 148, 126 158 C 130 170, 144 168, 156 158 C 172 146, 194 132, 189 117 C 185 104, 160 108, 160 134 C 160 160, 182 172, 206 160 C 226 148, 246 108, 250 72 C 254 42, 238 32, 232 56 C 226 86, 225 140, 232 158 C 238 172, 256 170, 268 158 C 286 140, 306 106, 310 72 C 314 42, 298 32, 292 56 C 286 86, 285 140, 292 158 C 298 172, 318 170, 332 152 C 338 132, 348 113, 366 112 C 390 110, 400 140, 386 160 C 373 176, 346 172, 346 148 C 346 126, 366 110, 382 116 C 394 120, 406 120, 422 110"
+                    android:strokeColor="#0BFFFFFF"
+                    android:strokeWidth="12"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:trimPathEnd="0" />
+            </group>
+            <group android:translateX="-0.35" android:translateY="-2.75">
+                <path
+                    android:name="core5"
+                    android:pathData="M 20 158 C 50 148, 92 96, 102 58 C 109 30, 90 22, 84 46 C 78 74, 72 128, 68 162 C 76 132, 94 110, 110 112 C 126 114, 122 148, 126 158 C 130 170, 144 168, 156 158 C 172 146, 194 132, 189 117 C 185 104, 160 108, 160 134 C 160 160, 182 172, 206 160 C 226 148, 246 108, 250 72 C 254 42, 238 32, 232 56 C 226 86, 225 140, 232 158 C 238 172, 256 170, 268 158 C 286 140, 306 106, 310 72 C 314 42, 298 32, 292 56 C 286 86, 285 140, 292 158 C 298 172, 318 170, 332 152 C 338 132, 348 113, 366 112 C 390 110, 400 140, 386 160 C 373 176, 346 172, 346 148 C 346 126, 366 110, 382 116 C 394 120, 406 120, 422 110"
+                    android:strokeColor="#0BFFFFFF"
+                    android:strokeWidth="10"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:trimPathEnd="0" />
+            </group>
+            <group android:translateX="-0.42" android:translateY="-3.30">
+                <path
+                    android:name="core6"
+                    android:pathData="M 20 158 C 50 148, 92 96, 102 58 C 109 30, 90 22, 84 46 C 78 74, 72 128, 68 162 C 76 132, 94 110, 110 112 C 126 114, 122 148, 126 158 C 130 170, 144 168, 156 158 C 172 146, 194 132, 189 117 C 185 104, 160 108, 160 134 C 160 160, 182 172, 206 160 C 226 148, 246 108, 250 72 C 254 42, 238 32, 232 56 C 226 86, 225 140, 232 158 C 238 172, 256 170, 268 158 C 286 140, 306 106, 310 72 C 314 42, 298 32, 292 56 C 286 86, 285 140, 292 158 C 298 172, 318 170, 332 152 C 338 132, 348 113, 366 112 C 390 110, 400 140, 386 160 C 373 176, 346 172, 346 148 C 346 126, 366 110, 382 116 C 394 120, 406 120, 422 110"
+                    android:strokeColor="#0BFFFFFF"
+                    android:strokeWidth="8"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:trimPathEnd="0" />
+            </group>
+            <group android:translateX="-0.49" android:translateY="-3.85">
+                <path
+                    android:name="core7"
+                    android:pathData="M 20 158 C 50 148, 92 96, 102 58 C 109 30, 90 22, 84 46 C 78 74, 72 128, 68 162 C 76 132, 94 110, 110 112 C 126 114, 122 148, 126 158 C 130 170, 144 168, 156 158 C 172 146, 194 132, 189 117 C 185 104, 160 108, 160 134 C 160 160, 182 172, 206 160 C 226 148, 246 108, 250 72 C 254 42, 238 32, 232 56 C 226 86, 225 140, 232 158 C 238 172, 256 170, 268 158 C 286 140, 306 106, 310 72 C 314 42, 298 32, 292 56 C 286 86, 285 140, 292 158 C 298 172, 318 170, 332 152 C 338 132, 348 113, 366 112 C 390 110, 400 140, 386 160 C 373 176, 346 172, 346 148 C 346 126, 366 110, 382 116 C 394 120, 406 120, 422 110"
+                    android:strokeColor="#0BFFFFFF"
+                    android:strokeWidth="6"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:trimPathEnd="0" />
+            </group>
+            <group android:translateX="-0.56" android:translateY="-4.40">
+                <path
+                    android:name="core8"
+                    android:pathData="M 20 158 C 50 148, 92 96, 102 58 C 109 30, 90 22, 84 46 C 78 74, 72 128, 68 162 C 76 132, 94 110, 110 112 C 126 114, 122 148, 126 158 C 130 170, 144 168, 156 158 C 172 146, 194 132, 189 117 C 185 104, 160 108, 160 134 C 160 160, 182 172, 206 160 C 226 148, 246 108, 250 72 C 254 42, 238 32, 232 56 C 226 86, 225 140, 232 158 C 238 172, 256 170, 268 158 C 286 140, 306 106, 310 72 C 314 42, 298 32, 292 56 C 286 86, 285 140, 292 158 C 298 172, 318 170, 332 152 C 338 132, 348 113, 366 112 C 390 110, 400 140, 386 160 C 373 176, 346 172, 346 148 C 346 126, 366 110, 382 116 C 394 120, 406 120, 422 110"
+                    android:strokeColor="#0BFFFFFF"
+                    android:strokeWidth="4"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:trimPathEnd="0" />
+            </group>
+            <group android:translateX="-0.6" android:translateY="-6.2">
+                <path
+                    android:name="specular"
+                    android:pathData="M 20 158 C 50 148, 92 96, 102 58 C 109 30, 90 22, 84 46 C 78 74, 72 128, 68 162 C 76 132, 94 110, 110 112 C 126 114, 122 148, 126 158 C 130 170, 144 168, 156 158 C 172 146, 194 132, 189 117 C 185 104, 160 108, 160 134 C 160 160, 182 172, 206 160 C 226 148, 246 108, 250 72 C 254 42, 238 32, 232 56 C 226 86, 225 140, 232 158 C 238 172, 256 170, 268 158 C 286 140, 306 106, 310 72 C 314 42, 298 32, 292 56 C 286 86, 285 140, 292 158 C 298 172, 318 170, 332 152 C 338 132, 348 113, 366 112 C 390 110, 400 140, 386 160 C 373 176, 346 172, 346 148 C 346 126, 366 110, 382 116 C 394 120, 406 120, 422 110"
+                    android:strokeColor="#59FFFFFF"
+                    android:strokeWidth="2.2"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:trimPathEnd="0" />
+            </group>
+            <group android:translateX="0.3" android:translateY="8">
+                <path
+                    android:name="glint"
+                    android:pathData="M 20 158 C 50 148, 92 96, 102 58 C 109 30, 90 22, 84 46 C 78 74, 72 128, 68 162 C 76 132, 94 110, 110 112 C 126 114, 122 148, 126 158 C 130 170, 144 168, 156 158 C 172 146, 194 132, 189 117 C 185 104, 160 108, 160 134 C 160 160, 182 172, 206 160 C 226 148, 246 108, 250 72 C 254 42, 238 32, 232 56 C 226 86, 225 140, 232 158 C 238 172, 256 170, 268 158 C 286 140, 306 106, 310 72 C 314 42, 298 32, 292 56 C 286 86, 285 140, 292 158 C 298 172, 318 170, 332 152 C 338 132, 348 113, 366 112 C 390 110, 400 140, 386 160 C 373 176, 346 172, 346 148 C 346 126, 366 110, 382 116 C 394 120, 406 120, 422 110"
+                    android:strokeColor="#1FFFFFFF"
+                    android:strokeWidth="1.8"
+                    android:strokeLineCap="round"
+                    android:strokeLineJoin="round"
+                    android:trimPathEnd="0" />
+            </group>
         </vector>
     </aapt:attr>
-    <target android:name="hello">
-        <aapt:attr name="android:animation">
-            <objectAnimator
-                android:propertyName="trimPathEnd"
-                android:valueFrom="0"
-                android:valueTo="1"
-                android:valueType="floatType"
-                android:startOffset="150"
-                android:duration="1800"
-                android:interpolator="@android:interpolator/fast_out_slow_in" />
-        </aapt:attr>
-    </target>
+    <target android:name="shadow_far" android:animation="@animator/hello_write" />
+    <target android:name="shadow_mid" android:animation="@animator/hello_write" />
+    <target android:name="shadow_near" android:animation="@animator/hello_write" />
+    <target android:name="rim" android:animation="@animator/hello_write" />
+    <target android:name="body" android:animation="@animator/hello_write" />
+    <target android:name="core0" android:animation="@animator/hello_write" />
+    <target android:name="core1" android:animation="@animator/hello_write" />
+    <target android:name="core2" android:animation="@animator/hello_write" />
+    <target android:name="core3" android:animation="@animator/hello_write" />
+    <target android:name="core4" android:animation="@animator/hello_write" />
+    <target android:name="core5" android:animation="@animator/hello_write" />
+    <target android:name="core6" android:animation="@animator/hello_write" />
+    <target android:name="core7" android:animation="@animator/hello_write" />
+    <target android:name="core8" android:animation="@animator/hello_write" />
+    <target android:name="specular" android:animation="@animator/hello_write" />
+    <target android:name="glint" android:animation="@animator/hello_write" />
 </animated-vector>
