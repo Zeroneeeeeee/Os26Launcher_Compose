@@ -35,20 +35,21 @@ param(
 $ErrorActionPreference = 'Stop'
 $adbArgs = @()
 if ($Serial) { $adbArgs = @('-s', $Serial) }
-function Adb { & adb @adbArgs @args }
+# Tên hàm KHÔNG được là "Adb": PowerShell không phân biệt hoa thường, hàm sẽ che lệnh adb và tự gọi lại mình (CallDepthOverflow).
+function Invoke-Adb { & adb.exe @adbArgs @args }
 
-$sdk = (Adb shell getprop ro.build.version.sdk).Trim()
+$sdk = (Invoke-Adb shell getprop ro.build.version.sdk).Trim()
 Write-Host "Thiết bị API $sdk"
 if ([int]$sdk -ge 31) { Write-Warning 'Máy API >= 31: Home dùng Modifier.blur, không có log FolderBlur.' }
 
 $oldScale = $null
 if ($Slow -gt 0) {
-    $oldScale = (Adb shell settings get global animator_duration_scale).Trim()
-    Adb shell settings put global animator_duration_scale $Slow | Out-Null
+    $oldScale = (Invoke-Adb shell settings get global animator_duration_scale).Trim()
+    Invoke-Adb shell settings put global animator_duration_scale $Slow | Out-Null
     Write-Host "animator_duration_scale = $Slow (cũ: $oldScale)"
 }
 
-Adb logcat -c
+Invoke-Adb logcat -c
 $job = $null
 try {
     if ($FolderX -ge 0 -and $FolderY -ge 0) {
@@ -57,9 +58,9 @@ try {
             param($a, $x, $y, $n, $openMs, $closeMs)
             Start-Sleep -Milliseconds 800
             for ($i = 1; $i -le $n; $i++) {
-                & adb @a shell input tap $x $y | Out-Null
+                & adb.exe @a shell input tap $x $y | Out-Null
                 Start-Sleep -Milliseconds $openMs
-                & adb @a shell input keyevent KEYCODE_BACK | Out-Null
+                & adb.exe @a shell input keyevent KEYCODE_BACK | Out-Null
                 Start-Sleep -Milliseconds $closeMs
             }
         }
@@ -69,7 +70,7 @@ try {
     }
     $n = 0
     $shownAt = $null
-    Adb logcat -v time -s FolderBlur:I | ForEach-Object {
+    Invoke-Adb logcat -v time -s FolderBlur:I | ForEach-Object {
         $line = $_
         if ($line -match 'FolderBlur\(\s*\d+\):\s*(.*)$') {
             $msg = $Matches[1]
@@ -100,7 +101,7 @@ try {
     if ($job) { Stop-Job $job -ErrorAction SilentlyContinue; Remove-Job $job -Force -ErrorAction SilentlyContinue }
     if ($null -ne $oldScale) {
         if ($oldScale -eq 'null' -or $oldScale -eq '') { $oldScale = '1' }
-        Adb shell settings put global animator_duration_scale $oldScale | Out-Null
+        Invoke-Adb shell settings put global animator_duration_scale $oldScale | Out-Null
         Write-Host "Trả animator_duration_scale = $oldScale"
     }
 }
