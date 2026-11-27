@@ -4,7 +4,7 @@
 > commit chỉ được rà bằng đọc code. Không có test tự động.
 
 **Bắt đầu:** 2026-11-27 · **Plan duyệt:** 2026-11-27 (chốt trong chat: "theo đề xuất")
-**Trạng thái:** Đang làm
+**Trạng thái:** Code xong 2026-11-27 (Task 1–6), chờ chủ dự án build + kiểm
 
 **Goal:** Widget thời tiết có nút làm mới nhỏ (icon xoay vòng, góc dưới phải); Cài đặt → Thời tiết có "Làm mới sau" 1 giờ / 3 giờ / 6 giờ / 9 giờ /
 12 giờ / 1 ngày (mặc định 1 ngày) thay cho hằng 2 giờ. Kèm sửa B21 (hộp "Đặt làm màn hình chính" chồng lên hộp xin quyền) và B11 (dấu "−" phóng to /
@@ -75,7 +75,7 @@ widget nằm trong `HomeWidgetCell` (Compose, đè lên thẻ vẽ Canvas), gọ
 - [x] Theo R6 ở 4 nơi gọi. Commit `feat: animate remove badges in and out of edit mode`.
 
 ### Task 6: Docs
-- [ ] `Launcher-Features.md` (thời tiết), `lessons/widgets.md`, `BACKLOG.md`, `plans/README.md`. Commit `docs: WR weather refresh`.
+- [x] `Launcher-Features.md` (thời tiết), `lessons/widgets.md`, `BACKLOG.md`, `plans/README.md`. Commit `docs: WR weather refresh`.
 
 ## Nhật ký
 
@@ -86,3 +86,4 @@ widget nằm trong `HomeWidgetCell` (Compose, đè lên thẻ vẽ Canvas), gọ
 | 2026-11-27 | 3 | `ic_widget_refresh.xml` (Material "refresh"); `HomeWidgetCell.WeatherRefreshButton` (12/32dp, góc dưới phải thẻ, xoay ≥ 1 vòng và trong lúc `refreshing`); `WeatherWidgetHub.onRefreshTapped`, `refreshing`; `HomeActivity.onWeatherRefreshTapped` | Chưa build. Cần chủ dự án nhìn chỗ đặt nút trên 2×2 / 4×2 (có thể đè chữ góc dưới phải) |
 | 2026-11-27 | 4 | B21: `PermissionRequester(onSystemUi)` gọi trước hộp quyền hệ thống và khi bấm "Cấp quyền"; Home truyền `defaultPrompt.skipNextResume()`; `DsDialogHost.hasOpen`; `DefaultLauncherPromptController` không hiện khi đang có hộp khác | Chưa build |
 | 2026-11-27 | 5 | B11: `HomeRemoveBadge(visible)` — `animateFloatAsState` (vào: spring 0,55 / 500; ra: tween 150 ms) qua `graphicsLayer` scale, rời cây khi về 0; 4 nơi gọi (widget + app trên lưới, Thư viện, Today) luôn dựng dấu | Chưa build |
+| 2026-11-27 | 6 | Docs: `Launcher-Features.md` (vị trí, mục 14), `lessons/widgets.md` (mục WR), `BACKLOG.md` (B22 / B21 / B11 chờ kiểm), `plans/README.md` (dòng WR) | — |

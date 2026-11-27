@@ -26,7 +26,7 @@ Tài liệu liên quan: [LiquidGlass-Demo.md](LiquidGlass-Demo.md) (demo đã đ
 | Thời tiết | **Xong một vị trí** (G3e, 2026-11-10): tech lead chọn OpenWeatherMap | Khóa gói Free ghi thẳng trong `buildTypes` của `app/build.gradle.kts` (2026-11-26, chủ dự án chấp nhận khóa public trên GitHub); `OWM_API_KEY` trong `local.properties` hoặc biến môi trường ghi đè; gọi thẳng từ app, thiết kế sẵn để thêm proxy |
 | Nguồn dữ liệu thời tiết | Giao diện `WeatherProvider`, dùng OpenWeatherMap (tech lead chọn 2026-11-09; trước đó dự tính Open-Meteo) | Gói Free: 60 lệnh/phút, 1.000.000 lệnh/tháng; điều kiện ghi nguồn xét trước phát hành |
 | Gọi API thời tiết | Gọi thẳng từ app khi phát triển, thiết kế sẵn để thêm proxy sau | Key trong APK có thể bị lấy |
-| Vị trí cho thời tiết | Cài đặt → Vị trí: Tự động (vị trí thô, lấy khi bấm hoặc tối đa 2 giờ/lần lúc widget "Vị trí hiện tại" đang hiện, chỉ đổi khi đi xa > 5 km) hoặc Chọn thủ công (không cần quyền) — WX 2026-11-13 | Không chạy nền, không xin quyền vị trí nền |
+| Vị trí cho thời tiết | Cài đặt → Vị trí: Tự động (vị trí thô, lấy khi bấm, khi bấm nút làm mới, hoặc theo chu kỳ "Làm mới sau" lúc widget "Vị trí hiện tại" đang hiện, chỉ đổi khi đi xa > 5 km) hoặc Chọn thủ công (không cần quyền) — WX 2026-11-13 | Không chạy nền, không xin quyền vị trí nền |
 
 ## 3. Danh sách tính năng (cơ bản đến nâng cao)
 
@@ -65,7 +65,7 @@ Giai đoạn: **G1** bản đầu dùng được, **G2** hoàn thiện giao di�
 
 | # | Tính năng | Nguồn | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| 14 | Thời tiết (một vị trí, rồi nhiều vị trí) | App mẫu | **Xong** (G3e 2026-11-10 một vị trí; WX 2026-11-13 nhiều địa điểm) | Widget 2x2 và 4x2, °C/°F (WU). Tối đa 3 địa điểm kể cả vị trí hiện tại; mỗi widget chọn địa điểm bằng cách bấm widget; mỗi địa điểm làm mới tối đa 2 giờ/lần, chỉ khi có widget hiện (≤ 72 lệnh/ngày). Xem [plans/WX-weather-cities.md](plans/WX-weather-cities.md). Chưa làm: thẻ "hiện tại + theo giờ" của màn 1.4 |
+| 14 | Thời tiết (một vị trí, rồi nhiều vị trí) | App mẫu | **Xong** (G3e 2026-11-10 một vị trí; WX 2026-11-13 nhiều địa điểm) | Widget 2x2 và 4x2, °C/°F (WU). Tối đa 3 địa điểm kể cả vị trí hiện tại; mỗi widget chọn địa điểm bằng cách bấm widget; mỗi địa điểm tự làm mới theo Cài đặt → Thời tiết → "Làm mới sau" (1 / 3 / 6 / 9 / 12 giờ / 1 ngày, mặc định 1 ngày), chỉ khi có widget hiện; nút làm mới nhỏ ở góc dưới phải widget (tối đa 1 lần/phút mỗi địa điểm) — WR 2026-11-27. Xem [plans/WX-weather-cities.md](plans/WX-weather-cities.md). Chưa làm: thẻ "hiện tại + theo giờ" của màn 1.4 |
 | 15 | Widget ảnh (bố cục Mosaic, chọn và sửa ảnh) | App mẫu | **Xong** (G3b, 2026-11-16) | Widget 2×2/4×2: một ảnh hoặc bộ tối đa 10 ảnh đổi mỗi giờ khi Home đang hiện; chọn bằng bộ chọn ảnh hệ thống (không xin quyền), cắt theo khung widget; bản sao thu nhỏ, bỏ EXIF/GPS, ở `no_backup/photo_widgets/`. Không làm bố cục Mosaic. Xem [plans/G3b-photo-widget.md](plans/G3b-photo-widget.md) |
 | 16 | Bộ sưu tập hình nền, tự đổi, báo hình mới | App mẫu | Chưa | Mốc G3f. Cần nguồn nội dung và có thể cần máy chủ; chưa quyết |
 | 17 | Thông báo thời tiết (dự báo, cảnh báo) | App mẫu | **Xong** (WN, 2026-11-16) | Hai thông báo: dự báo hôm nay 07:00 và ngày mai 21:00 (có thể trễ tới ~1 giờ, báo thức không chính xác), dùng "Vị trí hiện tại" đã lưu, quy tắc 2 giờ của WX. Cảnh báo thời tiết xấu không làm (One Call 3.0 là gói riêng). Chạm mở Home (mở bảng Thời tiết để sau). Xem [plans/WN-weather-notifications.md](plans/WN-weather-notifications.md) |
