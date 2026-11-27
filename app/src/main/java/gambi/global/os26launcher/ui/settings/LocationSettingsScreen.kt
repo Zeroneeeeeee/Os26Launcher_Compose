@@ -99,7 +99,28 @@ class LocationSettingsScreen(private val ctx: SettingsScreenContext) : SettingsS
             ID_MODE_MANUAL -> LocationMode.MANUAL
             else -> return
         }
-        if (chosen != places.mode) viewModel.setMode(chosen, fallbackName())
+        if (chosen == places.mode) return
+        // PG (2026-11-27): "Tự động" cần quyền vị trí: chưa có thì xin trước, chỉ đổi chế độ khi đã cấp (bị chặn: cấp ở Thông tin ứng dụng
+        // rồi quay lại thì [onResume] đổi). Không cấp thì giữ chế độ cũ.
+        if (chosen == LocationMode.AUTO && !viewModel.hasPermission()) {
+            ctx.rerender(true)
+            permission.request(onOpenSettings = { awaitingAutoSettings = true }) { granted ->
+                if (granted) viewModel.setMode(LocationMode.AUTO, fallbackName())
+                ctx.rerender(true)
+            }
+            return
+        }
+        viewModel.setMode(chosen, fallbackName())
+    }
+
+    /** PG: vừa mở Thông tin ứng dụng để cấp quyền cho chế độ "Tự động". */
+    private var awaitingAutoSettings = false
+
+    override fun onResume() {
+        if (!awaitingAutoSettings) return
+        awaitingAutoSettings = false
+        if (viewModel.hasPermission() && places.mode != LocationMode.AUTO) viewModel.setMode(LocationMode.AUTO, fallbackName())
+        activity.window.decorView.post { ctx.rerender(false) }
     }
 
     override fun onSwitchChanged(row: SettingsRow.Switch, checked: Boolean) = Unit

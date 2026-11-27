@@ -748,6 +748,8 @@
     <string name="perm_blocked_location_message">Cuaca memakai perkiraan lokasi Anda untuk menampilkan cuaca di tempat Anda. Lokasi hanya dipakai untuk cuaca dan tidak dilacak terus-menerus. Anda telah menolak izin ini, jadi Android tidak akan bertanya lagi. Ketuk Beri izin, lalu Izin → Lokasi → Izinkan.</string>
     <string name="perm_blocked_contacts_title">Izin kontak diperlukan</string>
     <string name="perm_blocked_contacts_message">Penelusuran membaca kontak agar Anda bisa mencari orang berdasarkan nama lalu menelepon atau mengirim pesan dengan cepat. Kontak hanya dibaca di ponsel ini dan tidak pernah dikirim ke mana pun. Anda telah menolak izin ini, jadi Android tidak akan bertanya lagi. Ketuk Beri izin, lalu Izin → Kontak → Izinkan.</string>
+    <string name="perm_blocked_notifications_title">Izin notifikasi diperlukan</string>
+    <string name="perm_blocked_notifications_message">Cuaca mengirim prakiraan pagi dan pemberitahuan cuaca besok. Anda telah menolak izin ini, jadi Android tidak akan bertanya lagi. Ketuk Beri izin, lalu Notifikasi → Izinkan.</string>
     <!-- WR (2026-11-27): chu kỳ "Làm mới sau" (Cài đặt → Thời tiết) và nút làm mới trên widget. -->
     <string name="wx_refresh_header">Muat ulang</string>
     <string name="wx_refresh_interval">Muat ulang setiap</string>

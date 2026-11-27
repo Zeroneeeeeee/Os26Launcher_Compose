@@ -748,6 +748,8 @@
     <string name="perm_blocked_location_message">天気は、現在地の天気を表示するためにおおよその位置情報を使います。位置情報は天気にのみ使われ、継続的に追跡されることはありません。この許可が拒否されているため、Android は再度確認しません。「許可する」をタップし、[権限] → [位置情報] → [許可] を選んでください。</string>
     <string name="perm_blocked_contacts_title">連絡先の許可が必要です</string>
     <string name="perm_blocked_contacts_message">検索では、名前で相手を探してすばやく電話やメッセージができるよう連絡先を読み取ります。連絡先はこの端末内でのみ読み取られ、外部に送信されることはありません。この許可が拒否されているため、Android は再度確認しません。「許可する」をタップし、[権限] → [連絡先] → [許可] を選んでください。</string>
+    <string name="perm_blocked_notifications_title">通知の許可が必要です</string>
+    <string name="perm_blocked_notifications_message">天気は朝の予報と明日の天気のお知らせを送ります。この許可が拒否されているため、Android は再度確認しません。「許可する」をタップし、[通知] → [許可] を選んでください。</string>
     <!-- WR (2026-11-27): chu kỳ "Làm mới sau" (Cài đặt → Thời tiết) và nút làm mới trên widget. -->
     <string name="wx_refresh_header">更新</string>
     <string name="wx_refresh_interval">更新間隔</string>

@@ -783,6 +783,8 @@
     <string name="perm_blocked_location_message">Weather uses your approximate location to show the weather where you are. It is only used for weather and is not tracked continuously. You have denied this permission, so Android won\'t ask again. Tap Grant permission, then Permissions → Location → Allow.</string>
     <string name="perm_blocked_contacts_title">Contacts permission needed</string>
     <string name="perm_blocked_contacts_message">Search reads your contacts so you can find people by name and call or message them quickly. Contacts are read on this phone only and never sent anywhere. You have denied this permission, so Android won\'t ask again. Tap Grant permission, then Permissions → Contacts → Allow.</string>
+    <string name="perm_blocked_notifications_title">Notification permission needed</string>
+    <string name="perm_blocked_notifications_message">Weather sends you a morning forecast and a heads-up about tomorrow\'s weather. You have denied this permission, so Android won\'t ask again. Tap Grant permission, then Notifications → Allow.</string>
     <!-- WR (2026-11-27): chu kỳ "Làm mới sau" (Cài đặt → Thời tiết) và nút làm mới trên widget. -->
     <string name="wx_refresh_header">Refresh</string>
     <string name="wx_refresh_interval">Refresh every</string>

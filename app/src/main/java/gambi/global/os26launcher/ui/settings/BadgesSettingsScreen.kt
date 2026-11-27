@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import gambi.global.os26launcher.R
 import gambi.global.os26launcher.core.designsystem.DsTileColor
+import gambi.global.os26launcher.core.designsystem.compose.DsDialogHandle
 import gambi.global.os26launcher.domain.config.BadgeStyle
 import gambi.global.os26launcher.domain.config.HomeScreenConfig
 import gambi.global.os26launcher.domain.model.AppItem
@@ -19,6 +20,9 @@ import kotlinx.coroutines.launch
  *
  * Card xin quyền chỉ hiện khi chưa cấp "Truy cập thông báo"; nút mở màn quyền của hệ thống, quay lại thì [onResume] đọc lại.
  * "Theo ứng dụng" là mọi app thật (mỗi gói + hồ sơ một hàng), mặc định bật.
+ *
+ * PG (2026-11-27): bật "Hiện huy hiệu" khi chưa có quyền thì hiện hộp xin quyền; công tắc chỉ thật sự bật (ghi pref) khi đã cấp. Từ chối /
+ * "Để sau" / quay lại mà chưa cấp thì tự về tắt. Công tắc hiện bật = đã bật VÀ có quyền.
  */
 class BadgesSettingsScreen(private val ctx: SettingsScreenContext) : SettingsScreen {
 
@@ -27,7 +31,11 @@ class BadgesSettingsScreen(private val ctx: SettingsScreenContext) : SettingsScr
     private var config = HomeScreenConfig()
     private var apps: List<AppItem> = emptyList()
     private var granted = viewModel.isListenerGranted()
-    private val listenerFlow = NotificationListenerFlow(activity, viewModel::isListenerGranted)
+    private val listenerFlow = NotificationListenerFlow(activity, viewModel::isListenerGranted, onGuideDeclined = ::cancelPending)
+
+    /** PG: vừa bật công tắc mà chưa có quyền: công tắc hiện bật, pref CHƯA ghi; cấp xong mới ghi bật. */
+    private var enablePending = false
+    private var permissionDialog: DsDialogHandle? = null
 
     override val titleRes: Int = R.string.settings_hub_badges
 
@@ -48,7 +56,7 @@ class BadgesSettingsScreen(private val ctx: SettingsScreenContext) : SettingsScr
             SettingsRow.Switch(
                 ID_SHOW,
                 R.string.badges_show,
-                config.badgesEnabled,
+                (config.badgesEnabled && granted) || enablePending,
                 tile = SettingsTile(R.drawable.ds_ic_badge, DsTileColor.RED)
             )
         )
@@ -67,7 +75,50 @@ class BadgesSettingsScreen(private val ctx: SettingsScreenContext) : SettingsScr
     override fun onValueClicked(row: SettingsRow.Value) = Unit
 
     override fun onSwitchChanged(row: SettingsRow.Switch, checked: Boolean) {
-        if (row.id == ID_SHOW) viewModel.setEnabled(checked)
+        if (row.id != ID_SHOW) return
+        if (!checked) {
+            cancelPending()
+            viewModel.setEnabled(false)
+            return
+        }
+        granted = viewModel.isListenerGranted()
+        if (granted) {
+            viewModel.setEnabled(true)
+            return
+        }
+        enablePending = true
+        showPermissionDialog()
+    }
+
+    /** PG: hộp xin quyền Truy cập thông báo khi bật công tắc. "Cấp quyền" mở màn hệ thống; "Để sau" / Back thì công tắc về tắt. */
+    private fun showPermissionDialog() {
+        if (permissionDialog?.isShowing == true) return
+        permissionDialog = SettingsDialogs.confirm(
+            activity = activity,
+            title = activity.getString(R.string.badges_perm_title),
+            message = activity.getString(R.string.badges_perm_desc),
+            positive = activity.getString(R.string.badges_perm_action),
+            onPositive = {
+                if (!listenerFlow.open()) {
+                    Toast.makeText(activity, R.string.badges_perm_open_failed, Toast.LENGTH_LONG).show()
+                    cancelPending()
+                }
+            },
+            negative = activity.getString(R.string.cc_perm_later),
+            onNegative = ::cancelPending,
+            onCancel = ::cancelPending
+        ).also { handle -> handle.setOnDismissListener { if (permissionDialog === handle) permissionDialog = null } }
+    }
+
+    /** PG: bỏ lượt bật đang chờ quyền: công tắc về trạng thái thật (tắt). */
+    private fun cancelPending() {
+        permissionDialog?.setOnDismissListener(null)
+        permissionDialog?.dismiss()
+        permissionDialog = null
+        if (enablePending) {
+            enablePending = false
+            ctx.rerender(true)
+        }
     }
 
     override fun onAppSwitchChanged(row: SettingsRow.AppSwitch, checked: Boolean) = viewModel.setAppEnabled(row.app, checked)
@@ -85,10 +136,24 @@ class BadgesSettingsScreen(private val ctx: SettingsScreenContext) : SettingsScr
 
     override fun onResume() {
         granted = viewModel.isListenerGranted() // người dùng có thể vừa cấp/thu hồi ở Cài đặt hệ thống
-        listenerFlow.onResume() // RST: máy chặn "Cài đặt bị hạn chế" thì hướng dẫn mở khóa
+        val guiding = listenerFlow.onResume() // RST: máy chặn "Cài đặt bị hạn chế" thì hướng dẫn mở khóa
+        if (!enablePending) return
+        when {
+            granted -> { // PG: vừa cấp quyền cho lượt bật đang chờ: giờ mới ghi bật
+                enablePending = false
+                viewModel.setEnabled(true)
+            }
+            // Còn hộp xin quyền / hướng dẫn mở khóa (hay vừa tự mở lại màn quyền) thì chờ tiếp; không thì quay lại mà chưa cấp: về tắt.
+            !guiding && permissionDialog?.isShowing != true -> cancelPending()
+        }
     }
 
-    override fun onDestroy() = listenerFlow.onDestroy()
+    override fun onDestroy() {
+        permissionDialog?.setOnDismissListener(null)
+        permissionDialog?.dismiss()
+        permissionDialog = null
+        listenerFlow.onDestroy()
+    }
 
     override suspend fun observe() {
         coroutineScope {
