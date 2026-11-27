@@ -268,7 +268,11 @@ class HomeActivity : AppCompatActivity() {
         appWidgetFlow = AppWidgetFlowController(
             this, appWidgetHost, appWidgetFlowState, appWidgetRepository,
             onCommit = { request, id ->
-                viewModel.onAddAppWidget(request.provider, id, request.spanX, request.spanY, request.preferredPageIndex)
+                if (request.toToday) {
+                    viewModel.onAddTodayAppWidget(request.provider, id, wide = request.spanX >= 4) // TA: viên "+" của Today
+                } else {
+                    viewModel.onAddAppWidget(request.provider, id, request.spanX, request.spanY, request.preferredPageIndex)
+                }
             },
             onMessage = { Toast.makeText(this, it, Toast.LENGTH_SHORT).show() }
         )

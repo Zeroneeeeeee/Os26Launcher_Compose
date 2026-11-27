@@ -7,6 +7,7 @@ import javax.inject.Singleton
 /**
  * G3c Task 6 — yêu cầu thêm một widget app: provider, cỡ (ô), cỡ dp của khung để gắn (`OPTION_APPWIDGET_*`) và trang đang xem lúc bấm chip.
  * Chỉ là dữ liệu số/chuỗi, không giữ view hay Context, nên sống được trong [AppWidgetFlowState] qua `recreate()`.
+ * TA: [toToday] = thêm vào cuối Today View (cỡ 4 × 2 nếu `spanX >= 4`, không thì 2 × 2; [preferredPageIndex] bỏ qua).
  */
 data class AppWidgetAddRequest(
     val provider: AppWidgetRef,
@@ -14,7 +15,8 @@ data class AppWidgetAddRequest(
     val spanY: Int,
     val widthDp: Int,
     val heightDp: Int,
-    val preferredPageIndex: Int
+    val preferredPageIndex: Int,
+    val toToday: Boolean = false
 )
 
 /** Các trạng thái của luồng thêm (plan G3c, mục "Luồng thêm"). Hai trạng thái chạy đều mang id đã cấp và đánh dấu "đang trong luồng" ở `AppWidgetRepository`. */

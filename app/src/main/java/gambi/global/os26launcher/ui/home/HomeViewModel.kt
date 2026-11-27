@@ -610,6 +610,30 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch { todayWidgetsRepository.add(kindId, wide) }
     }
 
+    /**
+     * TA — ghi widget app đã cấp id, gắn và cấu hình xong ([appWidgetId]) vào cuối Today (như [onAddAppWidget] của Home: ghi trong `NonCancellable`;
+     * xong hay hỏng thì id hết "đang trong luồng", hỏng thì giải phóng id và báo lỗi).
+     */
+    fun onAddTodayAppWidget(provider: AppWidgetRef, appWidgetId: Int, wide: Boolean) {
+        viewModelScope.launch {
+            var placed = false
+            try {
+                withContext(NonCancellable) {
+                    layoutRepository.addTodayAppWidget(provider, appWidgetId, wide)
+                    placed = true
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e(TAG, "addTodayAppWidget failed ${e.javaClass.name}")
+                _events.trySend(HomeEvent.AppWidgetAddFailed)
+            } finally {
+                appWidgetRepository.clearInFlight(appWidgetId)
+                if (!placed) appWidgetRepository.release(listOf(appWidgetId))
+            }
+        }
+    }
+
     fun removeTodayWidget(id: Long) {
         viewModelScope.launch { removeTodayWidgetUseCase(id) }
     }
