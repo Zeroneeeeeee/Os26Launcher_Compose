@@ -11,12 +11,12 @@ import kotlinx.coroutines.flow.StateFlow
  *
  * Hợp đồng chặn tần suất (chủ dự án chốt 2026-11-13), mọi người gọi đều tuân theo, không ai tự đếm giờ. Hằng ở
  * [gambi.global.os26launcher.domain.model.weather.WeatherPolicy]:
- * - [refreshIfStale]: gọi mạng cho [placeId] nếu chưa có dữ liệu hợp lệ của nơi đó (lần tải đầu: ngay), hoặc quá 2 giờ kể từ lần thử gần nhất
- *   (thành công hoặc 429), hoặc quá 15 phút sau lỗi mạng/máy chủ/dữ liệu; sau 401 thì KHÔNG thử lại tới khi khởi động lại tiến trình. Giờ lùi
+ * - [refreshIfStale]: gọi mạng cho [placeId] nếu chưa có dữ liệu hợp lệ của nơi đó (lần tải đầu: ngay), hoặc quá chu kỳ "Làm mới sau" (WR, mặc định
+ *   1 ngày) kể từ lần thành công gần nhất, quá 2 giờ sau 429, hoặc quá 15 phút sau lỗi mạng/máy chủ/dữ liệu; sau 401 thì KHÔNG thử lại tới khi khởi động lại tiến trình. Giờ lùi
  *   (lần thử ở tương lai) coi là đã hết hạn. Không gọi mạng thì không đổi [states]. Một lúc chỉ một lượt làm mới cho cả ứng dụng.
  * - **Chỉ widget đang hiện hoặc thông báo thời tiết (WN, [snapshotForNotification]) mới kích hoạt làm mới** (mỗi widget gọi [refreshIfStale] cho địa điểm
  *   của nó ở mỗi nhịp phút): thêm/xóa/chọn địa điểm không gọi mạng; địa điểm không có widget hiện và không có thông báo đến hạn thì 0 lệnh.
- * - Không có làm mới thủ công (hệ quả của "tối đa 2 giờ một lần").
+ * - WR (2026-11-27): làm mới tay bằng [refreshNow] (nút trên widget), tối đa 1 lần / phút / địa điểm.
  * - Một mục bộ nhớ đệm chỉ hợp lệ khi tọa độ của nó trùng địa điểm đang tra (đổi vị trí tự động hay thành phố thủ công thì dữ liệu cũ bị bỏ).
  */
 interface WeatherRepository {
@@ -39,6 +39,16 @@ interface WeatherRepository {
 
     /** Không chặn: tự chạy trên scope ứng dụng. Gọi rẻ (so một số nguyên) nên được gọi mỗi nhịp phút. */
     fun refreshIfStale(placeId: String)
+
+    /**
+     * WR — làm mới tay (nút trên widget): bỏ qua chu kỳ nhưng tối đa 1 lần mỗi [gambi.global.os26launcher.domain.model.weather.WeatherPolicy.MANUAL_COOLDOWN_MS]
+     * cho một địa điểm, không gọi khi không có khóa hoặc khóa đã bị từ chối (401). Với "Vị trí hiện tại" ở chế độ Tự động và đã có quyền: lấy lại
+     * vị trí trước rồi mới tải. Không chặn; [refreshing] chứa [placeId] trong lúc chạy.
+     */
+    fun refreshNow(placeId: String)
+
+    /** WR: các địa điểm đang làm mới tay (icon xoay trên widget). */
+    val refreshing: StateFlow<Set<String>>
 
     /** Chỉ ném [gambi.global.os26launcher.domain.model.weather.WeatherException] (hoặc hủy coroutine); không loại ngoại lệ nào khác (B1). */
     suspend fun search(query: String): List<GeoPlace>

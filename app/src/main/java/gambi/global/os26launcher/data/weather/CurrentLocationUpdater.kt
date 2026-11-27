@@ -28,7 +28,7 @@ import kotlin.math.sqrt
  * Điều kiện chạy (mọi điều kiện đều phải đúng):
  * - chế độ [LocationMode.AUTO] (Thủ công thì không bao giờ lấy vị trí);
  * - đã cấp quyền vị trí (không bao giờ tự xin quyền ở đây);
- * - lần lấy thành công gần nhất cách đây ≥ [WeatherPolicy.REFRESH_INTERVAL_MS] (2 giờ; lấy tay ở Cài đặt cũng tính); sau một lần thất bại (không có vị trí,
+ * - lần lấy thành công gần nhất cách đây ≥ chu kỳ "Làm mới sau" (WR, mặc định 1 ngày; lấy tay ở Cài đặt / nút làm mới cũng tính); sau một lần thất bại (không có vị trí,
  *   không tra được tên) thử lại sau ≥ [WeatherPolicy.RETRY_AFTER_ERROR_MS] (chỉ trong RAM: khởi động lại tiến trình thì thử lại);
  * - một lần chạy mỗi lúc.
  *
@@ -50,12 +50,15 @@ class CurrentLocationUpdater @Inject constructor(
     @Volatile
     private var lastFailAt = 0L
 
-    /** Gọi rẻ (so vài số); không chặn. Chỉ gọi khi đã biết một widget đang hiện "current" và danh sách địa điểm đã nạp. */
-    fun maybeUpdate() {
+    /**
+     * Gọi rẻ (so vài số); không chặn. Chỉ gọi khi đã biết một widget đang hiện "current" và danh sách địa điểm đã nạp. [intervalMs] = chu kỳ
+     * "Làm mới sau" (WR, thay hằng 2 giờ).
+     */
+    fun maybeUpdate(intervalMs: Long) {
         val snapshot = places.places.value
         if (snapshot.mode != LocationMode.AUTO) return
         val now = System.currentTimeMillis()
-        if (snapshot.autoFixAt != 0L && now - snapshot.autoFixAt in 0 until WeatherPolicy.REFRESH_INTERVAL_MS) return
+        if (snapshot.autoFixAt != 0L && now - snapshot.autoFixAt in 0 until intervalMs) return
         if (lastFailAt != 0L && now - lastFailAt in 0 until WeatherPolicy.RETRY_AFTER_ERROR_MS) return
         if (!location.hasPermission()) return
         if (!running.compareAndSet(false, true)) return
@@ -70,6 +73,27 @@ class CurrentLocationUpdater @Inject constructor(
             } finally {
                 running.set(false)
             }
+        }
+    }
+
+    /**
+     * WR — làm mới tay ("Vị trí hiện tại" trên widget): lấy vị trí ngay, bỏ qua chu kỳ và lần lỗi trước; vẫn chỉ ở chế độ Tự động, đã có quyền,
+     * và một lần chạy mỗi lúc (đang chạy thì bỏ qua). Chờ tới khi xong (để thời tiết tải đúng nơi mới).
+     */
+    suspend fun updateNow() {
+        val snapshot = places.places.value
+        if (snapshot.mode != LocationMode.AUTO || !location.hasPermission()) return
+        if (!running.compareAndSet(false, true)) return
+        val now = System.currentTimeMillis()
+        try {
+            update(now, snapshot.autoPlace)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            lastFailAt = now
+            Log.w(TAG, "manual update failed: ${e.javaClass.simpleName}")
+        } finally {
+            running.set(false)
         }
     }
 

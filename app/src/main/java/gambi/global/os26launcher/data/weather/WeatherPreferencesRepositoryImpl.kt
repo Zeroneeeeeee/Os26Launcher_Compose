@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
+import gambi.global.os26launcher.domain.model.weather.WeatherRefreshInterval
 
 @Singleton
 class WeatherPreferencesRepositoryImpl @Inject constructor(
@@ -31,6 +32,14 @@ class WeatherPreferencesRepositoryImpl @Inject constructor(
 
     override suspend fun setUnit(unit: TemperatureUnit) {
         dataStore.edit { it[WeatherPrefsKeys.TEMPERATURE_UNIT] = unit.name }
+    }
+
+    override val refreshInterval: Flow<WeatherRefreshInterval> = safeData
+        .map { WeatherRefreshInterval.fromName(it[WeatherPrefsKeys.REFRESH_INTERVAL]) }
+        .distinctUntilChanged()
+
+    override suspend fun setRefreshInterval(interval: WeatherRefreshInterval) {
+        dataStore.edit { it[WeatherPrefsKeys.REFRESH_INTERVAL] = interval.name }
     }
 
     override val notifications: Flow<WeatherNotificationSettings> = safeData

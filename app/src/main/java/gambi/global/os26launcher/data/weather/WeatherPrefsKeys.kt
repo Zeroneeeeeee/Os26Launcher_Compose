@@ -9,6 +9,9 @@ internal object WeatherPrefsKeys {
     /** Tên enum `TemperatureUnit`; vắng = °C. */
     val TEMPERATURE_UNIT = stringPreferencesKey("weather_temperature_unit")
 
+    /** WR: tên enum `WeatherRefreshInterval`; vắng = 1 ngày. */
+    val REFRESH_INTERVAL = stringPreferencesKey("weather_refresh_interval")
+
     /** WN: công tắc thông báo hằng ngày / ngày mai; vắng = tắt. */
     val NOTIFY_DAILY = booleanPreferencesKey("weather_notify_daily")
     val NOTIFY_TOMORROW = booleanPreferencesKey("weather_notify_tomorrow")

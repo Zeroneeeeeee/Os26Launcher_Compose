@@ -14,6 +14,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * G3e Task 5 — cầu nối giữa [WeatherRepository] và các ô widget thời tiết (view). `object` sống xuyên Activity, KHÔNG giữ `View`:
@@ -44,6 +46,19 @@ object WeatherWidgetHub {
      */
     @Volatile
     var tappedWidgetId: Long = 0L
+
+    /**
+     * WR R3: nút làm mới trên widget [itemId] vừa được bấm. Home gán lúc dựng (xin quyền vị trí hoặc `WeatherRepository.refreshNow`), gỡ khi hủy;
+     * null = không có Home nào nhận (nút không làm gì ngoài xoay một vòng).
+     */
+    @Volatile
+    var onRefreshTapped: ((Long) -> Unit)? = null
+
+    private val noneRefreshing = MutableStateFlow<Set<String>>(emptySet())
+
+    /** WR: các địa điểm đang làm mới tay (icon xoay); rỗng trước [init]. */
+    val refreshing: StateFlow<Set<String>>
+        get() = repository?.refreshing ?: noneRefreshing
 
     fun init(
         repo: WeatherRepository,

@@ -4,6 +4,7 @@ import gambi.global.os26launcher.domain.model.weather.TemperatureUnit
 import gambi.global.os26launcher.domain.model.weather.WeatherNotificationKind
 import gambi.global.os26launcher.domain.model.weather.WeatherNotificationSettings
 import kotlinx.coroutines.flow.Flow
+import gambi.global.os26launcher.domain.model.weather.WeatherRefreshInterval
 
 /** WU — lựa chọn của người dùng cho thời tiết (đơn vị nhiệt độ; WN thêm hai công tắc thông báo và ngày đã đăng). */
 interface WeatherPreferencesRepository {
@@ -12,6 +13,11 @@ interface WeatherPreferencesRepository {
 
     /** Trả về sau khi ghi xong. */
     suspend fun setUnit(unit: TemperatureUnit)
+
+    /** WR: chu kỳ "Làm mới sau"; khóa vắng hoặc tên lạ = [WeatherRefreshInterval.DEFAULT] (1 ngày). */
+    val refreshInterval: Flow<WeatherRefreshInterval>
+
+    suspend fun setRefreshInterval(interval: WeatherRefreshInterval)
 
     /** WN: hai công tắc thông báo; khóa vắng = tắt. */
     val notifications: Flow<WeatherNotificationSettings>

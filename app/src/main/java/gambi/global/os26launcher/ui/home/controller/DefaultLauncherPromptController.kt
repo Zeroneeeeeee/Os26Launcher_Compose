@@ -13,6 +13,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import gambi.global.os26launcher.core.designsystem.compose.dsDialogs
 
 /**
  * PB Task 3 — hỏi "Đặt làm màn hình chính" mỗi lần Home vào RESUMED khi app chưa là launcher mặc định (plan PB, D1). Chưa mặc định thì
@@ -62,6 +63,7 @@ internal class DefaultLauncherPromptController(
             // Đọc cờ và chờ là suspend: trong lúc chờ người dùng có thể đã rời Home hoặc vừa đặt mặc định.
             if (!activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return@launch
             if (dialog != null || repository.isDefaultLauncher()) return@launch
+            if (activity.dsDialogs.hasOpen) return@launch // B21: không chồng lên hộp khác (hộp "Cấp quyền", bảng thời tiết…)
             show()
         }
     }

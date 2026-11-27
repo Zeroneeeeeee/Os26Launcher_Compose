@@ -12,6 +12,8 @@
 
 | Plan | Nội dung | Trạng thái |
 |---|---|---|
+| [WM](WM-weather-fallback.md) | Open-Meteo làm nguồn dự phòng khi OWM lỗi, cấu hình ở `buildTypes` (B23) | Code xong 2026-11-27, chờ kiểm |
+| [WR](WR-weather-refresh.md) | Widget thời tiết: nút làm mới + "Làm mới sau" 1 giờ … 1 ngày (B22); hộp "Đặt làm màn hình chính" không chồng hộp quyền (B21); dấu "−" phóng / thu khi vào / ra edit mode (B11) | Code xong 2026-11-27, chờ kiểm |
 | [PM](PM-permission-flow.md) | Widget thời tiết xin quyền vị trí tại chỗ; hộp "Cấp quyền" khi quyền Vị trí / Danh bạ bị chặn, dùng chung mọi chỗ (B20) | Code xong 2026-11-26, chờ kiểm |
 | [FX](FX-folder-polish.md) | Bảng thư mục: icon giữ cỡ có nhãn + nằm giữa ô, ảnh kéo co về cỡ Home, hết dư ảnh menu, nền mờ dưới Android 12 (B12, B16, B17, B18) | Code xong 2026-11-26, chờ kiểm |
 | [TR](TR-remove-theme-presets.md) | Bỏ màn "Màn hình chính mặc định" + preset theme + cờ nổi 3D; Onboarding 0.2 chọn kiểu icon (B19) | Code xong 2026-11-26, chờ kiểm |

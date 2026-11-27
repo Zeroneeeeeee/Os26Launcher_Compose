@@ -508,7 +508,7 @@
     <string name="wx_loc_city_unset">Sin elegir</string>
     <string name="wx_loc_pick_city">Elegir ciudad</string>
     <string name="wx_loc_unavailable">No se pudo obtener tu ubicación. Activa los servicios de ubicación o elige una ciudad manualmente.</string>
-    <string name="wx_loc_privacy">Solo se usa la ubicación aproximada, obtenida una vez cada vez: cuando tocas Actualizar ubicación o (modo Automático con permiso) como máximo cada 2 horas mientras se ve un widget del tiempo con Ubicación actual, y solo cambia si te desplazas más de 5 km. Nada se ejecuta en segundo plano ni se hace seguimiento continuo. El modo Elegir manualmente no necesita permiso y nunca lee tu ubicación.</string>
+    <string name="wx_loc_privacy">Solo se usa la ubicación aproximada, obtenida una vez cada vez: cuando tocas Actualizar ubicación o el botón de actualizar del widget, o (modo Automático con permiso) como máximo una vez por cada intervalo de «Actualizar cada» (Ajustes → Tiempo) mientras se ve un widget del tiempo con Ubicación actual, y solo cambia si te desplazas más de 5 km. Nada se ejecuta en segundo plano ni se hace seguimiento continuo. El modo Elegir manualmente no necesita permiso y nunca lee tu ubicación.</string>
     <string name="wx_sheet_for_widget">Este widget muestra:</string>
     <string name="wx_sheet_current_named">Ubicación actual: %1$s</string>
     <string name="wx_sheet_current_unset">Ubicación actual (desconocida)</string>
@@ -755,4 +755,14 @@
     <string name="perm_blocked_location_message">El tiempo usa tu ubicación aproximada para mostrar el tiempo donde estás. Solo se usa para el tiempo y no se sigue de forma continua. Has rechazado este permiso, así que Android no volverá a preguntar. Toca Dar permiso y luego Permisos → Ubicación → Permitir.</string>
     <string name="perm_blocked_contacts_title">Se necesita el permiso de contactos</string>
     <string name="perm_blocked_contacts_message">La búsqueda lee tus contactos para que encuentres personas por nombre y las llames o les escribas rápido. Los contactos solo se leen en este teléfono y nunca se envían a ningún sitio. Has rechazado este permiso, así que Android no volverá a preguntar. Toca Dar permiso y luego Permisos → Contactos → Permitir.</string>
+    <!-- WR (2026-11-27): chu kỳ "Làm mới sau" (Cài đặt → Thời tiết) và nút làm mới trên widget. -->
+    <string name="wx_refresh_header">Actualización</string>
+    <string name="wx_refresh_interval">Actualizar cada</string>
+    <plurals name="wx_refresh_hours">
+        <item quantity="one">%d hora</item>
+        <item quantity="other">%d horas</item>
+    </plurals>
+    <string name="wx_refresh_day">1 día</string>
+    <string name="wx_refresh_hint">Los widgets del tiempo se recargan con esta frecuencia mientras están visibles, y la Ubicación actual se comprueba con la misma frecuencia. Toca el icono de actualizar del widget para recargar ahora.</string>
+    <string name="wx_refresh_button">Actualizar el tiempo</string>
 </resources>

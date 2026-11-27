@@ -508,7 +508,7 @@
     <string name="wx_loc_city_unset">Não escolhida</string>
     <string name="wx_loc_pick_city">Escolher cidade</string>
     <string name="wx_loc_unavailable">Não foi possível obter sua localização. Ative os serviços de localização ou escolha uma cidade manualmente.</string>
-    <string name="wx_loc_privacy">Só é usada a localização aproximada, obtida uma vez a cada vez: quando você toca em Atualizar localização ou (modo Automático com permissão) no máximo a cada 2 horas enquanto um widget de clima com Localização atual está visível, e ela só muda se você se deslocar mais de 5 km. Nada roda em segundo plano nem há rastreamento contínuo. O modo Escolher manualmente não precisa de permissão e nunca lê sua localização.</string>
+    <string name="wx_loc_privacy">Só é usada a localização aproximada, obtida uma vez a cada vez: quando você toca em Atualizar localização ou no botão de atualizar do widget, ou (modo Automático com permissão) no máximo uma vez a cada intervalo de “Atualizar a cada” (Configurações → Clima) enquanto um widget de clima com Localização atual está visível, e ela só muda se você se deslocar mais de 5 km. Nada roda em segundo plano nem há rastreamento contínuo. O modo Escolher manualmente não precisa de permissão e nunca lê sua localização.</string>
     <string name="wx_sheet_for_widget">Este widget mostra:</string>
     <string name="wx_sheet_current_named">Localização atual: %1$s</string>
     <string name="wx_sheet_current_unset">Localização atual (desconhecida)</string>
@@ -755,4 +755,14 @@
     <string name="perm_blocked_location_message">O clima usa sua localização aproximada para mostrar o clima onde você está. Ela é usada só para o clima e não é acompanhada continuamente. Você negou esta permissão, então o Android não vai perguntar de novo. Toque em Conceder permissão e depois em Permissões → Localização → Permitir.</string>
     <string name="perm_blocked_contacts_title">Permissão de contatos necessária</string>
     <string name="perm_blocked_contacts_message">A pesquisa lê seus contatos para você encontrar pessoas pelo nome e ligar ou enviar mensagem rapidamente. Os contatos são lidos só neste celular e nunca são enviados. Você negou esta permissão, então o Android não vai perguntar de novo. Toque em Conceder permissão e depois em Permissões → Contatos → Permitir.</string>
+    <!-- WR (2026-11-27): chu kỳ "Làm mới sau" (Cài đặt → Thời tiết) và nút làm mới trên widget. -->
+    <string name="wx_refresh_header">Atualização</string>
+    <string name="wx_refresh_interval">Atualizar a cada</string>
+    <plurals name="wx_refresh_hours">
+        <item quantity="one">%d hora</item>
+        <item quantity="other">%d horas</item>
+    </plurals>
+    <string name="wx_refresh_day">1 dia</string>
+    <string name="wx_refresh_hint">Os widgets de clima recarregam nesse intervalo enquanto estão visíveis, e a Localização atual é verificada no mesmo intervalo. Toque no ícone de atualizar do widget para recarregar agora.</string>
+    <string name="wx_refresh_button">Atualizar clima</string>
 </resources>

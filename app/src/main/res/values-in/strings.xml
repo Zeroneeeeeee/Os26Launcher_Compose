@@ -502,7 +502,7 @@
     <string name="wx_loc_city_unset">Belum dipilih</string>
     <string name="wx_loc_pick_city">Pilih kota</string>
     <string name="wx_loc_unavailable">Tidak dapat mendapatkan lokasi Anda. Aktifkan layanan lokasi atau pilih kota secara manual.</string>
-    <string name="wx_loc_privacy">Hanya lokasi perkiraan yang dipakai, diambil sekali setiap kali: saat Anda mengetuk Perbarui lokasi, atau (mode Otomatis dengan izin) paling sering setiap 2 jam saat widget cuaca dengan Lokasi saat ini terlihat, dan lokasi hanya berubah jika Anda berpindah lebih dari 5 km. Tidak ada yang berjalan di latar belakang dan tidak ada pelacakan terus-menerus. Mode Pilih manual tidak perlu izin dan tidak pernah membaca lokasi Anda.</string>
+    <string name="wx_loc_privacy">Hanya lokasi perkiraan yang dipakai, diambil sekali setiap kali: saat Anda mengetuk Perbarui lokasi atau tombol muat ulang di widget, atau (mode Otomatis dengan izin) paling sering sekali per interval “Muat ulang setiap” (Setelan → Cuaca) saat widget cuaca dengan Lokasi saat ini terlihat, dan lokasi hanya berubah jika Anda berpindah lebih dari 5 km. Tidak ada yang berjalan di latar belakang dan tidak ada pelacakan terus-menerus. Mode Pilih manual tidak perlu izin dan tidak pernah membaca lokasi Anda.</string>
     <string name="wx_sheet_for_widget">Widget ini menampilkan:</string>
     <string name="wx_sheet_current_named">Lokasi saat ini: %1$s</string>
     <string name="wx_sheet_current_unset">Lokasi saat ini (tidak diketahui)</string>
@@ -745,4 +745,13 @@
     <string name="perm_blocked_location_message">Cuaca memakai perkiraan lokasi Anda untuk menampilkan cuaca di tempat Anda. Lokasi hanya dipakai untuk cuaca dan tidak dilacak terus-menerus. Anda telah menolak izin ini, jadi Android tidak akan bertanya lagi. Ketuk Beri izin, lalu Izin → Lokasi → Izinkan.</string>
     <string name="perm_blocked_contacts_title">Izin kontak diperlukan</string>
     <string name="perm_blocked_contacts_message">Penelusuran membaca kontak agar Anda bisa mencari orang berdasarkan nama lalu menelepon atau mengirim pesan dengan cepat. Kontak hanya dibaca di ponsel ini dan tidak pernah dikirim ke mana pun. Anda telah menolak izin ini, jadi Android tidak akan bertanya lagi. Ketuk Beri izin, lalu Izin → Kontak → Izinkan.</string>
+    <!-- WR (2026-11-27): chu kỳ "Làm mới sau" (Cài đặt → Thời tiết) và nút làm mới trên widget. -->
+    <string name="wx_refresh_header">Muat ulang</string>
+    <string name="wx_refresh_interval">Muat ulang setiap</string>
+    <plurals name="wx_refresh_hours">
+        <item quantity="other">%d jam</item>
+    </plurals>
+    <string name="wx_refresh_day">1 hari</string>
+    <string name="wx_refresh_hint">Widget cuaca dimuat ulang sesuai interval ini saat terlihat, dan Lokasi saat ini juga diperiksa dengan interval yang sama. Ketuk ikon muat ulang di widget untuk memuat sekarang.</string>
+    <string name="wx_refresh_button">Muat ulang cuaca</string>
 </resources>

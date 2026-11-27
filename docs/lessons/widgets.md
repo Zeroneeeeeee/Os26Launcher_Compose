@@ -92,3 +92,17 @@ Mỗi mục giữ nguyên ngày, nhãn nguồn (đo được / đọc code / đ�
 ## BW — widget Pin (2026-11-25). Plan: [../plans/BW-battery-widget.md](../plans/BW-battery-widget.md)
 
 - (BW, 2026-11-25, **đọc tài liệu**, chờ kiểm máy) `ACTION_BATTERY_CHANGED` là broadcast dính: đăng ký receiver động trả luôn giá trị hiện tại; `registerReceiver(null, filter)` chỉ đọc bản dính. Lúc sạc hệ thống gửi rất dày (nhiệt độ, điện áp) nên chỉ báo vẽ lại khi %, cắm sạc, tiết kiệm pin thật sự đổi. Receiver chỉ sống khi có widget Pin (hoặc bản xem trước) đang hiện: đếm tham chiếu ở `HomeWidgetCell` / `RendererPreview`.
+
+## WR — làm mới thời tiết, chu kỳ tùy chọn (2026-11-27). Plan: [../plans/WR-weather-refresh.md](../plans/WR-weather-refresh.md)
+
+- (WR, 2026-11-27, **đọc tài liệu**, chờ kiểm máy) OWM gói Free trả dự báo theo bước 3 giờ: đó là khoảng cách giữa các mốc dự báo, không phải tần suất cập nhật số liệu. Widget không hiện giờ nên bước 3 giờ không ảnh hưởng; giữ OWM. Open-Meteo miễn phí chỉ cho dùng phi thương mại (app có quảng cáo là thương mại).
+- (WR, 2026-11-27, **đọc code**, chờ kiểm máy) Chu kỳ làm mới là cài đặt người dùng thì mọi hằng tính theo nó phải đọc cùng một giá trị: lần tới hạn (`dueReason`), ngưỡng "cũ" (= chu kỳ + 1 giờ) và lần cập nhật vị trí im lặng (`CurrentLocationUpdater.maybeUpdate(intervalMs)`). Lỗi 429 thử lại sau 2 giờ cố định, lỗi khác 15 phút: không theo chu kỳ, nếu không chọn "1 ngày" thì lỗi tạm thời giữ số cũ cả ngày.
+- (WR, 2026-11-27, **đọc code**, chờ kiểm máy) Làm mới tay vẫn đi qua `mutex` và hợp đồng `lastAttemptAt` như làm mới tự động, chỉ khác điều kiện tới hạn (1 lần/phút mỗi địa điểm). Bấm trong lúc chờ thì icon vẫn xoay một vòng cho có phản hồi, không gọi mạng.
+- (WR / B21, 2026-11-27, **đọc code**, chờ kiểm máy) Hộp xin quyền của hệ thống và trang thông tin ứng dụng là Activity khác: quay lại thì Home `onResume`. Việc gì chạy "mỗi lần resume" (hộp "Đặt làm màn hình chính") phải được báo bỏ qua lần resume đó ngay TRƯỚC khi mở màn hệ thống (`PermissionRequester(onSystemUi)`), và không hiện khi `dsDialogs.hasOpen`.
+- (WR / B11, 2026-11-27, **đọc code**, chờ kiểm máy) Muốn một phần tử Compose có hoạt ảnh lúc ẩn thì không bọc nó trong `if (điều kiện)`: luôn gọi, truyền `visible`, tự rời cây khi giá trị hoạt ảnh về 0. `animateFloatAsState` lấy đích làm giá trị đầu nên ô dựng mới khi đã ở edit mode hiện ngay, không phóng lại.
+
+## WM — Open-Meteo dự phòng cho OWM (2026-11-27). Plan: [../plans/WM-weather-fallback.md](../plans/WM-weather-fallback.md)
+
+- (WM, 2026-11-27, **đọc tài liệu**, chờ kiểm máy) Open-Meteo `forecast_hours` đếm từ giờ HIỆN TẠI (đã qua một phần), còn `data/2.5/forecast` của OWM trả mốc tương lai: muốn hai nguồn cùng nghĩa thì bỏ mốc 0, lấy mỗi 3 giờ một mốc. Với `timeformat=unixtime`, `hourly.time` là giây UTC; múi giờ lấy ở `utc_offset_seconds`.
+- (WM, 2026-11-27, **đọc code**, chờ kiểm máy) Bản bọc dự phòng không được để lỗi "chết vĩnh viễn" của nguồn chính (401) lọt lên repository khi nguồn phụ chỉ lỗi tạm: repository gặp 401 thì dừng mọi lần làm mới tới khi khởi động lại, kéo chết luôn nguồn phụ. Khi nguồn chính 401 và nguồn phụ cũng lỗi, ném lỗi của nguồn phụ.
+- (WM, 2026-11-27, **đọc code**) Thử nguồn dự phòng không cần code: đặt `OWM_API_KEY=sai` trong `local.properties` (ghi đè khóa có sẵn) → OWM trả 401 → Logcat tag `WeatherFallback`.
