@@ -69,7 +69,7 @@ widget nằm trong `HomeWidgetCell` (Compose, đè lên thẻ vẽ Canvas), gọ
 - [x] `WeatherWidgetHub`: `onRefreshTapped`, `refreshing`, `placeIdOf(itemId)`; `HomeActivity`: xin quyền như bấm widget (QĐ 3) hoặc `refreshNow`. Commit `feat: refresh button on weather widget`.
 
 ### Task 4: B21
-- [ ] Theo R5. Commit `fix: default-launcher prompt no longer stacks on permission dialogs`.
+- [x] Theo R5. Commit `fix: default-launcher prompt no longer stacks on permission dialogs`.
 
 ### Task 5: B11
 - [ ] Theo R6 ở 4 nơi gọi. Commit `feat: animate remove badges in and out of edit mode`.
@@ -84,3 +84,4 @@ widget nằm trong `HomeWidgetCell` (Compose, đè lên thẻ vẽ Canvas), gọ
 | 2026-11-27 | 1 | `WeatherRefreshInterval` + khóa `weather_refresh_interval`; `WeatherPolicy` (bỏ `REFRESH_INTERVAL_MS`, `STALE_AFTER_MS`; thêm `RATE_LIMIT_RETRY_MS`, `MANUAL_COOLDOWN_MS`, `STALE_GRACE_MS`); `WeatherRepositoryImpl` đọc chu kỳ, `refreshNow`, `refreshing`; `CurrentLocationUpdater.maybeUpdate(intervalMs)`, `updateNow()`; `config-schema.md` | Chưa build |
 | 2026-11-27 | 2 | Cài đặt → Thời tiết: nhóm "Làm mới" (hàng "Làm mới sau" mở hộp chọn một, chú thích), chuỗi `wx_refresh_*` × 9 (plurals giờ), `wx_loc_privacy` × 9 nói theo chu kỳ + nút làm mới | XML parse được. Chưa build |
 | 2026-11-27 | 3 | `ic_widget_refresh.xml` (Material "refresh"); `HomeWidgetCell.WeatherRefreshButton` (12/32dp, góc dưới phải thẻ, xoay ≥ 1 vòng và trong lúc `refreshing`); `WeatherWidgetHub.onRefreshTapped`, `refreshing`; `HomeActivity.onWeatherRefreshTapped` | Chưa build. Cần chủ dự án nhìn chỗ đặt nút trên 2×2 / 4×2 (có thể đè chữ góc dưới phải) |
+| 2026-11-27 | 4 | B21: `PermissionRequester(onSystemUi)` gọi trước hộp quyền hệ thống và khi bấm "Cấp quyền"; Home truyền `defaultPrompt.skipNextResume()`; `DsDialogHost.hasOpen`; `DefaultLauncherPromptController` không hiện khi đang có hộp khác | Chưa build |

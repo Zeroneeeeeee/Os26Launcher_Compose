@@ -184,8 +184,9 @@ class HomeActivity : AppCompatActivity() {
     private val onWeatherRefresh: (Long) -> Unit = { onWeatherRefreshTapped(it) } // WR: một tham chiếu cố định để gỡ đúng ở onDestroy
 
     // PM (2026-11-26): xin quyền theo luật chung (hộp hệ thống, hoặc hộp "Cấp quyền" khi bị chặn). Dựng lúc dựng Activity (trước STARTED).
-    private val locationPermission = PermissionRequester(this, PermissionKind.LOCATION)
-    private val contactsPermission = PermissionRequester(this, PermissionKind.CONTACTS)
+    // B21: mở hộp quyền / trang ứng dụng là rời Home; lần resume ngay sau đó không hỏi "Đặt làm màn hình chính".
+    private val locationPermission = PermissionRequester(this, PermissionKind.LOCATION) { defaultPrompt.skipNextResume() }
+    private val contactsPermission = PermissionRequester(this, PermissionKind.CONTACTS) { defaultPrompt.skipNextResume() }
 
     private lateinit var hostedWidgets: HostedWidgetViews
     private lateinit var appWidgetFlow: AppWidgetFlowController

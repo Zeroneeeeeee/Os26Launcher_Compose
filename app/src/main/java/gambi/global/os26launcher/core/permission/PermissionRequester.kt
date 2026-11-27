@@ -58,8 +58,15 @@ object PermissionDenials {
  * không đổi rationale nên không bị tính. Từ chối lần hai (Android 11+ chặn luôn) không hiện hộp riêng ngay; lần bấm sau mới hiện.
  *
  * Dựng lúc dựng Activity / màn (trước STARTED: `registerForActivityResult`). Lời gọi lại chờ kết quả không sống qua process death.
+ *
+ * [onSystemUi] (B21): gọi ngay khi sắp rời Activity sang màn của hệ thống (hộp xin quyền, trang thông tin ứng dụng), để Home bỏ qua lần
+ * `onResume` kế tiếp (hộp "Đặt làm màn hình chính" hỏi mỗi lần Home resume).
  */
-class PermissionRequester(private val activity: ComponentActivity, val kind: PermissionKind) {
+class PermissionRequester(
+    private val activity: ComponentActivity,
+    val kind: PermissionKind,
+    private val onSystemUi: () -> Unit = {}
+) {
 
     private var pending: ((Boolean) -> Unit)? = null
     private var rationaleBefore = false
@@ -94,7 +101,10 @@ class PermissionRequester(private val activity: ComponentActivity, val kind: Per
         }
         if (isBlocked()) {
             if (blockedDialog == null) {
-                blockedDialog = showPermissionBlockedDialog(activity, kind, onOpenSettings).also { d ->
+                blockedDialog = showPermissionBlockedDialog(activity, kind) {
+                    onSystemUi()
+                    onOpenSettings()
+                }.also { d ->
                     d.setOnDismissListener { blockedDialog = null }
                 }
             }
@@ -103,6 +113,7 @@ class PermissionRequester(private val activity: ComponentActivity, val kind: Per
         }
         rationaleBefore = rationale()
         pending = onResult
+        onSystemUi()
         launcher.launch(kind.permission)
     }
 

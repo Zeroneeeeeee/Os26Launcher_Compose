@@ -44,6 +44,9 @@ class DsDialogHost {
     fun show(content: @Composable (DsDialogHandle) -> Unit): DsDialogHandle =
         DsDialogHandle(this, content).also { entries += it }
 
+    /** WR / B21: đang có ít nhất một hộp mở (hộp "Đặt làm màn hình chính" không chồng lên hộp khác). */
+    val hasOpen: Boolean get() = entries.isNotEmpty()
+
     internal fun remove(handle: DsDialogHandle) {
         entries.remove(handle)
     }
