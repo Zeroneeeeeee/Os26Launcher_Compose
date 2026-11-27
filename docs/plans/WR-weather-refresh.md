@@ -65,8 +65,8 @@ widget nằm trong `HomeWidgetCell` (Compose, đè lên thẻ vẽ Canvas), gọ
 - [x] Nhóm "Làm mới": hàng "Làm mới sau" (hộp chọn một), chú thích; chuỗi × 9 (plurals giờ); sửa `wx_loc_privacy` × 9. Commit `feat: weather refresh interval setting`.
 
 ### Task 3: Nút làm mới trên widget
-- [ ] `ic_widget_refresh.xml`; `HomeWidgetCell` (WEATHER, không edit): icon 12dp / vùng chạm 32dp góc dưới phải thẻ, xoay khi `refreshing` hoặc ít nhất một vòng mỗi lần bấm.
-- [ ] `WeatherWidgetHub`: `onRefreshTapped`, `refreshing`, `placeIdOf(itemId)`; `HomeActivity`: xin quyền như bấm widget (QĐ 3) hoặc `refreshNow`. Commit `feat: refresh button on weather widget`.
+- [x] `ic_widget_refresh.xml`; `HomeWidgetCell` (WEATHER, không edit): icon 12dp / vùng chạm 32dp góc dưới phải thẻ, xoay khi `refreshing` hoặc ít nhất một vòng mỗi lần bấm.
+- [x] `WeatherWidgetHub`: `onRefreshTapped`, `refreshing`, `placeIdOf(itemId)`; `HomeActivity`: xin quyền như bấm widget (QĐ 3) hoặc `refreshNow`. Commit `feat: refresh button on weather widget`.
 
 ### Task 4: B21
 - [ ] Theo R5. Commit `fix: default-launcher prompt no longer stacks on permission dialogs`.
@@ -83,3 +83,4 @@ widget nằm trong `HomeWidgetCell` (Compose, đè lên thẻ vẽ Canvas), gọ
 |---|---|---|---|
 | 2026-11-27 | 1 | `WeatherRefreshInterval` + khóa `weather_refresh_interval`; `WeatherPolicy` (bỏ `REFRESH_INTERVAL_MS`, `STALE_AFTER_MS`; thêm `RATE_LIMIT_RETRY_MS`, `MANUAL_COOLDOWN_MS`, `STALE_GRACE_MS`); `WeatherRepositoryImpl` đọc chu kỳ, `refreshNow`, `refreshing`; `CurrentLocationUpdater.maybeUpdate(intervalMs)`, `updateNow()`; `config-schema.md` | Chưa build |
 | 2026-11-27 | 2 | Cài đặt → Thời tiết: nhóm "Làm mới" (hàng "Làm mới sau" mở hộp chọn một, chú thích), chuỗi `wx_refresh_*` × 9 (plurals giờ), `wx_loc_privacy` × 9 nói theo chu kỳ + nút làm mới | XML parse được. Chưa build |
+| 2026-11-27 | 3 | `ic_widget_refresh.xml` (Material "refresh"); `HomeWidgetCell.WeatherRefreshButton` (12/32dp, góc dưới phải thẻ, xoay ≥ 1 vòng và trong lúc `refreshing`); `WeatherWidgetHub.onRefreshTapped`, `refreshing`; `HomeActivity.onWeatherRefreshTapped` | Chưa build. Cần chủ dự án nhìn chỗ đặt nút trên 2×2 / 4×2 (có thể đè chữ góc dưới phải) |

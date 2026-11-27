@@ -126,6 +126,7 @@ import gambi.global.os26launcher.domain.usecase.UpdateAutoPlaceUseCase
 import gambi.global.os26launcher.domain.weather.WeatherPlacesRepository
 import gambi.global.os26launcher.domain.model.weather.LocationMode
 import gambi.global.os26launcher.domain.model.weather.WeatherPlaces
+import gambi.global.os26launcher.domain.weather.WeatherRepository
 
 /**
  * JH1 — CHỈ BẢN DEBUG. Home Compose chạy song song Home View (JH1 D1): cùng `HomeViewModel` thật, cùng ảnh nền, trang, dock. Không phải
@@ -177,6 +178,10 @@ class HomeActivity : AppCompatActivity() {
 
     @Inject
     lateinit var updateAutoPlace: UpdateAutoPlaceUseCase // PM: cấp quyền xong thì tự cập nhật vị trí
+
+    @Inject
+    lateinit var weatherRepository: WeatherRepository // WR: nút làm mới trên widget thời tiết
+    private val onWeatherRefresh: (Long) -> Unit = { onWeatherRefreshTapped(it) } // WR: một tham chiếu cố định để gỡ đúng ở onDestroy
 
     // PM (2026-11-26): xin quyền theo luật chung (hộp hệ thống, hoặc hộp "Cấp quyền" khi bị chặn). Dựng lúc dựng Activity (trước STARTED).
     private val locationPermission = PermissionRequester(this, PermissionKind.LOCATION)
@@ -257,6 +262,7 @@ class HomeActivity : AppCompatActivity() {
         )
         hostedWidgets = HostedWidgetViews(this, appWidgetHost)
         weatherSheet = WeatherSheetController(this) // G3e: dựng ở onCreate (xin quyền vị trí đăng ký trước STARTED)
+        WeatherWidgetHub.onRefreshTapped = onWeatherRefresh // WR R3
         // G3c Task 6: dựng ở onCreate (ActivityResultLauncher trước STARTED); ghi hàng do ViewModel lo.
         appWidgetFlow = AppWidgetFlowController(
             this, appWidgetHost, appWidgetFlowState, appWidgetRepository,
@@ -586,6 +592,18 @@ class HomeActivity : AppCompatActivity() {
             weatherPlaces.places.value.mode == LocationMode.AUTO &&
             weatherPlaces.widgetPlaceId(itemId) == WeatherPlaces.CURRENT
 
+    /**
+     * WR (QĐ 3): nút làm mới trên widget thời tiết [itemId]. Widget cần quyền vị trí mà chưa có (như khi bấm widget, PM R2) → luồng xin quyền, cấp
+     * xong thì lấy vị trí; còn lại → `refreshNow` cho địa điểm của widget (repository tự chặn 1 phút và tự lấy lại vị trí hiện tại nếu cần).
+     */
+    private fun onWeatherRefreshTapped(itemId: Long) {
+        if (weatherNeedsLocationPermission(itemId)) {
+            locationPermission.request { granted -> if (granted) updateCurrentLocation() }
+            return
+        }
+        weatherRepository.refreshNow(weatherPlaces.widgetPlaceId(itemId))
+    }
+
     /** PM (Y2): vừa được cấp quyền từ widget thời tiết: lấy vị trí một lần và ghi làm vị trí tự động (không mở bảng). */
     private fun updateCurrentLocation() {
         lifecycleScope.launch {
@@ -703,6 +721,7 @@ class HomeActivity : AppCompatActivity() {
         hostedWidgets.clear()
         widgetPicker.closeIfOpen()
         weatherSheet.onDestroy()
+        if (WeatherWidgetHub.onRefreshTapped == onWeatherRefresh) WeatherWidgetHub.onRefreshTapped = null // WR: Home mới có thể đã gán của nó
         locationPermission.dismissDialog() // PM
         contactsPermission.dismissDialog()
         defaultPrompt.onDestroy()
