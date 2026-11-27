@@ -94,11 +94,27 @@ class HostedWidgetViews(
     /**
      * Ô báo cỡ nội dung (px) của widget [appWidgetId]: đẩy cho provider theo dp (`onAppWidgetOptionsChanged`), bỏ qua nếu cỡ dp không đổi (chống gọi lặp mỗi lần layout).
      * Một cỡ duy nhất vì Home khóa dọc (`nosensor`).
+     *
+     * B13: `updateAppWidgetSize` tự trừ padding mặc định ([AppWidgetHostView.getDefaultPaddingForWidget]) khỏi cỡ ta đưa, kể cả khi view không còn padding
+     * thật ([gambi.global.os26launcher.core.appwidget.OsAppWidgetHostView] đặt về 0). Đọc mã nguồn AOSP + đo được trên Live 4 API 30 (đưa 317×77, hệ thống
+     * giữ 301×61): cộng bù đúng phần sẽ bị trừ để provider nhận cỡ nội dung thật.
      */
     fun onSized(appWidgetId: Int, view: AppWidgetHostView, widthPx: Int, heightPx: Int, density: Float) {
         if (widthPx <= 0 || heightPx <= 0 || density <= 0f) return
-        val wDp = (widthPx / density).toInt()
-        val hDp = (heightPx / density).toInt()
+        val pad = view.appWidgetInfo?.provider?.let { provider ->
+            try {
+                @Suppress("DEPRECATION")
+                AppWidgetHostView.getDefaultPaddingForWidget(context, provider, null)
+            } catch (e: RuntimeException) {
+                Log.w(TAG, "getDefaultPaddingForWidget failed ${e.javaClass.name}")
+                null
+            }
+        }
+        // Cùng phép làm tròn với AOSP: (int) ((left + right) / density).
+        val padXDp = if (pad != null) ((pad.left + pad.right) / density).toInt() else 0
+        val padYDp = if (pad != null) ((pad.top + pad.bottom) / density).toInt() else 0
+        val wDp = (widthPx / density).toInt() + padXDp
+        val hDp = (heightPx / density).toInt() + padYDp
         val key = (wDp.toLong() shl 32) or hDp.toLong()
         if (lastPushedDp[appWidgetId] == key) return
         lastPushedDp[appWidgetId] = key
