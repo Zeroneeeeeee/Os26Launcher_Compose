@@ -12,7 +12,6 @@
 | B7 | Kiểm TalkBack (K1 mục 5c) | Kiểm | — | `PG4-home-perf-and-device-checks.md` | Chủ dự án bỏ qua 2026-11-23 |
 | B8 | Nhãn tên dưới widget tự vẽ như iOS (dùng phần đáy để trống của thẻ vuông) | Tính năng | — | `PW-menu-block-widget-square-font.md` (ngoài phạm vi), FL Q9 | |
 | B9 | `GridMetricsTest` hỏng 4/112 test (default sizing, dock cap, measure at density one, cellAt): test do Claude viết ở JH1 Task 1 (2026-11-19, ngoại lệ "không test" chủ dự án cho phép, `AGENTS.md`); `git blame` ghi dvha vì `2615d5d` "Initial commit" (2026-11-23) là lần chép code sang repo Compose, lịch sử repo XML không có file này; chưa cập nhật theo `5d96e78` của anh Nam (icon scale 1, nhãn 12,5 sp, `ROW_GUTTER_SCALE = 0.5` nên `gutterY` 8 → 4, hàng thấp hơn); code đúng thiết kế, cần sửa số trong test | Test | Thấp | `.\gradlew.bat :app:testDebugUnitTest` (chủ dự án chạy 2026-11-26, sau merge `016c6d0`) | Chủ dự án 2026-11-26: bỏ qua, để anh Nam sửa; `master` cũng hỏng đúng 4 test này |
-| B13 | Widget của app khác lấy kích cỡ sai | Lỗi | — | Chủ dự án 2026-11-26 | Chưa có ảnh / log; chủ dự án cho xem khi cần |
 
 ## Chờ anh dvha (tick khi merge lên `master`)
 
@@ -41,6 +40,7 @@
 
 | Việc | Plan |
 |---|---|
+| B13: Widget của app khác phủ sát thẻ kính (bỏ padding mặc định 8dp của `AppWidgetHostView`, bù cỡ báo cho provider) và thu nhỏ đều khi nội dung tràn ô (chủ dự án kiểm 2026-11-27) | `B13-appwidget-fit.md` |
 | B23: Thời tiết: Open-Meteo (bản miễn phí) làm nguồn dự phòng khi OWM lỗi; giữ bộ icon, không ghi nguồn trên giao diện (chủ dự án kiểm 2026-11-27) | `WM-weather-fallback.md` |
 | B22: Widget thời tiết: nút làm mới (icon xoay vòng siêu nhỏ, góc dưới phải); Cài đặt → Thời tiết thêm "Làm mới sau" 1h / 3h / 6h / 9h / 12h / 1 ngày, mặc định 1 ngày (chủ dự án kiểm 2026-11-27) | `WR-weather-refresh.md` |
 | B21: Hộp "Đặt làm màn hình chính" (`DefaultLauncherPromptController`) hiện chồng lên hộp "Cấp quyền" (PM) (chủ dự án kiểm 2026-11-27) | `WR-weather-refresh.md` |

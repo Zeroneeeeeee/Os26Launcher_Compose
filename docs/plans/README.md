@@ -12,6 +12,7 @@
 
 | Plan | Nội dung | Trạng thái |
 |---|---|---|
+| [B13](B13-appwidget-fit.md) | Widget của app khác phủ sát thẻ kính (bỏ padding mặc định) và thu nhỏ đều khi tràn ô (B13) | Xong 2026-11-27 |
 | [WM](WM-weather-fallback.md) | Open-Meteo làm nguồn dự phòng khi OWM lỗi, cấu hình ở `buildTypes` (B23) | Xong 2026-11-27 |
 | [WR](WR-weather-refresh.md) | Widget thời tiết: nút làm mới + "Làm mới sau" 1 giờ … 1 ngày (B22); hộp "Đặt làm màn hình chính" không chồng hộp quyền (B21); dấu "−" phóng / thu khi vào / ra edit mode (B11) | Xong 2026-11-27 |
 | [PM](PM-permission-flow.md) | Widget thời tiết xin quyền vị trí tại chỗ; hộp "Cấp quyền" khi quyền Vị trí / Danh bạ bị chặn, dùng chung mọi chỗ (B20) | Xong 2026-11-27 |
