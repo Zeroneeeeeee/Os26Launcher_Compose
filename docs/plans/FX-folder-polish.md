@@ -4,7 +4,7 @@
 > Android SDK: commit chỉ được rà bằng đọc code). Không có test tự động.
 
 **Bắt đầu:** 2026-11-26 · **Plan duyệt:** 2026-11-26 (chốt trong chat)
-**Trạng thái:** Xong 2026-11-27 (chủ dự án build + kiểm happy case 10:39)
+**Trạng thái:** Xong 2026-11-27 (chủ dự án kiểm lại lớp mờ khi mở thư mục, 11:07)
 **Bằng chứng:** video `Screen_recording_20261126_153649.mp4` (máy Android 11, nhãn tắt), ảnh cắt ở `tools/perf/out/vid/`.
 
 **Goal:** Icon trong thư mục cỡ ổn định và nằm giữa ô dù bật/tắt nhãn; kéo app ra khỏi thư mục thì ảnh kéo co dần về cỡ icon Home; bắt đầu kéo không còn icon nổi của menu sót lại; Android dưới 12 thì Home phía sau bảng thư mục cũng mờ.
@@ -121,3 +121,4 @@ Chủ dự án chọn cách 1 (không chờ ảnh chụp rồi mới phóng).
 | 2026-11-26 | Rà cuối | Tự rà toàn nhánh (không có reviewer riêng: chủ dự án không yêu cầu subagent) bằng đọc diff `7bb531f..HEAD` + grep tham chiếu đã xóa | Cần chủ dự án build: Claude không biên dịch được trong VM |
 | 2026-11-26 | 6 | Chủ dự án kiểm: mờ hiện độp → lớp phủ ảnh nền mờ theo `folderProgress` + ảnh chụp hiện dần 150 ms (nền và kính bảng) | Chưa build |
 | 2026-11-27 | 7 | Chủ dự án kiểm lại (Android 11): lúc mở thư mục chỉ thấy nền mờ, app / widget phía sau chỉ hiện khi bảng phóng xong. Gốc (đọc code): lớp ảnh nền mờ ĐỤC của Task 6 che Home thật tới khi ảnh chụp lớp Home (chụp sau khi mở, làm mờ qua `BlurredBackdropCache`) về muộn. Hướng A (chủ dự án chọn): `rememberBlurredLayerSnapshot` chép + thu 1/8 + làm mờ trong một lần chạy nền (`smoothBlurred` thành hàm cấp file), `FrostedSnapshotLayer` gán ngay; bỏ lớp ảnh nền mờ đục (chưa có ảnh chụp thì Home thật hiện, chỉ tối). Log đo tạm tag `FolderBlur` + `tools/debug/folder-blur.ps1` | Chưa build. Gỡ log `FolderBlurTrace` khi chốt |
+| 2026-11-27 | 8 | Chủ dự án đo bằng `tools/debug/folder-blur.ps1` (Live 4, API 30): ảnh mờ tới 160–200 ms, lúc hoạt ảnh mở ~0,9, bảng xong ~250 ms; "khá ok". Gỡ log `FolderBlurTrace`, bỏ `rememberLayerSnapshot` (không còn dùng); giữ script (chủ dự án), ghi công dụng ở `AGENTS.md` + đầu script; bài học ở `lessons/glass.md` | — |

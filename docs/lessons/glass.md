@@ -220,3 +220,9 @@ Mỗi mục giữ nguyên ngày, nhãn nguồn (đo được / đọc code / đ�
 - `Modifier.blur` chỉ chạy API ≥ 31: dưới đó lớp Home sau bảng thư mục chỉ tối. Ảnh chụp lớp Home đã mờ (`rememberLayerSnapshot` +
   `rememberFrostedBackdrop`, PG3) có sẵn cho kính bảng thì dùng luôn để phủ toàn màn (`drawPlainBackdrop` với `FrostedNoEffects`), không
   cần thêm bộ làm mờ. Hai khung đầu khi mở chưa có ảnh chụp: chỉ tối như cũ.
+- (FX, 2026-11-27, **đo** Vsmart Live 4 API 30, `tools/debug/folder-blur.ps1`) Lớp phủ chờ ảnh chụp KHÔNG được đục: lớp ảnh nền mờ đục (Task 6) che
+  icon / widget thật tới khi ảnh chụp lớp Home về (sau khi bảng đã phóng xong) → chủ dự án thấy "chỉ nền mờ, app hiện sau". Sửa: chụp + chép
+  HARDWARE → ARGB + thu 1/8 + làm mờ trong MỘT lần chạy nền (`rememberBlurredLayerSnapshot`, không qua `BlurredBackdropCache` và không chờ
+  khung báo bộ đệm), gán vào lớp ngay (`FrostedSnapshotLayer`, SideEffect); chưa có ảnh thì để Home thật hiện (chỉ tối). Số đo: chờ 2 khung
+  50–70 ms, chụp ~30 ms, chép ~25 ms, làm mờ 135×292 ~20 ms → ảnh tới 160–200 ms, lúc hoạt ảnh mở đạt ~0,9 (bảng xong ~250 ms). Ảnh 1/8 vẫn
+  đủ mịn sau bảng (chủ dự án: "khá ok").

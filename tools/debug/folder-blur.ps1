@@ -3,7 +3,12 @@
   FX (2026-11-27) - xem mốc thời gian ảnh mờ sau bảng thư mục (máy dưới Android 12) trong lúc nhìn hoạt ảnh mở thư mục.
 
 .DESCRIPTION
-  Cần bản debug có log đo tạm tag `FolderBlur` (FolderBlurTrace) và một máy cắm adb, API < 31 (máy >= 31 không đi đường này).
+  Công dụng: đo ảnh mờ có icon sau bảng thư mục (máy dưới Android 12) tới lúc nào so với hoạt ảnh mở bảng, trong lúc mắt nhìn lớp mờ.
+  Dùng khi sửa đường chụp / làm mờ lớp Home (`rememberBlurredLayerSnapshot` trong DsFrosted.kt, lớp phủ trong HomeScreen.kt).
+
+  LOG ĐÃ GỠ khi chốt FX (2026-11-27): muốn đo lại thì thêm lại `FolderBlurTrace` + các dòng gọi nó, chép từ commit ad39de3
+  (`git show ad39de3 -- app/src/main/java`), build debug, chạy script; đo xong gỡ log trước khi merge.
+  Cần một máy cắm adb, API < 31 (máy >= 31 dùng Modifier.blur, không đi đường này).
   Script xoá logcat, (tuỳ chọn) làm chậm hoạt ảnh hệ thống, rồi in từng lần mở thư mục:
     open        bắt đầu chụp (thư mục vừa mở)
     frames      đã chờ 2 khung (lớp Home đã ghi)

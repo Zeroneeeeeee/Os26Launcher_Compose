@@ -115,7 +115,6 @@ import com.kyant.backdrop.drawPlainBackdrop
 import androidx.compose.ui.graphics.RectangleShape
 import gambi.global.os26launcher.core.glass.compose.FrostedNoEffects
 import androidx.compose.animation.core.animateFloatAsState
-import gambi.global.os26launcher.core.glass.compose.FolderBlurTrace
 import gambi.global.os26launcher.core.glass.compose.FrostedSnapshotLayer
 import gambi.global.os26launcher.core.glass.compose.rememberBlurredLayerSnapshot
 
@@ -338,15 +337,6 @@ internal fun HomeScreen(
         radiusPx = maxOf(GlassTuning.blurRadiusPx(folderLook), FOLDER_SNAPSHOT_MIN_BLUR_PX)
     )
     val folderFrosted = rememberFrostedBackdrop(folderShot)
-    // FX đo tạm (FolderBlurTrace): lúc ảnh mờ có icon tới và lúc bảng phóng gần hết, để so với nhau.
-    val folderShotReady = folderFrosted.backdropOrNull != null
-    LaunchedEffect(folderShotReady) { if (folderShotReady) FolderBlurTrace.log("shown progress=${"%.2f".format(folderProgress.value)}") }
-    LaunchedEffect(state.openFolderId) {
-        if (legacyGlass && state.openFolderId != null) {
-            snapshotFlow { folderProgress.value }.first { it >= 0.98f }
-            FolderBlurTrace.log("panel full")
-        }
-    }
     // FX Task 6: ảnh chụp lớp Home đã mờ hiện dần khi tới (nền sau bảng và kính bảng dưới API 31), không đổi phắt.
     val folderShotAlpha by animateFloatAsState(
         if (folderFrosted.backdropOrNull != null) 1f else 0f, tween(FOLDER_SHOT_FADE_MS), label = "folderShot"
