@@ -35,6 +35,22 @@ enum class WeatherCondition {
             803, 804 -> CLOUDY
             else -> UNKNOWN
         }
+
+        /**
+         * WM — ánh xạ mã thời tiết WMO của Open-Meteo (https://open-meteo.com/en/docs, bảng "WMO Weather interpretation codes"), cùng độ mịn với
+         * [fromOwmId]: 0 quang, 1-2 ít mây, 3 nhiều mây, 45/48 sương, mưa phùn / mưa / mưa rào (kể cả đóng băng) là mưa, tuyết / mưa tuyết là tuyết,
+         * 95-99 giông. Mã lạ -> [UNKNOWN].
+         */
+        fun fromWmoCode(code: Int): WeatherCondition = when (code) {
+            0 -> CLEAR
+            1, 2 -> PARTLY_CLOUDY
+            3 -> CLOUDY
+            45, 48 -> FOG
+            in 51..57, in 61..67, in 80..82 -> RAIN
+            in 71..77, 85, 86 -> SNOW
+            in 95..99 -> THUNDERSTORM
+            else -> UNKNOWN
+        }
     }
 }
 

@@ -20,6 +20,7 @@ import gambi.global.os26launcher.domain.weather.WeatherPreferencesRepository
 import gambi.global.os26launcher.domain.weather.WeatherProvider
 import gambi.global.os26launcher.domain.weather.WeatherRepository
 import javax.inject.Singleton
+import gambi.global.os26launcher.data.weather.OpenMeteoConfig
 
 /** G3e — nối nguồn thời tiết. Đổi sang proxy/backend: đổi `baseUrl`/khóa ở đây hoặc bind một [WeatherProvider] khác. */
 @Module
@@ -55,6 +56,15 @@ abstract class WeatherModule {
             WeatherProviderConfig(
                 baseUrl = "https://api.openweathermap.org",
                 apiKey = BuildConfig.OWM_API_KEY
+            )
+
+        /** WM: nguồn dự phòng Open-Meteo (cấu hình ở `buildTypes`). */
+        @Provides
+        @Singleton
+        fun provideOpenMeteoConfig(): OpenMeteoConfig =
+            OpenMeteoConfig(
+                baseUrl = BuildConfig.OPEN_METEO_BASE_URL,
+                apiKey = BuildConfig.OPEN_METEO_API_KEY
             )
     }
 }
